@@ -1,9 +1,10 @@
 #include "input.h"
 
-#include "type.h"
 #include "global.h"
 #include "helper.h"
+#include "opengl.h"
 #include "sound.h"
+#include "type.h"
 
 #include "SDL2/SDL_events.h"
 

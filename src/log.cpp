@@ -5,6 +5,10 @@
 #include <time.h>
 #include <string>
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif // _WIN32
+
 static constexpr char reset[] = "\033[0m"; /* reset to default Color */
 static constexpr char black[] = "\033[30m";
 static constexpr char red[] = "\033[31m";
@@ -36,7 +40,7 @@ static void windowsEnableColors()
   GetConsoleMode(hOut, &dwMode);
   dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
   SetConsoleMode(hOut, dwMode);
-#endif
+#endif // _WIN32
 }
 
 static char* getTimeString()

@@ -4,6 +4,9 @@
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles/
+Debug/
+Release/
+ReaperForge.dir/
 cmake_install.cmake
 Makefile
 build/

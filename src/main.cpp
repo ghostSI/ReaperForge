@@ -5,9 +5,7 @@
 #include "shader.h"
 #include "opengl.h"
 #include "texture.h"
-#include "font.h"
 #include "log.h"
-#include "type.h"
 
 #include "SDL2/SDL.h"
 

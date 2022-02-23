@@ -1,6 +1,5 @@
 #include "sprite.h"
 
-#include "global.h"
 #include "opengl.h"
 #include "helper.h"
 #include "shader.h"

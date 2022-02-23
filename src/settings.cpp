@@ -1,7 +1,6 @@
 
 #include "settings.h"
 #include "global.h"
-#include "helper.h"
 
 #include "SDL2/SDL_video.h"
 

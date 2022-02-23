@@ -1,7 +1,6 @@
 #include "input.h"
 
 #include "global.h"
-#include "helper.h"
 #include "opengl.h"
 #include "sound.h"
 #include "type.h"

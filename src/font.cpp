@@ -1,6 +1,5 @@
 #include "font.h"
 
-#include "file.h"
 #include "sprite.h"
 #include "global.h"
 

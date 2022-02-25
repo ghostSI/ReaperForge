@@ -1,8 +1,9 @@
 #include "rijndael.h"
+#include "psarc.h"
 
 #include "SDL2/SDL.h"
 
-void rijndaelTest()
+static void rijndaelTest()
 {
     static const u8 psarcKey[] =
             {
@@ -253,23 +254,29 @@ void rijndaelTest()
             0x10, 0x50, 0x11, 0x2f, 0x13, 0x6d, 0x07, 0xd7, 0x0a, 0x58, 0x0f, 0x2a,
             0x05, 0x33, 0x02, 0xa6, 0x03, 0x3c, 0x02, 0xda, 0x02, 0x2f
     };
-    static const size_t plainText_len = 1030;
-
+    static const size_t plainText_len = 512;
 
   u8 plainText[plainText_len];
 
   Rijndael rijndael;
   rijndael.MakeKey(psarcKey);
-  rijndael.Decrypt(encrypted_data, plainText, plainText_len);
+  rijndael.Decrypt(&encrypted_data[32], plainText, plainText_len);
 
   for (size_t i = 0; i < plainText_len; ++i)
     ASSERT(plainText[i] == plainText_data[i]);
+}
+
+static void psarcTest()
+{
+    std::vector<u8> psarcData = Psarc::readPsarcData("../temp/Napalm Death_You Suffer_NA_p.psarc");
+    Psarc::PsarcInfo psarcInfo = Psarc::read(psarcData);
 }
 
 #ifdef TEST_BUILD
 int main(int argc, char* argv[])
 {
     rijndaelTest();
+    psarcTest();
 
   return 0;
 }

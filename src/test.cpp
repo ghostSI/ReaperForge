@@ -1,5 +1,6 @@
-#include "test.h"
 #include "rijndael.h"
+
+#include "SDL2/SDL.h"
 
 void rijndaelTest()
 {

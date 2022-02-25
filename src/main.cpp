@@ -67,10 +67,6 @@ int main(int argc, char* argv[])
   UNUSED(argc);
   UNUSED(argv);
 
-    std::vector<u8> psarcData = Psarc::readPsarcData("D:\\ReaperForge\\res\\Ihsahn_Until-I-Too-Dissolve_v1_p.psarc");
-    Psarc::read(psarcData);
-  return 0;
-
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER))
   {
     SDL_Log("Unable to initialize SDL: %s", SDL_GetError());

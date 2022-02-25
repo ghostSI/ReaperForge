@@ -12,6 +12,7 @@ cmake-build-release-visual-studio/
 cmake_install.cmake
 Makefile
 build/
+temp/
 *.sln
 *.vcxproj
 *.vcxproj.filters

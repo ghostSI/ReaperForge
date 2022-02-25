@@ -1,6 +1,8 @@
 #ifndef TYPEDEFS_H
 #define TYPEDEFS_H
 
+#include "configuration.h"
+
 #include <stdint.h>
 #include <float.h>
 #include <math.h>

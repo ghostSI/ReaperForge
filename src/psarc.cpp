@@ -35,11 +35,16 @@ static const u8 psarcKey[32] =
 
 static std::vector<u8> decryptPsarc(const u8* bytes, const u32 len)
 {
-  std::vector<u8> plainText(len);
+    int lea= 4096;
+
+
+  std::vector<u8> plainText(lea);
 
   Rijndael rijndael;
   rijndael.MakeKey(psarcKey);
-  rijndael.Decrypt(bytes, plainText.data(), 1024);
+  rijndael.Decrypt(bytes, plainText.data(), lea);
+
+  auto a = plainText[1503];
 
   return plainText;
 }

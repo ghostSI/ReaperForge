@@ -33,12 +33,14 @@ set(HEADER_FILES
   src/log.h
   src/opengl.h
   src/picopng.h
+  src/psarc.h
+  src/rijndael.h
   src/scene.h
   src/settings.h
   src/shader.h
   src/sound.h
   src/sprite.h
-  src/type.h
+        src/type.h
   src/texture.h
   src/zorder.h
   )
@@ -54,12 +56,15 @@ set(SOURCE_FILES
   src/main.cpp
   src/opengl.cpp
   src/picopng.cpp
+  src/psarc.cpp
+        src/rijndael.cpp
   src/scene.cpp
   src/settings.cpp
   src/shader.cpp
   src/sound.cpp
   src/sprite.cpp
-  src/texture.cpp
+        src/test.cpp
+        src/texture.cpp
   src/zorder.cpp
   )
 

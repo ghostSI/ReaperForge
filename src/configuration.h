@@ -1,6 +1,6 @@
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
 
-//#define TEST_BUILD
+#define TEST_BUILD
 
 #endif // CONFIGURATION_H

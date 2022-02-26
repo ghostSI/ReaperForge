@@ -30,6 +30,7 @@ set(HEADER_FILES
         src/global.h
         src/helper.h
         src/input.h
+        src/installer.h
         src/log.h
         src/opengl.h
         src/picopng.h
@@ -52,6 +53,7 @@ set(SOURCE_FILES
         src/global.cpp
         src/helper.cpp
         src/input.cpp
+        src/installer.cpp
         src/log.cpp
         src/main.cpp
         src/opengl.cpp

@@ -1,7 +1,14 @@
+#include "configuration.h"
+
+#ifdef TEST_BUILD
+
 #include "rijndael.h"
 #include "psarc.h"
+#include "installer.h"
 
 #include "SDL2/SDL.h"
+
+#include <filesystem>
 
 static void rijndaelTest() {
     static const u8 psarcKey[] =
@@ -213,10 +220,28 @@ static void psarcTest() {
     std::vector<u8> psarcData = Psarc::readPsarcData("../temp/Napalm Death_You Suffer_NA_p.psarc");
     Psarc::PsarcInfo psarcInfo = Psarc::read(psarcData);
 }
+static void installerTest() {
+    if (Installer::isInstalled("."))
+    {
+        std::filesystem::remove("settings.ini");
+        std::filesystem::remove("songs");
+    }
 
-#ifdef TEST_BUILD
+    ASSERT(!Installer::isInstalled("."));
+    Installer::install(".");
+    ASSERT(Installer::isInstalled("."));
+
+    // uninstall
+    std::filesystem::remove("settings.ini");
+    std::filesystem::remove("songs");
+
+    ASSERT(!Installer::isInstalled("."));
+};
+
+
 
 int main(int argc, char *argv[]) {
+    installerTest();
     rijndaelTest();
     psarcTest();
 

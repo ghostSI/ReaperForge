@@ -32,14 +32,23 @@ std::vector<u8> File::load(const char *filepath, const char *mode) {
     return fileData;
 }
 
-void File::load(const char *file_path, std::string &buffer) {
-    std::ifstream file(file_path);
+void File::load(const char *filepath, std::string &buffer) {
+    std::ifstream file(filepath);
 
     std::stringstream ss;
 
     ss << file.rdbuf();
 
     buffer = ss.str();
+}
+
+void File::save(const char *filepath, const char *content, size_t len)
+{
+    FILE *file = fopen(filepath, "w");
+
+    fwrite(content, len, 1, file);
+
+    fclose(file);
 }
 
 std::vector<u8> File::loadPng(const char *filepath, i32 &width, i32 &heigth, bool convertRGBA) {

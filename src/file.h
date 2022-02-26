@@ -20,7 +20,9 @@ namespace File {
 
     std::vector<u8> load(const char *filepath, const char *mode);
 
-    void load(const char *file_path, std::string &buffer);
+    void load(const char *filepath, std::string &buffer);
+
+    void save(const char *filepath, const char *content, size_t len);
 
     std::vector<u8> loadPng(const char *filepath, i32 &width, i32 &heigth, bool convertRGBA = true);
 

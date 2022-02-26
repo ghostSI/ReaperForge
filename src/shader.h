@@ -3,16 +3,15 @@
 
 #include "typedefs.h"
 
-namespace Shader
-{
-enum struct Stem
-{
-  defaultWorld,
-  defaultScreen,
-};
+namespace Shader {
+    enum struct Stem {
+        defaultWorld,
+        defaultScreen,
+    };
 
-void init();
-GLuint useShader(Shader::Stem shaderStem);
+    void init();
+
+    GLuint useShader(Shader::Stem shaderStem);
 }
 
 #endif // SHADER_H

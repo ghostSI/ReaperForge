@@ -9,74 +9,74 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
 if (MSVC)
-else()
-  set(CMAKE_CXX_FLAGS "")
-  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -flto -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic")
-  set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")
-endif()
+else ()
+    set(CMAKE_CXX_FLAGS "")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -flto -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")
+endif ()
 
-if(CMAKE_HOST_UNIX)
-  set(LINUX ON)
+if (CMAKE_HOST_UNIX)
+    set(LINUX ON)
 elseif (CMAKE_HOST_WIN32)
-  set(WINDOWS ON)
-endif()
+    set(WINDOWS ON)
+endif ()
 
 set(HEADER_FILES
-  src/configuration.h
-  src/typedefs.h
-  src/camera.h
-  src/file.h
-  src/font.h
-  src/global.h
-  src/helper.h
-  src/input.h
-  src/log.h
-  src/opengl.h
-  src/picopng.h
-  src/psarc.h
-  src/rijndael.h
-  src/scene.h
-  src/settings.h
-  src/shader.h
-  src/sound.h
-  src/sprite.h
+        src/configuration.h
+        src/typedefs.h
+        src/camera.h
+        src/file.h
+        src/font.h
+        src/global.h
+        src/helper.h
+        src/input.h
+        src/log.h
+        src/opengl.h
+        src/picopng.h
+        src/psarc.h
+        src/rijndael.h
+        src/scene.h
+        src/settings.h
+        src/shader.h
+        src/sound.h
+        src/sprite.h
         src/type.h
-  src/texture.h
-  src/zorder.h
-  )
+        src/texture.h
+        src/zorder.h
+        )
 
 set(SOURCE_FILES
-  src/camera.cpp
-  src/file.cpp
-  src/font.cpp
-  src/global.cpp
-  src/helper.cpp
-  src/input.cpp
-  src/log.cpp
-  src/main.cpp
-  src/opengl.cpp
-  src/picopng.cpp
-  src/psarc.cpp
+        src/camera.cpp
+        src/file.cpp
+        src/font.cpp
+        src/global.cpp
+        src/helper.cpp
+        src/input.cpp
+        src/log.cpp
+        src/main.cpp
+        src/opengl.cpp
+        src/picopng.cpp
+        src/psarc.cpp
         src/rijndael.cpp
-  src/scene.cpp
-  src/settings.cpp
-  src/shader.cpp
-  src/sound.cpp
-  src/sprite.cpp
+        src/scene.cpp
+        src/settings.cpp
+        src/shader.cpp
+        src/sound.cpp
+        src/sprite.cpp
         src/test.cpp
         src/texture.cpp
-  src/zorder.cpp
-  )
+        src/zorder.cpp
+        )
 
 set(RESOURCE_FILES
-  res/defaultScreen.vert
-  res/defaultWorld.frag
-  res/defaultWorld.vert
-  res/font.png
-  res/menuHover.wav
-  res/menuSelect.wav
-  res/random.txt
-  )
+        res/defaultScreen.vert
+        res/defaultWorld.frag
+        res/defaultWorld.vert
+        res/font.png
+        res/menuHover.wav
+        res/menuSelect.wav
+        res/random.txt
+        )
 
 add_executable(ReaperForge WIN32 ${HEADER_FILES} ${SOURCE_FILES} ${RESOURCE_FILES} ReaperForge.rc)
 
@@ -85,56 +85,56 @@ set_target_properties(${TARGETNAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_
 
 file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/res)
 
-if(${LINUX})
-  target_link_libraries(ReaperForge stdc++fs)
+if (${LINUX})
+    target_link_libraries(ReaperForge stdc++fs)
 
-  ## USE INSTALLED SDL2 ##
-  #find_library(SDL2 ClassLibrary)
-  #target_link_libraries(ReaperForge SDL2)
+    ## USE INSTALLED SDL2 ##
+    #find_library(SDL2 ClassLibrary)
+    #target_link_libraries(ReaperForge SDL2)
 
-  ## USE OWN SDL2 ##
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-  target_link_libraries(ReaperForge ${CMAKE_DL_LIBS})
-  target_include_directories(ReaperForge PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/SDL2-2.0.12/Linux/include/)
-  target_link_libraries(ReaperForge ${CMAKE_SOURCE_DIR}/3rdparty/SDL2-2.0.12/Linux/lib/libSDL2.a)
+    ## USE OWN SDL2 ##
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+    target_link_libraries(ReaperForge ${CMAKE_DL_LIBS})
+    target_include_directories(ReaperForge PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/SDL2-2.0.12/Linux/include/)
+    target_link_libraries(ReaperForge ${CMAKE_SOURCE_DIR}/3rdparty/SDL2-2.0.12/Linux/lib/libSDL2.a)
 
-  find_package(OpenGL REQUIRED)
-  set(OpenGL_GL_PREFERENCE "GLVND")
-  include_directories(${OPENGL_INCLUDE_DIRS})
-  target_link_libraries(ReaperForge ${OPENGL_LIBRARIES})
+    find_package(OpenGL REQUIRED)
+    set(OpenGL_GL_PREFERENCE "GLVND")
+    include_directories(${OPENGL_INCLUDE_DIRS})
+    target_link_libraries(ReaperForge ${OPENGL_LIBRARIES})
 
-elseif(${WINDOWS})
+elseif (${WINDOWS})
 
-  target_include_directories(ReaperForge PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/SDL2-2.0.12/Windows/include/)
-  target_link_directories(ReaperForge PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/SDL2-2.0.12/Windows/lib/)
-  target_link_libraries(ReaperForge SDL2.lib)
-  target_link_libraries(ReaperForge SDL2main.lib)
+    target_include_directories(ReaperForge PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/SDL2-2.0.12/Windows/include/)
+    target_link_directories(ReaperForge PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/SDL2-2.0.12/Windows/lib/)
+    target_link_libraries(ReaperForge SDL2.lib)
+    target_link_libraries(ReaperForge SDL2main.lib)
 
-  # static link
-  target_link_libraries(ReaperForge Ws2_32.lib)
-  target_link_libraries(ReaperForge Setupapi.lib)
-  target_link_libraries(ReaperForge version.lib)
-  target_link_libraries(ReaperForge imm32.lib)
-  target_link_libraries(ReaperForge winmm.lib)
+    # static link
+    target_link_libraries(ReaperForge Ws2_32.lib)
+    target_link_libraries(ReaperForge Setupapi.lib)
+    target_link_libraries(ReaperForge version.lib)
+    target_link_libraries(ReaperForge imm32.lib)
+    target_link_libraries(ReaperForge winmm.lib)
 
-  find_package(OpenGL REQUIRED)
-  include_directories(${OPENGL_INCLUDE_DIRS})
-  target_link_libraries(ReaperForge ${OPENGL_LIBRARIES})
-  
-  # static link runtime
-  if(MSVC)
-    set(CMAKE_SUPPRESS_REGENERATION true)
-  
-    target_compile_options(ReaperForge PRIVATE "/MP")
-    foreach(flag_var CMAKE_C_FLAGS_DEBUG CMAKE_CXX_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS_RELEASE) 
-        string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-        string(REGEX REPLACE "/MDd" "/MT" ${flag_var} "${${flag_var}}")
-        string(REGEX REPLACE "/MTd" "/MT" ${flag_var} "${${flag_var}}")
-    endforeach(flag_var)
-    SET (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" CACHE STRING "MSVC C Debug MT flags " FORCE)    
-    SET (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}" CACHE STRING "MSVC CXX Debug MT flags " FORCE)
-    SET (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "MSVC C Release MT flags " FORCE)
-    SET (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "MSVC CXX Release MT flags " FORCE)
-  endif()
+    find_package(OpenGL REQUIRED)
+    include_directories(${OPENGL_INCLUDE_DIRS})
+    target_link_libraries(ReaperForge ${OPENGL_LIBRARIES})
 
-endif()
+    # static link runtime
+    if (MSVC)
+        set(CMAKE_SUPPRESS_REGENERATION true)
+
+        target_compile_options(ReaperForge PRIVATE "/MP")
+        foreach (flag_var CMAKE_C_FLAGS_DEBUG CMAKE_CXX_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS_RELEASE)
+            string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+            string(REGEX REPLACE "/MDd" "/MT" ${flag_var} "${${flag_var}}")
+            string(REGEX REPLACE "/MTd" "/MT" ${flag_var} "${${flag_var}}")
+        endforeach (flag_var)
+        SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" CACHE STRING "MSVC C Debug MT flags " FORCE)
+        SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}" CACHE STRING "MSVC CXX Debug MT flags " FORCE)
+        SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "MSVC C Release MT flags " FORCE)
+        SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "MSVC CXX Release MT flags " FORCE)
+    endif ()
+
+endif ()

@@ -1,5 +1,4 @@
 #include "camera.h"
 
-void Camera::tick()
-{
+void Camera::tick() {
 }

@@ -6,27 +6,27 @@
 #include <string>
 #include <vector>
 
-namespace File
-{
-  struct IniContent
-  {
-    struct Entry
-    {
-      std::string key;
-      std::string value;
+namespace File {
+    struct IniContent {
+        struct Entry {
+            std::string key;
+            std::string value;
+        };
+        std::string name;
+        std::vector<Entry> entry;
     };
-    std::string name;
-    std::vector<Entry> entry;
-  };
 
-  bool exists(const char* filepath);
+    bool exists(const char *filepath);
 
-  std::vector<u8> load(const char* filepath, const char* mode);
-  void load(const char* file_path, std::string& buffer);
+    std::vector<u8> load(const char *filepath, const char *mode);
 
-  std::vector<u8> loadPng(const char* filepath, i32& width, i32& heigth, bool convertRGBA = true);
-  std::vector<u8> loadPng(const u8* imageData, u32 imageSize, i32& width, i32& heigth, bool convertRGBA = true);
-  std::vector<IniContent> loadIni(const char* filepath);
+    void load(const char *file_path, std::string &buffer);
+
+    std::vector<u8> loadPng(const char *filepath, i32 &width, i32 &heigth, bool convertRGBA = true);
+
+    std::vector<u8> loadPng(const u8 *imageData, u32 imageSize, i32 &width, i32 &heigth, bool convertRGBA = true);
+
+    std::vector<IniContent> loadIni(const char *filepath);
 }
 
 #endif // FILE_H

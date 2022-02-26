@@ -2,8 +2,8 @@
 
 #include "type.h"
 
-SDL_Window* Global::window = nullptr;
-SDL_GameController* Global::gameController = nullptr;
+SDL_Window *Global::window = nullptr;
+SDL_GameController *Global::gameController = nullptr;
 bool Global::appQuit = false;
 KeyInput Global::inputFullscreen;
 KeyInput Global::inputPause;

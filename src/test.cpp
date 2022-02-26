@@ -3,8 +3,7 @@
 
 #include "SDL2/SDL.h"
 
-static void rijndaelTest()
-{
+static void rijndaelTest() {
     static const u8 psarcKey[] =
             {
                     0xC5, 0x3D, 0xB2, 0x38, 0x70, 0xA1, 0xA2, 0xF7,
@@ -201,26 +200,27 @@ static void rijndaelTest()
 
     u8 plainText[plainTextLen];
 
-  Rijndael rijndael;
-  rijndael.MakeKey(psarcKey);
-  rijndael.Decrypt(&encryptedPsarc[32], plainText, plainTextLen);
+    Rijndael::decrypt(psarcKey, &encryptedPsarc[32], plainText, plainTextLen);
+    for (size_t i = 0; i < plainTextLen; ++i)
+        ASSERT(expectedPlainText[i] == plainText[i]);
 
-  for (size_t i = 0; i < plainTextLen; ++i)
-    ASSERT(expectedPlainText[i] == plainText[i]);
+    Rijndael::decrypt(psarcKey, &encryptedPsarc[32], plainText, plainTextLen);
+    for (size_t i = 0; i < plainTextLen; ++i)
+        ASSERT(expectedPlainText[i] == plainText[i]);
 }
 
-static void psarcTest()
-{
+static void psarcTest() {
     std::vector<u8> psarcData = Psarc::readPsarcData("../temp/Napalm Death_You Suffer_NA_p.psarc");
     Psarc::PsarcInfo psarcInfo = Psarc::read(psarcData);
 }
 
 #ifdef TEST_BUILD
-int main(int argc, char* argv[])
-{
+
+int main(int argc, char *argv[]) {
     rijndaelTest();
     psarcTest();
 
-  return 0;
+    return 0;
 }
+
 #endif // TEST_BUILD

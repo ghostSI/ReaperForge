@@ -3,11 +3,12 @@
 
 union SDL_Event;
 
-namespace Input
-{
-void prePollEvent();
-void pollEvent(SDL_Event& event);
-void postPollEvent();
+namespace Input {
+    void prePollEvent();
+
+    void pollEvent(SDL_Event &event);
+
+    void postPollEvent();
 }
 
 

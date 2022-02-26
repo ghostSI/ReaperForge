@@ -5,11 +5,12 @@
 
 #include <array>
 
-namespace Scene
-{
-void init();
-void tick();
-void render();
+namespace Scene {
+    void init();
+
+    void tick();
+
+    void render();
 }
 
 #endif // SCENE_H

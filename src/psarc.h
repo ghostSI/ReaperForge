@@ -4,14 +4,11 @@
 #include "typedefs.h"
 #include <vector>
 
-namespace Psarc
-{
-    std::vector<u8> readPsarcData(const char* filepath);
+namespace Psarc {
+    std::vector<u8> readPsarcData(const char *filepath);
 
-    struct PsarcInfo
-    {
-        struct
-        {
+    struct PsarcInfo {
+        struct {
             u32 magicNumber;
             u32 version;
             u32 compressMethod;
@@ -22,18 +19,16 @@ namespace Psarc
             u32 archiveFlags;
         } header;
 
-        struct
-        {
+        struct {
 
         } image;
 
-        struct
-        {
+        struct {
 
         } data;
     };
 
-    PsarcInfo read(const std::vector<u8>& psarcData);
+    PsarcInfo read(const std::vector<u8> &psarcData);
 }
 
 #endif // PSARC_H

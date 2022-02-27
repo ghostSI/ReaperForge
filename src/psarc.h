@@ -15,17 +15,23 @@ namespace Psarc {
             u32 totalTocSize;
             u32 TOCEntrySize;
             u32 numFiles;
-            u32 BlockSizeAlloc;
+            u32 blockSizeAlloc;
             u32 archiveFlags;
         } header;
+
+        std::vector<u8> tocRaw;
+        struct TOCEntry{
+            i32 id;
+            u8 md5[16];
+            u32 zIndexBegin;
+            u64 length;
+            u64 offset;
+        };
+        std::vector<TOCEntry> tocEntry;
 
         struct {
 
         } image;
-
-        struct {
-           std::vector<u8> toc;
-        } data;
     };
 
     PsarcInfo read(const std::vector<u8> &psarcData);

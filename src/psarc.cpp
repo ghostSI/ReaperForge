@@ -3,26 +3,34 @@
 #include "file.h"
 #include "rijndael.h"
 
-static constexpr const char *psarcExtension = "_p.psarc";
-static constexpr const char *magicText = "PSAR";
+//static constexpr const char *psarcExtension = "_p.psarc";
+//static constexpr const char *magicText = "PSAR";
+
+static u16 u16BigEndian(const u8 *bytes) {
+    return bytes[0] << 8 | bytes[1];
+}
 
 static u32 u32BigEndian(const u8 *bytes) {
     return bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3];
 }
 
-std::vector<u8> Psarc::readPsarcData(const char *filepath) {
-    const size_t filepathLen = strlen(filepath);
-
-    ASSERT(filepathLen > sizeof(psarcExtension) && "Psarc filename invalid");
-    ASSERT(strncmp(filepath, psarcExtension, filepathLen - sizeof(psarcExtension)));
-
-    std::vector<u8> psarcData = File::load(filepath, "r");
-
-    ASSERT(strncmp(reinterpret_cast<char *>(psarcData.data()), magicText, sizeof(magicText)) == 0 &&
-           "Invalid Psarc content");
-
-    return psarcData;
+static u64 u40BigEndian(const u8 *bytes) {
+    return u64(bytes[0]) << 32 | bytes[1] << 24 | bytes[2] << 16 | bytes[3] << 8 | bytes[4];
 }
+
+//std::vector<u8> Psarc::readPsarcData(const char *filepath) {
+//    const size_t filepathLen = strlen(filepath);
+//
+//    ASSERT(filepathLen > sizeof(psarcExtension) && "Psarc filename invalid");
+//    ASSERT(strncmp(filepath, psarcExtension, filepathLen - sizeof(psarcExtension)));
+//
+//    std::vector<u8> psarcData = File::load(filepath, "r");
+//
+//    ASSERT(strncmp(reinterpret_cast<char *>(psarcData.data()), magicText, sizeof(magicText)) == 0 &&
+//           "Invalid Psarc content");
+//
+//    return psarcData;
+//}
 
 static const u8 psarcKey[32] = {
         0xC5, 0x3D, 0xB2, 0x38, 0x70, 0xA1, 0xA2, 0xF7,
@@ -45,25 +53,82 @@ static std::vector<u8> decryptPsarc(const std::vector<u8> &psarcData, u32 startP
 
     Rijndael::decrypt(psarcKey, encText.data(), plainText.data(), plainText.size());
 
-    plainText.resize(plainText.size() - startPos);
+    plainText.resize(len - startPos);
 
     return plainText;
+}
+
+static i32 tocBNum(const u32 blockSizeAlloc) {
+    switch (blockSizeAlloc) {
+        case 65536:
+            return 2;
+    }
+
+    ASSERT(false);
+
+    return {};
 }
 
 Psarc::PsarcInfo Psarc::read(const std::vector<u8> &psarcData) {
     PsarcInfo psarcInfo;
 
-    psarcInfo.header.magicNumber = u32BigEndian(&psarcData[0]);
-    ASSERT(psarcInfo.header.magicNumber == 1347633490_u32 && "Invalid Psarc content");
-    psarcInfo.header.version = u32BigEndian(&psarcData[4]);
-    psarcInfo.header.compressMethod = u32BigEndian(&psarcData[8]);
-    psarcInfo.header.totalTocSize = u32BigEndian(&psarcData[12]);
-    psarcInfo.header.TOCEntrySize = u32BigEndian(&psarcData[16]);
-    psarcInfo.header.numFiles = u32BigEndian(&psarcData[20]);
-    psarcInfo.header.BlockSizeAlloc = u32BigEndian(&psarcData[24]);
-    psarcInfo.header.archiveFlags = u32BigEndian(&psarcData[28]);
+    { // parse Header
+        psarcInfo.header.magicNumber = u32BigEndian(&psarcData[0]);
+        ASSERT(psarcInfo.header.magicNumber == 1347633490_u32 && "Invalid Psarc content");
+        psarcInfo.header.version = u32BigEndian(&psarcData[4]);
+        psarcInfo.header.compressMethod = u32BigEndian(&psarcData[8]);
+        psarcInfo.header.totalTocSize = u32BigEndian(&psarcData[12]);
+        psarcInfo.header.TOCEntrySize = u32BigEndian(&psarcData[16]);
+        psarcInfo.header.numFiles = u32BigEndian(&psarcData[20]);
+        psarcInfo.header.blockSizeAlloc = u32BigEndian(&psarcData[24]);
+        psarcInfo.header.archiveFlags = u32BigEndian(&psarcData[28]);
+    }
 
-    psarcInfo.data.toc = decryptPsarc(psarcData, 32, psarcInfo.header.totalTocSize);
+    { // parse TOC
+        psarcInfo.tocRaw = decryptPsarc(psarcData, 32, psarcInfo.header.totalTocSize);
+        for (u32 i = 0; i < psarcInfo.header.numFiles; ++i) {
+            const u64 offset = i * 30;
+            PsarcInfo::TOCEntry tocEntry;
+            tocEntry.id = i;
+            memcpy(tocEntry.md5, &psarcInfo.tocRaw[offset], 16);
+            tocEntry.zIndexBegin = u32BigEndian(&psarcInfo.tocRaw[offset + 16]);
+            tocEntry.length = u40BigEndian(&psarcInfo.tocRaw[offset + 20]);
+            tocEntry.offset = u40BigEndian(&psarcInfo.tocRaw[offset + 25]);
+            psarcInfo.tocEntry.push_back(tocEntry);
+        }
+    }
+
+    std::vector<u32> zBlockSizeList;
+    { // parse zBlockSizeList
+        const i32 tocSize = psarcInfo.header.totalTocSize - 32;
+        const i32 tocChunkSize = (int) (psarcInfo.header.numFiles * psarcInfo.header.TOCEntrySize);
+        const i32 bNum = tocBNum(psarcInfo.header.blockSizeAlloc);
+        const i32 zNum = (tocSize - tocChunkSize) / bNum;
+        const u64 offset = psarcInfo.header.numFiles * 30;
+        zBlockSizeList.resize(zNum);
+
+        for (int i = 0; i < zNum; ++i) {
+            switch (bNum) {
+                case 2: // 64KB
+                    zBlockSizeList[i] = u16BigEndian(&psarcInfo.tocRaw[offset + i * 2]);
+                    break;
+                default:
+                    ASSERT(false);
+                    break;
+            }
+        }
+    }
+
+    { // decompress
+        switch (psarcInfo.header.compressMethod) {
+            case 2053925218:
+                break;
+            default:
+                ASSERT(false);
+                break;
+        }
+    }
+
 
     return psarcInfo;
 }

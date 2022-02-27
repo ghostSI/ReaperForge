@@ -3,8 +3,6 @@
 
 #include <string>
 
-namespace File { struct IniContent; }
-
 namespace Settings {
 
     bool init(int argc, char *argv[]);

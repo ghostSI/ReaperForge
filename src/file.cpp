@@ -42,9 +42,14 @@ void File::load(const char *filepath, std::string &buffer) {
     buffer = ss.str();
 }
 
-void File::save(const char *filepath, const char *content, size_t len)
-{
+void File::save(const char *filepath, const char *content, size_t len) {
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
     FILE *file = fopen(filepath, "w");
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
 
     fwrite(content, len, 1, file);
 
@@ -70,7 +75,7 @@ std::vector<u8> File::loadPng(const u8 *imageData, u32 imageSize, i32 &width, i3
     return color;
 }
 
-std::vector<File::IniContent> File::loadIni(const char *filepath) {
+std::map<std::string, std::map<std::string, std::string>> File::loadIni(const char *filepath) {
 #ifdef _WIN32
 #pragma warning( disable: 4996 ) // ignore msvc unsafe warning
 #endif // _WIN32
@@ -79,8 +84,7 @@ std::vector<File::IniContent> File::loadIni(const char *filepath) {
 #pragma warning( default: 4996 )
 #endif // _WIN32
 
-    std::vector<IniContent> fileData;
-    IniContent iniContent;
+    std::map<std::string, std::map<std::string, std::string>> iniContent;
 
     char buf[1024];
     while (fgets(buf, 1024, file) != nullptr) {
@@ -92,16 +96,15 @@ std::vector<File::IniContent> File::loadIni(const char *filepath) {
         while (line.at(line.size() - 1) == '\n' || line.at(line.size() - 1) == '\r')
             line.pop_back();
 
+        std::string name;
         if (line[0] == '[') {
-            iniContent.name = line.substr(1, line.size() - 2);
-            fileData.push_back(iniContent);
+            name = line.substr(1, line.size() - 2);
         } else {
             for (u64 i = 0; i < line.size(); ++i) {
                 if (line[i] == '=') {
-                    IniContent::Entry entry;
-                    entry.key = line.substr(0, i);
-                    entry.value = line.substr(i + 1, line.size() - i - 1);
-                    fileData[fileData.size() - 1].entry.push_back(entry);
+                    const std::string key = line.substr(0, i);
+                    const std::string value = line.substr(i + 1, line.size() - i - 1);
+                    iniContent[name] = {{key, value}};
                     break;
                 }
             }
@@ -110,5 +113,27 @@ std::vector<File::IniContent> File::loadIni(const char *filepath) {
 
     fclose(file);
 
-    return fileData;
+    return iniContent;
+}
+
+void File::saveIni(const char *filepath, const std::map<std::string, std::map<std::string, std::string>> &iniContent) {
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
+    FILE *file = fopen(filepath, "w");
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
+
+    for (const auto& [section, keyValue] : iniContent)
+    {
+        fprintf(file, "[%s]\n", section.c_str());
+
+        for (const auto& [key, value] : keyValue)
+            fprintf(file, "%s=%s\n", key.c_str(), value.c_str());
+
+        fputc('\n', file);
+    }
+
+    fclose(file);
 }

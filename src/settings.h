@@ -1,22 +1,19 @@
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
-#include "type.h"
+#include <string>
 
-#include <vector>
+namespace File { struct IniContent; }
 
 namespace Settings {
-    struct Resolution {
-        int w, h;
-    };
 
-    extern DisplayMode displayMode;
-    extern bool pauseAudio;
-    extern u32 windowWidth;
-    extern u32 windowHeight;
+    bool init(int argc, char *argv[]);
 
-    extern std::vector<Resolution> supportedDisplayResolutions;
-    extern i32 selectedSupportedDisplayResolution;
+    std::string get(const std::string &section, const std::string &key);
 
     void load();
 
     void save();
 }
+
+#endif // SETTINGS_H

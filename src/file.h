@@ -5,17 +5,9 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 namespace File {
-    struct IniContent {
-        struct Entry {
-            std::string key;
-            std::string value;
-        };
-        std::string name;
-        std::vector<Entry> entry;
-    };
-
     bool exists(const char *filepath);
 
     std::vector<u8> load(const char *filepath, const char *mode);
@@ -28,7 +20,8 @@ namespace File {
 
     std::vector<u8> loadPng(const u8 *imageData, u32 imageSize, i32 &width, i32 &heigth, bool convertRGBA = true);
 
-    std::vector<IniContent> loadIni(const char *filepath);
+    std::map<std::string, std::map<std::string, std::string>> loadIni(const char *filepath);
+    void saveIni(const char *filepath, const std::map<std::string, std::map<std::string, std::string>>& iniContent);
 }
 
 #endif // FILE_H

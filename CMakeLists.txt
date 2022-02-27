@@ -27,6 +27,7 @@ set(HEADER_FILES
         src/camera.h
         src/file.h
         src/font.h
+        src/getopt.h
         src/global.h
         src/helper.h
         src/input.h
@@ -50,6 +51,7 @@ set(SOURCE_FILES
         src/camera.cpp
         src/file.cpp
         src/font.cpp
+        src/getopt.cpp
         src/global.cpp
         src/helper.cpp
         src/input.cpp

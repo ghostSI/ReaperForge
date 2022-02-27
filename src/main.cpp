@@ -1,3 +1,7 @@
+#include "configuration.h"
+
+#ifndef TEST_BUILD
+
 #include "global.h"
 #include "input.h"
 #include "scene.h"
@@ -7,6 +11,7 @@
 #include "texture.h"
 #include "log.h"
 #include "psarc.h"
+#include "settings.h"
 
 #include "SDL2/SDL.h"
 
@@ -59,11 +64,9 @@ static void mainloop() {
     }
 }
 
-#ifndef TEST_BUILD
-
 int main(int argc, char *argv[]) {
-    UNUSED(argc);
-    UNUSED(argv);
+    if (!Settings::init(argc, argv))
+        return -1;
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER)) {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());

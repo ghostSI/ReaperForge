@@ -23,6 +23,7 @@ endif ()
 
 set(HEADER_FILES
         src/configuration.h
+        src/devutil.h
         src/typedefs.h
         src/camera.h
         src/file.h

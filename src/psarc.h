@@ -24,7 +24,7 @@ namespace Psarc {
         } image;
 
         struct {
-
+           std::vector<u8> toc;
         } data;
     };
 

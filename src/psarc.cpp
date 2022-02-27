@@ -24,23 +24,28 @@ std::vector<u8> Psarc::readPsarcData(const char *filepath) {
     return psarcData;
 }
 
-static const u8 psarcKey[32] =
-        {
-                0xC5, 0x3D, 0xB2, 0x38, 0x70, 0xA1, 0xA2, 0xF7,
-                0x1C, 0xAE, 0x64, 0x06, 0x1F, 0xDD, 0x0E, 0x11,
-                0x57, 0x30, 0x9D, 0xC8, 0x52, 0x04, 0xD4, 0xC5,
-                0xBF, 0xDF, 0x25, 0x09, 0x0D, 0xF2, 0x57, 0x2C
-        };
+static const u8 psarcKey[32] = {
+        0xC5, 0x3D, 0xB2, 0x38, 0x70, 0xA1, 0xA2, 0xF7,
+        0x1C, 0xAE, 0x64, 0x06, 0x1F, 0xDD, 0x0E, 0x11,
+        0x57, 0x30, 0x9D, 0xC8, 0x52, 0x04, 0xD4, 0xC5,
+        0xBF, 0xDF, 0x25, 0x09, 0x0D, 0xF2, 0x57, 0x2C
+};
 
-static std::vector<u8> decryptPsarc(const u8 *bytes, const u32 len) {
-    int lea = 4096;
+static std::vector<u8> decryptPsarc(const std::vector<u8> &psarcData, u32 startPos, const u32 len) {
 
+    // This is a bit strange not sure if the padding stuff is really required.
 
-    std::vector<u8> plainText(lea);
+    std::vector<u8> encText;
+    std::copy(psarcData.begin() + startPos, psarcData.begin() + startPos + len, std::back_inserter(encText));
 
-    Rijndael::decrypt(psarcKey, bytes, plainText.data(), lea);
+    const u32 pad = 512 - (len % 512);
+    encText.resize(encText.size() + pad);
 
-    auto a = plainText[1503];
+    std::vector<u8> plainText(encText.size());
+
+    Rijndael::decrypt(psarcKey, encText.data(), plainText.data(), plainText.size());
+
+    plainText.resize(plainText.size() - startPos);
 
     return plainText;
 }
@@ -58,7 +63,7 @@ Psarc::PsarcInfo Psarc::read(const std::vector<u8> &psarcData) {
     psarcInfo.header.BlockSizeAlloc = u32BigEndian(&psarcData[24]);
     psarcInfo.header.archiveFlags = u32BigEndian(&psarcData[28]);
 
-    decryptPsarc(&psarcData[32], psarcInfo.header.totalTocSize);
+    psarcInfo.data.toc = decryptPsarc(psarcData, 32, psarcInfo.header.totalTocSize);
 
     return psarcInfo;
 }

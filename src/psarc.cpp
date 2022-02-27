@@ -2,6 +2,7 @@
 
 #include "file.h"
 #include "rijndael.h"
+#include "inflate.h"
 
 //static constexpr const char *psarcExtension = "_p.psarc";
 //static constexpr const char *magicText = "PSAR";
@@ -69,7 +70,52 @@ static i32 tocBNum(const u32 blockSizeAlloc) {
     return {};
 }
 
-Psarc::PsarcInfo Psarc::read(const std::vector<u8> &psarcData) {
+static void inflateTocEntry(Psarc::PsarcInfo::TOCEntry &tocEntry, const u32 blockSizeAlloc, const u8 *psarcData,
+                            const std::vector<u32> &zBlockSizeList) {
+    if (tocEntry.length == 0)
+        return;
+
+    const i32 zHeader = 0x78DA;
+    u32 zChunkId = tocEntry.zIndexBegin;
+
+    do {
+        if (zBlockSizeList[zChunkId] == 0) // raw. full cluster used.
+        {
+            tocEntry.content.resize(blockSizeAlloc);
+            memcpy(tocEntry.content.data(), &psarcData[tocEntry.offset], blockSizeAlloc);
+        } else {
+            const u16 num = u16BigEndian(&psarcData[tocEntry.offset]);
+
+            const u32 blockSize = zBlockSizeList[zChunkId];
+            std::vector<u8> encData(blockSize);
+            memcpy(&encData[0], &psarcData[tocEntry.offset], blockSize);
+            if (num == zHeader) {
+                tocEntry.content.resize(blockSize * 100);
+                const i32 size = Inflate::inflate(encData.data(), blockSize, tocEntry.content.data(),
+                                                   tocEntry.content.size());
+                tocEntry.content.resize(size);
+            } else // raw. used only for data(chunks) smaller than 64 kb
+            {
+                tocEntry.content.resize(blockSize);
+                memcpy(&encData[0], &psarcData[tocEntry.offset], blockSize);
+            }
+        }
+        zChunkId += 1;
+    } while (tocEntry.content.size() < tocEntry.length);
+
+};
+
+static void readManifest(std::vector<Psarc::PsarcInfo::TOCEntry> &tocEnties, u32 blockSizeAlloc, const u8 *psarcData,
+                         const std::vector<u32> &zBlockSizeList) {
+    Psarc::PsarcInfo::TOCEntry &tocEntry = tocEnties[0];
+
+    ASSERT(tocEntry.name.empty());
+
+    tocEntry.name = "NameBlock.bin";
+    inflateTocEntry(tocEntry, blockSizeAlloc, psarcData, zBlockSizeList);
+}
+
+Psarc::PsarcInfo Psarc::parse(const std::vector<u8> &psarcData) {
     PsarcInfo psarcInfo;
 
     { // parse Header
@@ -122,6 +168,8 @@ Psarc::PsarcInfo Psarc::read(const std::vector<u8> &psarcData) {
     { // decompress
         switch (psarcInfo.header.compressMethod) {
             case 2053925218:
+                readManifest(psarcInfo.tocEntry, psarcInfo.header.blockSizeAlloc, &psarcData[0],
+                             zBlockSizeList);
                 break;
             default:
                 ASSERT(false);

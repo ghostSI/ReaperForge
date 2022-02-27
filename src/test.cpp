@@ -482,7 +482,7 @@ static void psarcTOCTest() {
             5, 51, 2, 166, 3, 60, 2, 218, 2, 47
     };
 
-    Psarc::PsarcInfo psarcInfo = Psarc::read(psarcData);
+    Psarc::PsarcInfo psarcInfo = Psarc::parse(psarcData);
 
     ASSERT(sizeof(expectedTOCPlainText) == psarcInfo.tocRaw.size());
 

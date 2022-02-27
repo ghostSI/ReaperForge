@@ -31,6 +31,7 @@ set(HEADER_FILES
         src/getopt.h
         src/global.h
         src/helper.h
+        src/inflate.h
         src/input.h
         src/installer.h
         src/log.h
@@ -55,6 +56,7 @@ set(SOURCE_FILES
         src/getopt.cpp
         src/global.cpp
         src/helper.cpp
+        src/inflate.cpp
         src/input.cpp
         src/installer.cpp
         src/log.cpp

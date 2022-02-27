@@ -26,6 +26,8 @@ namespace Psarc {
             u32 zIndexBegin;
             u64 length;
             u64 offset;
+            std::string name;
+            std::vector<u8> content;
         };
         std::vector<TOCEntry> tocEntry;
 
@@ -34,7 +36,7 @@ namespace Psarc {
         } image;
     };
 
-    PsarcInfo read(const std::vector<u8> &psarcData);
+    PsarcInfo parse(const std::vector<u8> &psarcData);
 }
 
 #endif // PSARC_H

@@ -92,7 +92,7 @@ static void inflateTocEntry(Psarc::PsarcInfo::TOCEntry &tocEntry, const u32 bloc
             if (num == zHeader) {
                 tocEntry.content.resize(blockSize * 100);
                 const i32 size = Inflate::inflate(encData.data(), blockSize, tocEntry.content.data(),
-                                                   tocEntry.content.size());
+                                                  tocEntry.content.size());
                 tocEntry.content.resize(size);
             } else // raw. used only for data(chunks) smaller than 64 kb
             {
@@ -113,6 +113,17 @@ static void readManifest(std::vector<Psarc::PsarcInfo::TOCEntry> &tocEnties, u32
 
     tocEntry.name = "NameBlock.bin";
     inflateTocEntry(tocEntry, blockSizeAlloc, psarcData, zBlockSizeList);
+
+    for (i32 i = 0, begin = 0, c = 1; i < tocEntry.content.size(); ++i) {
+        if (tocEntry.content[i] == '\n') {
+            tocEntry.content[i] = '\0';
+            if (i != tocEnties.size() - 1) {
+                tocEnties[c++].name = reinterpret_cast<const char *>(&tocEntry.content[begin]);
+                begin = i + 1;
+            }
+            tocEntry.content[i] = '\n';
+        }
+    }
 }
 
 Psarc::PsarcInfo Psarc::parse(const std::vector<u8> &psarcData) {

@@ -114,15 +114,20 @@ static void readManifest(std::vector<Psarc::PsarcInfo::TOCEntry> &tocEnties, u32
     tocEntry.name = "NameBlock.bin";
     inflateTocEntry(tocEntry, blockSizeAlloc, psarcData, zBlockSizeList);
 
-    for (i32 i = 0, begin = 0, c = 1; i < tocEntry.content.size(); ++i) {
-        if (tocEntry.content[i] == '\n') {
-            tocEntry.content[i] = '\0';
-            if (i != tocEnties.size() - 1) {
-                tocEnties[c++].name = reinterpret_cast<const char *>(&tocEntry.content[begin]);
-                begin = i + 1;
+    { // read names of toc entries.
+        i32 begin = 0;
+        i32 tocIndex = 1;
+        for (i32 i = 0; i < tocEntry.content.size(); ++i) {
+            if (tocEntry.content[i] == '\n') {
+                tocEntry.content[i] = '\0';
+                if (i != tocEnties.size() - 1) {
+                    tocEnties[tocIndex++].name = reinterpret_cast<const char *>(&tocEntry.content[begin]);
+                    begin = i + 1;
+                }
+                tocEntry.content[i] = '\n';
             }
-            tocEntry.content[i] = '\n';
         }
+        tocEnties[tocIndex].name = reinterpret_cast<const char *>(&tocEntry.content[begin]);
     }
 }
 

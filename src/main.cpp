@@ -38,16 +38,20 @@ static void mainloop() {
 
     {
         Input::prePollEvent();
+        Ui::handleInputBegin();
         SDL_Event event;
         while (SDL_PollEvent(&event) != 0)
+        {
             Input::pollEvent(event);
+            Ui::handleInput(event);
+        }
+        Ui::handleInputEnd();
         Input::postPollEvent();
     }
 
     //if (Global::frameDelta >= 16.666_f32)
     { // render frame
         Scene::tick();
-        Ui::tick();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -93,6 +97,7 @@ int main(int argc, char *argv[]) {
     }
 
     SDL_GLContext con = SDL_GL_CreateContext(Global::window);
+
     SDL_GL_SetSwapInterval(0); // disable vsync
 
     glEnable(GL_CULL_FACE);
@@ -119,7 +124,6 @@ int main(int argc, char *argv[]) {
     Texture::init();
     Scene::init();
 
-    Ui::init();
 
 
 #ifdef __EMSCRIPTEN__

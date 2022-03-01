@@ -36,7 +36,6 @@ set(HEADER_FILES
         src/installer.h
         src/log.h
         src/nuklear.h
-        src/nuklear_sdl_gl3.h
         src/opengl.h
         src/picopng.h
         src/psarc.h

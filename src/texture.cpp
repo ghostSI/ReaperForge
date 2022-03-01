@@ -16,6 +16,7 @@ static void initTexture(const char *filePath, bool convertRGBA = true) {
 }
 
 void Texture::init() {
+    initTexture("res/font.png");
 }
 
 Texture::Type Texture::addTexture(const char *filepath) {

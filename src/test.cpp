@@ -530,7 +530,22 @@ static void settingsTest() {
 //    std::filesystem::remove("songs");
 }
 
+static void allReadPsarc() {
+
+    std::vector<Psarc::PsarcInfo> psarcInfos;
+
+    std::string path = "D:/psarc";
+    for (const auto & entry : std::filesystem::directory_iterator(path))
+    {
+        psarcInfos.push_back(Psarc::parse(Psarc::readPsarcData(entry.path().string().c_str())));
+        std::cout << entry.path() << std::endl;
+    }
+
+    path.clear();
+}
+
 int main(int argc, char *argv[]) {
+    //allReadPsarc();
     psarcTOCTest();
     settingsTest();
     installerTest();

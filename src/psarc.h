@@ -21,12 +21,11 @@ namespace Psarc {
 
         std::vector<u8> tocRaw;
         struct TOCEntry{
-            i32 id;
+            std::string name;
             u8 md5[16];
             u32 zIndexBegin;
             u64 length;
             u64 offset;
-            std::string name;
             std::vector<u8> content;
         };
         std::vector<TOCEntry> tocEntry;

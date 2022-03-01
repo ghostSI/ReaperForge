@@ -4,6 +4,8 @@
 #include "settings.h"
 #include "sprite.h"
 
+#include <stdio.h>
+
 void Scene::init() {
     Font::init();
     Sprite::init();

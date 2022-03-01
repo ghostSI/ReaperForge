@@ -64,6 +64,7 @@ static void mainloop() {
     }
 }
 
+
 int main(int argc, char *argv[]) {
     if (!Settings::init(argc, argv))
         return -1;
@@ -84,6 +85,7 @@ int main(int argc, char *argv[]) {
     Global::window = SDL_CreateWindow("ReaperForge", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                       Global::windowWidth, Global::windowHeight,
                                       SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+
     if (Global::window == nullptr) {
         SDL_Log("Unable to create Window: %s", SDL_GetError());
         SDL_Quit();
@@ -113,6 +115,8 @@ int main(int argc, char *argv[]) {
     Sound::init();
     Texture::init();
     Scene::init();
+
+    glClearColor(0.0, 0.007843, 0.180392, 1.0);
 
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(mainloop, -1, 1);

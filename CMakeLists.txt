@@ -35,6 +35,7 @@ set(HEADER_FILES
         src/input.h
         src/installer.h
         src/log.h
+        src/nuklear.h
         src/opengl.h
         src/picopng.h
         src/psarc.h

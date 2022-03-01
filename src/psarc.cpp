@@ -4,8 +4,8 @@
 #include "rijndael.h"
 #include "inflate.h"
 
-//static constexpr const char *psarcExtension = "_p.psarc";
-//static constexpr const char *magicText = "PSAR";
+static constexpr const char *psarcExtension = "_p.psarc";
+static constexpr const char *magicText = "PSAR";
 
 static u16 u16BigEndian(const u8 *bytes) {
     return bytes[0] << 8 | bytes[1];
@@ -19,19 +19,19 @@ static u64 u40BigEndian(const u8 *bytes) {
     return u64(bytes[0]) << 32 | bytes[1] << 24 | bytes[2] << 16 | bytes[3] << 8 | bytes[4];
 }
 
-//std::vector<u8> Psarc::readPsarcData(const char *filepath) {
-//    const size_t filepathLen = strlen(filepath);
-//
-//    ASSERT(filepathLen > sizeof(psarcExtension) && "Psarc filename invalid");
-//    ASSERT(strncmp(filepath, psarcExtension, filepathLen - sizeof(psarcExtension)));
-//
-//    std::vector<u8> psarcData = File::load(filepath, "r");
-//
-//    ASSERT(strncmp(reinterpret_cast<char *>(psarcData.data()), magicText, sizeof(magicText)) == 0 &&
-//           "Invalid Psarc content");
-//
-//    return psarcData;
-//}
+std::vector<u8> Psarc::readPsarcData(const char *filepath) {
+    const size_t filepathLen = strlen(filepath);
+
+    ASSERT(filepathLen > sizeof(psarcExtension) && "Psarc filename invalid");
+    ASSERT(strncmp(filepath, psarcExtension, filepathLen - sizeof(psarcExtension)));
+
+    std::vector<u8> psarcData = File::load(filepath, "r");
+
+    ASSERT(strncmp(reinterpret_cast<char *>(psarcData.data()), magicText, sizeof(magicText)) == 0 &&
+           "Invalid Psarc content");
+
+    return psarcData;
+}
 
 static const u8 psarcKey[32] = {
         0xC5, 0x3D, 0xB2, 0x38, 0x70, 0xA1, 0xA2, 0xF7,
@@ -151,7 +151,6 @@ Psarc::PsarcInfo Psarc::parse(const std::vector<u8> &psarcData) {
         for (u32 i = 0; i < psarcInfo.header.numFiles; ++i) {
             const u64 offset = i * 30;
             PsarcInfo::TOCEntry tocEntry;
-            tocEntry.id = i;
             memcpy(tocEntry.md5, &psarcInfo.tocRaw[offset], 16);
             tocEntry.zIndexBegin = u32BigEndian(&psarcInfo.tocRaw[offset + 16]);
             tocEntry.length = u40BigEndian(&psarcInfo.tocRaw[offset + 20]);

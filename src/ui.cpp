@@ -2,6 +2,7 @@
 
 #include "global.h"
 #include "opengl.h"
+#include "texture.h"
 
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO
@@ -11,6 +12,7 @@
 #define NK_INCLUDE_FONT_BAKING
 #define NK_INCLUDE_DEFAULT_FONT
 #define NK_IMPLEMENTATION
+
 #include "nuklear.h"
 
 #include "SDL2/SDL.h"
@@ -295,17 +297,16 @@ static void nk_sdl_font_stash_end() {
 }
 
 static int nk_sdl_handle_event(SDL_Event *evt) {
-    nk_context *ctx = &sdl.ctx;
 
     /* optional grabbing behavior */
-    if (ctx->input.mouse.grab) {
+    if (sdl.ctx.input.mouse.grab) {
         SDL_SetRelativeMouseMode(SDL_TRUE);
-        ctx->input.mouse.grab = 0;
-    } else if (ctx->input.mouse.ungrab) {
-        int x = (int) ctx->input.mouse.prev.x, y = (int) ctx->input.mouse.prev.y;
+        sdl.ctx.input.mouse.grab = 0;
+    } else if (sdl.ctx.input.mouse.ungrab) {
+        int x = (int) sdl.ctx.input.mouse.prev.x, y = (int) sdl.ctx.input.mouse.prev.y;
         SDL_SetRelativeMouseMode(SDL_FALSE);
         SDL_WarpMouseInWindow(Global::window, x, y);
-        ctx->input.mouse.ungrab = 0;
+        sdl.ctx.input.mouse.ungrab = 0;
     }
 
     switch (evt->type) {
@@ -316,70 +317,70 @@ static int nk_sdl_handle_event(SDL_Event *evt) {
             switch (evt->key.keysym.sym) {
                 case SDLK_RSHIFT: /* RSHIFT & LSHIFT share same routine */
                 case SDLK_LSHIFT:
-                    nk_input_key(ctx, NK_KEY_SHIFT, down);
+                    nk_input_key(&sdl.ctx, NK_KEY_SHIFT, down);
                     break;
                 case SDLK_DELETE:
-                    nk_input_key(ctx, NK_KEY_DEL, down);
+                    nk_input_key(&sdl.ctx, NK_KEY_DEL, down);
                     break;
                 case SDLK_RETURN:
-                    nk_input_key(ctx, NK_KEY_ENTER, down);
+                    nk_input_key(&sdl.ctx, NK_KEY_ENTER, down);
                     break;
                 case SDLK_TAB:
-                    nk_input_key(ctx, NK_KEY_TAB, down);
+                    nk_input_key(&sdl.ctx, NK_KEY_TAB, down);
                     break;
                 case SDLK_BACKSPACE:
-                    nk_input_key(ctx, NK_KEY_BACKSPACE, down);
+                    nk_input_key(&sdl.ctx, NK_KEY_BACKSPACE, down);
                     break;
                 case SDLK_HOME:
-                    nk_input_key(ctx, NK_KEY_TEXT_START, down);
-                    nk_input_key(ctx, NK_KEY_SCROLL_START, down);
+                    nk_input_key(&sdl.ctx, NK_KEY_TEXT_START, down);
+                    nk_input_key(&sdl.ctx, NK_KEY_SCROLL_START, down);
                     break;
                 case SDLK_END:
-                    nk_input_key(ctx, NK_KEY_TEXT_END, down);
-                    nk_input_key(ctx, NK_KEY_SCROLL_END, down);
+                    nk_input_key(&sdl.ctx, NK_KEY_TEXT_END, down);
+                    nk_input_key(&sdl.ctx, NK_KEY_SCROLL_END, down);
                     break;
                 case SDLK_PAGEDOWN:
-                    nk_input_key(ctx, NK_KEY_SCROLL_DOWN, down);
+                    nk_input_key(&sdl.ctx, NK_KEY_SCROLL_DOWN, down);
                     break;
                 case SDLK_PAGEUP:
-                    nk_input_key(ctx, NK_KEY_SCROLL_UP, down);
+                    nk_input_key(&sdl.ctx, NK_KEY_SCROLL_UP, down);
                     break;
                 case SDLK_z:
-                    nk_input_key(ctx, NK_KEY_TEXT_UNDO, down && state[SDL_SCANCODE_LCTRL]);
+                    nk_input_key(&sdl.ctx, NK_KEY_TEXT_UNDO, down && state[SDL_SCANCODE_LCTRL]);
                     break;
                 case SDLK_r:
-                    nk_input_key(ctx, NK_KEY_TEXT_REDO, down && state[SDL_SCANCODE_LCTRL]);
+                    nk_input_key(&sdl.ctx, NK_KEY_TEXT_REDO, down && state[SDL_SCANCODE_LCTRL]);
                     break;
                 case SDLK_c:
-                    nk_input_key(ctx, NK_KEY_COPY, down && state[SDL_SCANCODE_LCTRL]);
+                    nk_input_key(&sdl.ctx, NK_KEY_COPY, down && state[SDL_SCANCODE_LCTRL]);
                     break;
                 case SDLK_v:
-                    nk_input_key(ctx, NK_KEY_PASTE, down && state[SDL_SCANCODE_LCTRL]);
+                    nk_input_key(&sdl.ctx, NK_KEY_PASTE, down && state[SDL_SCANCODE_LCTRL]);
                     break;
                 case SDLK_x:
-                    nk_input_key(ctx, NK_KEY_CUT, down && state[SDL_SCANCODE_LCTRL]);
+                    nk_input_key(&sdl.ctx, NK_KEY_CUT, down && state[SDL_SCANCODE_LCTRL]);
                     break;
                 case SDLK_b:
-                    nk_input_key(ctx, NK_KEY_TEXT_LINE_START, down && state[SDL_SCANCODE_LCTRL]);
+                    nk_input_key(&sdl.ctx, NK_KEY_TEXT_LINE_START, down && state[SDL_SCANCODE_LCTRL]);
                     break;
                 case SDLK_e:
-                    nk_input_key(ctx, NK_KEY_TEXT_LINE_END, down && state[SDL_SCANCODE_LCTRL]);
+                    nk_input_key(&sdl.ctx, NK_KEY_TEXT_LINE_END, down && state[SDL_SCANCODE_LCTRL]);
                     break;
                 case SDLK_UP:
-                    nk_input_key(ctx, NK_KEY_UP, down);
+                    nk_input_key(&sdl.ctx, NK_KEY_UP, down);
                     break;
                 case SDLK_DOWN:
-                    nk_input_key(ctx, NK_KEY_DOWN, down);
+                    nk_input_key(&sdl.ctx, NK_KEY_DOWN, down);
                     break;
                 case SDLK_LEFT:
                     if (state[SDL_SCANCODE_LCTRL])
-                        nk_input_key(ctx, NK_KEY_TEXT_WORD_LEFT, down);
-                    else nk_input_key(ctx, NK_KEY_LEFT, down);
+                        nk_input_key(&sdl.ctx, NK_KEY_TEXT_WORD_LEFT, down);
+                    else nk_input_key(&sdl.ctx, NK_KEY_LEFT, down);
                     break;
                 case SDLK_RIGHT:
                     if (state[SDL_SCANCODE_LCTRL])
-                        nk_input_key(ctx, NK_KEY_TEXT_WORD_RIGHT, down);
-                    else nk_input_key(ctx, NK_KEY_RIGHT, down);
+                        nk_input_key(&sdl.ctx, NK_KEY_TEXT_WORD_RIGHT, down);
+                    else nk_input_key(&sdl.ctx, NK_KEY_RIGHT, down);
                     break;
             }
         }
@@ -392,35 +393,35 @@ static int nk_sdl_handle_event(SDL_Event *evt) {
             switch (evt->button.button) {
                 case SDL_BUTTON_LEFT:
                     if (evt->button.clicks > 1)
-                        nk_input_button(ctx, NK_BUTTON_DOUBLE, x, y, down);
-                    nk_input_button(ctx, NK_BUTTON_LEFT, x, y, down);
+                        nk_input_button(&sdl.ctx, NK_BUTTON_DOUBLE, x, y, down);
+                    nk_input_button(&sdl.ctx, NK_BUTTON_LEFT, x, y, down);
                     break;
                 case SDL_BUTTON_MIDDLE:
-                    nk_input_button(ctx, NK_BUTTON_MIDDLE, x, y, down);
+                    nk_input_button(&sdl.ctx, NK_BUTTON_MIDDLE, x, y, down);
                     break;
                 case SDL_BUTTON_RIGHT:
-                    nk_input_button(ctx, NK_BUTTON_RIGHT, x, y, down);
+                    nk_input_button(&sdl.ctx, NK_BUTTON_RIGHT, x, y, down);
                     break;
             }
         }
             return 1;
 
         case SDL_MOUSEMOTION:
-            if (ctx->input.mouse.grabbed) {
-                int x = (int) ctx->input.mouse.prev.x, y = (int) ctx->input.mouse.prev.y;
-                nk_input_motion(ctx, x + evt->motion.xrel, y + evt->motion.yrel);
-            } else nk_input_motion(ctx, evt->motion.x, evt->motion.y);
+            if (sdl.ctx.input.mouse.grabbed) {
+                int x = (int) sdl.ctx.input.mouse.prev.x, y = (int) sdl.ctx.input.mouse.prev.y;
+                nk_input_motion(&sdl.ctx, x + evt->motion.xrel, y + evt->motion.yrel);
+            } else nk_input_motion(&sdl.ctx, evt->motion.x, evt->motion.y);
             return 1;
 
         case SDL_TEXTINPUT: {
             nk_glyph glyph;
             memcpy(glyph, evt->text.text, NK_UTF_SIZE);
-            nk_input_glyph(ctx, glyph);
+            nk_input_glyph(&sdl.ctx, glyph);
         }
             return 1;
 
         case SDL_MOUSEWHEEL:
-            nk_input_scroll(ctx, nk_vec2((float) evt->wheel.x, (float) evt->wheel.y));
+            nk_input_scroll(&sdl.ctx, nk_vec2((float) evt->wheel.x, (float) evt->wheel.y));
             return 1;
     }
     return 0;
@@ -437,7 +438,7 @@ void Ui::init() {
 
 }
 
-void Ui::tick() {
+static void demoWindow() {
     if (nk_begin(ctx, "Demo", nk_rect(50, 50, 230, 250),
                  NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
                  NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
@@ -462,7 +463,83 @@ void Ui::tick() {
 
     }
     nk_end(ctx);
+}
 
+static void mixerWindow() {
+    if (nk_begin(ctx, "Mixer", nk_rect(50, 50, 300, 250),
+                 NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
+        {
+            nk_layout_row_dynamic(ctx, 22, 1);
+            static int musicVolume = 100;
+            nk_property_int(ctx, "Music Volume:", 0, &musicVolume, 100, 10, 1);
+        }
+
+        {
+            nk_layout_row_dynamic(ctx, 22, 1);
+            static int guitar1Volume = 100;
+            nk_property_int(ctx, "Player 1 Guitar Volume:", 0, &guitar1Volume, 100, 10, 1);
+        }
+
+        {
+            nk_layout_row_dynamic(ctx, 22, 1);
+            static int bass1Volume = 100;
+            nk_property_int(ctx, "Player 1 Bass Volume:", 0, &bass1Volume, 100, 10, 1);
+        }
+
+        {
+            nk_layout_row_dynamic(ctx, 22, 1);
+            static int guitar2Volume = 100;
+            nk_property_int(ctx, "Player 2 Guitar Volume:", 0, &guitar2Volume, 100, 10, 1);
+        }
+
+        {
+            nk_layout_row_dynamic(ctx, 22, 1);
+            static int bass2Volume = 100;
+            nk_property_int(ctx, "Player 2 Bass Volume:", 0, &bass2Volume, 100, 10, 1);
+        }
+
+        {
+            nk_layout_row_dynamic(ctx, 22, 1);
+            static int microphoneVolume = 100;
+            nk_property_int(ctx, "Microphone Volume:", 0, &microphoneVolume, 100, 10, 1);
+        }
+    }
+    nk_end(ctx);
+}
+
+static void imageWindow() {
+
+    if (nk_begin(ctx, "Image", nk_rect(50, 50, 230, 250),
+                 NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
+                 NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
+
+        static struct nk_image testImage;
+        if (static GLuint texture; !texture) {
+            glGenTextures(1, &texture);
+            glBindTexture(GL_TEXTURE_2D, texture);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Texture::width(Texture::Type::test),
+                         Texture::height(Texture::Type::test), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                         Texture::texture(Texture::Type::test));
+            testImage = nk_image_id((int) texture);
+        }
+
+        nk_command_buffer *canvas = nk_window_get_canvas(ctx);
+        const struct nk_rect window_content_region = nk_window_get_content_region(ctx);
+        nk_draw_image(canvas, window_content_region, &testImage, nk_rgba(255, 255, 255, 255));
+    }
+    nk_end(ctx);
+}
+
+void Ui::tick() {
+    demoWindow();
+    mixerWindow();
+    imageWindow();
 }
 
 void Ui::render() {

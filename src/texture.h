@@ -15,6 +15,7 @@ namespace Texture {
         // Texture
         notfound = -1,
         font,
+        test,
     };
 
 

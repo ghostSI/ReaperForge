@@ -51,6 +51,17 @@ static const std::map<std::string, std::map<std::string, std::string>> defaultSe
                 {
                         {"Path",             "\"songs\""}
                 }
+        },
+        {
+                "Mixer",
+                {
+                        {"MusicVolume",      "100"},
+                        {"Guitar1Volume",      "100"},
+                        {"Bass1Volume",      "100"},
+                        {"Guitar2Volume",      "100"},
+                        {"Bass2Volume",      "100"},
+                        {"Microphone2Volume",      "100"},
+                }
         }
 
 };

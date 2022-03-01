@@ -47,6 +47,13 @@ static PFNGLBINDRENDERBUFFERPROC glBindRenderbufferProc;
 static PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorageProc;
 static PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbufferProc;
 static PFNGLDRAWBUFFERSPROC glDrawBuffersProc;
+static PFNGLBINDTEXTUREEXTPROC glBindTextureProc;
+static PFNGLGENTEXTURESEXTPROC glGenTexturesProc;
+static PFNGLMAPBUFFERPROC glMapBufferProc;
+static PFNGLDELETETEXTURESEXTPROC glDeleteTexturesProc;
+static PFNGLUNMAPBUFFERPROC glUnmapBufferProc;
+static PFNGLBLENDEQUATIONPROC glBlendEquationProc;
+static PFNGLDELETEBUFFERSPROC glDeleteBuffersProc;
 
 void OpenGl::init() {
     glCreateShaderProc = static_cast<PFNGLCREATESHADERPROC>(SDL_GL_GetProcAddress("glCreateShader"));
@@ -99,6 +106,13 @@ void OpenGl::init() {
     glFramebufferRenderbufferProc = static_cast<PFNGLFRAMEBUFFERRENDERBUFFERPROC>(SDL_GL_GetProcAddress(
             "glFramebufferRenderbuffer"));
     glDrawBuffersProc = static_cast<PFNGLDRAWBUFFERSPROC>(SDL_GL_GetProcAddress("glDrawBuffers"));
+    glBindTextureProc = static_cast<PFNGLBINDTEXTUREEXTPROC>(SDL_GL_GetProcAddress("glBindTexture"));
+    glGenTexturesProc = static_cast<PFNGLGENTEXTURESEXTPROC>(SDL_GL_GetProcAddress("glGenTextures"));
+    glMapBufferProc = static_cast<PFNGLMAPBUFFERPROC>(SDL_GL_GetProcAddress("glMapBuffer"));
+    glDeleteTexturesProc = static_cast<PFNGLDELETETEXTURESEXTPROC>(SDL_GL_GetProcAddress("glDeleteTextures"));
+    glUnmapBufferProc = static_cast<PFNGLUNMAPBUFFERPROC>(SDL_GL_GetProcAddress("glUnmapBuffer"));
+    glBlendEquationProc = static_cast<PFNGLBLENDEQUATIONPROC>(SDL_GL_GetProcAddress("glBlendEquation"));
+    glDeleteBuffersProc = static_cast<PFNGLDELETEBUFFERSPROC>(SDL_GL_GetProcAddress("glDeleteBuffers"));
 }
 
 void OpenGl::glUseProgram(GLuint program) {
@@ -119,6 +133,14 @@ void OpenGl::glGenBuffers(GLsizei n, GLuint *buffers) {
 
 void OpenGl::glBindBuffer(GLenum target, GLuint buffer) {
     glBindBufferProc(target, buffer);
+}
+
+void OpenGl::glDetachShader(GLuint program, GLuint shader) {
+    glDetachShaderProc(program, shader);
+}
+
+void OpenGl::glDeleteProgram(GLuint program) {
+    glDeleteProgramProc(program);
 }
 
 void OpenGl::glBufferData(GLenum target, GLsizeiptr size, const void *data, GLenum usage) {
@@ -198,6 +220,10 @@ void OpenGl::glLinkProgram(GLuint program) {
     glLinkProgramProc(program);
 }
 
+void OpenGl::glGetProgramiv(GLuint program, GLenum pname, GLint *params) {
+    glGetProgramivProc(program, pname, params);
+}
+
 void OpenGl::glGetShaderiv(GLuint shader, GLenum pname, GLint *params) {
     glGetShaderivProc(shader, pname, params);
 }
@@ -253,4 +279,32 @@ OpenGl::glFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum rende
 
 void OpenGl::glDrawBuffers(GLsizei n, const GLenum *bufs) {
     glDrawBuffersProc(n, bufs);
+}
+
+void OpenGl::glBindTexture(GLenum target, GLuint texture) {
+    glBindTextureProc(target, texture);
+}
+
+void OpenGl::glGenTextures(GLsizei n, GLuint *textures) {
+    glGenTexturesProc(n, textures);
+}
+
+void *OpenGl::glMapBuffer(GLenum target, GLenum access) {
+    return glMapBufferProc(target, access);
+}
+
+void OpenGl::glDeleteTextures(GLsizei n, const GLuint *textures) {
+    glDeleteTexturesProc(n, textures);
+}
+
+GLboolean OpenGl::glUnmapBuffer(GLenum target) {
+    return glUnmapBufferProc(target);
+}
+
+void OpenGl::glBlendEquation(GLenum mode) {
+    glBlendEquationProc(mode);
+}
+
+void OpenGl::glDeleteBuffers(GLsizei n, const GLuint *buffers) {
+    glDeleteBuffersProc(n, buffers);
 }

@@ -12,6 +12,7 @@
 #include "log.h"
 #include "psarc.h"
 #include "settings.h"
+#include "ui.h"
 
 #include "SDL2/SDL.h"
 
@@ -46,6 +47,7 @@ static void mainloop() {
     //if (Global::frameDelta >= 16.666_f32)
     { // render frame
         Scene::tick();
+        Ui::tick();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -63,7 +65,6 @@ static void mainloop() {
         last_frame = current_frame;
     }
 }
-
 
 int main(int argc, char *argv[]) {
     if (!Settings::init(argc, argv))
@@ -111,12 +112,15 @@ int main(int argc, char *argv[]) {
     if (Global::gameController == nullptr && SDL_NumJoysticks() >= 1 && SDL_IsGameController(0))
         Global::gameController = SDL_GameControllerOpen(0);
 
+    glClearColor(0.0, 0.007843, 0.180392, 1.0);
+
     Shader::init();
     Sound::init();
     Texture::init();
     Scene::init();
 
-    glClearColor(0.0, 0.007843, 0.180392, 1.0);
+    Ui::init();
+
 
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(mainloop, -1, 1);

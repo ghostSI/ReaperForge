@@ -38,6 +38,10 @@ namespace OpenGl {
 
     void glBindBuffer(GLenum target, GLuint buffer);
 
+    void glDetachShader(GLuint program, GLuint shader);
+
+    void glDeleteProgram(GLuint program);
+
     void glBufferData(GLenum target, GLsizeiptr size, const void *data, GLenum usage);
 
     GLint glGetUniformLocation(GLuint program, const GLchar *name);
@@ -77,6 +81,8 @@ namespace OpenGl {
 
     void glLinkProgram(GLuint program);
 
+    void glGetProgramiv(GLuint program, GLenum pname, GLint *params);
+
     void glGetShaderiv(GLuint shader, GLenum pname, GLint *params);
 
     void glGetShaderInfoLog(GLuint shader, GLsizei maxLength, GLsizei *length, GLchar *infoLog);
@@ -104,6 +110,20 @@ namespace OpenGl {
     void glFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
 
     void glDrawBuffers(GLsizei n, const GLenum *bufs);
+
+    void glBindTexture(GLenum target, GLuint texture);
+
+    void glGenTextures(GLsizei n, GLuint *textures);
+
+    void *glMapBuffer(GLenum target, GLenum access);
+
+    void glDeleteTextures(GLsizei n, const GLuint *textures);
+
+    GLboolean glUnmapBuffer(GLenum target);
+
+    void glBlendEquation(GLenum mode);
+
+    void glDeleteBuffers(GLsizei n, const GLuint *buffers);
 }
 
 

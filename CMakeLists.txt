@@ -36,6 +36,7 @@ set(HEADER_FILES
         src/installer.h
         src/log.h
         src/nuklear.h
+        src/nuklear_sdl_gl3.h
         src/opengl.h
         src/picopng.h
         src/psarc.h
@@ -47,6 +48,7 @@ set(HEADER_FILES
         src/sprite.h
         src/type.h
         src/texture.h
+        src/ui.h
         src/zorder.h
         )
 
@@ -73,6 +75,7 @@ set(SOURCE_FILES
         src/sprite.cpp
         src/test.cpp
         src/texture.cpp
+        src/ui.cpp
         src/zorder.cpp
         )
 

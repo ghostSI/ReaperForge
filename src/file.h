@@ -20,6 +20,8 @@ namespace File {
 
     std::vector<u8> loadPng(const u8 *imageData, u32 imageSize, i32 &width, i32 &heigth, bool convertRGBA = true);
 
+    GLuint loadDds(const char *filepath);
+
     std::map<std::string, std::map<std::string, std::string>> loadIni(const char *filepath);
     void saveIni(const char *filepath, const std::map<std::string, std::map<std::string, std::string>>& iniContent);
 }

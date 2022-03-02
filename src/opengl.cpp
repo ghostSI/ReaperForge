@@ -54,6 +54,7 @@ static PFNGLDELETETEXTURESEXTPROC glDeleteTexturesProc;
 static PFNGLUNMAPBUFFERPROC glUnmapBufferProc;
 static PFNGLBLENDEQUATIONPROC glBlendEquationProc;
 static PFNGLDELETEBUFFERSPROC glDeleteBuffersProc;
+static PFNGLCOMPRESSEDTEXIMAGE2DPROC glCompressedTexImage2DProc;
 
 void OpenGl::init() {
     glCreateShaderProc = static_cast<PFNGLCREATESHADERPROC>(SDL_GL_GetProcAddress("glCreateShader"));
@@ -113,6 +114,7 @@ void OpenGl::init() {
     glUnmapBufferProc = static_cast<PFNGLUNMAPBUFFERPROC>(SDL_GL_GetProcAddress("glUnmapBuffer"));
     glBlendEquationProc = static_cast<PFNGLBLENDEQUATIONPROC>(SDL_GL_GetProcAddress("glBlendEquation"));
     glDeleteBuffersProc = static_cast<PFNGLDELETEBUFFERSPROC>(SDL_GL_GetProcAddress("glDeleteBuffers"));
+    glCompressedTexImage2DProc = static_cast<PFNGLCOMPRESSEDTEXIMAGE2DPROC>(SDL_GL_GetProcAddress("glCompressedTexImage2D"));
 }
 
 void OpenGl::glUseProgram(GLuint program) {
@@ -307,4 +309,9 @@ void OpenGl::glBlendEquation(GLenum mode) {
 
 void OpenGl::glDeleteBuffers(GLsizei n, const GLuint *buffers) {
     glDeleteBuffersProc(n, buffers);
+}
+
+void OpenGl::glCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height,
+                                    GLint border, GLsizei imageSize, const GLvoid *data) {
+    glCompressedTexImage2DProc(target, level, internalformat, width, height, border, imageSize, data);
 }

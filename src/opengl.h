@@ -124,6 +124,9 @@ namespace OpenGl {
     void glBlendEquation(GLenum mode);
 
     void glDeleteBuffers(GLsizei n, const GLuint *buffers);
+
+    void glCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height,
+                                GLint border, GLsizei imageSize, const GLvoid *data);
 }
 
 

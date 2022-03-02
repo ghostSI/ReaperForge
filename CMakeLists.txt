@@ -31,13 +31,13 @@ set(HEADER_FILES
         src/getopt.h
         src/global.h
         src/helper.h
+        src/imageload.h
         src/inflate.h
         src/input.h
         src/installer.h
         src/log.h
         src/nuklear.h
         src/opengl.h
-        src/picopng.h
         src/psarc.h
         src/rijndael.h
         src/scene.h
@@ -58,13 +58,13 @@ set(SOURCE_FILES
         src/getopt.cpp
         src/global.cpp
         src/helper.cpp
+        src/imageload.cpp
         src/inflate.cpp
         src/input.cpp
         src/installer.cpp
         src/log.cpp
         src/main.cpp
         src/opengl.cpp
-        src/picopng.cpp
         src/psarc.cpp
         src/rijndael.cpp
         src/scene.cpp

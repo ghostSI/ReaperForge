@@ -14,6 +14,7 @@
 #define NK_IMPLEMENTATION
 
 #include "nuklear.h"
+#include "file.h"
 
 #include "SDL2/SDL.h"
 
@@ -509,29 +510,22 @@ static void mixerWindow() {
 
 static void imageWindow() {
 
-    if (nk_begin(ctx, "Image", nk_rect(50, 50, 230, 250),
+    if (nk_begin(ctx, "Songs", nk_rect(500, 200, 230, 250),
                  NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
                  NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
 
         static struct nk_image testImage;
         if (static GLuint texture; !texture) {
-            glGenTextures(1, &texture);
-            glBindTexture(GL_TEXTURE_2D, texture);
-
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Texture::width(Texture::Type::test),
-                         Texture::height(Texture::Type::test), 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                         Texture::texture(Texture::Type::test));
+            texture = File::loadDds("res/test.dds");
             testImage = nk_image_id((int) texture);
         }
 
         nk_command_buffer *canvas = nk_window_get_canvas(ctx);
         const struct nk_rect window_content_region = nk_window_get_content_region(ctx);
         nk_draw_image(canvas, window_content_region, &testImage, nk_rgba(255, 255, 255, 255));
+
+
+
     }
     nk_end(ctx);
 }

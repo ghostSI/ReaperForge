@@ -1,6 +1,6 @@
 #include "file.h"
 
-#include "picopng.h"
+#include "imageload.h"
 
 #include <stdio.h>
 #include <string>
@@ -60,6 +60,12 @@ std::vector<u8> File::loadPng(const char *filepath, i32 &width, i32 &heigth, boo
     const std::vector<u8> fileData = File::load(filepath, "rb");
 
     return loadPng(fileData.data(), fileData.size(), width, heigth, convertRGBA);
+}
+
+GLuint File::loadDds(const char *filepath) {
+    const std::vector<u8> fileData = File::load(filepath, "rb");
+
+    return loadDDS(fileData.data(), fileData.size());
 }
 
 std::vector<u8> File::loadPng(const u8 *imageData, u32 imageSize, i32 &width, i32 &heigth, bool convertRGBA) {

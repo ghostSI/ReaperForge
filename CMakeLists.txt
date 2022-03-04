@@ -37,6 +37,7 @@ set(HEADER_FILES
         src/installer.h
         src/log.h
         src/nuklear.h
+        src/oggvorbis.h
         src/opengl.h
         src/psarc.h
         src/rijndael.h
@@ -64,6 +65,7 @@ set(SOURCE_FILES
         src/installer.cpp
         src/log.cpp
         src/main.cpp
+        src/oggvorbis.cpp
         src/opengl.cpp
         src/psarc.cpp
         src/rijndael.cpp

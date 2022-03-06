@@ -84,8 +84,7 @@ static void inflateTocEntry(Psarc::PsarcInfo::TOCEntry &tocEntry, const u32 bloc
     i32 outCur = 0;
     do {
         const u32 blockSize = zBlockSizeList[zChunkId];
-        if (blockSize == 0) // raw. full cluster used.
-        {
+        if (blockSize == 0) { // raw. full cluster used.
             memcpy(&tocEntry.content[outCur], &psarcData[tocEntry.offset + inCur], blockSizeAlloc);
             inCur += blockSizeAlloc;
             outCur += blockSizeAlloc;
@@ -96,8 +95,7 @@ static void inflateTocEntry(Psarc::PsarcInfo::TOCEntry &tocEntry, const u32 bloc
                                                   &tocEntry.content[outCur], tocEntry.length - outCur);
                 inCur += blockSize;
                 outCur += size;
-            } else // raw. used only for data(chunks) smaller than 64 kb
-            {
+            } else { // raw. used only for data(chunks) smaller than 64 kb
                 memcpy(&tocEntry.content[outCur], &psarcData[tocEntry.offset + inCur], blockSize);
                 inCur += blockSize;
                 outCur += blockSize;

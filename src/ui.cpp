@@ -1813,68 +1813,88 @@ static void songWindow() {
     if (!Global::collectionLoaded)
         Collection::init();
 
-    if (nk_begin(ctx, "Songs", nk_rect(500, 200, 230, 250),
+    if (nk_begin(ctx, "Songs", nk_rect(100, 100, 800, 500),
                  NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
                  NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
 
-
-        nk_layout_row_dynamic(ctx, 20, 4);
-
-        if (nk_button_label(ctx, "A"));
-        if (nk_button_label(ctx, "L"));
-        if (nk_button_label(ctx, "R"));
-        if (nk_button_label(ctx, "B"));
-
-        nk_layout_row_dynamic(ctx, 20, 2);
+        nk_layout_row_template_begin(ctx, 20);
+        nk_layout_row_template_push_static(ctx, 130);
+        nk_layout_row_template_push_dynamic(ctx);
+        nk_layout_row_template_push_static(ctx, 30);
+        nk_layout_row_template_push_static(ctx, 30);
+        nk_layout_row_template_push_static(ctx, 30);
+        nk_layout_row_template_push_static(ctx, 30);
+        nk_layout_row_template_end(ctx);
 
         nk_label(ctx, "Search:", NK_TEXT_LEFT);
 
         nk_edit_string(ctx, NK_EDIT_SIMPLE, Global::searchText, &Global::searchTextLength, sizeof(Global::searchText),
                        nk_filter_default);
 
-        static float a = 120, b = 100, c = 100;
-        struct nk_rect bounds;
+        if (nk_button_label(ctx, "A"));
+        if (nk_button_label(ctx, "L"));
+        if (nk_button_label(ctx, "R"));
+        if (nk_button_label(ctx, "B"));
 
-        /* top space */
-        nk_layout_row_dynamic(ctx, a, 1);
+        //nk_layout_row_dynamic(ctx, 200, 1);
+        //if (nk_group_begin(ctx, "1", NK_WINDOW_BORDER))
+        {
+            nk_layout_row_dynamic(ctx, 133, 1);
 
-        for (i32 i = 0; i < Global::collection.size(); ++i) {
-            const Song::Info &songInfo = Global::collection[i];
+            for (i32 i = 0; i < Global::collection.size(); ++i) {
+                const Song::Info &songInfo = Global::collection[i];
 
-            if (nk_group_begin(ctx, "top", NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER)) {
-                nk_layout_row_dynamic(ctx, 15, 2);
+                if (nk_group_begin(ctx, "top", NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER)) {
 
-                struct nk_image thumbnail;
-                if (songInfo.albumCover128_ogl == 0 && songInfo.albumCover128_tocIndex >= 1)
-                    songInfo.albumCover128_ogl = loadDDS(
-                            Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.data(),
-                            Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.size());
-                if (songInfo.albumCover128_ogl != 0)
-                    thumbnail = nk_image_id((int) songInfo.albumCover128_ogl);
+                    nk_layout_row_template_begin(ctx, 15);
+                    nk_layout_row_template_push_static(ctx, 130);
+                    nk_layout_row_template_push_static(ctx, 80);
+                    nk_layout_row_template_push_dynamic(ctx);
+                    nk_layout_row_template_push_static(ctx, 130);
+                    nk_layout_row_template_end(ctx);
 
-                nk_command_buffer *canvas = nk_window_get_canvas(ctx);
-                struct nk_rect window_content_region = nk_window_get_content_region(ctx);
-                window_content_region.w = 128;
-                window_content_region.h = 128;
+                    struct nk_image thumbnail;
+                    if (songInfo.albumCover128_ogl == 0 && songInfo.albumCover128_tocIndex >= 1)
+                        songInfo.albumCover128_ogl = loadDDS(
+                                Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.data(),
+                                Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.size());
+                    if (songInfo.albumCover128_ogl != 0)
+                        thumbnail = nk_image_id((int) songInfo.albumCover128_ogl);
 
-                nk_draw_image(canvas, window_content_region, &thumbnail, nk_rgba(255, 255, 255, 255));
+                    nk_command_buffer *canvas = nk_window_get_canvas(ctx);
+                    struct nk_rect window_content_region = nk_window_get_content_region(ctx);
+                    window_content_region.w = 128;
+                    window_content_region.h = 128;
 
-                //nk_layout_row_dynamic(ctx, 20, 1);
-                nk_label(ctx, "Title:", NK_TEXT_LEFT);
-                nk_label(ctx, songInfo.title.c_str(), NK_TEXT_LEFT);
-                nk_label(ctx, "Artist:", NK_TEXT_LEFT);
-                nk_label(ctx, songInfo.artist.c_str(), NK_TEXT_LEFT);
-                nk_label(ctx, "Album:", NK_TEXT_LEFT);
-                nk_label(ctx, songInfo.albumName.c_str(), NK_TEXT_LEFT);
-                nk_label(ctx, "Year:", NK_TEXT_LEFT);
-                nk_label(ctx, songInfo.albumYear.c_str(), NK_TEXT_LEFT);
-                nk_label(ctx, "Length:", NK_TEXT_LEFT);
-                nk_label(ctx, songInfo.songLength.c_str(), NK_TEXT_LEFT);
+                    nk_draw_image(canvas, window_content_region, &thumbnail, nk_rgba(255, 255, 255, 255));
 
-                nk_button_label(ctx, "#FFAA");
-                nk_button_label(ctx, "#FFBB");
+                    nk_spacing(ctx, 1);
+                    nk_label(ctx, "Title:", NK_TEXT_LEFT);
+                    nk_label(ctx, songInfo.title.c_str(), NK_TEXT_LEFT);
+                    nk_button_label(ctx, "Lead guitar");
+                    nk_spacing(ctx, 1);
+                    nk_label(ctx, "Artist:", NK_TEXT_LEFT);
+                    nk_label(ctx, songInfo.artist.c_str(), NK_TEXT_LEFT);
+                    nk_button_label(ctx, "Rhythm Guitar");
+                    nk_spacing(ctx, 1);
+                    nk_label(ctx, "Album:", NK_TEXT_LEFT);
+                    nk_label(ctx, songInfo.albumName.c_str(), NK_TEXT_LEFT);
+                    nk_button_label(ctx, "Bass Guitar");
+                    nk_spacing(ctx, 1);
+                    nk_label(ctx, "Year:", NK_TEXT_LEFT);
+                    nk_label(ctx, songInfo.albumYear.c_str(), NK_TEXT_LEFT);
+                    nk_spacing(ctx, 1);
+                    nk_spacing(ctx, 1);
+                    nk_label(ctx, "Length:", NK_TEXT_LEFT);
+                    nk_label(ctx, songInfo.songLength.c_str(), NK_TEXT_LEFT);
+                    nk_label(ctx, "Score:       98.4%", NK_TEXT_LEFT);
+                    nk_spacing(ctx, 1);
+                    nk_label(ctx, "Tuning:", NK_TEXT_LEFT);
+                    nk_label(ctx, songInfo.tuning.c_str(), NK_TEXT_LEFT);
+                    nk_label(ctx, "Accuracy:    98.4%", NK_TEXT_LEFT);
 
-                nk_group_end(ctx);
+                    nk_group_end(ctx);
+                }
             }
         }
     }

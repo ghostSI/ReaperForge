@@ -3,6 +3,8 @@
 #include "collection.h"
 #include "global.h"
 #include "opengl.h"
+#include "imageload.h"
+#include "psarc.h"
 
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO
@@ -863,6 +865,7 @@ static void demo2Window() {
                 }
                 /* progressbar combobox */
                 sum = prog_a + prog_b + prog_c + prog_d;
+
                 sprintf(buffer, "%lu", sum);
                 if (nk_combo_begin_label(ctx, buffer, nk_vec2(200, 200))) {
                     nk_layout_row_dynamic(ctx, 30, 1);
@@ -1815,23 +1818,19 @@ static void songWindow() {
                  NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
 
 
+        nk_layout_row_dynamic(ctx, 20, 4);
 
-        //        static struct nk_image testImage;
-//        if (static GLuint texture; !texture) {
-//            texture = File::loadDds("res/test.dds");
-//            testImage = nk_image_id((int) texture);
-//        }
-//
-//        nk_command_buffer *canvas = nk_window_get_canvas(ctx);
-//        struct nk_rect window_content_region = nk_window_get_content_region(ctx);
-//        window_content_region.w = 64;
-//        window_content_region.h = 64;
-//
-//        nk_draw_image(canvas, window_content_region, &testImage, nk_rgba(255, 255, 255, 255));
+        if (nk_button_label(ctx, "A"));
+        if (nk_button_label(ctx, "L"));
+        if (nk_button_label(ctx, "R"));
+        if (nk_button_label(ctx, "B"));
 
+        nk_layout_row_dynamic(ctx, 20, 2);
 
+        nk_label(ctx, "Search:", NK_TEXT_LEFT);
 
-
+        nk_edit_string(ctx, NK_EDIT_SIMPLE, Global::searchText, &Global::searchTextLength, sizeof(Global::searchText),
+                       nk_filter_default);
 
         static float a = 120, b = 100, c = 100;
         struct nk_rect bounds;
@@ -1839,10 +1838,27 @@ static void songWindow() {
         /* top space */
         nk_layout_row_dynamic(ctx, a, 1);
 
-        for (const Song::Info& songInfo : Global::collection)
+        for (i32 i = 0; i < Global::collection.size(); ++i)
         {
+            const Song::Info& songInfo = Global::collection[i];
+
             if (nk_group_begin(ctx, "top", NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER)) {
                 nk_layout_row_dynamic(ctx, 15, 2);
+
+                struct nk_image thumbnail;
+                if (songInfo.albumCover64_ogl == 0 && songInfo.albumCover64_tocIndex >= 1)
+                    songInfo.albumCover64_ogl = loadDDS(Global::psarcInfos[i].tocEntries[songInfo.albumCover64_tocIndex].content.data(), Global::psarcInfos[i].tocEntries[songInfo.albumCover64_tocIndex].content.size());
+                if (songInfo.albumCover64_ogl != 0)
+                    thumbnail = nk_image_id((int) songInfo.albumCover64_ogl);
+
+                nk_command_buffer *canvas = nk_window_get_canvas(ctx);
+                struct nk_rect window_content_region = nk_window_get_content_region(ctx);
+                window_content_region.w = 64;
+                window_content_region.h = 64;
+
+                nk_draw_image(canvas, window_content_region, &thumbnail, nk_rgba(255, 255, 255, 255));
+
+
 
                 //nk_layout_row_dynamic(ctx, 20, 1);
                 nk_label(ctx, "Title:", NK_TEXT_LEFT);
@@ -1858,7 +1874,7 @@ static void songWindow() {
 
                 nk_button_label(ctx, "#FFAA");
                 nk_button_label(ctx, "#FFBB");
-                
+
                 nk_group_end(ctx);
             }
         }

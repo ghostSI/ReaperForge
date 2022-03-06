@@ -4,6 +4,7 @@
 #include "type.h"
 #include "helper.h"
 #include "song.h"
+#include "psarc.h"
 
 #include <vector>
 #include <string>
@@ -11,10 +12,6 @@
 enum struct DisplayMode : u8;
 enum struct InputDebugMode : u16;
 enum struct RenderOptions : u32;
-namespace Biom { enum struct Type : u8; }
-namespace Weapon { enum struct Type : i32; }
-namespace World { enum struct Type : i32; }
-namespace Song { struct Info; }
 struct SDL_Window;
 typedef struct _SDL_GameController SDL_GameController;
 
@@ -41,7 +38,10 @@ namespace Global {
 
     extern Instrument filterInstrument;
     extern bool collectionLoaded;
+    extern std::vector<Psarc::PsarcInfo> psarcInfos;
     extern std::vector<Song::Info> collection;
+    extern char searchText[256];
+    extern i32 searchTextLength;
 
     extern f32 frameDelta;
     extern f32 time;

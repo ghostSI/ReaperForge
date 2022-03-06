@@ -22,11 +22,8 @@ void Collection::init() {
         if (file.path().extension() != std::filesystem::path(".psarc"))
             continue;
 
-        const std::vector<u8> psarcData = Psarc::readPsarcData(file.path().string().c_str());
-        const Psarc::PsarcInfo psarcInfo = Psarc::parse(psarcData);
-        const Song::Info songInfo = Song::psarcInfoToSongInfo(psarcInfo);
-
-        Global::collection.push_back(songInfo);
+        Global::psarcInfos.push_back(Psarc::parse(Psarc::readPsarcData(file.path().string().c_str())));
+        Global::collection.push_back(Song::psarcInfoToSongInfo(Global::psarcInfos[Global::psarcInfos.size() - 1]));
     }
 
     Global::collectionLoaded = true;

@@ -41,10 +41,12 @@ enum struct DisplayMode : u8 {
 };
 
 enum struct Instrument {
-    LeadGuitar,
-    RhythmGuitar,
-    BassGuitar
-};
+    none,
+    LeadGuitar = 1 << 0,
+    RhythmGuitar = 1 << 1,
+    BassGuitar = 1 << 2,
+    All = LeadGuitar | RhythmGuitar | BassGuitar
+}BIT_FLAGS(Instrument);
 
 struct vec2 {
     f32 v0 = 0.0_f32;

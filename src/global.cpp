@@ -18,7 +18,10 @@ f32 Global::cameraMidY = f32(Global::windowHeight / 2);
 
 Instrument Global::filterInstrument;
 bool Global::collectionLoaded;
+std::vector<Psarc::PsarcInfo> Global::psarcInfos;
 std::vector<Song::Info> Global::collection;
+char Global::searchText[256] = "";
+i32 Global::searchTextLength = 0;
 
 f32 Global::frameDelta = 0.016_f32;
 f32 Global::time = 0.0_f32;

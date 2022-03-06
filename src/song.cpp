@@ -8,7 +8,7 @@ static bool isXmlForInstrument(std::string filename, Instrument instrument) {
 
     switch (instrument) {
         case Instrument::LeadGuitar:
-            if (filename.ends_with("lead.xml"))
+            if (filename.ends_with("_lead.xml"))
                 return true;
             break;
         case Instrument::RhythmGuitar:
@@ -35,9 +35,8 @@ tuning(const std::string &string0, const std::string &string1, const std::string
     return "Custom Tuning";
 }
 
-static Song::Info readSongInfoXml(const Psarc::PsarcInfo::TOCEntry &tocEntry) {
+static void readSongInfoXml(const Psarc::PsarcInfo::TOCEntry &tocEntry, Song::Info &songInfo) {
 
-    Song::Info songInfo;
 
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load(reinterpret_cast<const char *>(tocEntry.content.data()));
@@ -68,21 +67,34 @@ static Song::Info readSongInfoXml(const Psarc::PsarcInfo::TOCEntry &tocEntry) {
     for (pugi::xml_node node: root.child("albumYear")) {
         songInfo.albumYear = node.value();
     }
-
-    return songInfo;
 }
 
 Song::Info Song::psarcInfoToSongInfo(const Psarc::PsarcInfo &psarcInfo) {
 
-    for (const Psarc::PsarcInfo::TOCEntry &tocEntry: psarcInfo.tocEntries) {
-        if (!tocEntry.name.ends_with(".xml"))
-            continue;
+    Song::Info songInfo;
 
-        if (isXmlForInstrument(tocEntry.name, Instrument::LeadGuitar)) {
-            return readSongInfoXml(tocEntry);
-            break;
+    for (i32 i = 0; i < psarcInfo.tocEntries.size(); ++i) {
+        const Psarc::PsarcInfo::TOCEntry &tocEntry = psarcInfo.tocEntries[i];
+
+        if (tocEntry.name.ends_with("_lead.xml")) {
+            songInfo.instrumentFlags |= Info::InstrumentFlags::LeadGuitar;
+            readSongInfoXml(tocEntry, songInfo);
+        } else if (tocEntry.name.ends_with("_rhythm.xml")) {
+            songInfo.instrumentFlags |= Info::InstrumentFlags::RhythmGuitar;
+            if (songInfo.title.empty())
+                readSongInfoXml(tocEntry, songInfo);
+        } else if (tocEntry.name.ends_with("_bass.xml")) {
+            songInfo.instrumentFlags |= Info::InstrumentFlags::BassGuitar;
+            if (songInfo.title.empty())
+                readSongInfoXml(tocEntry, songInfo);
+        } else if (tocEntry.name.ends_with("_64.dds")) {
+            songInfo.albumCover64_tocIndex = i;
+        } else if (tocEntry.name.ends_with("_128.dds")) {
+            songInfo.albumCover128_tocIndex = i;
+        } else if (tocEntry.name.ends_with("_256.dds")) {
+            songInfo.albumCover256_tocIndex = i;
         }
     }
 
-    return {};
+    return songInfo;
 }

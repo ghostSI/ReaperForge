@@ -1,7 +1,7 @@
 #ifndef SONG_H
 #define SONG_H
 
-#include "type.h"
+#include <string>
 
 namespace Psarc { struct PsarcInfo; }
 
@@ -18,7 +18,9 @@ namespace Song {
         std::string tuning;
     };
 
-    Info psarcInfoToSongInfo(const Psarc::PsarcInfo &psarcInfo, Instrument instrument);
+    Info psarcInfoToSongInfo(const Psarc::PsarcInfo &psarcInfo);
+
+
 }
 
 #endif // SONG_H

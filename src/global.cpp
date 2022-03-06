@@ -16,10 +16,14 @@ bool Global::pauseAudio = false;
 f32 Global::cameraMidX = f32(Global::windowWidth / 2);
 f32 Global::cameraMidY = f32(Global::windowHeight / 2);
 
+Instrument Global::filterInstrument;
+bool Global::collectionLoaded;
+std::vector<Song::Info> Global::collection;
+
 f32 Global::frameDelta = 0.016_f32;
 f32 Global::time = 0.0_f32;
 
-char Global::guyName[256] = "Anon";
+char Global::playerName[256] = "Anon";
 
 bool Global::inputUseController;
 i32 Global::inputCursorPosX = 0;

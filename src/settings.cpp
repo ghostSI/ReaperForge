@@ -199,7 +199,7 @@ bool Settings::init(int argc, char *argv[]) {
     gameSettings = defaultSettings;
 
     if (Installer::isInstalled("."))
-        gameSettings = File::loadIni("settings");
+        gameSettings = File::loadIni("settings.ini");
 
     File::saveIni(settingsIniPath.string().c_str(), gameSettings);
 

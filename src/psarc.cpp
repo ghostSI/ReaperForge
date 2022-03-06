@@ -197,7 +197,6 @@ Psarc::PsarcInfo Psarc::parse(const std::vector<u8> &psarcData) {
             if (tocEntry.name == "NameBlock.bin")
                 continue;
 
-
             inflateTocEntry(tocEntry, psarcInfo.header.blockSizeAlloc, &psarcData[0], zBlockSizeList);
         }
     }

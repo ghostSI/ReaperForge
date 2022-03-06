@@ -3,6 +3,7 @@
 
 #include "type.h"
 #include "helper.h"
+#include "song.h"
 
 #include <vector>
 #include <string>
@@ -13,6 +14,7 @@ enum struct RenderOptions : u32;
 namespace Biom { enum struct Type : u8; }
 namespace Weapon { enum struct Type : i32; }
 namespace World { enum struct Type : i32; }
+namespace Song { struct Info; }
 struct SDL_Window;
 typedef struct _SDL_GameController SDL_GameController;
 
@@ -37,13 +39,14 @@ namespace Global {
     extern f32 cameraMidX;
     extern f32 cameraMidY;
 
-    extern Biom::Type cameraBiom;
-    extern Biom::Type defaultBiom;
+    extern Instrument filterInstrument;
+    extern bool collectionLoaded;
+    extern std::vector<Song::Info> collection;
 
     extern f32 frameDelta;
     extern f32 time;
 
-    extern char guyName[256];
+    extern char playerName[256];
 
     extern bool inputUseController;
     extern i32 inputCursorPosX;

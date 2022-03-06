@@ -10,7 +10,7 @@
 #include "opengl.h"
 #include "texture.h"
 #include "log.h"
-#include "psarc.h"
+#include "collection.h"
 #include "settings.h"
 #include "ui.h"
 
@@ -40,8 +40,7 @@ static void mainloop() {
         Input::prePollEvent();
         Ui::handleInputBegin();
         SDL_Event event;
-        while (SDL_PollEvent(&event) != 0)
-        {
+        while (SDL_PollEvent(&event) != 0) {
             Input::pollEvent(event);
             Ui::handleInput(event);
         }
@@ -123,8 +122,6 @@ int main(int argc, char *argv[]) {
     Sound::init();
     Texture::init();
     Scene::init();
-
-
 
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(mainloop, -1, 1);

@@ -2,6 +2,7 @@
 
 #include "psarc.h"
 #include "xml.h"
+#include "global.h"
 
 static bool isXmlForInstrument(std::string filename, Instrument instrument) {
 
@@ -71,13 +72,13 @@ static Song::Info readSongInfoXml(const Psarc::PsarcInfo::TOCEntry &tocEntry) {
     return songInfo;
 }
 
-Song::Info Song::psarcInfoToSongInfo(const Psarc::PsarcInfo &psarcInfo, Instrument instrument) {
+Song::Info Song::psarcInfoToSongInfo(const Psarc::PsarcInfo &psarcInfo) {
 
     for (const Psarc::PsarcInfo::TOCEntry &tocEntry: psarcInfo.tocEntries) {
         if (!tocEntry.name.ends_with(".xml"))
             continue;
 
-        if (isXmlForInstrument(tocEntry.name, instrument)) {
+        if (isXmlForInstrument(tocEntry.name, Instrument::LeadGuitar)) {
             return readSongInfoXml(tocEntry);
             break;
         }

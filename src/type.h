@@ -40,6 +40,12 @@ enum struct DisplayMode : u8 {
     COUNT,
 };
 
+enum struct Instrument {
+    LeadGuitar,
+    RhythmGuitar,
+    BassGuitar
+};
+
 struct vec2 {
     f32 v0 = 0.0_f32;
     f32 v1 = 0.0_f32;

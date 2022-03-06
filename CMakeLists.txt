@@ -44,11 +44,13 @@ set(HEADER_FILES
         src/scene.h
         src/settings.h
         src/shader.h
+        src/song.h
         src/sound.h
         src/sprite.h
         src/type.h
         src/texture.h
         src/ui.h
+        src/xml.h
         src/zorder.h
         )
 
@@ -72,11 +74,13 @@ set(SOURCE_FILES
         src/scene.cpp
         src/settings.cpp
         src/shader.cpp
+        src/song.cpp
         src/sound.cpp
         src/sprite.cpp
         src/test.cpp
         src/texture.cpp
         src/ui.cpp
+        src/xml.cpp
         src/zorder.cpp
         )
 

@@ -28,7 +28,7 @@ namespace Psarc {
             u64 offset;
             std::vector<u8> content;
         };
-        std::vector<TOCEntry> tocEntry;
+        std::vector<TOCEntry> tocEntries;
 
         struct {
 

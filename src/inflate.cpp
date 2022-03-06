@@ -581,6 +581,7 @@ static i32 inflate_partial(const void *compressed_data, i32 compressed_size,
         }
         if ((zlib_header & 0x8F00) == 0x0800 && zlib_header % 31 == 0) {
             if (zlib_header & 0x0020) {
+                assert(false);
                 return -1;
             }
             state->in_ptr += (state->state == PARTIAL_ZLIB_HEADER ? 1 : 2);
@@ -597,7 +598,10 @@ static i32 inflate_partial(const void *compressed_data, i32 compressed_size,
             return res;
 
         if ((i32) state->out_ofs < 0)
+        {
+            assert(false);
             return -1;
+        }
     } while (!state->final);
 
     if (size_ret) {
@@ -615,6 +619,7 @@ i32 Inflate::inflate(const void *compressed_data, i32 compressed_size,
 
     if (compressed_data == nullptr || compressed_size < 0 || output_size < 0
         || (output_size > 0 && output_buffer == nullptr)) {
+        assert(false);
         return -1;
     }
 
@@ -632,6 +637,7 @@ i32 Inflate::inflate(const void *compressed_data, i32 compressed_size,
                               &size, crc_ret,
                               &state, sizeof(state));
     if (result != 0) {
+        assert(false);
         return -1;
     }
 

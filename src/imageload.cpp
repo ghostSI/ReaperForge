@@ -703,24 +703,19 @@ GLuint loadDDS(const unsigned char *in_dds, size_t in_size) {
 
     u32 height = (in_dds[12]) | (in_dds[13] << 8) | (in_dds[14] << 16) | (in_dds[15] << 24);
     u32 width = (in_dds[16]) | (in_dds[17] << 8) | (in_dds[18] << 16) | (in_dds[19] << 24);
-    u32 mipMapCount = (in_dds[28]) | (in_dds[29] << 8) | (in_dds[30] << 16) | (in_dds[31] << 24);
 
-    u32 blockSize;
     u32 format;
 
     if (in_dds[84] == 'D') {
         switch (in_dds[87]) {
             case '1': // DXT1
                 format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-                blockSize = 8;
                 break;
             case '3': // DXT3
                 format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-                blockSize = 16;
                 break;
             case '5': // DXT5
                 format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-                blockSize = 16;
                 break;
             case '0': // DX10
             default:
@@ -735,30 +730,13 @@ GLuint loadDDS(const unsigned char *in_dds, size_t in_size) {
     assert(texture != 0);
 
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mipMapCount - 1);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    u32 offset = 0;
-    u32 size = 0;
-    u32 w = width;
-    u32 h = height;
+    OpenGl::glCompressedTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, in_size - 128, &in_dds[128]);
 
-    for (u32 i = 0; i < mipMapCount; i++) {
-        if (w == 0 || h == 0) {
-            mipMapCount--;
-            continue;
-        }
-        size = ((w + 3) / 4) * ((h + 3) / 4) * blockSize;
-        OpenGl::glCompressedTexImage2D(GL_TEXTURE_2D, i, format, w, h, 0, size, in_dds + offset);
-        offset += size;
-        w /= 2;
-        h /= 2;
-    }
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mipMapCount - 1);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     return texture;

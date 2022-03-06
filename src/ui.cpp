@@ -1838,27 +1838,26 @@ static void songWindow() {
         /* top space */
         nk_layout_row_dynamic(ctx, a, 1);
 
-        for (i32 i = 0; i < Global::collection.size(); ++i)
-        {
-            const Song::Info& songInfo = Global::collection[i];
+        for (i32 i = 0; i < Global::collection.size(); ++i) {
+            const Song::Info &songInfo = Global::collection[i];
 
             if (nk_group_begin(ctx, "top", NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER)) {
                 nk_layout_row_dynamic(ctx, 15, 2);
 
                 struct nk_image thumbnail;
-                if (songInfo.albumCover64_ogl == 0 && songInfo.albumCover64_tocIndex >= 1)
-                    songInfo.albumCover64_ogl = loadDDS(Global::psarcInfos[i].tocEntries[songInfo.albumCover64_tocIndex].content.data(), Global::psarcInfos[i].tocEntries[songInfo.albumCover64_tocIndex].content.size());
-                if (songInfo.albumCover64_ogl != 0)
-                    thumbnail = nk_image_id((int) songInfo.albumCover64_ogl);
+                if (songInfo.albumCover128_ogl == 0 && songInfo.albumCover128_tocIndex >= 1)
+                    songInfo.albumCover128_ogl = loadDDS(
+                            Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.data(),
+                            Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.size());
+                if (songInfo.albumCover128_ogl != 0)
+                    thumbnail = nk_image_id((int) songInfo.albumCover128_ogl);
 
                 nk_command_buffer *canvas = nk_window_get_canvas(ctx);
                 struct nk_rect window_content_region = nk_window_get_content_region(ctx);
-                window_content_region.w = 64;
-                window_content_region.h = 64;
+                window_content_region.w = 128;
+                window_content_region.h = 128;
 
                 nk_draw_image(canvas, window_content_region, &thumbnail, nk_rgba(255, 255, 255, 255));
-
-
 
                 //nk_layout_row_dynamic(ctx, 20, 1);
                 nk_label(ctx, "Title:", NK_TEXT_LEFT);

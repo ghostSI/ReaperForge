@@ -25,7 +25,7 @@ std::vector<u8> Psarc::readPsarcData(const char *filepath) {
     ASSERT(filepathLen > sizeof(psarcExtension) && "Psarc filename invalid");
     ASSERT(strncmp(filepath, psarcExtension, filepathLen - sizeof(psarcExtension)));
 
-    std::vector<u8> psarcData = File::load(filepath, "r");
+    std::vector<u8> psarcData = File::load(filepath, "rb");
 
     ASSERT(strncmp(reinterpret_cast<char *>(psarcData.data()), magicText, sizeof(magicText)) == 0 &&
            "Invalid Psarc content");

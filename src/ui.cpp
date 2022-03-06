@@ -1833,7 +1833,7 @@ static void songWindow() {
 
 
 
-        static float a = 100, b = 100, c = 100;
+        static float a = 120, b = 100, c = 100;
         struct nk_rect bounds;
 
         /* top space */
@@ -1842,46 +1842,25 @@ static void songWindow() {
         for (const Song::Info& songInfo : Global::collection)
         {
             if (nk_group_begin(ctx, "top", NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER)) {
-                nk_layout_row_dynamic(ctx, 25, 3);
+                nk_layout_row_dynamic(ctx, 15, 2);
 
                 //nk_layout_row_dynamic(ctx, 20, 1);
-                nk_label(ctx, "Label aligned left", NK_TEXT_LEFT);
-                nk_label(ctx, "Label aligned centered", NK_TEXT_LEFT);
-                nk_label(ctx, "Label aligned right", NK_TEXT_LEFT);
+                nk_label(ctx, "Title:", NK_TEXT_LEFT);
+                nk_label(ctx, songInfo.title.c_str(), NK_TEXT_LEFT);
+                nk_label(ctx, "Artist:", NK_TEXT_LEFT);
+                nk_label(ctx, songInfo.artist.c_str(), NK_TEXT_LEFT);
+                nk_label(ctx, "Album:", NK_TEXT_LEFT);
+                nk_label(ctx, songInfo.albumName.c_str(), NK_TEXT_LEFT);
+                nk_label(ctx, "Year:", NK_TEXT_LEFT);
+                nk_label(ctx, songInfo.albumYear.c_str(), NK_TEXT_LEFT);
+                nk_label(ctx, "Length:", NK_TEXT_LEFT);
+                nk_label(ctx, songInfo.songLength.c_str(), NK_TEXT_LEFT);
 
                 nk_button_label(ctx, "#FFAA");
                 nk_button_label(ctx, "#FFBB");
-                nk_button_label(ctx, "#FFCC");
-                nk_button_label(ctx, "#FFDD");
-                nk_button_label(ctx, "#FFEE");
-                nk_button_label(ctx, "#FFFF");
+                
                 nk_group_end(ctx);
             }
-        }
-
-        {
-            /* scaler */
-            nk_layout_row_dynamic(ctx, 8, 1);
-            bounds = nk_widget_bounds(ctx);
-            if ((nk_input_is_mouse_hovering_rect(&ctx->input, bounds) ||
-                 nk_input_is_mouse_prev_hovering_rect(&ctx->input, bounds)) &&
-                nk_input_is_mouse_down(&ctx->input, NK_BUTTON_LEFT)) {
-                b = b + ctx->input.mouse.delta.y;
-                c = c - ctx->input.mouse.delta.y;
-            }
-        }
-
-        /* bottom space */
-        nk_layout_row_dynamic(ctx, c, 1);
-        if (nk_group_begin(ctx, "bottom", NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER)) {
-            nk_layout_row_dynamic(ctx, 25, 3);
-            nk_button_label(ctx, "#FFAA");
-            nk_button_label(ctx, "#FFBB");
-            nk_button_label(ctx, "#FFCC");
-            nk_button_label(ctx, "#FFDD");
-            nk_button_label(ctx, "#FFEE");
-            nk_button_label(ctx, "#FFFF");
-            nk_group_end(ctx);
         }
     }
     nk_end(ctx);

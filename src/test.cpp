@@ -21273,10 +21273,7 @@ static void psarcTOCTest2() {
     };
 
     const Psarc::PsarcInfo psarcInfo = Psarc::parse(psarcData);
-    const Song::Info songInfo = Song::psarcInfoToSongInfo(psarcInfo, Instrument::LeadGuitar);
-
-    songInfo.title;
-
+    const Song::Info songInfo = Song::psarcInfoToSongInfo(psarcInfo);
 }
 
 int main(int argc, char *argv[]) {

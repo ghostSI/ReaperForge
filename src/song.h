@@ -14,7 +14,7 @@ namespace Song {
         bool capo = false;
         std::string albumName;
         std::string albumYear;
-        double songLength = 0.0;
+        std::string songLength;
         std::string tuning;
     };
 

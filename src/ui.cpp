@@ -1808,6 +1808,62 @@ static void mixerWindow() {
     nk_end(ctx);
 }
 
+static char *stristr(const char *str1, const char *str2) {
+    const char *p1 = str1;
+    const char *p2 = str2;
+    const char *r = *p2 == 0 ? str1 : 0;
+
+    while (*p1 != 0 && *p2 != 0) {
+        if (tolower( *p1) == tolower( *p2)) {
+            if (r == 0) {
+                r = p1;
+            }
+            p2++;
+        } else {
+            p2 = str2;
+            if (r != 0) {
+                p1 = r + 1;
+            }
+
+            if (tolower( *p1) == tolower(*p2)) {
+                r = p1;
+                p2++;
+            } else {
+                r = 0;
+            }
+        }
+
+        p1++;
+    }
+
+    return *p2 == 0 ? (char *) r : 0;
+}
+
+static bool filterSongOut(const Song::Info &songInfo) {
+    if (Global::searchTextLength == 0)
+        return false;
+
+    char searchText2[sizeof(Global::searchText)];
+    i32 i = 0;
+    for (; i < Global::searchTextLength; ++i){
+        searchText2[i] = Global::searchText[i];
+    }
+    searchText2[i] = '\0';
+
+    if (stristr(songInfo.title.c_str(), searchText2))
+        return false;
+    if (stristr(songInfo.artist.c_str(), searchText2))
+        return false;
+    if (stristr(songInfo.albumName.c_str(), searchText2))
+        return false;
+    if (stristr(songInfo.albumYear.c_str(), searchText2))
+        return false;
+    if (stristr(songInfo.tuning.c_str(), searchText2))
+        return false;
+
+    return true;
+}
+
 static void songWindow() {
 
     if (!Global::collectionLoaded)
@@ -1817,7 +1873,7 @@ static void songWindow() {
                  NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
                  NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
 
-        nk_layout_row_template_begin(ctx, 20);
+        nk_layout_row_template_begin(ctx, 22);
         nk_layout_row_template_push_static(ctx, 130);
         nk_layout_row_template_push_dynamic(ctx);
         nk_layout_row_template_push_static(ctx, 30);
@@ -1843,6 +1899,9 @@ static void songWindow() {
 
             for (i32 i = 0; i < Global::collection.size(); ++i) {
                 const Song::Info &songInfo = Global::collection[i];
+
+                if (filterSongOut(songInfo))
+                    continue;
 
                 if (nk_group_begin(ctx, "top", NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER)) {
 

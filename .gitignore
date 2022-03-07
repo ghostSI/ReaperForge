@@ -11,6 +11,7 @@ cmake-build-debug-visual-studio/
 cmake-build-release-visual-studio/
 cmake_install.cmake
 Makefile
+ReaperForge
 build/
 temp/
 *.sln

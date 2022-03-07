@@ -112,9 +112,8 @@ if (${LINUX})
 
     ## USE OWN SDL2 ##
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-    target_link_libraries(ReaperForge ${CMAKE_DL_LIBS})
     target_include_directories(ReaperForge PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/SDL2-2.0.12/Linux/include/)
-    target_link_libraries(ReaperForge ${CMAKE_SOURCE_DIR}/3rdparty/SDL2-2.0.12/Linux/lib/libSDL2.a)
+    target_link_libraries(ReaperForge ${CMAKE_SOURCE_DIR}/3rdparty/SDL2-2.0.12/Linux/lib/libSDL2.a ${CMAKE_DL_LIBS})
 
     find_package(OpenGL REQUIRED)
     set(OpenGL_GL_PREFERENCE "GLVND")

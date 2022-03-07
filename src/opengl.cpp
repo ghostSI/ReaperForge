@@ -57,64 +57,64 @@ static PFNGLDELETEBUFFERSPROC glDeleteBuffersProc;
 static PFNGLCOMPRESSEDTEXIMAGE2DPROC glCompressedTexImage2DProc;
 
 void OpenGl::init() {
-    glCreateShaderProc = static_cast<PFNGLCREATESHADERPROC>(SDL_GL_GetProcAddress("glCreateShader"));
-    glShaderSourceProc = static_cast<PFNGLSHADERSOURCEPROC>(SDL_GL_GetProcAddress("glShaderSource"));
-    glCompileShaderProc = static_cast<PFNGLCOMPILESHADERPROC>(SDL_GL_GetProcAddress("glCompileShader"));
-    glGetShaderivProc = static_cast<PFNGLGETSHADERIVPROC>(SDL_GL_GetProcAddress("glGetShaderiv"));
-    glGetShaderInfoLogProc = static_cast<PFNGLGETSHADERINFOLOGPROC>(SDL_GL_GetProcAddress("glGetShaderInfoLog"));
-    glDeleteShaderProc = static_cast<PFNGLDELETESHADERPROC>(SDL_GL_GetProcAddress("glDeleteShader"));
-    glAttachShaderProc = static_cast<PFNGLATTACHSHADERPROC>(SDL_GL_GetProcAddress("glAttachShader"));
-    glCreateProgramProc = static_cast<PFNGLCREATEPROGRAMPROC>(SDL_GL_GetProcAddress("glCreateProgram"));
-    glLinkProgramProc = static_cast<PFNGLLINKPROGRAMPROC>(SDL_GL_GetProcAddress("glLinkProgram"));
-    glValidateProgramProc = static_cast<PFNGLVALIDATEPROGRAMPROC>(SDL_GL_GetProcAddress("glValidateProgram"));
-    glGetProgramivProc = static_cast<PFNGLGETPROGRAMIVPROC>(SDL_GL_GetProcAddress("glGetProgramiv"));
-    glGetProgramInfoLogProc = static_cast<PFNGLGETPROGRAMINFOLOGPROC>(SDL_GL_GetProcAddress("glGetProgramInfoLog"));
-    glUseProgramProc = static_cast<PFNGLUSEPROGRAMPROC>(SDL_GL_GetProcAddress("glUseProgram"));
-    glGenVertexArraysProc = static_cast<PFNGLGENVERTEXARRAYSPROC>(SDL_GL_GetProcAddress("glGenVertexArrays"));
-    glBindVertexArrayProc = static_cast<PFNGLBINDVERTEXARRAYPROC>(SDL_GL_GetProcAddress("glBindVertexArray"));
-    glGenBuffersProc = static_cast<PFNGLGENBUFFERSPROC>(SDL_GL_GetProcAddress("glGenBuffers"));
-    glBindBufferProc = static_cast<PFNGLBINDBUFFERPROC>(SDL_GL_GetProcAddress("glBindBuffer"));
-    glDetachShaderProc = static_cast<PFNGLDETACHSHADERPROC>(SDL_GL_GetProcAddress("glDetachShader"));
-    glDeleteProgramProc = static_cast<PFNGLDELETEPROGRAMPROC>(SDL_GL_GetProcAddress("glDeleteProgram"));
-    glBindFragDataLocationProc = static_cast<PFNGLBINDFRAGDATALOCATIONPROC>(SDL_GL_GetProcAddress(
+    glCreateShaderProc = reinterpret_cast<PFNGLCREATESHADERPROC>(SDL_GL_GetProcAddress("glCreateShader"));
+    glShaderSourceProc = reinterpret_cast<PFNGLSHADERSOURCEPROC>(SDL_GL_GetProcAddress("glShaderSource"));
+    glCompileShaderProc = reinterpret_cast<PFNGLCOMPILESHADERPROC>(SDL_GL_GetProcAddress("glCompileShader"));
+    glGetShaderivProc = reinterpret_cast<PFNGLGETSHADERIVPROC>(SDL_GL_GetProcAddress("glGetShaderiv"));
+    glGetShaderInfoLogProc = reinterpret_cast<PFNGLGETSHADERINFOLOGPROC>(SDL_GL_GetProcAddress("glGetShaderInfoLog"));
+    glDeleteShaderProc = reinterpret_cast<PFNGLDELETESHADERPROC>(SDL_GL_GetProcAddress("glDeleteShader"));
+    glAttachShaderProc = reinterpret_cast<PFNGLATTACHSHADERPROC>(SDL_GL_GetProcAddress("glAttachShader"));
+    glCreateProgramProc = reinterpret_cast<PFNGLCREATEPROGRAMPROC>(SDL_GL_GetProcAddress("glCreateProgram"));
+    glLinkProgramProc = reinterpret_cast<PFNGLLINKPROGRAMPROC>(SDL_GL_GetProcAddress("glLinkProgram"));
+    glValidateProgramProc = reinterpret_cast<PFNGLVALIDATEPROGRAMPROC>(SDL_GL_GetProcAddress("glValidateProgram"));
+    glGetProgramivProc = reinterpret_cast<PFNGLGETPROGRAMIVPROC>(SDL_GL_GetProcAddress("glGetProgramiv"));
+    glGetProgramInfoLogProc = reinterpret_cast<PFNGLGETPROGRAMINFOLOGPROC>(SDL_GL_GetProcAddress("glGetProgramInfoLog"));
+    glUseProgramProc = reinterpret_cast<PFNGLUSEPROGRAMPROC>(SDL_GL_GetProcAddress("glUseProgram"));
+    glGenVertexArraysProc = reinterpret_cast<PFNGLGENVERTEXARRAYSPROC>(SDL_GL_GetProcAddress("glGenVertexArrays"));
+    glBindVertexArrayProc = reinterpret_cast<PFNGLBINDVERTEXARRAYPROC>(SDL_GL_GetProcAddress("glBindVertexArray"));
+    glGenBuffersProc = reinterpret_cast<PFNGLGENBUFFERSPROC>(SDL_GL_GetProcAddress("glGenBuffers"));
+    glBindBufferProc = reinterpret_cast<PFNGLBINDBUFFERPROC>(SDL_GL_GetProcAddress("glBindBuffer"));
+    glDetachShaderProc = reinterpret_cast<PFNGLDETACHSHADERPROC>(SDL_GL_GetProcAddress("glDetachShader"));
+    glDeleteProgramProc = reinterpret_cast<PFNGLDELETEPROGRAMPROC>(SDL_GL_GetProcAddress("glDeleteProgram"));
+    glBindFragDataLocationProc = reinterpret_cast<PFNGLBINDFRAGDATALOCATIONPROC>(SDL_GL_GetProcAddress(
             "glBindFragDataLocation"));
-    glGetAttribLocationProc = static_cast<PFNGLGETATTRIBLOCATIONPROC>(SDL_GL_GetProcAddress("glGetAttribLocation"));
-    glEnableVertexAttribArrayProc = static_cast<PFNGLENABLEVERTEXATTRIBARRAYPROC>(SDL_GL_GetProcAddress(
+    glGetAttribLocationProc = reinterpret_cast<PFNGLGETATTRIBLOCATIONPROC>(SDL_GL_GetProcAddress("glGetAttribLocation"));
+    glEnableVertexAttribArrayProc = reinterpret_cast<PFNGLENABLEVERTEXATTRIBARRAYPROC>(SDL_GL_GetProcAddress(
             "glEnableVertexAttribArray"));
-    glVertexAttribPointerProc = static_cast<PFNGLVERTEXATTRIBPOINTERPROC>(SDL_GL_GetProcAddress(
+    glVertexAttribPointerProc = reinterpret_cast<PFNGLVERTEXATTRIBPOINTERPROC>(SDL_GL_GetProcAddress(
             "glVertexAttribPointer"));
-    glBufferDataProc = static_cast<PFNGLBUFFERDATAPROC>(SDL_GL_GetProcAddress("glBufferData"));
-    glGetUniformLocationProc = static_cast<PFNGLGETUNIFORMLOCATIONPROC>(SDL_GL_GetProcAddress("glGetUniformLocation"));
-    glUniform1fProc = static_cast<PFNGLUNIFORM1FPROC>(SDL_GL_GetProcAddress("glUniform1f"));
-    glUniform2fProc = static_cast<PFNGLUNIFORM2FPROC>(SDL_GL_GetProcAddress("glUniform2f"));
-    glUniform3fProc = static_cast<PFNGLUNIFORM3FPROC>(SDL_GL_GetProcAddress("glUniform3f"));
-    glUniform4fProc = static_cast<PFNGLUNIFORM4FPROC>(SDL_GL_GetProcAddress("glUniform4f"));
-    glUniform1iProc = static_cast<PFNGLUNIFORM1IPROC>(SDL_GL_GetProcAddress("glUniform1i"));
-    glUniform1uiProc = static_cast<PFNGLUNIFORM1UIPROC>(SDL_GL_GetProcAddress("glUniform1ui"));
-    glGenerateMipmapProc = static_cast<PFNGLGENERATEMIPMAPPROC>(SDL_GL_GetProcAddress("glGenerateMipmap"));
-    glUniformMatrix4fvProc = static_cast<PFNGLUNIFORMMATRIX4FVPROC>(SDL_GL_GetProcAddress("glUniformMatrix4fv"));
-    glActiveTextureProc = static_cast<PFNGLACTIVETEXTUREPROC>(SDL_GL_GetProcAddress("glActiveTexture"));
-    glGenFramebuffersProc = static_cast<PFNGLGENFRAMEBUFFERSPROC>(SDL_GL_GetProcAddress("glGenFramebuffers"));
-    glBindFramebufferProc = static_cast<PFNGLBINDFRAMEBUFFERPROC>(SDL_GL_GetProcAddress("glBindFramebuffer"));
-    glFramebufferTexture2DProc = static_cast<PFNGLFRAMEBUFFERTEXTURE2DPROC>(SDL_GL_GetProcAddress(
+    glBufferDataProc = reinterpret_cast<PFNGLBUFFERDATAPROC>(SDL_GL_GetProcAddress("glBufferData"));
+    glGetUniformLocationProc = reinterpret_cast<PFNGLGETUNIFORMLOCATIONPROC>(SDL_GL_GetProcAddress("glGetUniformLocation"));
+    glUniform1fProc = reinterpret_cast<PFNGLUNIFORM1FPROC>(SDL_GL_GetProcAddress("glUniform1f"));
+    glUniform2fProc = reinterpret_cast<PFNGLUNIFORM2FPROC>(SDL_GL_GetProcAddress("glUniform2f"));
+    glUniform3fProc = reinterpret_cast<PFNGLUNIFORM3FPROC>(SDL_GL_GetProcAddress("glUniform3f"));
+    glUniform4fProc = reinterpret_cast<PFNGLUNIFORM4FPROC>(SDL_GL_GetProcAddress("glUniform4f"));
+    glUniform1iProc = reinterpret_cast<PFNGLUNIFORM1IPROC>(SDL_GL_GetProcAddress("glUniform1i"));
+    glUniform1uiProc = reinterpret_cast<PFNGLUNIFORM1UIPROC>(SDL_GL_GetProcAddress("glUniform1ui"));
+    glGenerateMipmapProc = reinterpret_cast<PFNGLGENERATEMIPMAPPROC>(SDL_GL_GetProcAddress("glGenerateMipmap"));
+    glUniformMatrix4fvProc = reinterpret_cast<PFNGLUNIFORMMATRIX4FVPROC>(SDL_GL_GetProcAddress("glUniformMatrix4fv"));
+    glActiveTextureProc = reinterpret_cast<PFNGLACTIVETEXTUREPROC>(SDL_GL_GetProcAddress("glActiveTexture"));
+    glGenFramebuffersProc = reinterpret_cast<PFNGLGENFRAMEBUFFERSPROC>(SDL_GL_GetProcAddress("glGenFramebuffers"));
+    glBindFramebufferProc = reinterpret_cast<PFNGLBINDFRAMEBUFFERPROC>(SDL_GL_GetProcAddress("glBindFramebuffer"));
+    glFramebufferTexture2DProc = reinterpret_cast<PFNGLFRAMEBUFFERTEXTURE2DPROC>(SDL_GL_GetProcAddress(
             "glFramebufferTexture2D"));
-    glCheckFramebufferStatusProc = static_cast<PFNGLCHECKFRAMEBUFFERSTATUSPROC>(SDL_GL_GetProcAddress(
+    glCheckFramebufferStatusProc = reinterpret_cast<PFNGLCHECKFRAMEBUFFERSTATUSPROC>(SDL_GL_GetProcAddress(
             "glCheckFramebufferStatus"));
-    glGenRenderbuffersProc = static_cast<PFNGLGENRENDERBUFFERSPROC>(SDL_GL_GetProcAddress("glGenRenderbuffers"));
-    glBindRenderbufferProc = static_cast<PFNGLBINDRENDERBUFFERPROC>(SDL_GL_GetProcAddress("glBindRenderbuffer"));
-    glRenderbufferStorageProc = static_cast<PFNGLRENDERBUFFERSTORAGEPROC>(SDL_GL_GetProcAddress(
+    glGenRenderbuffersProc = reinterpret_cast<PFNGLGENRENDERBUFFERSPROC>(SDL_GL_GetProcAddress("glGenRenderbuffers"));
+    glBindRenderbufferProc = reinterpret_cast<PFNGLBINDRENDERBUFFERPROC>(SDL_GL_GetProcAddress("glBindRenderbuffer"));
+    glRenderbufferStorageProc = reinterpret_cast<PFNGLRENDERBUFFERSTORAGEPROC>(SDL_GL_GetProcAddress(
             "glRenderbufferStorage"));
-    glFramebufferRenderbufferProc = static_cast<PFNGLFRAMEBUFFERRENDERBUFFERPROC>(SDL_GL_GetProcAddress(
+    glFramebufferRenderbufferProc = reinterpret_cast<PFNGLFRAMEBUFFERRENDERBUFFERPROC>(SDL_GL_GetProcAddress(
             "glFramebufferRenderbuffer"));
-    glDrawBuffersProc = static_cast<PFNGLDRAWBUFFERSPROC>(SDL_GL_GetProcAddress("glDrawBuffers"));
-    glBindTextureProc = static_cast<PFNGLBINDTEXTUREEXTPROC>(SDL_GL_GetProcAddress("glBindTexture"));
-    glGenTexturesProc = static_cast<PFNGLGENTEXTURESEXTPROC>(SDL_GL_GetProcAddress("glGenTextures"));
-    glMapBufferProc = static_cast<PFNGLMAPBUFFERPROC>(SDL_GL_GetProcAddress("glMapBuffer"));
-    glDeleteTexturesProc = static_cast<PFNGLDELETETEXTURESEXTPROC>(SDL_GL_GetProcAddress("glDeleteTextures"));
-    glUnmapBufferProc = static_cast<PFNGLUNMAPBUFFERPROC>(SDL_GL_GetProcAddress("glUnmapBuffer"));
-    glBlendEquationProc = static_cast<PFNGLBLENDEQUATIONPROC>(SDL_GL_GetProcAddress("glBlendEquation"));
-    glDeleteBuffersProc = static_cast<PFNGLDELETEBUFFERSPROC>(SDL_GL_GetProcAddress("glDeleteBuffers"));
-    glCompressedTexImage2DProc = static_cast<PFNGLCOMPRESSEDTEXIMAGE2DPROC>(SDL_GL_GetProcAddress("glCompressedTexImage2D"));
+    glDrawBuffersProc = reinterpret_cast<PFNGLDRAWBUFFERSPROC>(SDL_GL_GetProcAddress("glDrawBuffers"));
+    glBindTextureProc = reinterpret_cast<PFNGLBINDTEXTUREEXTPROC>(SDL_GL_GetProcAddress("glBindTexture"));
+    glGenTexturesProc = reinterpret_cast<PFNGLGENTEXTURESEXTPROC>(SDL_GL_GetProcAddress("glGenTextures"));
+    glMapBufferProc = reinterpret_cast<PFNGLMAPBUFFERPROC>(SDL_GL_GetProcAddress("glMapBuffer"));
+    glDeleteTexturesProc = reinterpret_cast<PFNGLDELETETEXTURESEXTPROC>(SDL_GL_GetProcAddress("glDeleteTextures"));
+    glUnmapBufferProc = reinterpret_cast<PFNGLUNMAPBUFFERPROC>(SDL_GL_GetProcAddress("glUnmapBuffer"));
+    glBlendEquationProc = reinterpret_cast<PFNGLBLENDEQUATIONPROC>(SDL_GL_GetProcAddress("glBlendEquation"));
+    glDeleteBuffersProc = reinterpret_cast<PFNGLDELETEBUFFERSPROC>(SDL_GL_GetProcAddress("glDeleteBuffers"));
+    glCompressedTexImage2DProc = reinterpret_cast<PFNGLCOMPRESSEDTEXIMAGE2DPROC>(SDL_GL_GetProcAddress("glCompressedTexImage2D"));
 }
 
 void OpenGl::glUseProgram(GLuint program) {

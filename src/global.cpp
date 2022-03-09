@@ -16,6 +16,7 @@ bool Global::pauseAudio = false;
 f32 Global::cameraMidX = f32(Global::windowWidth / 2);
 f32 Global::cameraMidY = f32(Global::windowHeight / 2);
 
+bool Global::isInstalled = false;
 Instrument Global::filterInstrument;
 bool Global::collectionLoaded;
 std::vector<Psarc::PsarcInfo> Global::psarcInfos;

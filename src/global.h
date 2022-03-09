@@ -36,6 +36,7 @@ namespace Global {
     extern f32 cameraMidX;
     extern f32 cameraMidY;
 
+    extern bool isInstalled;
     extern Instrument filterInstrument;
     extern bool collectionLoaded;
     extern std::vector<Psarc::PsarcInfo> psarcInfos;

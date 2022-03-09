@@ -1,7 +1,5 @@
 #include "collection.h"
 
-#include "file.h"
-#include "installer.h"
 #include "psarc.h"
 #include "song.h"
 #include "global.h"
@@ -15,7 +13,7 @@ void Collection::init() {
 
     Global::collection.clear();
 
-    if (!Installer::isInstalled("."))
+    if (!Global::isInstalled)
         return;
 
     for (const auto &file: std::filesystem::directory_iterator(std::filesystem::path("songs"))) {

@@ -5,6 +5,7 @@
 #include "opengl.h"
 #include "imageload.h"
 #include "psarc.h"
+#include "installer.h"
 
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO
@@ -1960,7 +1961,30 @@ static void songWindow() {
     nk_end(ctx);
 }
 
+static void installWindow() {
+    if (nk_begin(ctx, "Install", nk_rect(200, 280, 600, 160),
+                 NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
+
+
+        nk_layout_row_dynamic(ctx, 22, 1);
+        nk_label(ctx, "Reaperforge is not installed.", NK_TEXT_LEFT);
+        nk_label(ctx, "Installing ReaperForge will create a songs directory for the .psarc files.", NK_TEXT_LEFT);
+        nk_label(ctx, "It will also create a settings.ini file.", NK_TEXT_LEFT);
+
+        nk_layout_row_dynamic(ctx, 29, 1);
+        if (nk_button_label(ctx, "Install"))
+            Installer::install();
+    }
+    nk_end(ctx);
+}
+
 void Ui::tick() {
+    if (!Global::isInstalled)
+    {
+        installWindow();
+        return;
+    }
+
     demoWindow();
     demo2Window();
     mixerWindow();

@@ -1,28 +1,31 @@
 #include "installer.h"
 
 #include "settings.h"
+#include "global.h"
 
 #include <filesystem>
 
-bool Installer::isInstalled(const char *installPath) {
-    auto path = std::filesystem::path(installPath);
+void Installer::init() {
+    auto path = std::filesystem::path(".");
 
     if (!std::filesystem::exists(path / "settings.ini"))
-        return false;
+        return;
 
 
     if (!(std::filesystem::exists(path / "songs") && std::filesystem::is_directory(path / "songs")))
-        return false;
+        return;
 
-    return true;
+    Global::isInstalled = true;
 }
 
-void Installer::install(const char *installPath) {
-    auto path = std::filesystem::path(installPath);
+void Installer::install() {
+    auto path = std::filesystem::path(".");
 
     if (!std::filesystem::exists(path / "settings.ini"))
         Settings::save();
 
     if (!(std::filesystem::exists(path / "songs") && std::filesystem::is_directory(path / "songs")))
         std::filesystem::create_directory((path / "songs").string().c_str());
+
+    Global::isInstalled = true;
 }

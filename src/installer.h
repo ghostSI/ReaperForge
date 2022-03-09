@@ -2,9 +2,9 @@
 #define INSTALLER_H
 
 namespace Installer {
-    bool isInstalled(const char *installPath);
+    void init();
 
-    void install(const char* installPath);
+    void install();
 }
 
 

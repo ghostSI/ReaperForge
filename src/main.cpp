@@ -8,9 +8,9 @@
 #include "sound.h"
 #include "shader.h"
 #include "opengl.h"
+#include "installer.h"
 #include "texture.h"
 #include "log.h"
-#include "collection.h"
 #include "settings.h"
 #include "ui.h"
 
@@ -121,6 +121,7 @@ int main(int argc, char *argv[]) {
     Shader::init();
     Sound::init();
     Texture::init();
+    Installer::init();
     Scene::init();
 
 #ifdef __EMSCRIPTEN__

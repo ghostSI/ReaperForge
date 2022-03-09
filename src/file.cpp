@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <filesystem>
 
 bool File::exists(const char *filepath) {

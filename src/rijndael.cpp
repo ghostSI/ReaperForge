@@ -1,5 +1,7 @@
 #include "rijndael.h"
 
+#include <string.h>
+
 static const u8 sm_S[] = {
         99, 124, 119, 123, 242, 107, 111, 197,
         48, 1, 103, 43, 254, 215, 171, 118,

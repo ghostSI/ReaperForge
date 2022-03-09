@@ -11,7 +11,12 @@ cmake-build-debug-visual-studio/
 cmake-build-release-visual-studio/
 cmake_install.cmake
 Makefile
+ReaperForge
 build/
+3rdparty/emsdk/
+website/index.js
+website/index.wasm
+website/res/
 temp/
 *.sln
 *.vcxproj

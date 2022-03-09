@@ -4,6 +4,8 @@
 #include "rijndael.h"
 #include "inflate.h"
 
+#include <string.h>
+
 static constexpr const char *psarcExtension = "_p.psarc";
 static constexpr const char *magicText = "PSAR";
 

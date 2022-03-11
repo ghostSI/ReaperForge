@@ -217,8 +217,8 @@ void Sound::init() {
     initAudio();
 
     // Effects
-    initSound(Sound::Effect::menuHover, "res/menuHover.wav");
-    initSound(Sound::Effect::menuSelect, "res/menuSelect.wav");
+    //initSound(Sound::Effect::menuHover, "res/menuHover.wav");
+    //initSound(Sound::Effect::menuSelect, "res/menuSelect.wav");
 }
 
 void Sound::play(Sound::Effect effect, i32 volume) {

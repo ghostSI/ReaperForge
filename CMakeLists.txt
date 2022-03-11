@@ -24,6 +24,7 @@ endif ()
 set(HEADER_FILES
         src/configuration.h
         src/collection.h
+        src/data.h
         src/devutil.h
         src/typedefs.h
         src/camera.h
@@ -58,6 +59,7 @@ set(HEADER_FILES
 set(SOURCE_FILES
         src/camera.cpp
         src/collection.cpp
+        src/data.cpp
         src/file.cpp
         src/font.cpp
         src/getopt.cpp

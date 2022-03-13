@@ -3,6 +3,7 @@
 #include "file.h"
 #include "rijndael.h"
 #include "inflate.h"
+#include "ww2ogg.h"
 
 #include <string.h>
 
@@ -204,4 +205,17 @@ Psarc::PsarcInfo Psarc::parse(const std::vector<u8> &psarcData) {
     }
 
     return psarcInfo;
+}
+
+std::vector<u8> Psarc::loadOgg(const PsarcInfo& psarcInfo)
+{
+  for (const Psarc::PsarcInfo::TOCEntry& tocEntry : psarcInfo.tocEntries)
+  {
+    if (!tocEntry.name.ends_with(".wem"))
+      continue;
+
+    return ww2ogg::wemData2OggData(tocEntry.content.data(), tocEntry.length);
+  }
+
+  return {};
 }

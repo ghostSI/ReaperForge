@@ -4,7 +4,7 @@
 #include "typedefs.h"
 
 namespace Data {
-    extern const char* font;
+    extern const u8 font[82944];
 }
 
 #endif // DATA_H

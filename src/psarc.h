@@ -36,6 +36,8 @@ namespace Psarc {
     };
 
     PsarcInfo parse(const std::vector<u8> &psarcData);
+
+    std::vector<u8> loadOgg(const PsarcInfo& psarcInfo);
 }
 
 #endif // PSARC_H

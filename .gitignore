@@ -18,6 +18,8 @@ website/index.js
 website/index.wasm
 website/res/
 temp/
+songs/
+settings.ini
 *.sln
 *.vcxproj
 *.vcxproj.filters

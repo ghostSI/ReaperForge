@@ -52,6 +52,7 @@ set(HEADER_FILES
         src/type.h
         src/texture.h
         src/ui.h
+        src/ww2ogg.h
         src/xml.h
         src/zorder.h
         )
@@ -84,6 +85,7 @@ set(SOURCE_FILES
         src/test.cpp
         src/texture.cpp
         src/ui.cpp
+        src/ww2ogg.cpp
         src/xml.cpp
         src/zorder.cpp
         )

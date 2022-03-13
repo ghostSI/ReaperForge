@@ -3,6 +3,8 @@
 
 #include "ww2ogg.h"
 
+#include "file.h"
+
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -10,6 +12,7 @@
 #include <stdint.h>
 #include <string>
 #include <string.h>
+#include <filesystem>
 
 using namespace std;
 
@@ -80,7 +83,7 @@ public:
 };
 
 /* from Tremor (lowmem) */
-static uint32_t crc_lookup[256] = {
+static const uint32_t crc_lookup[256] = {
   0x00000000,0x04c11db7,0x09823b6e,0x0d4326d9,
   0x130476dc,0x17c56b6b,0x1a864db2,0x1e475005,
   0x2608edb8,0x22c9f00f,0x2f8ad6d6,0x2b4bcb61,
@@ -146,7 +149,7 @@ static uint32_t crc_lookup[256] = {
   0xafb010b1,0xab710d06,0xa6322bdf,0xa2f33668,
   0xbcb4666d,0xb8757bda,0xb5365d03,0xb1f740b4 };
 
-uint32_t checksum(unsigned char* data, int bytes) {
+static uint32_t checksum(unsigned char* data, int bytes) {
   uint32_t crc_reg = 0;
   int i;
 
@@ -157,43 +160,40 @@ uint32_t checksum(unsigned char* data, int bytes) {
 }
 
 /* stuff from Tremor (lowmem) */
-namespace {
-  int ilog(unsigned int v) {
-    int ret = 0;
-    while (v) {
-      ret++;
-      v >>= 1;
-    }
-    return(ret);
+static int ilog(unsigned int v) {
+  int ret = 0;
+  while (v) {
+    ret++;
+    v >>= 1;
   }
+  return(ret);
+}
 
-  unsigned int _book_maptype1_quantvals(unsigned int entries, unsigned int dimensions) {
-    /* get us a starting hint, we'll polish it below */
-    int bits = ilog(entries);
-    int vals = entries >> ((bits - 1) * (dimensions - 1) / dimensions);
+static unsigned int _book_maptype1_quantvals(unsigned int entries, unsigned int dimensions) {
+  /* get us a starting hint, we'll polish it below */
+  int bits = ilog(entries);
+  int vals = entries >> ((bits - 1) * (dimensions - 1) / dimensions);
 
-    while (1) {
-      unsigned long acc = 1;
-      unsigned long acc1 = 1;
-      unsigned int i;
-      for (i = 0; i < dimensions; i++) {
-        acc *= vals;
-        acc1 *= vals + 1;
-      }
-      if (acc <= entries && acc1 > entries) {
-        return(vals);
+  while (1) {
+    unsigned long acc = 1;
+    unsigned long acc1 = 1;
+    unsigned int i;
+    for (i = 0; i < dimensions; i++) {
+      acc *= vals;
+      acc1 *= vals + 1;
+    }
+    if (acc <= entries && acc1 > entries) {
+      return(vals);
+    }
+    else {
+      if (acc > entries) {
+        vals--;
       }
       else {
-        if (acc > entries) {
-          vals--;
-        }
-        else {
-          vals++;
-        }
+        vals++;
       }
     }
   }
-
 }
 
 // host-endian-neutral integer reading
@@ -7714,7 +7714,7 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
     //throw Parse_error_str("unknown subtype");
     break;
   }
-}
+  }
 
 void Wwise_RIFF_Vorbis::print_info(void)
 {
@@ -8576,9 +8576,9 @@ void Wwise_RIFF_Vorbis::generate_ogg_header_with_triad(Bit_oggstream& os)
 
 }
 
-
 class ww2ogg_options
 {
+public:
   string in_filename;
   string out_filename;
   string codebooks_filename;
@@ -8601,65 +8601,6 @@ public:
   bool get_full_setup(void) const { return full_setup; }
   ForcePacketFormat get_force_packet_format(void) const { return force_packet_format; }
 };
-
-void usage(void)
-{
-  cout << endl;
-  cout << "usage: ww2ogg input.wav [-o output.ogg] [--inline-codebooks] [--full-setup]" << endl <<
-    "                        [--mod-packets | --no-mod-packets]" << endl <<
-    "                        [--pcb packed_codebooks.bin]" << endl << endl;
-}
-
-int main2(int argc, char** argv)
-{
-  cout << "Audiokinetic Wwise RIFF/RIFX Vorbis to Ogg Vorbis converter " VERSION " by hcs" << endl << endl;
-
-  ww2ogg_options opt;
-
-  try
-  {
-    opt.parse_args(argc, argv);
-  }
-  catch (const Argument_error& ae)
-  {
-    cout << ae << endl;
-
-    usage();
-    return 1;
-  }
-
-  try
-  {
-    cout << "Input: " << opt.get_in_filename() << endl;
-    Wwise_RIFF_Vorbis ww(opt.get_in_filename(),
-      opt.get_codebooks_filename(),
-      opt.get_inline_codebooks(),
-      opt.get_full_setup(),
-      opt.get_force_packet_format()
-    );
-
-    ww.print_info();
-    cout << "Output: " << opt.get_out_filename() << endl;
-
-    ofstream of(opt.get_out_filename().c_str(), ios::binary);
-    if (!of) throw File_open_error(opt.get_out_filename());
-
-    ww.generate_ogg(of);
-    cout << "Done!" << endl << endl;
-  }
-  catch (const File_open_error& fe)
-  {
-    cout << fe << endl;
-    return 1;
-  }
-  catch (const Parse_error& pe)
-  {
-    cout << pe << endl;
-    return 1;
-  }
-
-  return 0;
-}
 
 void ww2ogg_options::parse_args(int argc, char** argv)
 {
@@ -8754,7 +8695,48 @@ void ww2ogg_options::parse_args(int argc, char** argv)
 
 std::vector<u8> ww2ogg::wemData2OggData(const u8* data, u64 size)
 {
+  ww2ogg_options opt;
 
+  const auto in_filename = filesystem::temp_directory_path() / filesystem::u8path("reaperForgeInput.wem");
+  const auto out_filename = filesystem::temp_directory_path() / filesystem::u8path("reaperForgeOutput.ogg");
+  const auto codebook_filename = filesystem::temp_directory_path() / filesystem::u8path("reaperForgeCodebook.ogg");
 
-  return {};
+  opt.in_filename = in_filename.string();
+  opt.out_filename = out_filename.string();
+  opt.codebooks_filename = codebook_filename.string();
+  opt.inline_codebooks = false;
+  opt.full_setup = false;
+  opt.force_packet_format = kNoForcePacketFormat;
+
+  File::save(in_filename.string().c_str(), reinterpret_cast<const char*>(data), size);
+  File::save(codebook_filename.string().c_str(), reinterpret_cast<const char*>(packed_codebooks_aoTuV_603_bin), sizeof(packed_codebooks_aoTuV_603_bin));
+
+  try
+  {
+    Wwise_RIFF_Vorbis ww(opt.get_in_filename(),
+      opt.get_codebooks_filename(),
+      opt.get_inline_codebooks(),
+      opt.get_full_setup(),
+      opt.get_force_packet_format()
+    );
+
+    ww.print_info();
+
+    ofstream of(opt.get_out_filename().c_str(), ios::binary);
+    if (!of) throw File_open_error(opt.get_out_filename());
+
+    ww.generate_ogg(of);
+  }
+  catch (const File_open_error& fe)
+  {
+    cout << fe << endl;
+    return {};
+  }
+  catch (const Parse_error& pe)
+  {
+    cout << pe << endl;
+    return {};
+  }
+
+  return File::load(out_filename.string().c_str(), "rb");
 }

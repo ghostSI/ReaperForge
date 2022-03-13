@@ -47,7 +47,7 @@ void File::save(const char *filepath, const char *content, size_t len) {
 #ifdef _WIN32
 #pragma warning( disable: 4996 ) // ignore msvc unsafe warning
 #endif // _WIN32
-    FILE *file = fopen(filepath, "w");
+    FILE *file = fopen(filepath, "wb");
 #ifdef _WIN32
 #pragma warning( default: 4996 )
 #endif // _WIN32

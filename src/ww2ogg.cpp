@@ -1,6 +1,3 @@
-#define __STDC_CONSTANT_MACROS
-#define VERSION "0.24"
-
 #include "ww2ogg.h"
 
 #include "file.h"
@@ -7836,7 +7833,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
 
     os << vhead;
 
-    static const char vendor[] = "converted from Audiokinetic Wwise by ww2ogg " VERSION;
+    static const char vendor[] = "converted from Audiokinetic Wwise by ww2ogg 0.24";
     Bit_uint<32> vendor_size(strlen(vendor));
 
     os << vendor_size;

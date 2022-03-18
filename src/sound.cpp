@@ -17,9 +17,7 @@ namespace Const
 
 static SDL_AudioDeviceID devid_in = 0;
 static SDL_AudioSpec want_in;
-static u8 buffer_in[4096 * 4];
-static int buffer_in_pos = (sizeof(buffer_in) / 2);
-static int buffer_in_out_pos;
+static u8 buffer_in[4096];
 
 static SDL_AudioDeviceID devid_out;
 static SDL_AudioSpec want_out;
@@ -218,13 +216,14 @@ static void freeAudio(Audio* audio)
     delete temp;
   }
 }
-static void audioRecordingCallback(void* userdata, Uint8* stream, int len)
+static void audioRecordingCallback(void* userdata, u8* stream, int len)
 {
+  ASSERT(len == sizeof(buffer_in));
+
   std::unique_lock<std::mutex> lock(mutex);
   cv.wait(lock, [] { return recordingFirst ? true : false; });
 
-  memcpy(&buffer_in[buffer_in_pos], stream, len);
-  buffer_in_pos = (buffer_in_pos + len) % sizeof(buffer_in);
+  memcpy(buffer_in, stream, len);
 
   recordingFirst = !recordingFirst;
   cv.notify_one();
@@ -235,11 +234,12 @@ static void audioRecordingCallback(void* userdata, Uint8* stream, int len)
 //param len           Length of sound to play
 static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
 {
+  ASSERT(len == sizeof(buffer_in));
+
   std::unique_lock<std::mutex> lock(mutex);
   cv.wait(lock, [] { return !recordingFirst ? true : false; });
 
-  memcpy(stream, &buffer_in[buffer_in_out_pos], len);
-  buffer_in_out_pos = (buffer_in_out_pos + len) % sizeof(buffer_in);
+  memcpy(stream, buffer_in, len);
 
   Audio* audio = reinterpret_cast<Audio*>(userdata);
   Audio* previous = audio;

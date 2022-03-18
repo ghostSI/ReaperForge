@@ -1941,7 +1941,10 @@ static void songWindow() {
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Artist:", NK_TEXT_LEFT);
                     nk_label(ctx, songInfo.artist.c_str(), NK_TEXT_LEFT);
-                    nk_button_label(ctx, "Lead Guitar");
+                    if (nk_button_label(ctx, "Lead Guitar"))
+                    {
+                      Sound::play(Sound::Effect::menuHover);
+                    }
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Album:", NK_TEXT_LEFT);
                     nk_label(ctx, songInfo.albumName.c_str(), NK_TEXT_LEFT);

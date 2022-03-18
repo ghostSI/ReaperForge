@@ -7,20 +7,33 @@
 #include <vector>
 #include <stdio.h>
 
+#include <mutex>
+
 namespace Const
 {
   // Max number of sounds that can be in the audio queue at anytime, stops too much mixing
   static constexpr u32 maxSoundEffects = 25;
 }
 
-struct PrivateAudioDevice
-{
-  SDL_AudioDeviceID device;
-  SDL_AudioSpec want;
-  u8 audioEnabled;
-};
+static SDL_AudioDeviceID devid_in = 0;
+static SDL_AudioSpec want_in;
+static u8 buffer_in[4096 * 4];
+static int buffer_in_pos = (sizeof(buffer_in) / 2);
+static int buffer_in_out_pos;
 
-static PrivateAudioDevice gDevice;
+static SDL_AudioDeviceID devid_out;
+static SDL_AudioSpec want_out;
+
+
+
+
+
+
+static std::condition_variable cv;
+static std::mutex mutex;
+bool recordingFirst = true;
+
+
 
 enum struct SoundType : i32
 {
@@ -107,7 +120,7 @@ static void addMusic(Audio* new1)
 
       headNext->fade = 1;
     }
-    /* Set flag to remove any queued up music in favour of new music */
+    /* Set recordingFirst to remove any queued up music in favour of new music */
     else if (getSoundType(headNext) == SoundType::Music && headNext->fade == 1)
     {
       musicFound = true;
@@ -147,9 +160,6 @@ static void playAudio(Audio* audio, SoundType soundType, i32 volume)
 {
   ASSERT(volume >= 0 && volume <= 128);
 
-  if (!gDevice.audioEnabled)
-    return;
-
   /* If sound, check if under max number of sounds allowed, else don't play */
   if (soundType == SoundType::Effect)
   {
@@ -171,7 +181,7 @@ static void playAudio(Audio* audio, SoundType soundType, i32 volume)
   new1->free = 0;
 
   /* Lock callback function */
-  SDL_LockAudioDevice(gDevice.device);
+  SDL_LockAudioDevice(devid_out);
 
   if (soundType == SoundType::Music)
   {
@@ -182,61 +192,7 @@ static void playAudio(Audio* audio, SoundType soundType, i32 volume)
     addAudio(new1);
   }
 
-  SDL_UnlockAudioDevice(gDevice.device);
-}
-
-static void changeAudioSequence(Audio* audio)
-{
-  if (!gDevice.audioEnabled)
-    return;
-
-  Audio* headNext = &head;
-  while (headNext != nullptr)
-  {
-    if (headNext->soundId == audio->soundId)
-    {
-      /*if (headNext->sequence != Sequence::Out)
-      {
-        headNext->nextSequence = Sequence::Out;
-        return;
-      }*/
-      if (audio->sequence == Sequence::Out && headNext->sequence != Sequence::Out)
-      {
-        SDL_LockAudioDevice(gDevice.device);
-
-        headNext->sequence = audio->sequence;
-        headNext->buffer = audio->buffer;
-        headNext->bufferTrue = audio->bufferTrue;
-        headNext->fade = audio->fade;
-        headNext->free = audio->free;
-        headNext->length = audio->length;
-        headNext->lengthTrue = audio->lengthTrue;
-        headNext->soundId = audio->soundId;
-        headNext->volume = audio->volume;
-
-        SDL_UnlockAudioDevice(gDevice.device);
-        //return;
-      }
-      else if ((audio->sequence == Sequence::Loop || audio->sequence == Sequence::LoopUsed) && audio->sequence != headNext->sequence)
-      {
-        SDL_LockAudioDevice(gDevice.device);
-
-        headNext->sequence = audio->sequence;
-        headNext->nextSequence = audio->nextSequence;
-        headNext->buffer = audio->buffer;
-        headNext->bufferTrue = audio->bufferTrue;
-        headNext->fade = audio->fade;
-        headNext->free = audio->free;
-        headNext->length = audio->length;
-        headNext->lengthTrue = audio->lengthTrue;
-        headNext->soundId = audio->soundId;
-        headNext->volume = audio->volume;
-
-        SDL_UnlockAudioDevice(gDevice.device);
-      }
-    }
-    headNext = headNext->next;
-  }
+  SDL_UnlockAudioDevice(devid_out);
 }
 
 /*
@@ -262,19 +218,33 @@ static void freeAudio(Audio* audio)
     delete temp;
   }
 }
+static void audioRecordingCallback(void* userdata, Uint8* stream, int len)
+{
+  std::unique_lock<std::mutex> lock(mutex);
+  cv.wait(lock, [] { return recordingFirst ? true : false; });
+
+  memcpy(&buffer_in[buffer_in_pos], stream, len);
+  buffer_in_pos = (buffer_in_pos + len) % sizeof(buffer_in);
+
+  recordingFirst = !recordingFirst;
+  cv.notify_one();
+}
 
 //param userdata      Poi32s to linked list of sounds to play, first being a placeholder
 //param stream        Stream to mix sound into
 //param len           Length of sound to play
-static void audioCallback(void* userdata, u8* stream, i32 len)
+static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
 {
+  std::unique_lock<std::mutex> lock(mutex);
+  cv.wait(lock, [] { return !recordingFirst ? true : false; });
+
+  memcpy(stream, &buffer_in[buffer_in_out_pos], len);
+  buffer_in_out_pos = (buffer_in_out_pos + len) % sizeof(buffer_in);
+
   Audio* audio = reinterpret_cast<Audio*>(userdata);
   Audio* previous = audio;
   i32 tempLength;
   u8 music = 0;
-
-  /* Silence the main buffer */
-  SDL_memset(stream, 0, len);
 
   /* First one is place holder */
   audio = audio->next;
@@ -335,6 +305,9 @@ static void audioCallback(void* userdata, u8* stream, i32 len)
       }
     }
   }
+
+  recordingFirst = !recordingFirst;
+  cv.notify_one();
 }
 
 static void audioCallbackOgg(void* userData, Uint8* stream, int len)
@@ -346,32 +319,36 @@ static void audioCallbackOgg(void* userData, Uint8* stream, int len)
 
 static void initAudio()
 {
-  gDevice.audioEnabled = 0;
+  { // Input
+    SDL_memset(&(want_in), 0, sizeof(want_in));
 
-  SDL_memset(&(gDevice.want), 0, sizeof(gDevice.want));
+    want_in.freq = 48000;
+    want_in.format = AUDIO_S16LSB;
+    want_in.channels = 2;
+    want_in.samples = 1024;
+    want_in.callback = audioRecordingCallback;
+    want_in.userdata = nullptr;
 
-  gDevice.want.freq = 48000;
-  gDevice.want.format = AUDIO_S16LSB;
-  gDevice.want.channels = 2;
-  gDevice.want.samples = 4096;
-  gDevice.want.callback = audioCallback;
-  gDevice.want.userdata = &head;
+    devid_in = SDL_OpenAudioDevice(NULL, SDL_TRUE, &want_in, nullptr, 0);
+    ASSERT(devid_in != 0);
 
-  /* want.userdata = new; */
-  if ((gDevice.device = SDL_OpenAudioDevice(NULL, 0, &(gDevice.want), nullptr, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE)) == 0)
-  {
-    fprintf(stderr, "[%s: %d]Warning: failed to open audio device: %s\n", __FILE__, __LINE__, SDL_GetError());
+    SDL_PauseAudioDevice(devid_in, 0);
   }
-  else
-  {
-    /* Set audio device enabled global flag */
-    gDevice.audioEnabled = 1;
 
-    /* Unpause active audio stream */
-    if (gDevice.audioEnabled)
-    {
-      SDL_PauseAudioDevice(gDevice.device, 0);
-    }
+  { // Output
+    SDL_memset(&(want_out), 0, sizeof(want_out));
+
+    want_out.freq = 48000;
+    want_out.format = AUDIO_S16LSB;
+    want_out.channels = 2;
+    want_out.samples = 1024;
+    want_out.callback = audioPlaybackCallback;
+    want_out.userdata = &head;
+
+    devid_out = SDL_OpenAudioDevice(NULL, 0, &(want_out), nullptr, 0);
+    ASSERT(devid_out != 0);
+
+    SDL_PauseAudioDevice(devid_out, 0);
   }
 }
 
@@ -391,8 +368,8 @@ void Sound::init()
   initAudio();
 
   // Effects
-  //initSound(Sound::Effect::menuHover, "res/menuHover.wav");
-  //initSound(Sound::Effect::menuSelect, "res/menuSelect.wav");
+  initSound(Sound::Effect::menuHover, "res/menuHover.wav");
+  initSound(Sound::Effect::menuSelect, "res/menuSelect.wav");
 }
 
 void Sound::playOgg()
@@ -426,6 +403,5 @@ void Sound::play(Sound::Music music, i32 volume)
 
 void Sound::setPauseAudio(bool pauseAudio)
 {
-  if (gDevice.audioEnabled)
-    SDL_PauseAudioDevice(gDevice.device, pauseAudio);
+  SDL_PauseAudioDevice(devid_out, pauseAudio);
 }

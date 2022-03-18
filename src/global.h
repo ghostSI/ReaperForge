@@ -41,6 +41,7 @@ namespace Global {
     extern bool collectionLoaded;
     extern std::vector<Psarc::PsarcInfo> psarcInfos;
     extern std::vector<Song::Info> collection;
+    extern std::vector<u8> ogg;
     extern char searchText[256];
     extern i32 searchTextLength;
 

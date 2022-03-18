@@ -4,6 +4,7 @@
 #include "rijndael.h"
 #include "inflate.h"
 #include "ww2ogg.h"
+#include "global.h"
 
 #include <string.h>
 
@@ -21,6 +22,20 @@ static u32 u32BigEndian(const u8 *bytes) {
 static u64 u40BigEndian(const u8 *bytes) {
     return u64(bytes[0]) << 32 | bytes[1] << 24 | bytes[2] << 16 | bytes[3] << 8 | bytes[4];
 }
+
+static u32 u32LittleEndian(const u8* bytes)
+{
+  return *reinterpret_cast<const u32*>(bytes);
+}
+
+//static u32 reverseBits(u32 x)
+//{
+//  x = (((x & 0xaaaaaaaa) >> 1) | ((x & 0x55555555) << 1));
+//  x = (((x & 0xcccccccc) >> 2) | ((x & 0x33333333) << 2));
+//  x = (((x & 0xf0f0f0f0) >> 4) | ((x & 0x0f0f0f0f) << 4));
+//  x = (((x & 0xff00ff00) >> 8) | ((x & 0x00ff00ff) << 8));
+//  return((x >> 16) | (x << 16));
+//}
 
 std::vector<u8> Psarc::readPsarcData(const char *filepath) {
     const size_t filepathLen = strlen(filepath);
@@ -207,15 +222,47 @@ Psarc::PsarcInfo Psarc::parse(const std::vector<u8> &psarcData) {
     return psarcInfo;
 }
 
-std::vector<u8> Psarc::loadOgg(const PsarcInfo& psarcInfo)
+
+
+static u32 readWemFileIdFromBnkFile(const u8* data, u64 size)
+{
+  const u32 lenBKHD = u32LittleEndian(&data[4]);
+
+  ASSERT(lenBKHD == 28);
+
+  const u32 offset = lenBKHD + 12;
+
+  const u32 lenDIDX = u32LittleEndian(&data[offset]);
+
+  ASSERT(lenDIDX == 12);
+  ASSERT(offset == 40);
+
+  const u32 fileId = u32LittleEndian(&data[offset + 4]);
+
+  return fileId;
+}
+
+void Psarc::loadOgg(const PsarcInfo& psarcInfo, bool preview)
 {
   for (const Psarc::PsarcInfo::TOCEntry& tocEntry : psarcInfo.tocEntries)
   {
-    if (!tocEntry.name.ends_with(".wem"))
+    if ((preview && !tocEntry.name.ends_with("_preview.bnk")) || !tocEntry.name.ends_with(".bnk"))
       continue;
 
-    return ww2ogg::wemData2OggData(tocEntry.content.data(), tocEntry.length);
+    const u32 wemFileId = readWemFileIdFromBnkFile(tocEntry.content.data(), tocEntry.content.size());
+
+    char wemFileName[40];
+    sprintf(wemFileName, "%u.wem", wemFileId);
+
+    for (const Psarc::PsarcInfo::TOCEntry& tocEntry : psarcInfo.tocEntries)
+    {
+      if (!tocEntry.name.ends_with(wemFileName))
+        continue;
+     
+      Global::ogg = ww2ogg::wemData2OggData(tocEntry.content.data(), tocEntry.length);
+      return;
+    }
   }
 
-  return {};
+  ASSERT(false);
 }

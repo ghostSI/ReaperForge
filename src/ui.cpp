@@ -1865,6 +1865,8 @@ static bool filterSongOut(const Song::Info &songInfo) {
     return true;
 }
 
+#include "sound.h"
+
 static void songWindow() {
 
     if (!Global::collectionLoaded)
@@ -1931,19 +1933,23 @@ static void songWindow() {
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Title:", NK_TEXT_LEFT);
                     nk_label(ctx, songInfo.title.c_str(), NK_TEXT_LEFT);
-                    nk_button_label(ctx, "Lead guitar");
+                    if (nk_button_label(ctx, "Preview"))
+                    {
+                      Psarc::loadOgg(Global::psarcInfos[i], true);
+                      Sound::playOgg();
+                    }
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Artist:", NK_TEXT_LEFT);
                     nk_label(ctx, songInfo.artist.c_str(), NK_TEXT_LEFT);
-                    nk_button_label(ctx, "Rhythm Guitar");
+                    nk_button_label(ctx, "Lead Guitar");
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Album:", NK_TEXT_LEFT);
                     nk_label(ctx, songInfo.albumName.c_str(), NK_TEXT_LEFT);
-                    nk_button_label(ctx, "Bass Guitar");
+                    nk_button_label(ctx, "Rhythm Guitar");
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Year:", NK_TEXT_LEFT);
                     nk_label(ctx, songInfo.albumYear.c_str(), NK_TEXT_LEFT);
-                    nk_spacing(ctx, 1);
+                    nk_button_label(ctx, "Bass Guitar");
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Length:", NK_TEXT_LEFT);
                     nk_label(ctx, songInfo.songLength.c_str(), NK_TEXT_LEFT);

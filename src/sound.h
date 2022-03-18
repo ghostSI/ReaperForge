@@ -3,17 +3,25 @@
 
 #include "typedefs.h"
 
-namespace Sound {
-    enum struct Effect {
-        menuHover,
-        menuSelect,
-    };
+namespace Sound
+{
+  enum struct Effect
+  {
+    menuHover,
+    menuSelect,
+  };
 
-    void init();
+  enum struct Music
+  {
+  };
 
-    void play(Sound::Effect type, i32 volume = 64);
+  void init();
+  void playOgg();
 
-    void setPauseAudio(bool pauseAudio);
+  void play(Sound::Effect type, i32 volume = 64);
+  void play(Sound::Music music, i32 volume = 64);
+
+  void setPauseAudio(bool pauseAudio);
 };
 
 #endif // SOUND_H

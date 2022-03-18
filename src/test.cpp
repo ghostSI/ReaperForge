@@ -24382,27 +24382,15 @@ static void psarcTOCTest2() {
 
   ASSERT(songInfo.title == "You Suffer");
 
-  const std::vector<u8> ogg = Psarc::loadOgg(psarcInfo);
+  Psarc::loadOgg(psarcInfo, false);
 
-  ASSERT(ogg.size() == sizeof(expected_ogg));
+  ASSERT(Global::ogg.size() == sizeof(expected_ogg));
   for (u64 i = 0; i < sizeof(expected_ogg); ++i)
-    ASSERT(ogg[i] == expected_ogg[i]);
+    ASSERT(Global::ogg[i] == expected_ogg[i]);
 }
-
-
-static void oggTest()
-{
-  stb_vorbis* vorbis = stb_vorbis_open_memory(expected_ogg, sizeof(expected_ogg), nullptr, nullptr);
-
-
-
-  stb_vorbis_close(vorbis);
-}
-
 
 int main(int argc, char* argv[]) {
-  oggTest();
-  //psarcTOCTest2();
+  psarcTOCTest2();
   //settingsTest();
   //installerTest();
   //rijndaelTest();

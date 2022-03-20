@@ -65,8 +65,8 @@ static const std::map<std::string, std::map<std::string, std::string>> defaultSe
         }
 
 };
-std::map<std::string, std::map<std::string, std::string>> commandLineSettings;
-std::map<std::string, std::map<std::string, std::string>> gameSettings;
+static std::map<std::string, std::map<std::string, std::string>> commandLineSettings;
+static std::map<std::string, std::map<std::string, std::string>> gameSettings;
 
 static void printUsage() {
     puts("Usage: ReaperForge.exe [OPTION]...\n"
@@ -221,7 +221,8 @@ void Settings::set(const std::string& section, const std::string& key, const std
 }
 
 void Settings::save() {
-    File::saveIni(settingsIniPath.string().c_str(), gameSettings);
+    if (Global::isInstalled)
+        File::saveIni(settingsIniPath.string().c_str(), gameSettings);
 }
 
 //static std::vector<Settings::Resolution> getSupportedDisplayResolutions() {

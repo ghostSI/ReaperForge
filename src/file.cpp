@@ -94,6 +94,7 @@ std::map<std::string, std::map<std::string, std::string>> File::loadIni(const ch
     std::map<std::string, std::map<std::string, std::string>> iniContent;
 
     char buf[1024];
+    std::string name;
     while (fgets(buf, 1024, file) != nullptr) {
         std::string line = buf;
 
@@ -103,7 +104,6 @@ std::map<std::string, std::map<std::string, std::string>> File::loadIni(const ch
         while (line.at(line.size() - 1) == '\n' || line.at(line.size() - 1) == '\r')
             line.pop_back();
 
-        std::string name;
         if (line[0] == '[') {
             name = line.substr(1, line.size() - 2);
         } else {
@@ -111,7 +111,7 @@ std::map<std::string, std::map<std::string, std::string>> File::loadIni(const ch
                 if (line[i] == '=') {
                     const std::string key = line.substr(0, i);
                     const std::string value = line.substr(i + 1, line.size() - i - 1);
-                    iniContent[name] = {{key, value}};
+                    iniContent[name].insert({key, value});
                     break;
                 }
             }

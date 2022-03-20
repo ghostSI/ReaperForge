@@ -70,6 +70,7 @@ static void mainloop() {
 }
 
 int main(int argc, char *argv[]) {
+    Installer::init();
     if (!Settings::init(argc, argv))
         return -1;
 
@@ -121,7 +122,6 @@ int main(int argc, char *argv[]) {
     Shader::init();
     Sound::init();
     Texture::init();
-    Installer::init();
     Scene::init();
 
 #ifdef __EMSCRIPTEN__
@@ -130,6 +130,8 @@ int main(int argc, char *argv[]) {
     while (!Global::appQuit)
         mainloop();
 #endif // __EMSCRIPTEN__
+
+    Settings::save();
 
     SDL_Quit();
     return 0;

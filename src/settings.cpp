@@ -60,7 +60,7 @@ static const std::map<std::string, std::map<std::string, std::string>> defaultSe
                         {"Bass1Volume",      "100"},
                         {"Guitar2Volume",      "100"},
                         {"Bass2Volume",      "100"},
-                        {"Microphone2Volume",      "100"},
+                        {"MicrophoneVolume",      "100"},
                 }
         }
 
@@ -204,7 +204,7 @@ bool Settings::init(int argc, char *argv[]) {
     return true;
 }
 
-std::string get(const std::string &section, const std::string &key) {
+std::string Settings::get(const std::string &section, const std::string &key) {
     if (commandLineSettings.contains(section) && commandLineSettings[section].contains(key))
         return commandLineSettings[section][key];
 
@@ -214,6 +214,10 @@ std::string get(const std::string &section, const std::string &key) {
     ASSERT(false);
 
     return {};
+}
+
+void Settings::set(const std::string& section, const std::string& key, const std::string& value) {
+    gameSettings[section][key] = value;
 }
 
 void Settings::save() {

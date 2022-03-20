@@ -6,6 +6,7 @@
 #include "imageload.h"
 #include "psarc.h"
 #include "installer.h"
+#include "settings.h"
 
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO
@@ -1772,38 +1773,44 @@ static void mixerWindow() {
                  NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
         {
             nk_layout_row_dynamic(ctx, 22, 1);
-            static int musicVolume = 100;
+            int musicVolume = atoi(Settings::get("Mixer", "MusicVolume").c_str());
             nk_property_int(ctx, "Music Volume:", 0, &musicVolume, 100, 10, 1);
+            Settings::set("Mixer", "MusicVolume", std::to_string(musicVolume));
         }
 
         {
             nk_layout_row_dynamic(ctx, 22, 1);
-            static int guitar1Volume = 100;
+            int guitar1Volume = atoi(Settings::get("Mixer", "Guitar1Volume").c_str());
             nk_property_int(ctx, "Player 1 Guitar Volume:", 0, &guitar1Volume, 100, 10, 1);
+            Settings::set("Mixer", "Guitar1Volume", std::to_string(guitar1Volume));
         }
 
         {
             nk_layout_row_dynamic(ctx, 22, 1);
-            static int bass1Volume = 100;
+            int bass1Volume = atoi(Settings::get("Mixer", "Bass1Volume").c_str());
             nk_property_int(ctx, "Player 1 Bass Volume:", 0, &bass1Volume, 100, 10, 1);
+            Settings::set("Mixer", "Bass1Volume", std::to_string(bass1Volume));
         }
 
         {
             nk_layout_row_dynamic(ctx, 22, 1);
-            static int guitar2Volume = 100;
+            int guitar2Volume = atoi(Settings::get("Mixer", "Guitar2Volume").c_str());
             nk_property_int(ctx, "Player 2 Guitar Volume:", 0, &guitar2Volume, 100, 10, 1);
+            Settings::set("Mixer", "Guitar2Volume", std::to_string(guitar2Volume));
         }
 
         {
             nk_layout_row_dynamic(ctx, 22, 1);
-            static int bass2Volume = 100;
+            int bass2Volume = atoi(Settings::get("Mixer", "Bass2Volume").c_str());
             nk_property_int(ctx, "Player 2 Bass Volume:", 0, &bass2Volume, 100, 10, 1);
+            Settings::set("Mixer", "Bass2Volume", std::to_string(bass2Volume));
         }
 
         {
             nk_layout_row_dynamic(ctx, 22, 1);
-            static int microphoneVolume = 100;
+            int microphoneVolume = atoi(Settings::get("Mixer", "MicrophoneVolume").c_str());
             nk_property_int(ctx, "Microphone Volume:", 0, &microphoneVolume, 100, 10, 1);
+            Settings::set("Mixer", "MicrophoneVolume", std::to_string(microphoneVolume));
         }
     }
     nk_end(ctx);

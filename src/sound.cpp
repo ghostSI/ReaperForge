@@ -1,6 +1,7 @@
 #include "sound.h"
 #include "oggvorbis.h"
 #include "global.h"
+#include "settings.h"
 
 #include <SDL2/SDL.h>
 
@@ -18,6 +19,7 @@ namespace Const
 static SDL_AudioDeviceID devid_in = 0;
 static SDL_AudioSpec want_in;
 static u8 buffer_in[4096];
+static u8 buffer_mixer[4096];
 
 static SDL_AudioDeviceID devid_out;
 static SDL_AudioSpec want_out;
@@ -31,46 +33,28 @@ static std::condition_variable cv;
 static std::mutex mutex;
 bool recordingFirst = true;
 
-
-
 enum struct SoundType : i32
 {
   Effect = 10000, // play once
   Music = 20000, // play until another on should be played
-};
-
-enum struct Sequence : u8
-{
-  In,
-  Loop,
-  Out,
-  LoopUsed,
+  Ogg = 30000,
 };
 
 struct Audio
 {
   i32 soundId = 0;
-  Sequence sequence = Sequence::In;
-  Sequence nextSequence = Sequence::Loop;
 
   u32 length = 0;
   u32 lengthTrue = 0;
   u8* bufferTrue = nullptr;
   u8* buffer = nullptr;
+  stb_vorbis* vorbis = nullptr;
   u8 fade = 0;
   u8 free = 0;
   u8 volume = 0;
 
   SDL_AudioSpec spec;
   Audio* next = nullptr;
-};
-
-struct AudioSequence
-{
-  Audio in;
-  Audio loop;
-  Audio out;
-  Audio loopUsed;
 };
 
 static Audio head;
@@ -94,6 +78,8 @@ static void addAudio(Audio* new1, Audio* root = nullptr)
 
 static SoundType getSoundType(Audio* audio)
 {
+  if (audio->soundId >= to_underlying(SoundType::Ogg))
+    return SoundType::Ogg;
   if (audio->soundId >= to_underlying(SoundType::Music))
     return SoundType::Music;
   return SoundType::Effect;
@@ -130,14 +116,13 @@ static void addMusic(Audio* new1)
   addAudio(new1);
 }
 
-static Audio loadAudioFile(const char* filename, u32 soundId, Sequence sequence, i32 volume)
+static Audio loadAudioFile(const char* filename, u32 soundId, i32 volume)
 {
   Audio audio;
 
   //ASSERT(filename != nullptr);
 
   audio.soundId = soundId;
-  audio.sequence = sequence;
 
   audio.fade = 0;
   audio.free = 1;
@@ -220,13 +205,13 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
 {
   ASSERT(len == sizeof(buffer_in));
 
-  std::unique_lock<std::mutex> lock(mutex);
-  cv.wait(lock, [] { return recordingFirst ? true : false; });
+  //std::unique_lock<std::mutex> lock(mutex);
+  //cv.wait(lock, [] { return recordingFirst ? true : false; });
 
   memcpy(buffer_in, stream, len);
 
-  recordingFirst = !recordingFirst;
-  cv.notify_one();
+  //recordingFirst = !recordingFirst;
+  //cv.notify_one();
 }
 
 //param userdata      Poi32s to linked list of sounds to play, first being a placeholder
@@ -236,10 +221,16 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
 {
   ASSERT(len == sizeof(buffer_in));
 
-  std::unique_lock<std::mutex> lock(mutex);
-  cv.wait(lock, [] { return !recordingFirst ? true : false; });
+  //std::unique_lock<std::mutex> lock(mutex);
+  //cv.wait(lock, [] { return !recordingFirst ? true : false; });
 
-  memcpy(stream, buffer_in, len);
+  const int musicVolume = atoi(Settings::get("Mixer", "MusicVolume").c_str());
+  const int guitar1Volume = atoi(Settings::get("Mixer", "Guitar1Volume").c_str());
+
+
+  SDL_memset(stream, 0, len);
+
+  SDL_MixAudioFormat(stream, buffer_in, AUDIO_S16LSB, len, guitar1Volume);
 
   Audio* audio = reinterpret_cast<Audio*>(userdata);
   Audio* previous = audio;
@@ -289,6 +280,15 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
       audio->buffer = audio->bufferTrue;
       audio->length = audio->lengthTrue;
 
+      previous = audio;
+      audio = audio->next;
+    }
+    else if (getSoundType(audio) == SoundType::Ogg)
+    {
+      stb_vorbis_get_samples_short_interleaved(audio->vorbis, 2, (short*)buffer_mixer, len / sizeof(short));
+      SDL_MixAudio(stream, buffer_mixer, len, musicVolume);
+
+      previous = audio;
       audio = audio->next;
     }
     else
@@ -306,21 +306,14 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
     }
   }
 
-  recordingFirst = !recordingFirst;
-  cv.notify_one();
-}
-
-static void audioCallbackOgg(void* userData, Uint8* stream, int len)
-{
-  stb_vorbis* myVorbis = (stb_vorbis*)userData;
-  SDL_memset(stream, 0, len);
-  stb_vorbis_get_samples_short_interleaved(myVorbis, 2, (short*)stream, len / sizeof(short));
+  //recordingFirst = !recordingFirst;
+  //cv.notify_one();
 }
 
 static void initAudio()
 {
   { // Input
-    SDL_memset(&(want_in), 0, sizeof(want_in));
+    SDL_memset(&want_in, 0, sizeof(want_in));
 
     want_in.freq = 48000;
     want_in.format = AUDIO_S16LSB;
@@ -336,7 +329,7 @@ static void initAudio()
   }
 
   { // Output
-    SDL_memset(&(want_out), 0, sizeof(want_out));
+    SDL_memset(&want_out, 0, sizeof(want_out));
 
     want_out.freq = 48000;
     want_out.format = AUDIO_S16LSB;
@@ -354,12 +347,12 @@ static void initAudio()
 
 static void initSound(Sound::Effect soundType2, const char* filepath)
 {
-  soundPool.push_back(loadAudioFile(filepath, to_underlying(SoundType::Effect) + to_underlying(soundType2), Sequence::In, 128));
+  soundPool.push_back(loadAudioFile(filepath, to_underlying(SoundType::Effect) + to_underlying(soundType2), 128));
 }
 
 static void initSound(Sound::Music soundType2, const char* filepath)
 {
-  musicPool.push_back(loadAudioFile(filepath, to_underlying(SoundType::Music) + to_underlying(soundType2), Sequence::In, 128));
+  musicPool.push_back(loadAudioFile(filepath, to_underlying(SoundType::Music) + to_underlying(soundType2), 128));
 }
 
 
@@ -374,19 +367,26 @@ void Sound::init()
 
 void Sound::playOgg()
 {
-  stb_vorbis* vorbis = stb_vorbis_open_memory(Global::ogg.data(), Global::ogg.size(), nullptr, nullptr);
 
-  stb_vorbis_info info = stb_vorbis_get_info(vorbis);
+  Audio* audio = new Audio;
+
+  audio->vorbis = stb_vorbis_open_memory(Global::ogg.data(), Global::ogg.size(), nullptr, nullptr);
+  audio->soundId = 30000;
+
+
+  stb_vorbis_info info = stb_vorbis_get_info(audio->vorbis);
 
   SDL_AudioSpec spec;
   spec.freq = info.sample_rate;
   spec.format = AUDIO_S16;
   spec.channels = info.channels;
   spec.samples = 1024;
-  spec.callback = audioCallbackOgg;
-  spec.userdata = vorbis;
+  spec.callback = audioPlaybackCallback;
+  spec.userdata = audio;
 
   SDL_OpenAudio(&spec, NULL);
+
+  addAudio(audio);
 
   SDL_PauseAudio(0);
 }

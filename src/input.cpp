@@ -30,6 +30,8 @@ static void prePollEventKeyInput(KeyInput &keyInput) {
 void Input::prePollEvent() {
     prePollEventKeyInput(Global::inputFullscreen);
     prePollEventKeyInput(Global::inputPause);
+    prePollEventKeyInput(Global::inputWireframe);
+    prePollEventKeyInput(Global::inputDebug);
 }
 
 void Input::pollEvent(SDL_Event &event) {
@@ -63,6 +65,12 @@ void Input::pollEvent(SDL_Event &event) {
                 case SDLK_p:
                     Global::inputPause.pressed = true;
                     break;
+                case SDLK_F2:
+                    Global::inputWireframe.pressed = true;
+                    break;
+                case SDLK_F3:
+                    Global::inputDebug.pressed = true;
+                    break;
                 case SDLK_RETURN:
                     if (event.key.keysym.mod & KMOD_ALT)
                         Global::inputFullscreen.pressed = true;
@@ -95,6 +103,12 @@ void Input::pollEvent(SDL_Event &event) {
                     break;
                 case SDLK_p:
                     Global::inputPause.pressed = false;
+                    break;
+                case SDLK_F2:
+                    Global::inputWireframe.pressed = false;
+                    break;
+                case SDLK_F3:
+                    Global::inputDebug.pressed = false;
                     break;
                 case SDLK_RETURN:
                     if (event.key.keysym.mod & KMOD_ALT)
@@ -226,5 +240,8 @@ static void postPollEventKeyInput(KeyInput &keyInput) {
 }
 
 void Input::postPollEvent() {
-    postPollEventKeyInput(Global::inputFullscreen);
+  postPollEventKeyInput(Global::inputFullscreen);
+  postPollEventKeyInput(Global::inputPause);
+  postPollEventKeyInput(Global::inputWireframe);
+  postPollEventKeyInput(Global::inputDebug);
 }

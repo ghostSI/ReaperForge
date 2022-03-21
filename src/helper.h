@@ -20,6 +20,10 @@ Color getColor(const u8 *rgbaData, i32 index);
 
 void setColor(std::vector<u8> &rgbaData, i32 index, Color color);
 
+f32 x2GlScreen(f32 x);
+
+f32 y2GlScreen(f32 y);
+
 f32 deg2rad(f32 deg);
 
 namespace rnd {

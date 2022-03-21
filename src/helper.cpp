@@ -43,6 +43,16 @@ void setColor(std::vector<u8> &rgbaData, i32 index, Color color) {
     reinterpret_cast<std::vector<Color> &>(rgbaData)[index] = color;
 }
 
+f32 x2GlScreen(f32 x)
+{
+  return 2.0f * x / f32(Global::windowWidth) - 1.0_f32;
+}
+
+f32 y2GlScreen(f32 y)
+{
+  return -(2.0f * y / f32(Global::windowHeight) - 1.0_f32);
+}
+
 f32 deg2rad(f32 deg) {
     return 0.0174533f * deg;
 }

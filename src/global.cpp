@@ -7,6 +7,8 @@ SDL_GameController *Global::gameController = nullptr;
 bool Global::appQuit = false;
 KeyInput Global::inputFullscreen;
 KeyInput Global::inputPause;
+KeyInput Global::inputWireframe;
+KeyInput Global::inputDebug;
 
 u32 Global::windowWidth = 1024;
 u32 Global::windowHeight = 768;

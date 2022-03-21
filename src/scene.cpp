@@ -1,6 +1,8 @@
 #include "scene.h"
 
+#include "debug.h"
 #include "font.h"
+#include "highway.h"
 #include "settings.h"
 #include "sprite.h"
 #include "ui.h"
@@ -10,15 +12,17 @@
 void Scene::init() {
     Font::init();
     Sprite::init();
-    Ui::init();
+    //Ui::init();
 }
 
 void Scene::tick() {
+    Debug::tick();
     Font::tick();
-    Ui::tick();
+    //Ui::tick();
 }
 
 void Scene::render() {
     Font::render();
-    Ui::render();
+    Highway::render();
+    //Ui::render();
 }

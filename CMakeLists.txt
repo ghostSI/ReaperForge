@@ -25,6 +25,7 @@ set(HEADER_FILES
         src/configuration.h
         src/collection.h
         src/data.h
+        src/debug.h
         src/devutil.h
         src/typedefs.h
         src/camera.h
@@ -33,6 +34,7 @@ set(HEADER_FILES
         src/getopt.h
         src/global.h
         src/helper.h
+        src/highway.h
         src/imageload.h
         src/inflate.h
         src/input.h
@@ -61,11 +63,13 @@ set(SOURCE_FILES
         src/camera.cpp
         src/collection.cpp
         src/data.cpp
+        src/debug.cpp
         src/file.cpp
         src/font.cpp
         src/getopt.cpp
         src/global.cpp
         src/helper.cpp
+        src/highway.cpp
         src/imageload.cpp
         src/inflate.cpp
         src/input.cpp

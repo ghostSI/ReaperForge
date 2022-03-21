@@ -1,53 +1,70 @@
 #include "texture.h"
 
+#include "data.h"
 #include "file.h"
 
 static std::vector<std::vector<u8>> texturePool;
 static std::vector<Texture::Info> textureInfo;
 static std::vector<u32> animationTiles;
 
-static void initTexture(const char *filePath, bool convertRGBA = true) {
-    Texture::Info info;
+static void initTexture(const char* filePath, bool convertRGBA = true)
+{
+  Texture::Info info;
 
-    if (File::exists(filePath)) {
-        texturePool.push_back(File::loadPng(filePath, info.width, info.height, convertRGBA));
-        textureInfo.push_back(info);
-    }
+  if (File::exists(filePath))
+  {
+    texturePool.push_back(File::loadPng(filePath, info.width, info.height, convertRGBA));
+    textureInfo.push_back(info);
+  }
 }
 
-void Texture::init() {
-    initTexture("res/font.png");
-    initTexture("res/test.png");
+void Texture::init()
+{
+  {
+    Texture::Info fontTextureInfo;
+    fontTextureInfo.width = 192;
+    fontTextureInfo.height = 108;
+    textureInfo.push_back(fontTextureInfo);
+    std::vector<u8> fontTexture;
+    fontTexture.assign(Data::font, Data::font + sizeof(Data::font));
+    texturePool.push_back(fontTexture);
+  }
 }
 
-Texture::Type Texture::addTexture(const char *filepath) {
-    // TODO: it is currently possible to add a texture multiple times
-    initTexture(filepath);
-    return Texture::Type(texturePool.size() - 1);
+Texture::Type Texture::addTexture(const char* filepath)
+{
+  // TODO: it is currently possible to add a texture multiple times
+  initTexture(filepath);
+  return Texture::Type(texturePool.size() - 1);
 }
 
-Texture::Type Texture::findTexture(const u8 *addr) {
-    for (i32 i = 0; i < texturePool.size(); ++i) {
-        if (&texturePool[i][0] == addr)
-            return Texture::Type(i);
-    }
-    return Texture::Type::notfound;
+Texture::Type Texture::findTexture(const u8* addr)
+{
+  for (i32 i = 0; i < texturePool.size(); ++i)
+  {
+    if (&texturePool[i][0] == addr)
+      return Texture::Type(i);
+  }
+  return Texture::Type::notfound;
 }
 
-const u8 *Texture::texture(Texture::Type textureType) {
-    ASSERT(textureType != Texture::Type::notfound);
+const u8* Texture::texture(Texture::Type textureType)
+{
+  ASSERT(textureType != Texture::Type::notfound);
 
-    return texturePool[to_underlying(textureType)].data();
+  return texturePool[to_underlying(textureType)].data();
 }
 
-i32 Texture::width(Texture::Type textureType) {
-    ASSERT(textureType != Texture::Type::notfound);
+i32 Texture::width(Texture::Type textureType)
+{
+  ASSERT(textureType != Texture::Type::notfound);
 
-    return textureInfo[to_underlying(textureType)].width;
+  return textureInfo[to_underlying(textureType)].width;
 }
 
-i32 Texture::height(Texture::Type textureType) {
-    ASSERT(textureType != Texture::Type::notfound);
+i32 Texture::height(Texture::Type textureType)
+{
+  ASSERT(textureType != Texture::Type::notfound);
 
-    return textureInfo[to_underlying(textureType)].height;
+  return textureInfo[to_underlying(textureType)].height;
 }

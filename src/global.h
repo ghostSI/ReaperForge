@@ -27,6 +27,8 @@ namespace Global {
     extern bool appQuit;
     extern KeyInput inputFullscreen;
     extern KeyInput inputPause;
+    extern KeyInput inputWireframe;
+    extern KeyInput inputDebug;
 
     extern u32 windowWidth;
     extern u32 windowHeight;

@@ -54,7 +54,7 @@ static struct nk_sdl {
 static void nk_sdl_device_create() {
     GLint status;
     static const GLchar *vertex_shader =
-            "#version 300 es\n"
+            "#version 330\n"
             "uniform mat4 ProjMtx;\n"
             "in vec2 Position;\n"
             "in vec2 TexCoord;\n"
@@ -67,7 +67,7 @@ static void nk_sdl_device_create() {
             "   gl_Position = ProjMtx * vec4(Position.xy, 0, 1);\n"
             "}\n";
     static const GLchar *fragment_shader =
-            "#version 300 es\n"
+            "#version 330\n"
             "precision mediump float;\n"
             "uniform sampler2D Texture;\n"
             "in vec2 Frag_UV;\n"
@@ -275,8 +275,7 @@ static void nk_sdl_clipboard_copy(nk_handle usr, const char *text, int len) {
     free(str);
 }
 
-static nk_context *nk_sdl_init(SDL_Window *win) {
-    Global::window = win;
+static nk_context *nk_sdl_init() {
     nk_init_default(&sdl.ctx, 0);
     sdl.ctx.clip.copy = nk_sdl_clipboard_copy;
     sdl.ctx.clip.paste = nk_sdl_clipboard_paste;
@@ -434,13 +433,12 @@ static int nk_sdl_handle_event(SDL_Event *evt) {
 
 
 void Ui::init() {
-    ctx = nk_sdl_init(Global::window);
+    ctx = nk_sdl_init();
     {
         nk_font_atlas *atlas;
         nk_sdl_font_stash_begin(&atlas);
         nk_sdl_font_stash_end();
     }
-
 }
 
 static void demoWindow() {

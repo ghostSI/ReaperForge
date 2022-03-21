@@ -38,13 +38,13 @@ static void mainloop() {
 
     {
         Input::prePollEvent();
-        Ui::handleInputBegin();
+        //Ui::handleInputBegin();
         SDL_Event event;
         while (SDL_PollEvent(&event) != 0) {
             Input::pollEvent(event);
-            Ui::handleInput(event);
+            //Ui::handleInput(event);
         }
-        Ui::handleInputEnd();
+        //Ui::handleInputEnd();
         Input::postPollEvent();
     }
 
@@ -55,7 +55,7 @@ static void mainloop() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 #ifndef __EMSCRIPTEN__
-        if (false)
+        if (Global::inputWireframe.toggle)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         else
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -97,7 +97,6 @@ int main(int argc, char *argv[]) {
     }
 
     SDL_GLContext con = SDL_GL_CreateContext(Global::window);
-
     SDL_GL_SetSwapInterval(0); // disable vsync
 
     glEnable(GL_CULL_FACE);
@@ -115,7 +114,7 @@ int main(int argc, char *argv[]) {
     OpenGl::glGenFramebuffers(1, &Global::fboRtt);
 
     if (Global::gameController == nullptr && SDL_NumJoysticks() >= 1 && SDL_IsGameController(0))
-        Global::gameController = SDL_GameControllerOpen(0);
+      Global::gameController = SDL_GameControllerOpen(0);
 
     glClearColor(0.0, 0.007843, 0.180392, 1.0);
 

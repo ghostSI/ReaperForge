@@ -1560,7 +1560,28 @@ int main(int argc, char* argv[])
 #pragma warning( default: 4996 )
 #endif // _WIN32
 
-    fwrite(v.data(), v.size() * sizeof(float), 1, file);
+    //fwrite(v.data(), v.size() * sizeof(float), 1, file);
+
+
+    fprintf(file, "\nconst f32 Data::Geo[%u] = {", v.size());
+
+      for (int i = 0; i < v.size(); ++i)
+      {
+        if (i % 5 == 0)
+        {
+          if (i != 0)
+            fputc(',', file);
+          fputs("\n  ", file);
+          fprintf(file, "%9ff", v.at(i));
+        }
+        else
+        {
+          fprintf(file, ", %9ff", v.at(i));
+        }
+      }
+      fprintf(file, "\n};\n");
+
+
 
     fclose(file);
   

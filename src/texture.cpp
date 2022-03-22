@@ -26,7 +26,7 @@ void Texture::init()
     fontTextureInfo.height = 108;
     textureInfo.push_back(fontTextureInfo);
     std::vector<u8> fontTexture;
-    fontTexture.assign(Data::font, Data::font + sizeof(Data::font));
+    fontTexture.assign(Data::Texture::font, Data::Texture::font + sizeof(Data::Texture::font));
     texturePool.push_back(fontTexture);
   }
 }

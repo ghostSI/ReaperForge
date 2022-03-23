@@ -183,7 +183,6 @@ static GLuint useShader_(const char* name)
 
   mat4 modelMat;
   OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &modelMat.m00);
-  mat4 viewMat;
 
   //if (Global::inputZoom != Const::zoomStetch)
   //{
@@ -197,8 +196,22 @@ static GLuint useShader_(const char* name)
   //  viewMat.m13 = (2.0f * Global::cameraMidY / Global::worldHeight - 1.0_f32) * zoomFactor * aspectFixY;
   //}
 
-  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &viewMat.m00);
+  
+  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &Global::cameraMat.m00);
+
   mat4 projectionMat;
+  const f32 angleOfView = 90;
+  const f32 scale = 1 / tan(angleOfView * 0.5 * PI / 180);
+  const f32 near_ = 0.1f;
+  const f32 far_ = 100.0f;
+  projectionMat.m00 = scale;
+  projectionMat.m11 = scale;
+  projectionMat.m22 = -far_ / (far_ - near_);
+  projectionMat.m23 = -far_ * near_ / (far_ - near_);
+  projectionMat.m32 = -1.0f;
+  projectionMat.m33 = 0.0f;
+
+
   OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projectionMat.m00);
 
   OpenGl::glUniform2f(OpenGl::glGetUniformLocation(shaderProgram, "resolution"), f32(Global::windowWidth), f32(Global::windowHeight));

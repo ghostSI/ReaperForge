@@ -25,6 +25,12 @@ namespace Global {
     extern SDL_Window *window;
     extern SDL_GameController *gameController;
     extern bool appQuit;
+    extern KeyInput inputA;
+    extern KeyInput inputD;
+    extern KeyInput inputW;
+    extern KeyInput inputS;
+    extern KeyInput inputE;
+    extern KeyInput inputC;
     extern KeyInput inputFullscreen;
     extern KeyInput inputPause;
     extern KeyInput inputWireframe;
@@ -37,6 +43,7 @@ namespace Global {
 
     extern f32 cameraMidX;
     extern f32 cameraMidY;
+    extern mat4 cameraMat;
 
     extern bool isInstalled;
     extern Instrument filterInstrument;

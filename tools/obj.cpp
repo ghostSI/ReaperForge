@@ -1528,6 +1528,19 @@ int main(int argc, char* argv[])
 {
   std::vector<float> v;
   
+  char destFilepath[512];
+  
+  strcpy(destFilepath, argv[1]);
+  
+  size_t len = strlen(destFilepath);
+  
+  destFilepath[len++] = '.';
+  destFilepath[len++] = 'd';
+  destFilepath[len++] = 'a';
+  destFilepath[len++] = 't';
+  destFilepath[len++] = 'a';
+  destFilepath[len++] = '\0';
+  
   fastObjMesh* m = fast_obj_read(argv[1]);
 
   for (unsigned int i = 0; i < m->group_count; ++i)
@@ -1555,7 +1568,7 @@ int main(int argc, char* argv[])
   #ifdef _WIN32
 #pragma warning( disable: 4996 ) // ignore msvc unsafe warning
 #endif // _WIN32
-    FILE *file = fopen("obj.data", "wb");
+    FILE *file = fopen(destFilepath, "wb");
 #ifdef _WIN32
 #pragma warning( default: 4996 )
 #endif // _WIN32
@@ -1572,11 +1585,11 @@ int main(int argc, char* argv[])
           if (i != 0)
             fputc(',', file);
           fputs("\n  ", file);
-          fprintf(file, "%9ff", v.at(i));
+          fprintf(file, "%9f_f32", v.at(i));
         }
         else
         {
-          fprintf(file, ", %9ff", v.at(i));
+          fprintf(file, ", %9f_f32", v.at(i));
         }
       }
       fprintf(file, "\n};\n");

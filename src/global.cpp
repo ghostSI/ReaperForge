@@ -5,6 +5,12 @@
 SDL_Window *Global::window = nullptr;
 SDL_GameController *Global::gameController = nullptr;
 bool Global::appQuit = false;
+KeyInput Global::inputA;
+KeyInput Global::inputD;
+KeyInput Global::inputW;
+KeyInput Global::inputS;
+KeyInput Global::inputE;
+KeyInput Global::inputC;
 KeyInput Global::inputFullscreen;
 KeyInput Global::inputPause;
 KeyInput Global::inputWireframe;
@@ -17,6 +23,7 @@ bool Global::pauseAudio = false;
 
 f32 Global::cameraMidX = f32(Global::windowWidth / 2);
 f32 Global::cameraMidY = f32(Global::windowHeight / 2);
+mat4 Global::cameraMat;
 
 bool Global::isInstalled = false;
 Instrument Global::filterInstrument;

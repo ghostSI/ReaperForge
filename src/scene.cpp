@@ -1,5 +1,6 @@
 #include "scene.h"
 
+#include "camera.h"
 #include "debug.h"
 #include "font.h"
 #include "highway.h"
@@ -16,6 +17,7 @@ void Scene::init() {
 }
 
 void Scene::tick() {
+    Camera::tick();
     Debug::tick();
     Font::tick();
     //Ui::tick();

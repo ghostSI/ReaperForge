@@ -28,6 +28,12 @@ static void prePollEventKeyInput(KeyInput &keyInput) {
 }
 
 void Input::prePollEvent() {
+    prePollEventKeyInput(Global::inputA);
+    prePollEventKeyInput(Global::inputD);
+    prePollEventKeyInput(Global::inputW);
+    prePollEventKeyInput(Global::inputS);
+    prePollEventKeyInput(Global::inputE);
+    prePollEventKeyInput(Global::inputC);
     prePollEventKeyInput(Global::inputFullscreen);
     prePollEventKeyInput(Global::inputPause);
     prePollEventKeyInput(Global::inputWireframe);
@@ -43,12 +49,22 @@ void Input::pollEvent(SDL_Event &event) {
         case SDL_KEYDOWN: {
             switch (event.key.keysym.sym) {
                 case SDLK_a:
+                    Global::inputA.pressed = true;
                     break;
                 case SDLK_d:
+                    Global::inputD.pressed = true;
                     break;
                 case SDLK_w:
+                    Global::inputW.pressed = true;
                     break;
                 case SDLK_s:
+                    Global::inputS.pressed = true;
+                    break;
+                case SDLK_e:
+                    Global::inputE.pressed = true;
+                    break;
+                case SDLK_c:
+                    Global::inputC.pressed = true;
                     break;
                 case SDLK_LEFT:
                     break;
@@ -82,12 +98,22 @@ void Input::pollEvent(SDL_Event &event) {
         case SDL_KEYUP: {
             switch (event.key.keysym.sym) {
                 case SDLK_a:
+                    Global::inputA.pressed = false;
                     break;
                 case SDLK_d:
+                    Global::inputD.pressed = false;
                     break;
                 case SDLK_w:
+                    Global::inputW.pressed = false;
                     break;
                 case SDLK_s:
+                    Global::inputS.pressed = false;
+                    break;
+                case SDLK_e:
+                    Global::inputE.pressed = false;
+                    break;
+                case SDLK_c:
+                    Global::inputC.pressed = false;
                     break;
                 case SDLK_LEFT:
                     break;
@@ -240,6 +266,12 @@ static void postPollEventKeyInput(KeyInput &keyInput) {
 }
 
 void Input::postPollEvent() {
+  postPollEventKeyInput(Global::inputA);
+  postPollEventKeyInput(Global::inputD);
+  postPollEventKeyInput(Global::inputW);
+  postPollEventKeyInput(Global::inputS);
+  postPollEventKeyInput(Global::inputE);
+  postPollEventKeyInput(Global::inputC);
   postPollEventKeyInput(Global::inputFullscreen);
   postPollEventKeyInput(Global::inputPause);
   postPollEventKeyInput(Global::inputWireframe);

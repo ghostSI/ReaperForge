@@ -36,7 +36,6 @@ static f32 frets_25_5[]
 
 void Highway::render()
 {
-  //Shader::useShader(Shader::Stem::defaultScreen);
   GLuint shader = Shader::useShader(Shader::Stem::defaultWorld);
 
   // Draw Fret

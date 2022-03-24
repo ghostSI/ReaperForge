@@ -1,4 +1,4 @@
-#version 330 core
+R"(#version 330 core
 
 in vec3 position;
 in vec2 texcoord;
@@ -13,3 +13,4 @@ void main()
     Texcoord = texcoord;
     gl_Position = projection * view * model * vec4(position, 1.0);
 }
+)"

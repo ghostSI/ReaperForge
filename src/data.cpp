@@ -1,5 +1,19 @@
 #include "data.h"
 
+
+const char* Data::Shader::defaultScreenVert =
+#include "../res/defaultScreen.vert"
+;
+
+const char* Data::Shader::defaultWorldVert =
+#include "../res/defaultWorld.vert"
+;
+
+const char* Data::Shader::defaultWorldFrag =
+#include "../res/defaultWorld.frag"
+;
+
+
 const u8 Data::Texture::font[82944] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

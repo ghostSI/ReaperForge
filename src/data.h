@@ -4,7 +4,12 @@
 #include "typedefs.h"
 
 namespace Data {
-
+  namespace Shader
+  {
+    extern const char* defaultScreenVert;
+    extern const char* defaultWorldVert;
+    extern const char* defaultWorldFrag;
+  }
   namespace Texture
   {
     extern const u8 font[82944];

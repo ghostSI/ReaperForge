@@ -54,4 +54,10 @@ void Debug::tick()
     fontInfo.fontHandle = guyIdId;
     guyIdId = Font::print(fontInfo);
   }
+  else if (Global::inputDebug.pressed)
+  {
+    Font::remove(frameTimeId);
+    Font::remove(cursorPosId);
+    Font::remove(guyIdId);
+  }
 }

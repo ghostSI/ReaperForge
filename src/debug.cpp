@@ -12,7 +12,7 @@ void Debug::tick()
 {
   static Font::Handle frameTimeId;
   static Font::Handle cursorPosId;
-  static Font::Handle guyIdId;
+  static Font::Handle playerNameId;
 
   if (Global::inputDebug.toggle)
   {
@@ -42,13 +42,13 @@ void Debug::tick()
     sprintf(text, "PlayerName %s", Global::playerName);
     fontInfo.posY = f32(y);
     fontInfo.text = text;
-    fontInfo.fontHandle = guyIdId;
-    guyIdId = Font::print(fontInfo);
+    fontInfo.fontHandle = playerNameId;
+    playerNameId = Font::print(fontInfo);
   }
   else if (Global::inputDebug.pressed)
   {
     Font::remove(frameTimeId);
     Font::remove(cursorPosId);
-    Font::remove(guyIdId);
+    Font::remove(playerNameId);
   }
 }

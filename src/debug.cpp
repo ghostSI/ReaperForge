@@ -12,16 +12,7 @@ void Debug::tick()
 {
   static Font::Handle frameTimeId;
   static Font::Handle cursorPosId;
-  static Font::Handle worldPosId;
-  static Font::Handle guyPosId;
-  static Font::Handle guyVelocityId;
-  static Font::Handle guyAccelerationId;
-  static Font::Handle activeChunksId;
   static Font::Handle guyIdId;
-  static Font::Handle worldTypeId;
-  static Font::Handle zoomId;
-  static Font::Handle biomId;
-  static Font::Handle rectId;
 
   if (Global::inputDebug.toggle)
   {
@@ -41,7 +32,7 @@ void Debug::tick()
     y += 20;
 
     sprintf(text, "Cursor X %d Y %d", Global::inputCursorPosX, Global::inputCursorPosY);
-    fontInfo.posY = y;
+    fontInfo.posY = f32(y);
     fontInfo.text = text;
     fontInfo.fontHandle = cursorPosId;
     cursorPosId = Font::print(fontInfo);
@@ -49,7 +40,7 @@ void Debug::tick()
     y += 20;
 
     sprintf(text, "PlayerName %s", Global::playerName);
-    fontInfo.posY = y;
+    fontInfo.posY = f32(y);
     fontInfo.text = text;
     fontInfo.fontHandle = guyIdId;
     guyIdId = Font::print(fontInfo);

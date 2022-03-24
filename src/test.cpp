@@ -24389,11 +24389,74 @@ static void psarcTOCTest2() {
     ASSERT(Global::ogg[i] == expected_ogg[i]);
 }
 
+static void mat4Test()
+{
+  mat4 m0
+  {
+    .m00 = 1.0_f32,
+    .m01 = 2.0_f32,
+    .m02 = 3.0_f32,
+    .m03 = 4.0_f32,
+    .m10 = 5.0_f32,
+    .m11 = 6.0_f32,
+    .m12 = 7.0_f32,
+    .m13 = 8.0_f32,
+    .m20 = 9.0_f32,
+    .m21 = 10.0_f32,
+    .m22 = 11.0_f32,
+    .m23 = 12.0_f32,
+    .m30 = 13.0_f32,
+    .m31 = 14.0_f32,
+    .m32 = 15.0_f32,
+    .m33 = 16.0_f32
+  };
+
+  mat4 m1
+  {
+    .m00 = 1.0_f32,
+    .m01 = 2.0_f32,
+    .m02 = 3.0_f32,
+    .m03 = 4.0_f32,
+    .m10 = 5.0_f32,
+    .m11 = 6.0_f32,
+    .m12 = 7.0_f32,
+    .m13 = 8.0_f32,
+    .m20 = 9.0_f32,
+    .m21 = 10.0_f32,
+    .m22 = 11.0_f32,
+    .m23 = 12.0_f32,
+    .m30 = 13.0_f32,
+    .m31 = 14.0_f32,
+    .m32 = 15.0_f32,
+    .m33 = 16.0_f32
+  };
+
+  mat4 res = VecMath::multipicate(m0, m1);
+
+  ASSERT(res.m00 == 90);
+  ASSERT(res.m01 == 100);
+  ASSERT(res.m02 == 110);
+  ASSERT(res.m03 == 120);
+  ASSERT(res.m10 == 202);
+  ASSERT(res.m11 == 228);
+  ASSERT(res.m12 == 254);
+  ASSERT(res.m13 == 280);
+  ASSERT(res.m20 == 314);
+  ASSERT(res.m21 == 356);
+  ASSERT(res.m22 == 398);
+  ASSERT(res.m23 == 440);
+  ASSERT(res.m30 == 426);
+  ASSERT(res.m31 == 484);
+  ASSERT(res.m32 == 542);
+  ASSERT(res.m33 == 600);
+}
+
 int main(int argc, char* argv[]) {
+  mat4Test();
   psarcTOCTest2();
-  //settingsTest();
+  settingsTest();
   //installerTest();
-  //rijndaelTest();
+  rijndaelTest();
 
   return 0;
 }

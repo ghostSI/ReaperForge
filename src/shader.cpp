@@ -184,18 +184,6 @@ static GLuint useShader_(const char* name)
   mat4 modelMat;
   OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &modelMat.m00);
 
-  //if (Global::inputZoom != Const::zoomStetch)
-  //{
-  //  const f32 zoomFactor = Zoom::zoom2ZoomFactor(Global::inputZoom);
-  //  const f32 aspectFixX = f32(Global::worldWidth) / f32(Global::windowWidth);
-  //  const f32 aspectFixY = f32(Global::worldHeight) / f32(Global::windowHeight);
-
-  //  viewMat.m00 = zoomFactor * aspectFixX;
-  //  viewMat.m11 = zoomFactor * aspectFixY;
-  //  viewMat.m03 = (-2.0f * Global::cameraMidX / Global::worldWidth + 1.0_f32) * zoomFactor * aspectFixX;
-  //  viewMat.m13 = (2.0f * Global::cameraMidY / Global::worldHeight - 1.0_f32) * zoomFactor * aspectFixY;
-  //}
-
   
   OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &Global::cameraMat.m00);
 
@@ -207,34 +195,12 @@ static GLuint useShader_(const char* name)
   projectionMat.m00 = scale;
   projectionMat.m11 = scale;
   projectionMat.m22 = -far_ / (far_ - near_);
-  projectionMat.m23 = -far_ * near_ / (far_ - near_);
-  projectionMat.m32 = -1.0f;
+  projectionMat.m32 = -far_ * near_ / (far_ - near_);
+  projectionMat.m23 = -1.0f;
   projectionMat.m33 = 0.0f;
 
 
   OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projectionMat.m00);
-
-  OpenGl::glUniform2f(OpenGl::glGetUniformLocation(shaderProgram, "resolution"), f32(Global::windowWidth), f32(Global::windowHeight));
-
-  OpenGl::glUniform1ui(OpenGl::glGetUniformLocation(shaderProgram, "renderOptions"), to_underlying(Global::renderOptions));
-
-  OpenGl::glUniform1f(OpenGl::glGetUniformLocation(shaderProgram, "time"), Global::time);
-
-
-  /*OpenGl::glUniform2f(OpenGl::glGetUniformLocation(shaderProgram, "pointLights[1].position"), 0.2f, 0.2f);
-  OpenGl::glUniform3f(OpenGl::glGetUniformLocation(shaderProgram, "pointLights[1].color"), 0.2f, 0.8f, 0.2f);
-  OpenGl::glUniform1f(OpenGl::glGetUniformLocation(shaderProgram, "pointLights[1].radius"), 0.1f);
-  OpenGl::glUniform1f(OpenGl::glGetUniformLocation(shaderProgram, "pointLights[1].falloff"), 0.6f);
-
-  OpenGl::glUniform2f(OpenGl::glGetUniformLocation(shaderProgram, "pointLights[2].position"), 0.2f, 0.4f);
-  OpenGl::glUniform3f(OpenGl::glGetUniformLocation(shaderProgram, "pointLights[2].color"), 0.2f, 0.2f, 0.8f);
-  OpenGl::glUniform1f(OpenGl::glGetUniformLocation(shaderProgram, "pointLights[2].radius"), 0.1f);
-  OpenGl::glUniform1f(OpenGl::glGetUniformLocation(shaderProgram, "pointLights[2].falloff"), 0.6f);
-
-  OpenGl::glUniform2f(OpenGl::glGetUniformLocation(shaderProgram, "pointLights[3].position"), 0.4f, 0.2f);
-  OpenGl::glUniform3f(OpenGl::glGetUniformLocation(shaderProgram, "pointLights[3].color"), 0.8f, 0.2f, 0.8f);
-  OpenGl::glUniform1f(OpenGl::glGetUniformLocation(shaderProgram, "pointLights[3].radius"), 0.1f);
-  OpenGl::glUniform1f(OpenGl::glGetUniformLocation(shaderProgram, "pointLights[3].falloff"), 0.6f);*/
 
   return shaderProgram;
 }

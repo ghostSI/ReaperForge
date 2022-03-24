@@ -36,13 +36,14 @@ static f32 frets_25_5[]
 
 void Highway::render()
 {
+  //Shader::useShader(Shader::Stem::defaultScreen);
   GLuint shader = Shader::useShader(Shader::Stem::defaultWorld);
 
   // Draw Fret
   for (int i = 0; i < sizeof(frets_25_5); ++i)
   {
     mat4 modelMat;
-    modelMat.m03 = frets_25_5[i] * 0.075f;
+    modelMat.m30 = frets_25_5[i] * 0.05f;
     OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
     OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::fret), Data::Geometry::fret, GL_STATIC_DRAW);
@@ -53,7 +54,7 @@ void Highway::render()
   for (int i = 0; i < 350; ++i)
   {
     mat4 modelMat;
-    modelMat.m03 = 0.1f * f32(i);
+    modelMat.m30 = 0.1f * f32(i);
     OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
     OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::String::e), Data::Geometry::String::e, GL_STATIC_DRAW);

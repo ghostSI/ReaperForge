@@ -1,7 +1,7 @@
 #ifndef HELPER_H
 #define HELPER_H
 
-#include "typedefs.h"
+#include "type.h"
 
 #include <string>
 #include <vector>
@@ -44,6 +44,8 @@ namespace VecMath {
     void norm(f32 &x, f32 &y);
 
     void rotate(f32 &x, f32 &y, f32 rad);
+
+    mat4 multipicate(const mat4& m0, const mat4& m1);
 }
 
 template<typename T>

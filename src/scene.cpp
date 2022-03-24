@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 void Scene::init() {
+    Camera::init();
     Font::init();
     Sprite::init();
     //Ui::init();

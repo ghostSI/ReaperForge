@@ -74,7 +74,7 @@ static void drawNote(GLuint shader, i32 fret, i32 string, f32 time)
   mat4 modelMat;
   modelMat.m30 = frets[fret] + 0.5f * (frets[fret + 1] - frets[fret]);
   modelMat.m31 = f32(string) * stringSpacing;
-  modelMat.m32 = time;
+  modelMat.m32 = time * Const::highwaySpeedMultiplier;
   OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
   setStringColor(shader, string);
@@ -83,18 +83,7 @@ static void drawNote(GLuint shader, i32 fret, i32 string, f32 time)
   glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::note) / (sizeof(float) * 5));
 }
 
-static void drawNoteFretboard(GLuint shader, i32 fret, i32 string)
-{
-  mat4 modelMat;
-  modelMat.m30 = frets[fret] + 0.5f * (frets[fret + 1] - frets[fret]);
-  modelMat.m31 = f32(string) * stringSpacing;
-  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
-  setStringColor(shader, string);
-
-  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::noteFretboard), Data::Geometry::noteFretboard, GL_STATIC_DRAW);
-  glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::noteFretboard) / (sizeof(float) * 5));
-}
 
 static void drawNotes(GLuint shader)
 {
@@ -110,6 +99,58 @@ static void drawNotes(GLuint shader)
       continue;
 
     drawNote(shader, note.fret, 5 - note.string, noteTime);
+  }
+}
+
+static void drawNoteFretboard(GLuint shader, i32 fret, i32 string, f32 size)
+{
+  mat4 modelMat;
+  modelMat.m00 = size;
+  modelMat.m11 = size;
+  modelMat.m22 = size;
+  modelMat.m30 = frets[fret] + 0.5f * (frets[fret + 1] - frets[fret]);
+  modelMat.m31 = f32(string) * stringSpacing;
+  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+  setStringColor(shader, string);
+
+  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::noteFretboard), Data::Geometry::noteFretboard, GL_STATIC_DRAW);
+  glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::noteFretboard) / (sizeof(float) * 5));
+}
+
+static void drawNoteFreadboard(GLuint shader)
+{
+  f32 fretboard[6][24] = { };
+
+  const f32 oggElapsed = Global::time - Global::oggStartTime;
+
+  for (const Song::Notes::Note& note : songNotes.notes)
+  {
+    const f32 noteTime = -note.time + oggElapsed;
+
+    if (noteTime > 0.0f)
+      continue;
+    if (noteTime < -1.0f)
+      continue;
+    
+    if (fretboard[note.string][note.fret] == 0.0f || fretboard[note.string][note.fret] < noteTime)
+      fretboard[note.string][note.fret] = noteTime;
+  }
+
+  for (i32 i = 0; i < 6; ++i)
+  {
+    for (i32 j = 0; j < 24; ++j)
+    {
+      if (fretboard[i][j] >= 0.0f)
+        continue;
+      if (fretboard[i][j] < -1.0f)
+        continue;
+
+      f32 dist = fretboard[i][j];
+      f32 size = 1.0f + dist;
+
+      drawNoteFretboard(shader, j, 5 - i, size);
+    }
   }
 }
 
@@ -163,19 +204,5 @@ void Highway::render()
 
   // Draw Note
   drawNotes(shader);
-
-  //f32 oggElapsed = Global::time - Global::oggStartTime;
-  //{
-  //  for (f32 f = -2.0f; f > -10.0f; f -= 2.0f)
-  //    for (int y = 0; y < 6; ++y)
-  //      for (int x = 0; x < 4; ++x)
-  //        drawNote(shader, x, y, f + oggElapsed);
-  //}
-
-  // Draw NoteFretboard
-  {
-    for (int y = 0; y < 6; ++y)
-      for (int x = 0; x < 4; ++x)
-        drawNoteFretboard(shader, x, y);
-  }
+  drawNoteFreadboard(shader);
 }

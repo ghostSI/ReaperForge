@@ -3,9 +3,9 @@
 #include "global.h"
 
 void Camera::init() {
-  Global::cameraMat.m30 = -3.3f;
-  Global::cameraMat.m31 = -4.0f;
-  Global::cameraMat.m32 = -4.7f;
+  Global::cameraMat.m30 = -6.3f;
+  Global::cameraMat.m31 = -7.0f;
+  Global::cameraMat.m32 = -8.16f;
 }
 
 void Camera::tick() {

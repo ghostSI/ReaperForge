@@ -54,7 +54,7 @@ static struct nk_sdl {
 static void nk_sdl_device_create() {
     GLint status;
     static const GLchar *vertex_shader =
-            "#version 330\n"
+            "#version 330 core\n"
             "uniform mat4 ProjMtx;\n"
             "in vec2 Position;\n"
             "in vec2 TexCoord;\n"
@@ -67,7 +67,7 @@ static void nk_sdl_device_create() {
             "   gl_Position = ProjMtx * vec4(Position.xy, 0, 1);\n"
             "}\n";
     static const GLchar *fragment_shader =
-            "#version 330\n"
+            "#version 330 core\n"
             "precision mediump float;\n"
             "uniform sampler2D Texture;\n"
             "in vec2 Frag_UV;\n"

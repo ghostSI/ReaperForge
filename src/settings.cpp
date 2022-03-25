@@ -118,40 +118,40 @@ static bool parseCommandLineArgs(int argc, char *argv[]) {
                 commandLineSettings["Highway"]["Lyrics"] = optarg;
                 break;
             case '0':
-                commandLineSettings["Guitar"]["GuitarStringColor0"] = optarg;
+                commandLineSettings["Instrument"]["GuitarStringColor0"] = optarg;
                 break;
             case '1':
-                commandLineSettings["Guitar"]["GuitarStringColor1"] = optarg;
+                commandLineSettings["Instrument"]["GuitarStringColor1"] = optarg;
                 break;
             case '2':
-                commandLineSettings["Guitar"]["GuitarStringColor2"] = optarg;
+                commandLineSettings["Instrument"]["GuitarStringColor2"] = optarg;
                 break;
             case '3':
-                commandLineSettings["Guitar"]["GuitarStringColor3"] = optarg;
+                commandLineSettings["Instrument"]["GuitarStringColor3"] = optarg;
                 break;
             case '4':
-                commandLineSettings["Guitar"]["GuitarStringColor4"] = optarg;
+                commandLineSettings["Instrument"]["GuitarStringColor4"] = optarg;
                 break;
             case '5':
-                commandLineSettings["Guitar"]["GuitarStringColor5"] = optarg;
+                commandLineSettings["Instrument"]["GuitarStringColor5"] = optarg;
                 break;
             case '6':
-                commandLineSettings["Guitar"]["GuitarStringColor6"] = optarg;
+                commandLineSettings["Instrument"]["GuitarStringColor6"] = optarg;
                 break;
             case 'g':
-                commandLineSettings["Bass"]["BassStringColor6"] = optarg;
+                commandLineSettings["Instrument"]["BassStringColor6"] = optarg;
                 break;
             case 'd':
-                commandLineSettings["Bass"]["BassStringColor6"] = optarg;
+                commandLineSettings["Instrument"]["BassStringColor6"] = optarg;
                 break;
             case 'a':
-                commandLineSettings["Bass"]["BassStringColor6"] = optarg;
+                commandLineSettings["Instrument"]["BassStringColor6"] = optarg;
                 break;
             case 'e':
-                commandLineSettings["Bass"]["BassStringColor6"] = optarg;
+                commandLineSettings["Instrument"]["BassStringColor6"] = optarg;
                 break;
             case 'b':
-                commandLineSettings["Bass"]["BassStringColor6"] = optarg;
+                commandLineSettings["Instrument"]["BassStringColor6"] = optarg;
                 break;
             default:
                 printUsage();

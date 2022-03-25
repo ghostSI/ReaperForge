@@ -18,6 +18,9 @@ namespace Data {
   {
     extern const f32 fret[15060];
     extern const f32 note[180];
+    extern const f32 noteFretboard[480];
+    extern const f32 noteStand[240];
+    extern const f32 ground[30];
 
     namespace String
     {

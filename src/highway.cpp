@@ -4,6 +4,8 @@
 #include "type.h"
 #include "opengl.h"
 #include "shader.h"
+#include "settings.h"
+#include "helper.h"
 
 static const f32 stringSpacing = 0.42f;
 
@@ -36,6 +38,25 @@ static const f32 frets[]
   485.775f * 0.05f
 };
 
+static void setStringColor(GLuint shader, i32 string)
+{
+  const std::string colorStr = Settings::get("Instrument", std::string("GuitarStringColor") + std::to_string(string)).substr(1) + "FF";
+
+  const Color color = (Color)strtoul(colorStr.c_str(), NULL, 16);
+
+  const u8 r = colorR(color);
+  const u8 g = colorG(color);
+  const u8 b = colorB(color);
+  const u8 a = colorA(color);
+
+  f32 rr = r / 255.0f;
+  f32 gg = g / 255.0f;
+  f32 bb = b / 255.0f;
+  f32 aa = a / 255.0f;
+
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), rr, gg, bb, aa);
+}
+
 static void drawNote(GLuint shader, i32 fret, i32 string, f32 time)
 {
   mat4 modelMat;
@@ -44,15 +65,39 @@ static void drawNote(GLuint shader, i32 fret, i32 string, f32 time)
   modelMat.m32 = time;
   OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
+  setStringColor(shader, string);
+
   OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::note), Data::Geometry::note, GL_STATIC_DRAW);
   glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::note) / (sizeof(float) * 5));
+}
+
+static void drawNoteFretboard(GLuint shader, i32 fret, i32 string)
+{
+  mat4 modelMat;
+  modelMat.m30 = frets[fret] + 0.5f * (frets[fret + 1] - frets[fret]);
+  modelMat.m31 = f32(string) * stringSpacing;
+  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+  setStringColor(shader, string);
+
+  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::noteFretboard), Data::Geometry::noteFretboard, GL_STATIC_DRAW);
+  glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::noteFretboard) / (sizeof(float) * 5));
 }
 
 void Highway::render()
 {
   GLuint shader = Shader::useShader(Shader::Stem::defaultWorld);
 
+  // Draw Ground
+  {
+    //mat4 modelMat;
+    //OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+    //OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::ground), Data::Geometry::ground, GL_STATIC_DRAW);
+    //glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::ground) / (sizeof(float) * 5));
+  }
+
   // Draw Fret
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.1f, 0.1f, 0.1f, 1.0f);
   for (int i = 0; i < sizeof(frets); ++i)
   {
     mat4 modelMat;
@@ -64,6 +109,7 @@ void Highway::render()
   }
 
   // Draw Strings
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.2f, 0.2f, 0.2f, 1.0f);
   for (int i = 0; i < 350; ++i)
   {
     mat4 modelMat;
@@ -84,8 +130,18 @@ void Highway::render()
     glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::String::E) / (sizeof(float) * 5));
   }
 
-  for (f32 f = 0; f > -10.0f; f -= 2.0f)
+  // Draw Note
+  {
+    for (f32 f = -2.0f; f > -10.0f; f -= 2.0f)
+      for (int y = 0; y < 6; ++y)
+        for (int x = 0; x < 4; ++x)
+          drawNote(shader, x, y, f);
+  }
+
+  // Draw NoteFretboard
+  {
     for (int y = 0; y < 6; ++y)
       for (int x = 0; x < 4; ++x)
-        drawNote(shader, x, y, f);
+        drawNoteFretboard(shader, x, y);
+  }
 }

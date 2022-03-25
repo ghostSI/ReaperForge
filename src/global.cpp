@@ -31,6 +31,7 @@ bool Global::collectionLoaded;
 std::vector<Psarc::PsarcInfo> Global::psarcInfos;
 std::vector<Song::Info> Global::collection;
 std::vector<u8> Global::ogg;
+f32 Global::oggStartTime = 0.0f;
 char Global::searchText[256] = "";
 i32 Global::searchTextLength = 0;
 

@@ -372,6 +372,7 @@ void Sound::playOgg()
 
   audio->vorbis = stb_vorbis_open_memory(Global::ogg.data(), Global::ogg.size(), nullptr, nullptr);
   audio->soundId = 30000;
+  Global::oggStartTime = Global::time;
 
 
   stb_vorbis_info info = stb_vorbis_get_info(audio->vorbis);

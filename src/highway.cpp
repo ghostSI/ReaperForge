@@ -6,6 +6,7 @@
 #include "shader.h"
 #include "settings.h"
 #include "helper.h"
+#include "global.h"
 
 static const f32 stringSpacing = 0.42f;
 
@@ -133,11 +134,13 @@ void Highway::render()
   }
 
   // Draw Note
+  f32 oggElapsed = Global::time - Global::oggStartTime;
+
   {
     for (f32 f = -2.0f; f > -10.0f; f -= 2.0f)
       for (int y = 0; y < 6; ++y)
         for (int x = 0; x < 4; ++x)
-          drawNote(shader, x, y, f);
+          drawNote(shader, x, y, f + oggElapsed);
   }
 
   // Draw NoteFretboard

@@ -7,6 +7,8 @@
 #include "settings.h"
 #include "helper.h"
 #include "global.h"
+#include "psarc.h"
+#include "song.h"
 
 static const f32 stringSpacing = 0.42f;
 
@@ -38,6 +40,15 @@ static const f32 frets[]
   476.146f * 0.05f,
   485.775f * 0.05f
 };
+
+static Song::Notes songNotes;
+
+void Highway::init()
+{
+  const std::vector<u8> psarcData = Psarc::readPsarcData("songs/test.psarc");
+  const Psarc::PsarcInfo psarcInfo = Psarc::parse(psarcData);
+  songNotes = Song::loadNotes(psarcInfo, Song::Info::InstrumentFlags::RhythmGuitar);
+}
 
 static void setStringColor(GLuint shader, i32 string)
 {
@@ -83,6 +94,23 @@ static void drawNoteFretboard(GLuint shader, i32 fret, i32 string)
 
   OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::noteFretboard), Data::Geometry::noteFretboard, GL_STATIC_DRAW);
   glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::noteFretboard) / (sizeof(float) * 5));
+}
+
+static void drawNotes(GLuint shader)
+{
+  const f32 oggElapsed = Global::time - Global::oggStartTime;
+
+  for (const Song::Notes::Note& note : songNotes.notes)
+  {
+    const f32 noteTime = -note.time + oggElapsed;
+
+    if (noteTime > 0.0f)
+      continue;
+    if (noteTime < -60.0f)
+      continue;
+
+    drawNote(shader, note.fret, 5 - note.string, noteTime);
+  }
 }
 
 void Highway::render()
@@ -134,14 +162,15 @@ void Highway::render()
   }
 
   // Draw Note
-  f32 oggElapsed = Global::time - Global::oggStartTime;
+  drawNotes(shader);
 
-  {
-    for (f32 f = -2.0f; f > -10.0f; f -= 2.0f)
-      for (int y = 0; y < 6; ++y)
-        for (int x = 0; x < 4; ++x)
-          drawNote(shader, x, y, f + oggElapsed);
-  }
+  //f32 oggElapsed = Global::time - Global::oggStartTime;
+  //{
+  //  for (f32 f = -2.0f; f > -10.0f; f -= 2.0f)
+  //    for (int y = 0; y < 6; ++y)
+  //      for (int x = 0; x < 4; ++x)
+  //        drawNote(shader, x, y, f + oggElapsed);
+  //}
 
   // Draw NoteFretboard
   {

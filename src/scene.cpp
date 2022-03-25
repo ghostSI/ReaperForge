@@ -12,6 +12,7 @@
 
 void Scene::init() {
     Camera::init();
+    Highway::init();
     Font::init();
     Sprite::init();
     //Ui::init();

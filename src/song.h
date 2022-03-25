@@ -3,6 +3,8 @@
 
 #include "type.h"
 
+#include <vector>
+
 namespace Psarc { struct PsarcInfo; }
 
 namespace Song {
@@ -36,7 +38,40 @@ namespace Song {
 
     Info psarcInfoToSongInfo(const Psarc::PsarcInfo &psarcInfo);
 
+    struct Notes
+    {
+      struct Note
+      {
+        f32 time;
+        bool linkNext;
+        bool accent;
+        bool bend;
+        int fret;
+        bool hammerOn;
+        bool harmonic;
+        bool hopo;
+        bool ignore;
+        bool leftHand;
+        bool mute;
+        bool palmMute;
+        bool pluck;
+        bool pullOff;
+        bool slap;
+        bool slideTo;
+        bool string;
+        bool sustain;
+        bool tremolo;
+        bool harmonicPinch;
+        bool pickDirection;
+        bool rightHand;
+        bool slideUnpitchTo;
+        bool tap;
+        bool vibrato;
+      };
 
+      std::vector<Note> notes;
+    };
+    Notes loadNotes(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentFlags instrumentFlags);
 }
 
 #endif // SONG_H

@@ -222,8 +222,6 @@ Psarc::PsarcInfo Psarc::parse(const std::vector<u8> &psarcData) {
     return psarcInfo;
 }
 
-
-
 static u32 readWemFileIdFromBnkFile(const u8* data, u64 size)
 {
   const u32 lenBKHD = u32LittleEndian(&data[4]);

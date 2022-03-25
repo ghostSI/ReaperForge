@@ -2,6 +2,7 @@
 #define HIGHWAY_H
 
 namespace Highway {
+  void init();
   void render();
 }
 

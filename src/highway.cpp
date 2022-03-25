@@ -86,15 +86,17 @@ static void drawNoteFretboard(GLuint shader, i32 fret, i32 string)
 
 void Highway::render()
 {
-  GLuint shader = Shader::useShader(Shader::Stem::defaultWorld);
+  GLuint shader = Shader::useShader(Shader::Stem::ground);
 
   // Draw Ground
   {
-    //mat4 modelMat;
-    //OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
-    //OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::ground), Data::Geometry::ground, GL_STATIC_DRAW);
-    //glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::ground) / (sizeof(float) * 5));
+    mat4 modelMat;
+    OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::ground), Data::Geometry::ground, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::ground) / (sizeof(float) * 5));
   }
+
+  shader = Shader::useShader(Shader::Stem::defaultWorld);
 
   // Draw Fret
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.1f, 0.1f, 0.1f, 1.0f);

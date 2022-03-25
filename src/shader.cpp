@@ -59,6 +59,7 @@ void Shader::init()
 {
   shaderPrograms.push_back(compileShader(Data::Shader::defaultScreenVert, Data::Shader::defaultWorldFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::defaultWorldFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::groundFrag));
 }
 
 GLuint Shader::useShader(Shader::Stem shaderStem)

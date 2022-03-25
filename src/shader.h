@@ -7,6 +7,7 @@ namespace Shader {
     enum struct Stem {
         defaultScreen,
         defaultWorld,
+        ground,
     };
 
     void init();

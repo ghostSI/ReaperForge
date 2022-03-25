@@ -9,6 +9,7 @@ namespace Data {
     extern const char* defaultScreenVert;
     extern const char* defaultWorldVert;
     extern const char* defaultWorldFrag;
+    extern const char* groundFrag;
   }
   namespace Texture
   {

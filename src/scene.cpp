@@ -20,6 +20,7 @@ void Scene::init() {
 
 void Scene::tick() {
     Camera::tick();
+    Highway::tick();
     Debug::tick();
     Font::tick();
     //Ui::tick();

@@ -99,9 +99,9 @@ int main(int argc, char *argv[]) {
     SDL_GLContext con = SDL_GL_CreateContext(Global::window);
     SDL_GL_SetSwapInterval(0); // disable vsync
 
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
-    glFrontFace(GL_CW);
+    //glEnable(GL_CULL_FACE);
+    //glCullFace(GL_FRONT);
+    //glFrontFace(GL_CW);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glEnable(GL_BLEND);

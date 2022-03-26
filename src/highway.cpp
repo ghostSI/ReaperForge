@@ -9,6 +9,7 @@
 #include "global.h"
 #include "psarc.h"
 #include "song.h"
+#include "font.h"
 
 static const f32 stringSpacing = 0.42f;
 
@@ -50,6 +51,27 @@ void Highway::init()
   songNotes = Song::loadNotes(psarcInfo, Song::Info::InstrumentFlags::RhythmGuitar);
 }
 
+void Highway::tick()
+{
+  static Font::Handle handle[24];
+  char text[3];
+
+  for (i32 i = 0; i < 24; ++i)
+  {
+    f32 posX = frets[i] + 0.5f * (frets[i + 1] - frets[i]);
+
+    sprintf(text, "%d", i);
+    Font::Info fontInfo{
+      .text = text,
+      .fontHandle = handle[i],
+      .posX = posX,
+      .posY = 0.0,
+      .space = Space::screenSpace,
+    };
+    handle[i] = Font::print(fontInfo);
+  }
+}
+
 static void setStringColor(GLuint shader, i32 string)
 {
   const std::string colorStr = Settings::get("Instrument", std::string("GuitarStringColor") + std::to_string(string)).substr(1) + "FF";
@@ -82,7 +104,7 @@ static void drawNote(GLuint shader, const Song::Notes::Note& note, f32 noteTime)
   OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::note), Data::Geometry::note, GL_STATIC_DRAW);
   glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::note) / (sizeof(float) * 5));
 
-  if (!note.palmMute)
+  if (note.palmMute)
   {
     OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.0f, 0.0f, 0.0f, 1.0f);
     OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::palmmute), Data::Geometry::palmmute, GL_STATIC_DRAW);
@@ -100,7 +122,7 @@ static void drawNote(GLuint shader, const Song::Notes::Note& note, f32 noteTime)
     OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::harmonic), Data::Geometry::harmonic, GL_STATIC_DRAW);
     glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::harmonic) / (sizeof(float) * 5));
   }
-  if (!note.harmonicPinch)
+  if (note.harmonicPinch)
   {
     OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.486274f, 0.341176f, 0.027450f, 1.0f);
     OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::pinchHarmonic), Data::Geometry::pinchHarmonic, GL_STATIC_DRAW);

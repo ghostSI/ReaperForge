@@ -83,8 +83,6 @@ static void drawNote(GLuint shader, i32 fret, i32 string, f32 time)
   glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::note) / (sizeof(float) * 5));
 }
 
-
-
 static void drawNotes(GLuint shader)
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;

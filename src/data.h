@@ -18,10 +18,14 @@ namespace Data {
   namespace Geometry
   {
     extern const f32 fret[15060];
-    extern const f32 note[180];
-    extern const f32 noteFretboard[480];
+    extern const f32 note[150];
+    extern const f32 noteFretboard[360];
     extern const f32 noteStand[240];
     extern const f32 ground[30];
+    extern const f32 fretmute[540];
+    extern const f32 harmonic[1590];
+    extern const f32 palmmute[720];
+    extern const f32 pinchHarmonic[1590];
 
     namespace String
     {

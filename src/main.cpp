@@ -101,6 +101,7 @@ int main(int argc, char *argv[]) {
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
+    glFrontFace(GL_CW);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glEnable(GL_BLEND);

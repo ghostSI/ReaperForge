@@ -69,18 +69,43 @@ static void setStringColor(GLuint shader, i32 string)
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), rr, gg, bb, aa);
 }
 
-static void drawNote(GLuint shader, i32 fret, i32 string, f32 time)
+static void drawNote(GLuint shader, const Song::Notes::Note& note, f32 noteTime)
 {
   mat4 modelMat;
-  modelMat.m30 = frets[fret] + 0.5f * (frets[fret + 1] - frets[fret]);
-  modelMat.m31 = f32(string) * stringSpacing;
-  modelMat.m32 = time * Const::highwaySpeedMultiplier;
+  modelMat.m30 = frets[note.fret] + 0.5f * (frets[note.fret + 1] - frets[note.fret]);
+  modelMat.m31 = f32(5 - note.string) * stringSpacing;
+  modelMat.m32 = noteTime * Const::highwaySpeedMultiplier;
   OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
-  setStringColor(shader, string);
+  setStringColor(shader, 5 - note.string);
 
   OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::note), Data::Geometry::note, GL_STATIC_DRAW);
   glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::note) / (sizeof(float) * 5));
+
+  if (!note.palmMute)
+  {
+    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.0f, 0.0f, 0.0f, 1.0f);
+    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::palmmute), Data::Geometry::palmmute, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::palmmute) / (sizeof(float) * 5));
+  }
+  if (note.mute)
+  {
+    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
+    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::fretmute), Data::Geometry::fretmute, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::fretmute) / (sizeof(float) * 5));
+  }
+  if (note.harmonic)
+  {
+    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
+    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::harmonic), Data::Geometry::harmonic, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::harmonic) / (sizeof(float) * 5));
+  }
+  if (!note.harmonicPinch)
+  {
+    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.486274f, 0.341176f, 0.027450f, 1.0f);
+    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::pinchHarmonic), Data::Geometry::pinchHarmonic, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::pinchHarmonic) / (sizeof(float) * 5));
+  }
 }
 
 static void drawNotes(GLuint shader)
@@ -96,7 +121,7 @@ static void drawNotes(GLuint shader)
     if (noteTime < -60.0f)
       continue;
 
-    drawNote(shader, note.fret, 5 - note.string, noteTime);
+    drawNote(shader, note, noteTime);
   }
 }
 

@@ -6,101 +6,37 @@
 
 static bool isXmlForInstrument(std::string filename, Instrument instrument) {
 
-    switch (instrument) {
-        case Instrument::LeadGuitar:
-            if (filename.ends_with("_lead.xml"))
-                return true;
-            break;
-        case Instrument::RhythmGuitar:
-            if (filename.ends_with("_rhythm.xml"))
-                return true;
-            break;
-        case Instrument::BassGuitar:
-            if (filename.ends_with("_bass.xml"))
-                return true;
-            break;
-    }
+  switch (instrument) {
+  case Instrument::LeadGuitar:
+    if (filename.ends_with("_lead.xml"))
+      return true;
+    break;
+  case Instrument::RhythmGuitar:
+    if (filename.ends_with("_rhythm.xml"))
+      return true;
+    break;
+  case Instrument::BassGuitar:
+    if (filename.ends_with("_bass.xml"))
+      return true;
+    break;
+  }
 
-    return false;
+  return false;
 }
 
 static std::string
-tuning(const std::string &string0, const std::string &string1, const std::string &string2, const std::string &string3,
-       const std::string &string4, const std::string &string5) {
-    if (string0 == "0" && string1 == "0" && string2 == "0" && string3 == "0" && string4 == "0" && string5 == "0")
-        return "E Standard";
+tuning(const std::string& string0, const std::string& string1, const std::string& string2, const std::string& string3,
+  const std::string& string4, const std::string& string5) {
+  if (string0 == "0" && string1 == "0" && string2 == "0" && string3 == "0" && string4 == "0" && string5 == "0")
+    return "E Standard";
 
-    assert(false);
+  assert(false);
 
-    return "Custom Tuning";
+  return "Custom Tuning";
 }
 
-static void readSongInfoXml(const Psarc::PsarcInfo::TOCEntry &tocEntry, Song::Info &songInfo) {
+static void readSongInfoXml(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::Info& songInfo) {
 
-
-    pugi::xml_document doc;
-    pugi::xml_parse_result result = doc.load(reinterpret_cast<const char *>(tocEntry.content.data()));
-    assert(result);
-
-    auto a = result.description();
-
-    pugi::xml_node root = doc.child("song");
-
-    for (pugi::xml_node node: root.child("title")) {
-        songInfo.title = node.value();
-    }
-
-    for (pugi::xml_node node: root.child("tuning")) {
-        songInfo.albumYear = tuning(node.attribute("string0").value(), node.attribute("string1").value(),
-                                    node.attribute("string2").value(), node.attribute("string3").value(),
-                                    node.attribute("string4").value(), node.attribute("string5").value());
-    }
-
-    for (pugi::xml_node node: root.child("artistName")) {
-        songInfo.artist = node.value();
-    }
-
-    for (pugi::xml_node node: root.child("albumName")) {
-        songInfo.albumName = node.value();
-    }
-
-    for (pugi::xml_node node: root.child("albumYear")) {
-        songInfo.albumYear = node.value();
-    }
-}
-
-Song::Info Song::psarcInfoToSongInfo(const Psarc::PsarcInfo &psarcInfo) {
-
-    Song::Info songInfo;
-
-    for (i32 i = 0; i < psarcInfo.tocEntries.size(); ++i) {
-        const Psarc::PsarcInfo::TOCEntry &tocEntry = psarcInfo.tocEntries[i];
-
-        if (tocEntry.name.ends_with("_lead.xml")) {
-            songInfo.instrumentFlags |= Info::InstrumentFlags::LeadGuitar;
-            readSongInfoXml(tocEntry, songInfo);
-        } else if (tocEntry.name.ends_with("_rhythm.xml")) {
-            songInfo.instrumentFlags |= Info::InstrumentFlags::RhythmGuitar;
-            if (songInfo.title.empty())
-                readSongInfoXml(tocEntry, songInfo);
-        } else if (tocEntry.name.ends_with("_bass.xml")) {
-            songInfo.instrumentFlags |= Info::InstrumentFlags::BassGuitar;
-            if (songInfo.title.empty())
-                readSongInfoXml(tocEntry, songInfo);
-        } else if (tocEntry.name.ends_with("_64.dds")) {
-            songInfo.albumCover64_tocIndex = i;
-        } else if (tocEntry.name.ends_with("_128.dds")) {
-            songInfo.albumCover128_tocIndex = i;
-        } else if (tocEntry.name.ends_with("_256.dds")) {
-            songInfo.albumCover256_tocIndex = i;
-        }
-    }
-
-    return songInfo;
-}
-
-static Song::Notes readSongNotes(const Psarc::PsarcInfo::TOCEntry& tocEntry) {
-  Song::Notes songNotes;
 
   pugi::xml_document doc;
   pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
@@ -108,13 +44,78 @@ static Song::Notes readSongNotes(const Psarc::PsarcInfo::TOCEntry& tocEntry) {
 
   auto a = result.description();
 
+  pugi::xml_node root = doc.child("song");
+
+  for (pugi::xml_node node : root.child("title")) {
+    songInfo.title = node.value();
+  }
+
+  for (pugi::xml_node node : root.child("tuning")) {
+    songInfo.albumYear = tuning(node.attribute("string0").value(), node.attribute("string1").value(),
+      node.attribute("string2").value(), node.attribute("string3").value(),
+      node.attribute("string4").value(), node.attribute("string5").value());
+  }
+
+  for (pugi::xml_node node : root.child("artistName")) {
+    songInfo.artist = node.value();
+  }
+
+  for (pugi::xml_node node : root.child("albumName")) {
+    songInfo.albumName = node.value();
+  }
+
+  for (pugi::xml_node node : root.child("albumYear")) {
+    songInfo.albumYear = node.value();
+  }
+}
+
+Song::Info Song::psarcInfoToSongInfo(const Psarc::PsarcInfo& psarcInfo) {
+
+  Song::Info songInfo;
+
+  for (i32 i = 0; i < psarcInfo.tocEntries.size(); ++i) {
+    const Psarc::PsarcInfo::TOCEntry& tocEntry = psarcInfo.tocEntries[i];
+
+    if (tocEntry.name.ends_with("_lead.xml")) {
+      songInfo.instrumentFlags |= Info::InstrumentFlags::LeadGuitar;
+      readSongInfoXml(tocEntry, songInfo);
+    }
+    else if (tocEntry.name.ends_with("_rhythm.xml")) {
+      songInfo.instrumentFlags |= Info::InstrumentFlags::RhythmGuitar;
+      if (songInfo.title.empty())
+        readSongInfoXml(tocEntry, songInfo);
+    }
+    else if (tocEntry.name.ends_with("_bass.xml")) {
+      songInfo.instrumentFlags |= Info::InstrumentFlags::BassGuitar;
+      if (songInfo.title.empty())
+        readSongInfoXml(tocEntry, songInfo);
+    }
+    else if (tocEntry.name.ends_with("_64.dds")) {
+      songInfo.albumCover64_tocIndex = i;
+    }
+    else if (tocEntry.name.ends_with("_128.dds")) {
+      songInfo.albumCover128_tocIndex = i;
+    }
+    else if (tocEntry.name.ends_with("_256.dds")) {
+      songInfo.albumCover256_tocIndex = i;
+    }
+  }
+
+  return songInfo;
+}
+
+static void readSongNotes(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::TranscriptionTrack& transcriptionTrack) {
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
+  assert(result.status == pugi::status_ok);
+
   pugi::xml_node notes = doc.child("song").child("transcriptionTrack").child("notes");
 
   //songNotes.notes.resize(notes.attribute("count").as_int());
 
   for (pugi::xml_node note : notes.children("note")) {
 
-    Song::Notes::Note note_;
+    Song::TranscriptionTrack::Note note_;
 
     note_.time = note.attribute("time").as_float();
     note_.linkNext = note.attribute("linkNext").as_bool();
@@ -142,15 +143,66 @@ static Song::Notes readSongNotes(const Psarc::PsarcInfo::TOCEntry& tocEntry) {
     note_.tap = note.attribute("tap").as_bool();
     note_.vibrato = note.attribute("vibrato").as_bool();
 
-    songNotes.notes.push_back(note_);
+    transcriptionTrack.notes.push_back(note_);
   }
-
-  return songNotes;
 }
 
-Song::Notes Song::loadNotes(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentFlags instrumentFlags)
+static void readSongChords(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::TranscriptionTrack& transcriptionTrack) {
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
+  assert(result.status == pugi::status_ok);
+
+  pugi::xml_node cords = doc.child("song").child("transcriptionTrack").child("chords");
+
+  //songNotes.notes.resize(notes.attribute("count").as_int());
+
+  for (pugi::xml_node chord : cords.children("chord")) {
+    Song::TranscriptionTrack::Chords chords;
+
+    chords.time = chord.attribute("time").as_float();
+    chords.chordId = chord.attribute("time").as_uint();
+    chords.strum = chord.attribute("strum").as_bool();
+
+    for (pugi::xml_node chordNote : chord.children("chordNote")) {
+
+      Song::TranscriptionTrack::Chords::ChordNote chordnote_;
+
+      chordnote_.time = chordNote.attribute("time").as_float();
+      //chordnote_.linkNext = chordNote.attribute("linkNext").as_bool();
+      //chordnote_.accent = chordNote.attribute("accent").as_bool();
+      //chordnote_.bend = chordNote.attribute("bend").as_bool();
+      chordnote_.fret = chordNote.attribute("fret").as_int();
+      //chordnote_.hammerOn = chordNote.attribute("hammerOn").as_bool();
+      //chordnote_.harmonic = chordNote.attribute("harmonic").as_bool();
+      //chordnote_.hopo = chordNote.attribute("hopo").as_bool();
+      //chordnote_.ignore = chordNote.attribute("ignore").as_bool();
+      chordnote_.leftHand = chordNote.attribute("leftHand").as_bool();
+      //chordnote_.mute = chordNote.attribute("mute").as_bool();
+      //chordnote_.palmMute = chordNote.attribute("palmMute").as_bool();
+      //chordnote_.pluck = chordNote.attribute("pluck").as_bool();
+      //chordnote_.pullOff = chordNote.attribute("pullOff").as_bool();
+      //chordnote_.slap = chordNote.attribute("slap").as_bool();
+      //chordnote_.slideTo = chordNote.attribute("slideTo").as_bool();
+      chordnote_.string = chordNote.attribute("string ").as_bool();
+      //chordnote_.sustain = chordNote.attribute("sustain").as_bool();
+      //chordnote_.tremolo = chordNote.attribute("tremolo").as_bool();
+      //chordnote_.harmonicPinch = chordNote.attribute("harmonicPinch").as_bool();
+      //chordnote_.pickDirection = chordNote.attribute("pickDirection").as_bool();
+      //chordnote_.rightHand = chordNote.attribute("rightHand").as_bool();
+      //chordnote_.slideUnpitchTo = chordNote.attribute("slideUnpitchTo").as_bool();
+      //chordnote_.tap = chordNote.attribute("tap").as_bool();
+      //chordnote_.vibrato = chordNote.attribute("vibrato").as_bool();
+
+      chords.chordNotes.push_back(chordnote_);
+    }
+
+    transcriptionTrack.chords.push_back(chords);
+  }
+}
+
+Song::TranscriptionTrack Song::loadTranscriptionTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentFlags instrumentFlags)
 {
-  instrumentFlags = Info::InstrumentFlags::RhythmGuitar;
+  Song::TranscriptionTrack transcriptionTrack;
 
   for (const Psarc::PsarcInfo::TOCEntry& tocEntry : psarcInfo.tocEntries)
   {
@@ -158,16 +210,33 @@ Song::Notes Song::loadNotes(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentF
     {
     case Info::InstrumentFlags::LeadGuitar:
       if (tocEntry.name.ends_with("_lead.xml"))
-        return readSongNotes(tocEntry);
+      {
+        readSongNotes(tocEntry, transcriptionTrack);
+        readSongChords(tocEntry, transcriptionTrack);
+
+        return transcriptionTrack;
+      }
       break;
     case Info::InstrumentFlags::RhythmGuitar:
       if (tocEntry.name.ends_with("_rhythm.xml"))
-        return readSongNotes(tocEntry);
+      {
+        readSongNotes(tocEntry, transcriptionTrack);
+        readSongChords(tocEntry, transcriptionTrack);
+
+        return transcriptionTrack;
+      }
       break;
     case Info::InstrumentFlags::BassGuitar:
       if (tocEntry.name.ends_with("_bass.xml"))
-        return readSongNotes(tocEntry);
+      {
+        readSongNotes(tocEntry, transcriptionTrack);
+        readSongChords(tocEntry, transcriptionTrack);
+
+        return transcriptionTrack;
+      }
       break;
     }
   }
+
+  return transcriptionTrack;
 }

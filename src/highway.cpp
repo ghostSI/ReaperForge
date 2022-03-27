@@ -10,6 +10,7 @@
 #include "psarc.h"
 #include "song.h"
 #include "font.h"
+#include "sound.h"
 
 static const f32 stringSpacing = 0.42f;
 
@@ -42,19 +43,22 @@ static const f32 frets[]
   485.775f * 0.05f
 };
 
-static Song::Notes songNotes;
+static Song::TranscriptionTrack transcriptionTrack;
 
 void Highway::init()
 {
   const std::vector<u8> psarcData = Psarc::readPsarcData("songs/test.psarc");
   const Psarc::PsarcInfo psarcInfo = Psarc::parse(psarcData);
-  songNotes = Song::loadNotes(psarcInfo, Song::Info::InstrumentFlags::RhythmGuitar);
+  transcriptionTrack = Song::loadTranscriptionTrack(psarcInfo, Song::Info::InstrumentFlags::RhythmGuitar);
+
+  Psarc::loadOgg(psarcInfo, false);
+  Sound::playOgg();
 }
 
 void Highway::tick()
 {
   static Font::Handle handle[24];
-  char text[500];
+  char text[3];
 
   for (i32 i = 0; i < 24; i += 2)
   {
@@ -92,7 +96,7 @@ static void setStringColor(GLuint shader, i32 string)
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), rr, gg, bb, aa);
 }
 
-static void drawNote(GLuint shader, const Song::Notes::Note& note, f32 noteTime)
+static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, f32 noteTime)
 {
   mat4 modelMat;
   modelMat.m30 = frets[note.fret] + 0.5f * (frets[note.fret + 1] - frets[note.fret]);
@@ -135,7 +139,7 @@ static void drawNotes(GLuint shader)
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (const Song::Notes::Note& note : songNotes.notes)
+  for (const Song::TranscriptionTrack::Note& note : transcriptionTrack.notes)
   {
     const f32 noteTime = -note.time + oggElapsed;
 
@@ -170,7 +174,7 @@ static void drawNoteFreadboard(GLuint shader)
 
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (const Song::Notes::Note& note : songNotes.notes)
+  for (const Song::TranscriptionTrack::Note& note : transcriptionTrack.notes)
   {
     const f32 noteTime = -note.time + oggElapsed;
 

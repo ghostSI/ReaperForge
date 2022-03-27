@@ -240,6 +240,7 @@ static void readSongHandShape(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::
   }
 }
 
+
 Song::TranscriptionTrack Song::loadTranscriptionTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentFlags instrumentFlags)
 {
   Song::TranscriptionTrack transcriptionTrack;
@@ -285,4 +286,37 @@ Song::TranscriptionTrack Song::loadTranscriptionTrack(const Psarc::PsarcInfo& ps
   }
 
   return transcriptionTrack;
+}
+
+std::vector<Song::Vocal> Song::loadVocals(const Psarc::PsarcInfo& psarcInfo) {
+  for (const Psarc::PsarcInfo::TOCEntry& tocEntry : psarcInfo.tocEntries)
+  {
+    if (tocEntry.name.ends_with("_vocals.xml"))
+    {
+      pugi::xml_document doc;
+      pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
+      assert(result.status == pugi::status_ok);
+
+      pugi::xml_node vocals = doc.child("vocals");
+
+      std::vector<Song::Vocal> vocals_;
+
+      //songNotes.notes.resize(notes.attribute("count").as_int());
+
+      for (pugi::xml_node vocal : vocals.children("vocal")) {
+        Song::Vocal vocal_;
+
+        vocal_.time = vocal.attribute("time").as_float();
+        vocal_.note = vocal.attribute("note").as_int();
+        vocal_.length = vocal.attribute("length").as_float();
+        vocal_.lyric = vocal.attribute("lyric").as_string();
+
+        vocals_.push_back(vocal_);
+      }
+
+      return vocals_;
+    }
+  }
+
+  return {};
 }

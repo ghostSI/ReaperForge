@@ -44,12 +44,14 @@ static const f32 frets[]
 };
 
 static Song::TranscriptionTrack transcriptionTrack;
+static std::vector<Song::Vocal> vocals;
 
 void Highway::init()
 {
   const std::vector<u8> psarcData = Psarc::readPsarcData("songs/test.psarc");
   const Psarc::PsarcInfo psarcInfo = Psarc::parse(psarcData);
   transcriptionTrack = Song::loadTranscriptionTrack(psarcInfo, Song::Info::InstrumentFlags::RhythmGuitar);
+  vocals = Song::loadVocals(psarcInfo);
 
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();

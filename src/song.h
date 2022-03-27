@@ -103,6 +103,15 @@ namespace Song {
       std::vector<HandShape> handShape;
     };
     TranscriptionTrack loadTranscriptionTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentFlags instrumentFlags);
+
+    struct Vocal
+    {
+      f32 time;
+      i32 note;
+      f32 length;
+      std::string lyric;
+    };
+    std::vector<Vocal> loadVocals(const Psarc::PsarcInfo& psarcInfo);
 }
 
 #endif // SONG_H

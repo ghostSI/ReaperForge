@@ -138,7 +138,7 @@ void Font::render() {
     for (const Text &text: texts) {
         Sprite::Info spriteInfo{
                 .shaderStem = text.space == Space::worldSpace ? Shader::Stem::defaultWorld
-                                                              : Shader::Stem::defaultScreen,
+                                                              : Shader::Stem::fontScreen,
                 .zOrder = text.space == Space::worldSpace ? ZOrder::fontWorld : ZOrder::fontUi,
                 .posX = text.textPosX,
                 .posY = text.textPosY,

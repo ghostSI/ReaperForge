@@ -17,6 +17,10 @@ const char* Data::Shader::groundFrag =
 #include "../res/ground.frag"
 ;
 
+const char* Data::Shader::fontFrag =
+#include "../res/font.frag"
+;
+
 
 const u8 Data::Texture::font[82944] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

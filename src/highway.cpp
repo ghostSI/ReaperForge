@@ -57,7 +57,8 @@ void Highway::init()
   Sound::playOgg();
 }
 
-void Highway::tick()
+
+static void tickFretNumbers()
 {
   static Font::Handle handle[24];
   char text[3];
@@ -77,6 +78,136 @@ void Highway::tick()
     };
     handle[i] = Font::print(fontInfo);
   }
+}
+
+static void tickLyrics()
+{
+  if (Settings::get("Highway", "Lyrics") == "0")
+    return;
+
+  const f32 oggElapsed = Global::time - Global::oggStartTime;
+
+  i32 line0Begin = 0;
+  i32 line0End = 0;
+  for (i32 i = 0; i < vocals.size(); ++i)
+  {
+    const Song::Vocal& vocal = vocals[i];
+
+    if (vocal.lyric[vocal.lyric.size() - 1] == '+')
+    {
+      if (vocal.time + vocal.length > oggElapsed)
+      {
+        line0End = i;
+        break;
+      }
+      else
+      {
+        line0Begin = i + 1;
+      }
+    }
+  }
+
+  i32 line1End = 0;
+  for (i32 i = line0End + 1; i < vocals.size(); ++i)
+  {
+    const Song::Vocal& vocal = vocals[i];
+
+    if (vocal.lyric[vocal.lyric.size() - 1] == '+')
+    {
+      line1End = i;
+      break;
+    }
+  }
+
+  char line0[4096];
+  i32 line0Cur = 0;
+
+  for (i32 i = line0Begin; i < line0End; ++i)
+  {
+    const Song::Vocal& vocal = vocals[i];
+
+    i32 j = 0;
+    while (vocal.lyric[j] != '\0')
+    {
+      line0[line0Cur + j] = vocal.lyric[j];
+      ++j;
+    }
+    line0[line0Cur + j] = ' ';
+    line0Cur += j + 1;
+  }
+  const Song::Vocal& vocal = vocals[line0End];
+  i32 j = 0;
+  while (vocal.lyric[j] != '+')
+  {
+    line0[line0Cur + j] = vocal.lyric[j];
+    ++j;
+  }
+  line0[line0Cur + j] = '\0';
+
+  static Font::Handle line0Handle;
+  Font::Info fontInfo{
+    .text = line0,
+    .fontHandle = line0Handle,
+    .posX = 80.0f,
+    .posY = 200.0f,
+    .space = Space::screenSpace,
+  };
+  line0Handle = Font::print(fontInfo);
+
+  {
+    char line1[4096];
+    i32 line1Cur = 0;
+
+    i32 line1End = 0;
+    for (i32 i = line0End + 1; i < vocals.size(); ++i)
+    {
+      const Song::Vocal& vocal = vocals[i];
+
+      if (vocal.lyric[vocal.lyric.size() - 1] == '+')
+      {
+        line1End = i;
+        break;
+      }
+    }
+
+    for (i32 i = line0End + 1; i < line1End; ++i)
+    {
+      const Song::Vocal& vocal = vocals[i];
+
+      i32 j = 0;
+      while (vocal.lyric[j] != '\0')
+      {
+        line1[line1Cur + j] = vocal.lyric[j];
+        ++j;
+      }
+      line1[line1Cur + j] = ' ';
+      line1Cur += j + 1;
+    }
+    const Song::Vocal& vocal = vocals[line1End];
+    i32 j = 0;
+    while (vocal.lyric[j] != '+')
+    {
+      line1[line1Cur + j] = vocal.lyric[j];
+      ++j;
+    }
+    line1[line1Cur + j] = '\0';
+
+    static Font::Handle line1Handle;
+    Font::Info fontInfo{
+      .text = line1,
+      .fontHandle = line1Handle,
+      .posX = 80.0f,
+      .posY = 230.0f,
+      .space = Space::screenSpace,
+    };
+    line1Handle = Font::print(fontInfo);
+  }
+}
+
+void Highway::tick()
+{
+  tickFretNumbers();
+  tickLyrics();
 }
 
 static void setStringColor(GLuint shader, i32 string)

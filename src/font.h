@@ -23,6 +23,7 @@ namespace Font {
         Font::Handle fontHandle = 0;
         f32 posX = 0.0_f32;
         f32 posY = 0.0_f32;
+        f32 scale = 0.0_f32;
         Font::Alignment alignment = Font::Alignment::left;
         Space space = Space::worldSpace;
         Font::Type type = Font::Type::font;

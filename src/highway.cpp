@@ -54,19 +54,20 @@ void Highway::init()
 void Highway::tick()
 {
   static Font::Handle handle[24];
-  char text[3];
+  char text[500];
 
-  for (i32 i = 0; i < 24; ++i)
+  for (i32 i = 0; i < 24; i += 2)
   {
     f32 posX = frets[i] + 0.5f * (frets[i + 1] - frets[i]);
 
-    sprintf(text, "%d", i);
+    sprintf(text, "%d", i + 1);
     Font::Info fontInfo{
       .text = text,
       .fontHandle = handle[i],
-      .posX = posX,
-      .posY = 0.0,
-      .space = Space::screenSpace,
+      .posX = posX - 5.75f,
+      .posY = -0.4f,
+      .scale = 0.03f,
+      .space = Space::worldSpace,
     };
     handle[i] = Font::print(fontInfo);
   }

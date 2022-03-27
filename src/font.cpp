@@ -16,6 +16,7 @@ struct Text {
     f32 textPosY;
     i32 letters;
     f32 autoDelete;
+    f32 scale;
     std::vector<u32> textBitmap;
 };
 
@@ -78,6 +79,7 @@ Font::Handle Font::print(const Info &fontInfo) {
             break;
     }
     text.textPosY = fontInfo.posY;
+    text.scale = fontInfo.scale;
 
     text.textBitmap.resize(i64(text.letters) * charWidth * charHeight);
 
@@ -137,11 +139,14 @@ void Font::tick() {
 void Font::render() {
     for (const Text &text: texts) {
         Sprite::Info spriteInfo{
-                .shaderStem = text.space == Space::worldSpace ? Shader::Stem::defaultWorld
+                .shaderStem = text.space == Space::worldSpace ? Shader::Stem::fontWorld
                                                               : Shader::Stem::fontScreen,
                 .zOrder = text.space == Space::worldSpace ? ZOrder::fontWorld : ZOrder::fontUi,
                 .posX = text.textPosX,
                 .posY = text.textPosY,
+                .flip = text.space == Space::worldSpace ? Sprite::Flip::Horizontal : Sprite::Flip::none,
+                .scaleWidth = text.space == Space::worldSpace ? text.scale * text.letters * charWidth : 0.0f,
+                .scaleHeight = text.space == Space::worldSpace ? text.scale * charHeight : 0.0f,
                 .space = text.space,
                 .skipTextureCache = true,
                 .rawTexture = reinterpret_cast<const u8 *>(text.textBitmap.data()),

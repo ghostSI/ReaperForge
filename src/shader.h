@@ -9,6 +9,7 @@ namespace Shader {
         defaultWorld,
         ground,
         fontScreen,
+        fontWorld,
     };
 
     void init();

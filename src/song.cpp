@@ -157,15 +157,15 @@ static void readSongChords(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::Tra
   //songNotes.notes.resize(notes.attribute("count").as_int());
 
   for (pugi::xml_node chord : cords.children("chord")) {
-    Song::TranscriptionTrack::Chords chords;
+    Song::TranscriptionTrack::Chord chord_;
 
-    chords.time = chord.attribute("time").as_float();
-    chords.chordId = chord.attribute("time").as_uint();
-    chords.strum = chord.attribute("strum").as_bool();
+    chord_.time = chord.attribute("time").as_float();
+    chord_.chordId = chord.attribute("chordId").as_int();
+    chord_.strum = chord.attribute("strum").as_bool();
 
     for (pugi::xml_node chordNote : chord.children("chordNote")) {
 
-      Song::TranscriptionTrack::Chords::ChordNote chordnote_;
+      Song::TranscriptionTrack::Chord::ChordNote chordnote_;
 
       chordnote_.time = chordNote.attribute("time").as_float();
       //chordnote_.linkNext = chordNote.attribute("linkNext").as_bool();
@@ -193,10 +193,50 @@ static void readSongChords(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::Tra
       //chordnote_.tap = chordNote.attribute("tap").as_bool();
       //chordnote_.vibrato = chordNote.attribute("vibrato").as_bool();
 
-      chords.chordNotes.push_back(chordnote_);
+      chord_.chordNotes.push_back(chordnote_);
     }
 
-    transcriptionTrack.chords.push_back(chords);
+    transcriptionTrack.chords.push_back(chord_);
+  }
+}
+
+static void readSongAnchors(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::TranscriptionTrack& transcriptionTrack) {
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
+  assert(result.status == pugi::status_ok);
+
+  pugi::xml_node anchors = doc.child("song").child("transcriptionTrack").child("anchors");
+
+  //songNotes.notes.resize(notes.attribute("count").as_int());
+
+  for (pugi::xml_node anchor : anchors.children("anchor")) {
+    Song::TranscriptionTrack::Anchor anchor_;
+
+    anchor_.time = anchor.attribute("time").as_float();
+    anchor_.fret = anchor.attribute("fret").as_int();
+    anchor_.width = anchor.attribute("width").as_int();
+
+    transcriptionTrack.anchors.push_back(anchor_);
+  }
+}
+
+static void readSongHandShape(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::TranscriptionTrack& transcriptionTrack) {
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
+  assert(result.status == pugi::status_ok);
+
+  pugi::xml_node handShapes = doc.child("song").child("transcriptionTrack").child("handShapes");
+
+  //songNotes.notes.resize(notes.attribute("count").as_int());
+
+  for (pugi::xml_node handShape : handShapes.children("handShape")) {
+    Song::TranscriptionTrack::HandShape handShape_;
+
+    handShape_.chordId = handShape.attribute("chordId").as_int();
+    handShape_.endTime = handShape.attribute("endTime").as_float();
+    handShape_.startTime = handShape.attribute("startTime").as_float();
+
+    transcriptionTrack.handShape.push_back(handShape_);
   }
 }
 
@@ -213,6 +253,8 @@ Song::TranscriptionTrack Song::loadTranscriptionTrack(const Psarc::PsarcInfo& ps
       {
         readSongNotes(tocEntry, transcriptionTrack);
         readSongChords(tocEntry, transcriptionTrack);
+        readSongAnchors(tocEntry, transcriptionTrack);
+        readSongHandShape(tocEntry, transcriptionTrack);
 
         return transcriptionTrack;
       }
@@ -222,6 +264,8 @@ Song::TranscriptionTrack Song::loadTranscriptionTrack(const Psarc::PsarcInfo& ps
       {
         readSongNotes(tocEntry, transcriptionTrack);
         readSongChords(tocEntry, transcriptionTrack);
+        readSongAnchors(tocEntry, transcriptionTrack);
+        readSongHandShape(tocEntry, transcriptionTrack);
 
         return transcriptionTrack;
       }
@@ -231,6 +275,8 @@ Song::TranscriptionTrack Song::loadTranscriptionTrack(const Psarc::PsarcInfo& ps
       {
         readSongNotes(tocEntry, transcriptionTrack);
         readSongChords(tocEntry, transcriptionTrack);
+        readSongAnchors(tocEntry, transcriptionTrack);
+        readSongHandShape(tocEntry, transcriptionTrack);
 
         return transcriptionTrack;
       }

@@ -68,10 +68,10 @@ namespace Song {
         bool tap;
         bool vibrato;
       };
-      struct Chords
+      struct Chord
       {
         f32 time;
-        u32 chordId;
+        i32 chordId;
         bool strum;
 
         struct ChordNote
@@ -84,9 +84,23 @@ namespace Song {
 
         std::vector<ChordNote> chordNotes;
       };
+      struct Anchor
+      {
+        f32 time;
+        i32 fret;
+        i32 width;
+      };
+      struct HandShape
+      {
+        i32 chordId;
+        f32 endTime;
+        f32 startTime;
+      };
 
       std::vector<Note> notes;
-      std::vector<Chords> chords;
+      std::vector<Chord> chords;
+      std::vector<Anchor> anchors;
+      std::vector<HandShape> handShape;
     };
     TranscriptionTrack loadTranscriptionTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentFlags instrumentFlags);
 }

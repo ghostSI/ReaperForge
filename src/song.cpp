@@ -133,7 +133,7 @@ static void readSongNotes(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::Tran
     note_.pullOff = note.attribute("pullOff").as_bool();
     note_.slap = note.attribute("slap").as_bool();
     note_.slideTo = note.attribute("slideTo").as_bool();
-    note_.string = note.attribute("string ").as_bool();
+    note_.string = note.attribute("string").as_int();
     note_.sustain = note.attribute("sustain").as_bool();
     note_.tremolo = note.attribute("tremolo").as_bool();
     note_.harmonicPinch = note.attribute("harmonicPinch").as_bool();
@@ -165,35 +165,35 @@ static void readSongChords(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::Tra
 
     for (pugi::xml_node chordNote : chord.children("chordNote")) {
 
-      Song::TranscriptionTrack::Chord::ChordNote chordnote_;
+      Song::TranscriptionTrack::Note note_;
 
-      chordnote_.time = chordNote.attribute("time").as_float();
-      //chordnote_.linkNext = chordNote.attribute("linkNext").as_bool();
-      //chordnote_.accent = chordNote.attribute("accent").as_bool();
-      //chordnote_.bend = chordNote.attribute("bend").as_bool();
-      chordnote_.fret = chordNote.attribute("fret").as_int();
-      //chordnote_.hammerOn = chordNote.attribute("hammerOn").as_bool();
-      //chordnote_.harmonic = chordNote.attribute("harmonic").as_bool();
-      //chordnote_.hopo = chordNote.attribute("hopo").as_bool();
-      //chordnote_.ignore = chordNote.attribute("ignore").as_bool();
-      chordnote_.leftHand = chordNote.attribute("leftHand").as_bool();
-      //chordnote_.mute = chordNote.attribute("mute").as_bool();
-      //chordnote_.palmMute = chordNote.attribute("palmMute").as_bool();
-      //chordnote_.pluck = chordNote.attribute("pluck").as_bool();
-      //chordnote_.pullOff = chordNote.attribute("pullOff").as_bool();
-      //chordnote_.slap = chordNote.attribute("slap").as_bool();
-      //chordnote_.slideTo = chordNote.attribute("slideTo").as_bool();
-      chordnote_.string = chordNote.attribute("string ").as_bool();
-      //chordnote_.sustain = chordNote.attribute("sustain").as_bool();
-      //chordnote_.tremolo = chordNote.attribute("tremolo").as_bool();
-      //chordnote_.harmonicPinch = chordNote.attribute("harmonicPinch").as_bool();
-      //chordnote_.pickDirection = chordNote.attribute("pickDirection").as_bool();
-      //chordnote_.rightHand = chordNote.attribute("rightHand").as_bool();
-      //chordnote_.slideUnpitchTo = chordNote.attribute("slideUnpitchTo").as_bool();
-      //chordnote_.tap = chordNote.attribute("tap").as_bool();
-      //chordnote_.vibrato = chordNote.attribute("vibrato").as_bool();
+      note_.time = chordNote.attribute("time").as_float();
+      note_.linkNext = chordNote.attribute("linkNext").as_bool();
+      note_.accent = chordNote.attribute("accent").as_bool();
+      note_.bend = chordNote.attribute("bend").as_bool();
+      note_.fret = chordNote.attribute("fret").as_int();
+      note_.hammerOn = chordNote.attribute("hammerOn").as_bool();
+      note_.harmonic = chordNote.attribute("harmonic").as_bool();
+      note_.hopo = chordNote.attribute("hopo").as_bool();
+      note_.ignore = chordNote.attribute("ignore").as_bool();
+      note_.leftHand = chordNote.attribute("leftHand").as_bool();
+      note_.mute = chordNote.attribute("mute").as_bool();
+      note_.palmMute = chordNote.attribute("palmMute").as_bool();
+      note_.pluck = chordNote.attribute("pluck").as_bool();
+      note_.pullOff = chordNote.attribute("pullOff").as_bool();
+      note_.slap = chordNote.attribute("slap").as_bool();
+      note_.slideTo = chordNote.attribute("slideTo").as_bool();
+      note_.string = chordNote.attribute("string").as_int();
+      note_.sustain = chordNote.attribute("sustain").as_bool();
+      note_.tremolo = chordNote.attribute("tremolo").as_bool();
+      note_.harmonicPinch = chordNote.attribute("harmonicPinch").as_bool();
+      note_.pickDirection = chordNote.attribute("pickDirection").as_bool();
+      note_.rightHand = chordNote.attribute("rightHand").as_bool();
+      note_.slideUnpitchTo = chordNote.attribute("slideUnpitchTo").as_bool();
+      note_.tap = chordNote.attribute("tap").as_bool();
+      note_.vibrato = chordNote.attribute("vibrato").as_bool();
 
-      chord_.chordNotes.push_back(chordnote_);
+      chord_.chordNotes.push_back(note_);
     }
 
     transcriptionTrack.chords.push_back(chord_);

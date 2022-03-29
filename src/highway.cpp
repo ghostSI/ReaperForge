@@ -250,7 +250,9 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
   }
   if (note.pullOff)
   {
-
+    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
+    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::pullOff), Data::Geometry::pullOff, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::pullOff) / (sizeof(float) * 5));
   }
   if (note.palmMute)
   {
@@ -292,6 +294,52 @@ static void drawNotes(GLuint shader)
       continue;
 
     drawNote(shader, note, noteTime);
+  }
+}
+
+static void drawAnchor(GLuint shader, const Song::TranscriptionTrack::Anchor& anchor, f32 noteTime)
+{
+}
+
+static void drawAnchors(GLuint shader)
+{
+  const f32 oggElapsed = Global::time - Global::oggStartTime;
+
+  for (const Song::TranscriptionTrack::Anchor& ancher : transcriptionTrack.anchors)
+  {
+    const f32 noteTime = -ancher.time + oggElapsed;
+
+    if (noteTime > 0.0f)
+      continue;
+    if (noteTime < -60.0f)
+      continue;
+
+    drawAnchor(shader, ancher, noteTime);
+  }
+}
+
+static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chord, f32 noteTime)
+{
+  for (const Song::TranscriptionTrack::Note& note : chord.chordNotes)
+  {
+    drawNote(shader, note, noteTime);
+  }
+}
+
+static void drawChords(GLuint shader)
+{
+  const f32 oggElapsed = Global::time - Global::oggStartTime;
+
+  for (const Song::TranscriptionTrack::Chord& chord : transcriptionTrack.chords)
+  {
+    const f32 noteTime = -chord.time + oggElapsed;
+
+    if (noteTime > 0.0f)
+      continue;
+    if (noteTime < -60.0f)
+      continue;
+
+    drawChord(shader, chord, noteTime);
   }
 }
 
@@ -397,5 +445,7 @@ void Highway::render()
 
   // Draw Note
   drawNotes(shader);
+  drawAnchors(shader);
+  drawChords(shader);
   drawNoteFreadboard(shader);
 }

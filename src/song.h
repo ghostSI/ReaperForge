@@ -46,7 +46,7 @@ namespace Song {
         bool linkNext;
         bool accent;
         bool bend;
-        int fret;
+        i32 fret;
         bool hammerOn;
         bool harmonic;
         bool hopo;
@@ -58,7 +58,7 @@ namespace Song {
         bool pullOff;
         bool slap;
         bool slideTo;
-        bool string;
+        i32 string;
         bool sustain;
         bool tremolo;
         bool harmonicPinch;
@@ -74,15 +74,7 @@ namespace Song {
         i32 chordId;
         bool strum;
 
-        struct ChordNote
-        {
-          f32 time;
-          i32 fret;
-          i32 leftHand;
-          i32 string;
-        };
-
-        std::vector<ChordNote> chordNotes;
+        std::vector<Note> chordNotes;
       };
       struct Anchor
       {

@@ -26,9 +26,9 @@ namespace Data {
     extern const f32 hammerOn[105];
     extern const f32 pullOff[75];
     extern const f32 pinchHarmonic[1590];
-    extern const f32 anchor[270];
-    extern const f32 anchorLeft[135];
-    extern const f32 anchorRight[135];
+    extern const f32 zero[270];
+    extern const f32 zeroLeft[135];
+    extern const f32 zeroRight[135];
     extern const f32 ground[30];
     extern const f32 fretmute[540];
     extern const f32 harmonic[1590];

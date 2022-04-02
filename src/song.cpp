@@ -37,12 +37,9 @@ tuning(const std::string& string0, const std::string& string1, const std::string
 
 static void readSongInfoXml(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::Info& songInfo) {
 
-
   pugi::xml_document doc;
   pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
-  assert(result);
-
-  auto a = result.description();
+  assert(result.status == pugi::status_ok);
 
   pugi::xml_node root = doc.child("song");
 

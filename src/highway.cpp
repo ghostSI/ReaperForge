@@ -255,8 +255,8 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
       OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
 
-      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zero), Data::Geometry::zero, GL_STATIC_DRAW);
-      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::zero) / (sizeof(float) * 5));
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroMiddle), Data::Geometry::zeroMiddle, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::zeroMiddle) / (sizeof(float) * 5));
     }
 
     {
@@ -300,14 +300,14 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
   if (note.palmMute)
   {
     OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.0f, 0.0f, 0.0f, 1.0f);
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::palmmute), Data::Geometry::palmmute, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::palmmute) / (sizeof(float) * 5));
+    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::palmMute), Data::Geometry::palmMute, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::palmMute) / (sizeof(float) * 5));
   }
   if (note.mute)
   {
     OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::fretmute), Data::Geometry::fretmute, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::fretmute) / (sizeof(float) * 5));
+    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::fretMute), Data::Geometry::fretMute, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::fretMute) / (sizeof(float) * 5));
   }
   if (note.harmonic)
   {

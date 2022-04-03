@@ -7,7 +7,8 @@ uniform sampler2D texture0;
 
 void main()
 {
-  vec4 tex = texture(texture0, Texcoord);
-  outColor = mix(color, tex, tex.a);
+  vec2 texcoord = vec2(Texcoord.x , 1.0 - Texcoord.y);
+  vec4 tex = texture(texture0, texcoord);
+  outColor = mix(color, vec4(tex.rgb, 1.0), tex.a);
 }
 )"

@@ -43,8 +43,7 @@ static const f32 frets[]
   21.00f,
   22.00f,
   23.00f,
-  24.00f,
-  25.00f
+  24.00f
 };
 
 static Song::TranscriptionTrack transcriptionTrack;
@@ -64,29 +63,6 @@ void Highway::init()
 
 
   texture = loadDDS(Data::Texture::texture, sizeof(Data::Texture::texture));
-}
-
-
-static void tickFretNumbers()
-{
-  static Font::Handle handle[24];
-  char text[3];
-
-  for (i32 i = 0; i < 24; i += 2)
-  {
-    f32 posX = frets[i] + 0.5f * (frets[i + 1] - frets[i]);
-
-    sprintf(text, "%d", i + 1);
-    Font::Info fontInfo{
-      .text = text,
-      .fontHandle = handle[i],
-      .posX = posX - 5.75f,
-      .posY = -0.4f,
-      .scale = 0.03f,
-      .space = Space::worldSpace,
-    };
-    handle[i] = Font::print(fontInfo);
-  }
 }
 
 static void tickLyrics()
@@ -220,7 +196,6 @@ static void tickLyrics()
 void Highway::tick()
 {
   highwaySpeedMultiplier = atof(Settings::get("Highway", "SpeedMultiplier").c_str());
-  tickFretNumbers();
   tickLyrics();
 }
 
@@ -420,12 +395,36 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
   }
 }
 
+static void drawChordLeftHand(const Song::TranscriptionTrack::Chord& chord)
+{
+  for (const Song::TranscriptionTrack::Note& note : chord.chordNotes)
+  { // Draw Left Hand (Finger Position)
+    if (note.fret == 0)
+      continue;
+
+    GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
+    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
+
+    const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+
+    Font::drawFretNumber(note.leftHand, x, f32(5 - note.string) * stringSpacing, 0.1f, 0.4f);
+
+    Shader::useShader(Shader::Stem::defaultWorld);
+    glBindTexture(GL_TEXTURE_2D, texture);
+  }
+}
+
 static void drawChords(GLuint shader, f32 fretboardNoteDistance[6][24])
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (const Song::TranscriptionTrack::Chord& chord : transcriptionTrack.chords)
+  i32 nextChord = -1;
+  //f32 nextChordNoteTime = 0.0f;
+
+  for (i32 i = 0; i < transcriptionTrack.chords.size(); ++i)
   {
+    const Song::TranscriptionTrack::Chord& chord = transcriptionTrack.chords[i];
+
     const f32 noteTime = -chord.time + oggElapsed;
 
     if (noteTime > 0.0f)
@@ -434,6 +433,22 @@ static void drawChords(GLuint shader, f32 fretboardNoteDistance[6][24])
       continue;
 
     drawChord(shader, chord, noteTime, fretboardNoteDistance);
+
+    if (nextChord == -1)
+    {
+      //if (nextChordNoteTime == 0.0f || nextChordNoteTime > noteTime)
+      {
+        nextChord = i;
+        //nextChordNoteTime = noteTime;
+      }
+    }
+  }
+
+  if (nextChord != -1)
+  {
+    const Song::TranscriptionTrack::Chord& chord = transcriptionTrack.chords[nextChord];
+
+    drawChordLeftHand(chord);
   }
 }
 
@@ -475,6 +490,16 @@ static void drawNoteFreadboard(GLuint shader, f32 fretboardNoteDistance[6][24])
   }
 }
 
+static void drawFretNumbers()
+{
+  for (i32 i = 1; i <= 24; ++i)
+  {
+    const f32 x = frets[i - 1] + 0.5f * (frets[i] - frets[i - 1]);
+
+    Font::drawFretNumber(i, x, -0.7f, 0.0f, 0.4f);
+  }
+}
+
 void Highway::render()
 {
   //GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
@@ -497,7 +522,7 @@ void Highway::render()
 
   // Draw Fret
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.1f, 0.1f, 0.1f, 1.0f);
-  for (int i = 0; i < sizeof(frets); ++i)
+  for (i32 i = 0; i < sizeof(frets); ++i)
   {
     mat4 modelMat;
     modelMat.m30 = frets[i];
@@ -558,4 +583,9 @@ void Highway::render()
   drawChords(shader, fretboardNoteDistance);
 
   drawNoteFreadboard(shader, fretboardNoteDistance);
+
+
+  shader = Shader::useShader(Shader::Stem::fontWorld);
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
+  drawFretNumbers();
 }

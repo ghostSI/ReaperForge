@@ -51,7 +51,7 @@ namespace Song {
         bool harmonic;
         bool hopo;
         bool ignore;
-        bool leftHand;
+        i32 leftHand;
         bool mute;
         bool palmMute;
         bool pluck;

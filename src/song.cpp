@@ -173,7 +173,7 @@ static void readSongChords(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::Tra
       note_.harmonic = chordNote.attribute("harmonic").as_bool();
       note_.hopo = chordNote.attribute("hopo").as_bool();
       note_.ignore = chordNote.attribute("ignore").as_bool();
-      note_.leftHand = chordNote.attribute("leftHand").as_bool();
+      note_.leftHand = chordNote.attribute("leftHand").as_int();
       note_.mute = chordNote.attribute("mute").as_bool();
       note_.palmMute = chordNote.attribute("palmMute").as_bool();
       note_.pluck = chordNote.attribute("pluck").as_bool();

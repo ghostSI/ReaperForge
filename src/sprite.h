@@ -34,6 +34,7 @@ namespace Sprite {
         Space space = Space::worldSpace;
         i32 pixelOffset = 0;
         bool skipTextureCache = false;
+        Color color;
 
         // either use textureType or these 3
         const u8 *rawTexture = nullptr;

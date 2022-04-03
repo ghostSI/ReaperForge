@@ -137,7 +137,10 @@ void Sprite::render(Sprite::Info& spriteInfo)
 
   OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
 
-  Shader::useShader(spriteInfo.shaderStem);
+  GLuint shader = Shader::useShader(spriteInfo.shaderStem);
+
+  vec4 colorVec = colorVec4(spriteInfo.color);
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), colorVec.v0, colorVec.v1, colorVec.v2, colorVec.v3);
 
   if (spriteInfo.rawTexture != nullptr)
   { // Load texture

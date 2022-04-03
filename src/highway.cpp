@@ -10,6 +10,7 @@
 #include "psarc.h"
 #include "song.h"
 #include "font.h"
+#include "font2.h"
 #include "sound.h"
 #include "imageload.h"
 
@@ -162,6 +163,7 @@ static void tickLyrics()
     .posX = 80.0f,
     .posY = 200.0f,
     .space = Space::screenSpace,
+    .color = makeColor(255, 0, 0, 255)
   };
   line0Handle = Font::print(fontInfo);
 
@@ -228,17 +230,9 @@ static void setStringColor(GLuint shader, i32 string)
 
   const Color color = (Color)strtoul(colorStr.c_str(), NULL, 16);
 
-  const u8 r = colorR(color);
-  const u8 g = colorG(color);
-  const u8 b = colorB(color);
-  const u8 a = colorA(color);
+  vec4 colorVec = colorVec4(color);
 
-  f32 rr = r / 255.0f;
-  f32 gg = g / 255.0f;
-  f32 bb = b / 255.0f;
-  f32 aa = a / 255.0f;
-
-  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), rr, gg, bb, aa);
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), colorVec.v0, colorVec.v1, colorVec.v2, colorVec.v3);
 }
 
 static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, f32 noteTime, f32 fretboardNoteDistance[6][24])
@@ -289,8 +283,10 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
   }
   else
   {
+    const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+
     mat4 modelMat;
-    modelMat.m30 = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+    modelMat.m30 = x;
     modelMat.m31 = f32(5 - note.string) * stringSpacing;
     modelMat.m32 = noteTime * highwaySpeedMultiplier;
     OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
@@ -299,6 +295,13 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
 
     OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::note), Data::Geometry::note, GL_STATIC_DRAW);
     glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::note) / (sizeof(float) * 5));
+
+    GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
+    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
+
+    char fretNumber[3];
+    sprintf(fretNumber, "%d", note.fret);
+    Font::draw(fretNumber, x, -0.03f, noteTime * highwaySpeedMultiplier, 0.5f);
   }
 
 
@@ -447,6 +450,10 @@ static void drawNoteFreadboard(GLuint shader, f32 fretboardNoteDistance[6][24])
 
 void Highway::render()
 {
+  //GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
+  //OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.0f, 1.0f, 1.0f, 1.0f);
+  //Font::draw2D("test", 0.4f, 0.4f, 0.1f);
+
   GLuint shader = Shader::useShader(Shader::Stem::ground);
 
   // Draw Ground

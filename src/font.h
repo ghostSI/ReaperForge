@@ -1,5 +1,5 @@
-#ifndef FONT_H
-#define FONT_H
+#ifndef FONT_OLD_H
+#define FONT_OLD_H
 
 #include "type.h"
 
@@ -28,6 +28,7 @@ namespace Font {
         Space space = Space::worldSpace;
         Font::Type type = Font::Type::font;
         f32 autoDelete = F32::inf;
+        Color color = U32::max;
     };
 
     void init();
@@ -41,4 +42,4 @@ namespace Font {
     void render();
 }
 
-#endif // FONT_H
+#endif // FONT_OLD_H

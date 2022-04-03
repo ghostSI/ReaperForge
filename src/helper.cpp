@@ -35,6 +35,15 @@ u8 colorA(Color color) {
     return color;
 }
 
+vec4 colorVec4(const Color& color) {
+  const u8 r = colorR(color);
+  const u8 g = colorG(color);
+  const u8 b = colorB(color);
+  const u8 a = colorA(color);
+
+  return vec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+}
+
 Color getColor(const u8 *rgbaData, i32 index) {
     return reinterpret_cast<const Color *>(rgbaData)[index];
 }

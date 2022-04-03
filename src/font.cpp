@@ -2,6 +2,7 @@
 
 #include "sprite.h"
 #include "global.h"
+#include "opengl.h"
 
 #include <vector>
 #include <string.h>
@@ -17,6 +18,7 @@ struct Text {
     i32 letters;
     f32 autoDelete;
     f32 scale;
+    Color color;
     std::vector<u32> textBitmap;
 };
 
@@ -80,6 +82,7 @@ Font::Handle Font::print(const Info &fontInfo) {
     }
     text.textPosY = fontInfo.posY;
     text.scale = fontInfo.scale;
+    text.color = fontInfo.color;
 
     text.textBitmap.resize(i64(text.letters) * charWidth * charHeight);
 
@@ -138,6 +141,7 @@ void Font::tick() {
 
 void Font::render() {
     for (const Text &text: texts) {
+
         Sprite::Info spriteInfo{
                 .shaderStem = text.space == Space::worldSpace ? Shader::Stem::fontWorld
                                                               : Shader::Stem::fontScreen,
@@ -149,9 +153,10 @@ void Font::render() {
                 .scaleHeight = text.space == Space::worldSpace ? text.scale * charHeight : 0.0f,
                 .space = text.space,
                 .skipTextureCache = true,
+                .color = text.color,
                 .rawTexture = reinterpret_cast<const u8 *>(text.textBitmap.data()),
                 .rawTextureWidth = text.letters * charWidth,
-                .rawTextureHeight = charHeight,
+                .rawTextureHeight = charHeight
         };
         Sprite::render(spriteInfo);
     }

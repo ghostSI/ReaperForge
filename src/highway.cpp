@@ -255,6 +255,14 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
       OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroRight), Data::Geometry::zeroRight, GL_STATIC_DRAW);
       glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::zeroRight) / (sizeof(float) * 5));
     }
+
+    {
+      mat4 modelMat;
+      modelMat.m30 = frets[0] + 2.0f;
+      modelMat.m31 = f32(5 - note.string) * stringSpacing;
+      modelMat.m32 = noteTime * highwaySpeedMultiplier;
+      OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+    }
   }
   else
   {
@@ -582,10 +590,11 @@ void Highway::render()
   drawAnchors(shader);
   drawChords(shader, fretboardNoteDistance);
 
-  drawNoteFreadboard(shader, fretboardNoteDistance);
 
 
   shader = Shader::useShader(Shader::Stem::fontWorld);
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
   drawFretNumbers();
+
+  drawNoteFreadboard(shader, fretboardNoteDistance);
 }

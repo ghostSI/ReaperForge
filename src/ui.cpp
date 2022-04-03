@@ -7,6 +7,7 @@
 #include "psarc.h"
 #include "installer.h"
 #include "settings.h"
+#include "sound.h"
 
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO
@@ -1870,7 +1871,6 @@ static bool filterSongOut(const Song::Info &songInfo) {
     return true;
 }
 
-#include "sound.h"
 
 static void songWindow() {
 
@@ -1925,6 +1925,7 @@ static void songWindow() {
                         songInfo.albumCover128_ogl = loadDDS(
                                 Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.data(),
                                 Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.size());
+
                     if (songInfo.albumCover128_ogl != 0)
                         thumbnail = nk_image_id((int) songInfo.albumCover128_ogl);
 

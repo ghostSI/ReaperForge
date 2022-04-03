@@ -15,6 +15,8 @@ namespace Data {
   namespace Texture
   {
     extern const u8 font[82944];
+    extern const u8 test[384];
+    extern const u8 texture[1048704];
   }
   namespace Geometry
   {

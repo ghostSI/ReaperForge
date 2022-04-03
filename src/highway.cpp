@@ -11,40 +11,44 @@
 #include "song.h"
 #include "font.h"
 #include "sound.h"
+#include "imageload.h"
 
 static const f32 stringSpacing = 0.42f;
 
 static const f32 frets[]
 {
   0.0f,
-  36.353f * 0.05f,
-  70.665f * 0.05f,
-  103.051f * 0.05f,
-  133.620f * 0.05f,
-  162.473f * 0.05f,
-  189.707f * 0.05f,
-  215.412f * 0.05f,
-  239.675f * 0.05f,
-  262.575f * 0.05f,
-  284.191f * 0.05f,
-  304.593f * 0.05f,
-  323.850f * 0.05f,
-  342.026f * 0.05f,
-  359.182f * 0.05f,
-  375.376f * 0.05f,
-  390.660f * 0.05f,
-  405.087f * 0.05f,
-  418.703f * 0.05f,
-  431.556f * 0.05f,
-  443.687f * 0.05f,
-  455.138f * 0.05f,
-  465.945f * 0.05f,
-  476.146f * 0.05f,
-  485.775f * 0.05f
+  1.00f,
+  2.00f,
+  3.00f,
+  4.00f,
+  5.00f,
+  6.00f,
+  7.00f,
+  8.00f,
+  9.00f,
+  10.00f,
+  11.00f,
+  12.00f,
+  13.00f,
+  14.00f,
+  15.00f,
+  16.00f,
+  17.00f,
+  18.00f,
+  19.00f,
+  20.00f,
+  21.00f,
+  22.00f,
+  23.00f,
+  24.00f,
+  25.00f
 };
 
 static Song::TranscriptionTrack transcriptionTrack;
 static std::vector<Song::Vocal> vocals;
+
+static GLuint texture;
 
 void Highway::init()
 {
@@ -55,6 +59,9 @@ void Highway::init()
 
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();
+
+
+  texture = loadDDS(Data::Texture::texture, sizeof(Data::Texture::texture));
 }
 
 
@@ -83,6 +90,9 @@ static void tickFretNumbers()
 static void tickLyrics()
 {
   if (Settings::get("Highway", "Lyrics") == "0")
+    return;
+
+  if (vocals.size() == 0)
     return;
 
   const f32 oggElapsed = Global::time - Global::oggStartTime;
@@ -253,7 +263,6 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
       modelMat.m31 = f32(5 - note.string) * stringSpacing;
       modelMat.m32 = noteTime * Const::highwaySpeedMultiplier;
       OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
-
 
       OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroMiddle), Data::Geometry::zeroMiddle, GL_STATIC_DRAW);
       glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::zeroMiddle) / (sizeof(float) * 5));
@@ -451,6 +460,8 @@ void Highway::render()
   }
 
   shader = Shader::useShader(Shader::Stem::defaultWorld);
+
+  glBindTexture(GL_TEXTURE_2D, texture);
 
   // Draw Fret
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.1f, 0.1f, 0.1f, 1.0f);

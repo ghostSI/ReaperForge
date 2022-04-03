@@ -5,10 +5,10 @@ out vec4 outColor;
 
 void main()
 {
-  vec4 myvec = vec4(0.2, 0.2, 0.6, 1.0);
+  vec4 color = vec4(0.2, 0.2, 0.6, 1.0);
   
-  myvec.a = pow(sin(Texcoord.x * 400.0), 100);
+  color.a = pow(sin(Texcoord.x * 628.2), 100);
   
-  outColor = myvec;
+  outColor = color;
 }
 )"

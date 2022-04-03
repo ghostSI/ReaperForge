@@ -22,6 +22,7 @@ namespace Data {
   {
     extern const f32 fret[15060];
     extern const f32 ground[30];
+    extern const f32 string[180];
 
     extern const f32 fretMute[540];
     extern const f32 hammerOn[105];
@@ -39,15 +40,6 @@ namespace Data {
     extern const f32 zeroMiddle[270];
     extern const f32 zeroRight[135];
 
-    namespace String
-    {
-      extern const f32 e[240];
-      extern const f32 B[240];
-      extern const f32 G[240];
-      extern const f32 D[240];
-      extern const f32 A[240];
-      extern const f32 E[240];
-    }
   }
 }
 

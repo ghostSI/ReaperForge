@@ -19,7 +19,6 @@ namespace Const {
     inline constexpr i32 randomIntMax = 65535;
     inline constexpr i16 controllerAxisDeadZone = 3000;
     inline constexpr i16 controllerTriggerDeadZone = -30000;
-    inline constexpr f32 highwaySpeedMultiplier = 40.0f;
 }
 
 namespace Global {

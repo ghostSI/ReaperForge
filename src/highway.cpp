@@ -14,6 +14,7 @@
 #include "imageload.h"
 
 static const f32 stringSpacing = 0.42f;
+static f32 highwaySpeedMultiplier = 1.0f;
 
 static const f32 frets[]
 {
@@ -216,6 +217,7 @@ static void tickLyrics()
 
 void Highway::tick()
 {
+  highwaySpeedMultiplier = atof(Settings::get("Highway", "SpeedMultiplier").c_str());
   tickFretNumbers();
   tickLyrics();
 }
@@ -239,8 +241,14 @@ static void setStringColor(GLuint shader, i32 string)
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), rr, gg, bb, aa);
 }
 
-static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, f32 noteTime)
+static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, f32 noteTime, f32 fretboardNoteDistance[6][24])
 {
+  if (noteTime > -1.0f)
+  {
+    if (fretboardNoteDistance[note.string][note.fret] == 0.0f || fretboardNoteDistance[note.string][note.fret] < noteTime)
+      fretboardNoteDistance[note.string][note.fret] = noteTime;
+  }
+
   if (note.fret == 0)
   {
     setStringColor(shader, 5 - note.string);
@@ -249,7 +257,7 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
       mat4 modelMat;
       modelMat.m30 = frets[0] + 0.05f;
       modelMat.m31 = f32(5 - note.string) * stringSpacing;
-      modelMat.m32 = noteTime * Const::highwaySpeedMultiplier;
+      modelMat.m32 = noteTime * highwaySpeedMultiplier;
       OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
       OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroLeft), Data::Geometry::zeroLeft, GL_STATIC_DRAW);
@@ -261,7 +269,7 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
       modelMat.m00 = 16.0f;
       modelMat.m30 = frets[0] + 0.266f;
       modelMat.m31 = f32(5 - note.string) * stringSpacing;
-      modelMat.m32 = noteTime * Const::highwaySpeedMultiplier;
+      modelMat.m32 = noteTime * highwaySpeedMultiplier;
       OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
       OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroMiddle), Data::Geometry::zeroMiddle, GL_STATIC_DRAW);
@@ -272,7 +280,7 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
       mat4 modelMat;
       modelMat.m30 = frets[0] + 3.73f;
       modelMat.m31 = f32(5 - note.string) * stringSpacing;
-      modelMat.m32 = noteTime * Const::highwaySpeedMultiplier;
+      modelMat.m32 = noteTime * highwaySpeedMultiplier;
       OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
       OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroRight), Data::Geometry::zeroRight, GL_STATIC_DRAW);
@@ -284,7 +292,7 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
     mat4 modelMat;
     modelMat.m30 = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
     modelMat.m31 = f32(5 - note.string) * stringSpacing;
-    modelMat.m32 = noteTime * Const::highwaySpeedMultiplier;
+    modelMat.m32 = noteTime * highwaySpeedMultiplier;
     OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
     setStringColor(shader, 5 - note.string);
@@ -336,7 +344,7 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
   }
 }
 
-static void drawNotes(GLuint shader)
+static void drawNotes(GLuint shader, f32 fretboardNoteDistance[6][24])
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
@@ -349,7 +357,7 @@ static void drawNotes(GLuint shader)
     if (noteTime < -60.0f)
       continue;
 
-    drawNote(shader, note, noteTime);
+    drawNote(shader, note, noteTime, fretboardNoteDistance);
   }
 }
 
@@ -374,15 +382,15 @@ static void drawAnchors(GLuint shader)
   }
 }
 
-static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chord, f32 noteTime)
+static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chord, f32 noteTime, f32 fretboardNoteDistance[6][24])
 {
   for (const Song::TranscriptionTrack::Note& note : chord.chordNotes)
   {
-    drawNote(shader, note, noteTime);
+    drawNote(shader, note, noteTime, fretboardNoteDistance);
   }
 }
 
-static void drawChords(GLuint shader)
+static void drawChords(GLuint shader, f32 fretboardNoteDistance[6][24])
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
@@ -395,7 +403,7 @@ static void drawChords(GLuint shader)
     if (noteTime < -60.0f)
       continue;
 
-    drawChord(shader, chord, noteTime);
+    drawChord(shader, chord, noteTime, fretboardNoteDistance);
   }
 }
 
@@ -415,52 +423,21 @@ static void drawNoteFretboard(GLuint shader, i32 fret, i32 string, f32 size)
   glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::noteFretboard) / (sizeof(float) * 5));
 }
 
-static void drawNoteFreadboard(GLuint shader)
+static void drawNoteFreadboard(GLuint shader, f32 fretboardNoteDistance[6][24])
 {
-  f32 fretboard[6][24] = { };
 
   const f32 oggElapsed = Global::time - Global::oggStartTime;
-
-  for (const Song::TranscriptionTrack::Note& note : transcriptionTrack.notes)
-  {
-    const f32 noteTime = -note.time + oggElapsed;
-
-    if (noteTime > 0.0f)
-      continue;
-    if (noteTime < -1.0f)
-      continue;
-    
-    if (fretboard[note.string][note.fret] == 0.0f || fretboard[note.string][note.fret] < noteTime)
-      fretboard[note.string][note.fret] = noteTime;
-  }
-
-  for (const Song::TranscriptionTrack::Chord& chord : transcriptionTrack.chords)
-  {
-    for (const Song::TranscriptionTrack::Note& note : chord.chordNotes)
-    {
-
-      const f32 noteTime = -note.time + oggElapsed;
-
-      if (noteTime > 0.0f)
-        continue;
-      if (noteTime < -1.0f)
-        continue;
-
-      if (fretboard[note.string][note.fret] == 0.0f || fretboard[note.string][note.fret] < noteTime)
-        fretboard[note.string][note.fret] = noteTime;
-    }
-  }
 
   for (i32 i = 0; i < 6; ++i)
   {
     for (i32 j = 1; j < 24; ++j)
     {
-      if (fretboard[i][j] >= 0.0f)
+      if (fretboardNoteDistance[i][j] >= 0.0f)
         continue;
-      if (fretboard[i][j] < -1.0f)
+      if (fretboardNoteDistance[i][j] < -1.0f)
         continue;
 
-      f32 dist = fretboard[i][j];
+      f32 dist = fretboardNoteDistance[i][j];
       f32 size = 1.0f + dist;
 
       drawNoteFretboard(shader, j, 5 - i, size);
@@ -498,41 +475,53 @@ void Highway::render()
 
   // Draw Strings
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.2f, 0.2f, 0.2f, 1.0f);
-  for (int i = 0; i < 350; ++i)
-  {
-    mat4 modelMat;
-    modelMat.m30 = 0.1f * f32(i);
-    OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+  mat4 modelMat;
+  modelMat.m00 = 600.0f;
+
+  setStringColor(shader, 0);
+  modelMat.m31 = 0.0f * stringSpacing;
+  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::string), Data::Geometry::string, GL_STATIC_DRAW);
+  glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::string) / (sizeof(float) * 5));
+
+  setStringColor(shader, 1);
+  modelMat.m31 = 1.0f * stringSpacing;
+  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::string), Data::Geometry::string, GL_STATIC_DRAW);
+  glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::string) / (sizeof(float) * 5));
+
+  setStringColor(shader, 2);
+  modelMat.m31 = 2.0f * stringSpacing;
+  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::string), Data::Geometry::string, GL_STATIC_DRAW);
+  glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::string) / (sizeof(float) * 5));
+
+  setStringColor(shader, 3);
+  modelMat.m31 = 3.0f * stringSpacing;
+  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::string), Data::Geometry::string, GL_STATIC_DRAW);
+  glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::string) / (sizeof(float) * 5));
+
+  setStringColor(shader, 4);
+  modelMat.m31 = 4.0f * stringSpacing;
+  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::string), Data::Geometry::string, GL_STATIC_DRAW);
+  glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::string) / (sizeof(float) * 5));
+
+  setStringColor(shader, 5);
+  modelMat.m31 = 5.0f * stringSpacing;
+  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::string), Data::Geometry::string, GL_STATIC_DRAW);
+  glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::string) / (sizeof(float) * 5));
 
 
-    setStringColor(shader, 0);
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::String::e), Data::Geometry::String::e, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::String::e) / (sizeof(float) * 5));
-
-    setStringColor(shader, 1);
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::String::B), Data::Geometry::String::B, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::String::B) / (sizeof(float) * 5));
-
-    setStringColor(shader, 2);
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::String::G), Data::Geometry::String::G, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::String::G) / (sizeof(float) * 5));
-
-    setStringColor(shader, 3);
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::String::D), Data::Geometry::String::D, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::String::D) / (sizeof(float) * 5));
-
-    setStringColor(shader, 4);
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::String::A), Data::Geometry::String::A, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::String::A) / (sizeof(float) * 5));
-
-    setStringColor(shader, 5);
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::String::E), Data::Geometry::String::E, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::String::E) / (sizeof(float) * 5));
-  }
+  f32 fretboardNoteDistance[6][24] = { };
 
   // Draw Note
-  drawNotes(shader);
+  drawNotes(shader, fretboardNoteDistance);
   drawAnchors(shader);
-  drawChords(shader);
-  drawNoteFreadboard(shader);
+  drawChords(shader, fretboardNoteDistance);
+
+  drawNoteFreadboard(shader, fretboardNoteDistance);
 }

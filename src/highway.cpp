@@ -247,7 +247,7 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
 
     {
       mat4 modelMat;
-      modelMat.m30 = frets[0];
+      modelMat.m30 = frets[0] + 0.05f;
       modelMat.m31 = f32(5 - note.string) * stringSpacing;
       modelMat.m32 = noteTime * Const::highwaySpeedMultiplier;
       OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
@@ -258,8 +258,8 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
 
     {
       mat4 modelMat;
-      modelMat.m00 = 21.0f;
-      modelMat.m30 = frets[0] + 0.1f;
+      modelMat.m00 = 16.0f;
+      modelMat.m30 = frets[0] + 0.266f;
       modelMat.m31 = f32(5 - note.string) * stringSpacing;
       modelMat.m32 = noteTime * Const::highwaySpeedMultiplier;
       OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
@@ -270,7 +270,7 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
 
     {
       mat4 modelMat;
-      modelMat.m30 = frets[0] + 4.65f;
+      modelMat.m30 = frets[0] + 3.73f;
       modelMat.m31 = f32(5 - note.string) * stringSpacing;
       modelMat.m32 = noteTime * Const::highwaySpeedMultiplier;
       OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);

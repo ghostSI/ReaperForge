@@ -295,13 +295,6 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
 
     OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::note), Data::Geometry::note, GL_STATIC_DRAW);
     glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::note) / (sizeof(float) * 5));
-
-    GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
-    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
-
-    char fretNumber[3];
-    sprintf(fretNumber, "%d", note.fret);
-    Font::draw(fretNumber, x, -0.03f, noteTime * highwaySpeedMultiplier, 0.5f);
   }
 
 
@@ -361,6 +354,19 @@ static void drawNotes(GLuint shader, f32 fretboardNoteDistance[6][24])
       continue;
 
     drawNote(shader, note, noteTime, fretboardNoteDistance);
+
+    if (note.fret >= 1)  // Draw Fret Numbers for Chord
+    {
+      GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
+      OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
+
+      const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+
+      Font::drawFretNumber(note.fret, x, -0.03f, noteTime * highwaySpeedMultiplier, 0.5f);
+
+      Shader::useShader(Shader::Stem::defaultWorld);
+      glBindTexture(GL_TEXTURE_2D, texture);
+    }
   }
 }
 
@@ -387,9 +393,30 @@ static void drawAnchors(GLuint shader)
 
 static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chord, f32 noteTime, f32 fretboardNoteDistance[6][24])
 {
+  u32 fretsInCord = 0;
+
   for (const Song::TranscriptionTrack::Note& note : chord.chordNotes)
   {
     drawNote(shader, note, noteTime, fretboardNoteDistance);
+
+    fretsInCord |= 1 << note.fret;
+  }
+
+  { // Draw Fret Numbers for Chord
+    GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
+    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
+    for (i32 i = 1; i < 24; ++i)
+    {
+      if (fretsInCord & (1 << i))
+      {
+        const f32 x = frets[i - 1] + 0.5f * (frets[i] - frets[i - 1]);
+
+        Font::drawFretNumber(i, x, -0.03f, noteTime * highwaySpeedMultiplier, 0.5f);
+      }
+    }
+
+    Shader::useShader(Shader::Stem::defaultWorld);
+    glBindTexture(GL_TEXTURE_2D, texture);
   }
 }
 

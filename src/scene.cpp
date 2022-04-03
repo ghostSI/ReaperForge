@@ -3,6 +3,7 @@
 #include "camera.h"
 #include "debug.h"
 #include "font.h"
+#include "font2.h"
 #include "highway.h"
 #include "settings.h"
 #include "sprite.h"
@@ -14,6 +15,7 @@ void Scene::init() {
     Camera::init();
     Highway::init();
     Font::init();
+    Font::init2();
     Sprite::init();
     //Ui::init();
 }

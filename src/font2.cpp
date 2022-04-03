@@ -9,6 +9,7 @@
 static const i32 charWidth = 12;
 static const i32 charHeight = 18;
 
+
 static std::vector<u32> createTextBitmap(const char* text, u64 letters)
 {
   std::vector<u32> textBitmap;
@@ -44,12 +45,21 @@ static std::vector<u32> createTextBitmap(const char* text, u64 letters)
   return textBitmap;
 }
 
-void Font::draw(const char* text, f32 posX, f32 posY, f32 posZ, f32 scale)
+static std::vector<u32> fretNumberBitmap[24];
+
+void Font::init2()
 {
-  const u64 letters = strlen(text);
+  for (i32 i = 0; i < 24; ++i)
+  {
+    char fretNumber[3];
+    sprintf(fretNumber, "%d", i + 1);
 
-  const std::vector<u32> textBitmap = createTextBitmap(text, letters);
+    fretNumberBitmap[i] = createTextBitmap(fretNumber, i >= 9 ? 2 : 1);
+  }
+}
 
+static void drawBitmap(const std::vector<u32>& textBitmap, u64 letters, f32 posX, f32 posY, f32 posZ, f32 scale)
+{
   const f32 left = posX - 0.5_f32 * scale;
   const f32 top = posY - 0.5_f32 * scale;
   const f32 right = posX + 0.5_f32 * scale;
@@ -79,4 +89,20 @@ void Font::draw(const char* text, f32 posX, f32 posY, f32 posZ, f32 scale)
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
   glDeleteTextures(1, &tex);
+}
+
+void Font::draw(const char* text, f32 posX, f32 posY, f32 posZ, f32 scale)
+{
+  const u64 letters = strlen(text);
+
+  const std::vector<u32> textBitmap = createTextBitmap(text, letters);
+
+  drawBitmap(textBitmap, letters, posX, posY, posZ, scale);
+}
+
+void Font::drawFretNumber(i32 fretNumber, f32 posX, f32 posY, f32 posZ, f32 scale)
+{
+  const u64 letters = fretNumber >= 10 ? 2 : 1;
+
+  drawBitmap(fretNumberBitmap[fretNumber - 1], letters, posX, posY, posZ, scale);
 }

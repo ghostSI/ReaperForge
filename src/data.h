@@ -29,7 +29,7 @@ namespace Data {
     extern const f32 harmonic[8610];
     extern const f32 harmonicPinch[8610];
     extern const f32 note[150];
-    extern const f32 noteFretboard[300];
+    extern const f32 noteFretboard[2460];
     extern const f32 noteStand[180];
     extern const f32 palmMute[690];
     extern const f32 pop[1860];

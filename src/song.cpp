@@ -24,17 +24,6 @@ static bool isXmlForInstrument(std::string filename, Instrument instrument) {
   return false;
 }
 
-static std::string
-tuning(const std::string& string0, const std::string& string1, const std::string& string2, const std::string& string3,
-  const std::string& string4, const std::string& string5) {
-  if (string0 == "0" && string1 == "0" && string2 == "0" && string3 == "0" && string4 == "0" && string5 == "0")
-    return "E Standard";
-
-  assert(false);
-
-  return "Custom Tuning";
-}
-
 static void readSongInfoXml(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::Info& songInfo) {
 
   pugi::xml_document doc;
@@ -47,10 +36,16 @@ static void readSongInfoXml(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::In
     songInfo.title = node.value();
   }
 
-  for (pugi::xml_node node : root.child("tuning")) {
-    songInfo.albumYear = tuning(node.attribute("string0").value(), node.attribute("string1").value(),
-      node.attribute("string2").value(), node.attribute("string3").value(),
-      node.attribute("string4").value(), node.attribute("string5").value());
+  pugi::xml_node tuning = root.child("tuning");
+  songInfo.tuning.string0 = tuning.attribute("string0").as_int();
+  songInfo.tuning.string1 = tuning.attribute("string1").as_int();
+  songInfo.tuning.string2 = tuning.attribute("string2").as_int();
+  songInfo.tuning.string3 = tuning.attribute("string3").as_int();
+  songInfo.tuning.string4 = tuning.attribute("string4").as_int();
+  songInfo.tuning.string5 = tuning.attribute("string5").as_int();
+
+  for (pugi::xml_node node : root.child("capo")) {
+    songInfo.capo = node.value();
   }
 
   for (pugi::xml_node node : root.child("artistName")) {
@@ -316,4 +311,13 @@ std::vector<Song::Vocal> Song::loadVocals(const Psarc::PsarcInfo& psarcInfo) {
   }
 
   return {};
+}
+
+std::string Song::tuningName(const Song::Info::Tuning& tuning) {
+  if (tuning.string0 == 0 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == 0 && tuning.string4 == 0 && tuning.string5 == 0)
+    return "E Standard";
+
+  assert(false);
+
+  return "Custom Tuning";
 }

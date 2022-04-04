@@ -26,7 +26,16 @@ namespace Song {
         std::string albumName;
         std::string albumYear;
         std::string songLength;
-        std::string tuning;
+
+        struct Tuning
+        {
+          i32 string0;
+          i32 string1;
+          i32 string2;
+          i32 string3;
+          i32 string4;
+          i32 string5;
+        } tuning;
 
         i32 albumCover64_tocIndex = -1;
         mutable GLuint albumCover64_ogl = 0;
@@ -104,6 +113,8 @@ namespace Song {
       std::string lyric;
     };
     std::vector<Vocal> loadVocals(const Psarc::PsarcInfo& psarcInfo);
+
+    std::string tuningName(const Song::Info::Tuning& tuning);
 }
 
 #endif // SONG_H

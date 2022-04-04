@@ -1865,7 +1865,7 @@ static bool filterSongOut(const Song::Info &songInfo) {
         return false;
     if (stristr(songInfo.albumYear.c_str(), searchText2))
         return false;
-    if (stristr(songInfo.tuning.c_str(), searchText2))
+    if (stristr(Song::tuningName(songInfo.tuning).c_str(), searchText2))
         return false;
 
     return true;
@@ -1965,7 +1965,7 @@ static void songWindow() {
                     nk_label(ctx, "Score:       98.4%", NK_TEXT_LEFT);
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Tuning:", NK_TEXT_LEFT);
-                    nk_label(ctx, songInfo.tuning.c_str(), NK_TEXT_LEFT);
+                    nk_label(ctx, Song::tuningName(songInfo.tuning).c_str(), NK_TEXT_LEFT);
                     nk_label(ctx, "Accuracy:    98.4%", NK_TEXT_LEFT);
 
                     nk_group_end(ctx);

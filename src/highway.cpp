@@ -350,7 +350,7 @@ static void drawNotes(GLuint shader, f32 fretboardNoteDistance[7][24])
 
     if (noteTime > 0.0f)
       continue;
-    if (noteTime < -60.0f)
+    if (noteTime < -4.0f)
       continue;
 
     drawNote(shader, note, noteTime, fretboardNoteDistance);
@@ -384,7 +384,7 @@ static void drawAnchors(GLuint shader)
 
     if (noteTime > 0.0f)
       continue;
-    if (noteTime < -60.0f)
+    if (noteTime < -10.0f)
       continue;
 
     drawAnchor(shader, ancher, noteTime);
@@ -454,7 +454,7 @@ static void drawChords(GLuint shader, f32 fretboardNoteDistance[7][24])
 
     if (noteTime > 0.0f)
       continue;
-    if (noteTime < -60.0f)
+    if (noteTime < -10.0f)
       continue;
 
     drawChord(shader, chord, noteTime, fretboardNoteDistance);
@@ -473,7 +473,12 @@ static void drawChords(GLuint shader, f32 fretboardNoteDistance[7][24])
   {
     const Song::TranscriptionTrack::Chord& chord = transcriptionTrack.chords[nextChord];
 
-    drawChordLeftHand(chord);
+    const f32 noteTime = -chord.time + oggElapsed;
+
+    if (noteTime > -1.0f)
+    {
+      drawChordLeftHand(chord);
+    }
   }
 }
 

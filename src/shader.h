@@ -10,6 +10,7 @@ namespace Shader {
         ground,
         fontScreen,
         fontWorld,
+        anchorWorld,
     };
 
     void init();

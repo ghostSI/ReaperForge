@@ -78,9 +78,6 @@ void Highway::init()
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();
 
-  Global::oggStartTime = -30.0f;
-
-
   texture = loadDDS(Data::Texture::texture, sizeof(Data::Texture::texture));
 }
 
@@ -386,46 +383,50 @@ static void drawNotes(GLuint shader, f32 fretboardNoteDistance[7][24])
   }
 }
 
-static void drawAnchor(GLuint shader, const Song::TranscriptionTrack::Anchor& anchor, f32 noteTime)
+static void drawAnchor(GLuint shader, const Song::TranscriptionTrack::Anchor& anchor, f32 noteTimeBegin, f32 noteTimeEnd)
 {
   const f32 left = anchor.fret - 1;
-  const f32 top = f32(stringCount * stringOffset) * stringSpacing;
   const f32 right = anchor.fret + anchor.width - 1;
-  const f32 bottom = 0.0f;
-  const f32 posZ = noteTime * highwaySpeedMultiplier;
+  const f32 front = min_(noteTimeBegin * highwaySpeedMultiplier, 0.0f);
+  const f32 back = noteTimeEnd * highwaySpeedMultiplier;
+
 
   // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
+
   const GLfloat v[] = {
-    left , top, posZ, 0.0f, 1.0f,
-    right, top, posZ, 1.0f, 1.0f,
-    left, bottom, posZ, 0.0f, 0.0f,
-    right, bottom, posZ, 1.0f, 0.0f,
+  left , 0.02f, front, 0.8418f, 1.0f,
+  right, 0.02f, front, 0.9922f, 1.0f,
+  left, 0.02f, back, 0.8418f, 0.0f,
+  right, 0.02f, back, 0.9922f, 0.0f,
   };
 
   Shader::useShader(Shader::Stem::anchorWorld);
-  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.2f, 0.2f, 1.0f, 0.1f);
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.5f, 0.1f, 0.1f, 0.4f);
 
   OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
   Shader::useShader(Shader::Stem::defaultWorld);
-  glBindTexture(GL_TEXTURE_2D, texture);
 }
 
 static void drawAnchors(GLuint shader)
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (const Song::TranscriptionTrack::Anchor& ancher : transcriptionTrack.anchors)
+  for (i32 i = 0; i <  transcriptionTrack.anchors.size() - 2; ++i)
   {
-    const f32 noteTime = -ancher.time + oggElapsed;
+    const Song::TranscriptionTrack::Anchor& anchor0 = transcriptionTrack.anchors[i];
+    const Song::TranscriptionTrack::Anchor& anchor1 = transcriptionTrack.anchors[i + 1];
 
-    if (noteTime > 0.0f)
+    const f32 noteTimeBegin = -anchor0.time + oggElapsed;
+    const f32 noteTimeEnd = -anchor1.time + oggElapsed;
+
+    if (noteTimeEnd > 0.0f)
       continue;
-    if (noteTime < -10.0f)
+    if (noteTimeBegin < -10.0f)
       continue;
 
-    drawAnchor(shader, ancher, noteTime);
+    drawAnchor(shader, anchor0, noteTimeBegin, noteTimeEnd);
   }
 }
 
@@ -433,12 +434,49 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
 {
   u32 fretsInCord = 0;
 
+  i32 fretMin = 24;
+  i32 fretMax = 0;
+
   for (const Song::TranscriptionTrack::Note& note : chord.chordNotes)
   {
     drawNote(shader, note, noteTime, fretboardNoteDistance);
 
+    if (note.fret < fretMin)
+      fretMin = note.fret;
+
+    if (note.fret > fretMax)
+      fretMax = note.fret;
+
     fretsInCord |= 1 << note.fret;
   }
+
+  { // draw ChordBox
+    if (fretMax - fretMin < 4)
+      fretMax = fretMin + 4;
+
+    const f32 left = fretMin - 1;
+    const f32 top = f32(stringCount * stringOffset) * stringSpacing;
+    const f32 right = fretMax - 1;
+    const f32 bottom = 0.0f;
+    const f32 posZ = noteTime * highwaySpeedMultiplier;
+
+    // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
+    const GLfloat v[] = {
+      left , top, posZ, 0.0f, 1.0f,
+      right, top, posZ, 1.0f, 1.0f,
+      left, bottom, posZ, 0.0f, 0.0f,
+      right, bottom, posZ, 1.0f, 0.0f,
+    };
+
+    Shader::useShader(Shader::Stem::anchorWorld);
+    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.2f, 0.2f, 1.0f, 0.1f);
+
+    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    Shader::useShader(Shader::Stem::defaultWorld);
+  }
+
 
   { // Draw Fret Numbers for Chord
     GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
@@ -618,10 +656,10 @@ void Highway::render()
   f32 fretboardNoteDistance[7][24] = { };
 
   // Draw Note
+  drawAnchors(shader);
   drawNotes(shader, fretboardNoteDistance);
   drawChords(shader, fretboardNoteDistance);
   drawNoteFreadboard(shader, fretboardNoteDistance);
-  drawAnchors(shader);
 
   shader = Shader::useShader(Shader::Stem::fontWorld);
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);

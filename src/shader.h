@@ -11,6 +11,7 @@ namespace Shader {
         fontScreen,
         fontWorld,
         anchorWorld,
+        chordBoxWorld,
     };
 
     void init();

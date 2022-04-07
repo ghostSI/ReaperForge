@@ -11,6 +11,8 @@ namespace Data {
     extern const char* defaultWorldFrag;
     extern const char* groundFrag;
     extern const char* fontFrag;
+    extern const char* anchorWorld;
+    extern const char* chordBoxWorld;
   }
   namespace Texture
   {

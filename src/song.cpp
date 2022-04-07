@@ -124,16 +124,16 @@ static void readSongNotes(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::Tran
     note_.pluck = note.attribute("pluck").as_bool();
     note_.pullOff = note.attribute("pullOff").as_bool();
     note_.slap = note.attribute("slap").as_bool();
-    note_.slideTo = note.attribute("slideTo").as_bool();
+    note_.slideTo = note.attribute("slideTo").as_int();
     note_.string = note.attribute("string").as_int();
     note_.sustain = note.attribute("sustain").as_bool();
     note_.tremolo = note.attribute("tremolo").as_bool();
     note_.harmonicPinch = note.attribute("harmonicPinch").as_bool();
     note_.pickDirection = note.attribute("pickDirection").as_bool();
     note_.rightHand = note.attribute("rightHand").as_bool();
-    note_.slideUnpitchTo = note.attribute("slideUnpitchTo").as_bool();
+    note_.slideUnpitchTo = note.attribute("slideUnpitchTo").as_int();
     note_.tap = note.attribute("tap").as_bool();
-    note_.vibrato = note.attribute("vibrato").as_bool();
+    note_.vibrato = note.attribute("vibrato").as_int();
 
     transcriptionTrack.notes.push_back(note_);
   }
@@ -176,7 +176,7 @@ static void readSongChords(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::Tra
       note_.slap = chordNote.attribute("slap").as_bool();
       note_.slideTo = chordNote.attribute("slideTo").as_bool();
       note_.string = chordNote.attribute("string").as_int();
-      note_.sustain = chordNote.attribute("sustain").as_bool();
+      note_.sustain = chordNote.attribute("sustain").as_float();
       note_.tremolo = chordNote.attribute("tremolo").as_bool();
       note_.harmonicPinch = chordNote.attribute("harmonicPinch").as_bool();
       note_.pickDirection = chordNote.attribute("pickDirection").as_bool();

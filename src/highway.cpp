@@ -78,6 +78,8 @@ void Highway::init()
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();
 
+  Global::oggStartTime = -30.0f;
+
 
   texture = loadDDS(Data::Texture::texture, sizeof(Data::Texture::texture));
 }
@@ -337,6 +339,20 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
   {
     OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::tap), Data::Geometry::tap, GL_STATIC_DRAW);
     glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::tap) / (sizeof(float) * 5));
+  }
+  if (note.sustain != 0.0f)
+  {
+    const f32 sustainTime = -note.sustain * highwaySpeedMultiplier;
+
+    const GLfloat v[] = {
+      -0.2_f32 , 0.0f, 0.0f, 0.8418f, 1.0f,
+      0.2_f32, 0.0f, 0.0f, 0.9922f, 1.0f,
+      -0.2_f32, 0.0f, sustainTime, 0.8418f, 0.0f,
+      0.2_f32, 0.0f, sustainTime, 0.9922f, 0.0f,
+    };
+
+    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   }
 }
 

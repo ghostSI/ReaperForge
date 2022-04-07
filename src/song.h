@@ -66,16 +66,16 @@ namespace Song {
         bool pluck;
         bool pullOff;
         bool slap;
-        bool slideTo;
+        i32 slideTo;
         i32 string;
-        bool sustain;
+        f32 sustain;
         bool tremolo;
         bool harmonicPinch;
         bool pickDirection;
         bool rightHand;
-        bool slideUnpitchTo;
+        i32 slideUnpitchTo;
         bool tap;
-        bool vibrato;
+        i32 vibrato;
       };
       struct Chord
       {

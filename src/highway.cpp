@@ -236,7 +236,7 @@ static void setStringColor(GLuint shader, i32 string)
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), colorVec.v0, colorVec.v1, colorVec.v2, colorVec.v3);
 }
 
-static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, f32 noteTime, f32 fretboardNoteDistance[7][24])
+static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, f32 noteTime, f32 fretboardNoteDistance[7][24], i32 chordBoxLeft, i32 chordBoxWidth)
 {
   if (noteTime > -1.0f)
   {
@@ -250,7 +250,7 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
 
     {
       mat4 modelMat;
-      modelMat.m30 = frets[0] + 0.05f;
+      modelMat.m30 = frets[chordBoxLeft] + frets[0] + 0.05f;
       modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
       modelMat.m32 = noteTime * highwaySpeedMultiplier;
       OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
@@ -262,7 +262,7 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
     {
       mat4 modelMat;
       modelMat.m00 = 16.0f;
-      modelMat.m30 = frets[0] + 0.266f;
+      modelMat.m30 = frets[chordBoxLeft] + frets[0] + 0.266f;
       modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
       modelMat.m32 = noteTime * highwaySpeedMultiplier;
       OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
@@ -273,7 +273,7 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
 
     {
       mat4 modelMat;
-      modelMat.m30 = frets[0] + 3.73f;
+      modelMat.m30 = frets[chordBoxLeft] + frets[0] + 3.73f;
       modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
       modelMat.m32 = noteTime * highwaySpeedMultiplier;
       OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
@@ -284,7 +284,7 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
 
     {
       mat4 modelMat;
-      modelMat.m30 = frets[0] + 2.0f;
+      modelMat.m30 = frets[chordBoxLeft] + frets[0] + 2.0f;
       modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
       modelMat.m32 = noteTime * highwaySpeedMultiplier;
       OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
@@ -376,7 +376,7 @@ static void drawNotes(GLuint shader, f32 fretboardNoteDistance[7][24])
     if (noteTime < -10.0f)
       continue;
 
-    drawNote(shader, note, noteTime, fretboardNoteDistance);
+    drawNote(shader, note, noteTime, fretboardNoteDistance, 0, 4);
 
     if (note.fret >= 1)  // Draw Fret Numbers for Chord
     {
@@ -444,29 +444,30 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
 {
   u32 fretsInCord = 0;
 
-  i32 fretMin = 24;
-  i32 fretMax = 0;
+  i32 chordBoxLeft = 24;
+  i32 chordBoxRight = 0;
 
   for (const Song::TranscriptionTrack::Note& note : chord.chordNotes)
   {
-    drawNote(shader, note, noteTime, fretboardNoteDistance);
+    if (note.fret == 0)
+      chordBoxRight = chordBoxRight;
 
-    if (note.fret < fretMin)
-      fretMin = note.fret;
+    if (note.fret > 0 && note.fret < chordBoxLeft)
+      chordBoxLeft = note.fret;
 
-    if (note.fret > fretMax)
-      fretMax = note.fret;
+    if (note.fret > chordBoxRight)
+      chordBoxRight = note.fret;
 
     fretsInCord |= 1 << note.fret;
   }
 
   { // draw ChordBox
-    if (fretMax - fretMin < 4)
-      fretMax = fretMin + 4;
+    if (chordBoxRight - chordBoxLeft < 4)
+      chordBoxRight = chordBoxLeft + 4;
 
-    const f32 left = fretMin - 1;
-    const f32 top = f32(stringCount * stringOffset) * stringSpacing;
-    const f32 right = fretMax - 1;
+    const f32 left = chordBoxLeft - 1;
+    const f32 top = f32(stringCount + stringOffset) * stringSpacing;
+    const f32 right = chordBoxRight - 1;
     const f32 bottom = 0.0f;
     const f32 posZ = noteTime * highwaySpeedMultiplier;
 
@@ -486,6 +487,13 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
 
     Shader::useShader(Shader::Stem::defaultWorld);
   }
+
+  for (const Song::TranscriptionTrack::Note& note : chord.chordNotes)
+  {
+    drawNote(shader, note, noteTime, fretboardNoteDistance, chordBoxLeft - 1, chordBoxRight - chordBoxLeft);
+  }
+
+
 
 
   { // Draw Fret Numbers for Chord

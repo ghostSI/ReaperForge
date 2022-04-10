@@ -48,6 +48,36 @@ enum struct Instrument {
     All = LeadGuitar | RhythmGuitar | BassGuitar
 }BIT_FLAGS(Instrument);
 
+namespace Chords
+{
+  enum struct Note : i32
+  {
+    A,
+    Bb,
+    B,
+    C,
+    Db,
+    D,
+    Eb,
+    E,
+    F,
+    Gb,
+    G,
+    Ab
+  };
+
+  enum struct Quality : i32
+  {
+    Minor,
+    Major,
+    Suspended,
+    Dominant,
+    Dimished5th,
+    Augmented5th
+  };
+}
+
+
 struct vec2 {
     f32 v0 = 0.0_f32;
     f32 v1 = 0.0_f32;

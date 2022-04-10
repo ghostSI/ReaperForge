@@ -2,6 +2,7 @@
 
 #include "data.h"
 #include "type.h"
+#include "chords.h"
 #include "opengl.h"
 #include "shader.h"
 #include "settings.h"
@@ -618,7 +619,7 @@ static void drawFretNumbers()
 static i32 getStringTuning(i32 string)
 {
   const i32 psarcString = stringOffset + 5 - string;
-  
+
   if (psarcString < 0 || psarcString >= 6)
     return Const::stringStandardTuningOffset[string];
 
@@ -648,14 +649,18 @@ static void drawFretNoteNames()
   }
 }
 
-static void drawCurrentChord()
+static void drawCurrentChordName()
 {
   GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
 
-  Font::drawNoteNameFlat(Global::chordDetectorRootNote, -0.2f, 0.8f, 0.0f, 0.1f);
-  Font::drawFretNumber(Global::chordDetectorQuality, 0.0f, 0.8f, 0.0f, 0.1f);
+  const Chords::Note rootNote = Global::chordDetectorRootNote;
+  Font::drawNoteNameFlat(to_underlying(rootNote), -0.2f, 0.8f, 0.0f, 0.1f);
+  const Chords::Quality quality = Global::chordDetectorQuality;
+  Font::drawFretNumber(to_underlying(quality), 0.0f, 0.8f, 0.0f, 0.1f);
   Font::drawFretNumber(Global::chordDetectorIntervals, 0.2f, 0.8f, 0.0f, 0.1f);
+
+  Font::draw(Chords::name(), 0.0f, 0.7f, 0.0f, 0.1f);
 }
 
 void Highway::render()
@@ -720,5 +725,5 @@ void Highway::render()
   if (fretNoteNames)
     drawFretNoteNames();
 
-  drawCurrentChord();
+  drawCurrentChordName();
 }

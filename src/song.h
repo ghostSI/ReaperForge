@@ -114,7 +114,7 @@ namespace Song {
     };
     std::vector<Vocal> loadVocals(const Psarc::PsarcInfo& psarcInfo);
 
-    std::string tuningName(const Song::Info::Tuning& tuning);
+    const char* tuningName(const Song::Info::Tuning& tuning);
 }
 
 #endif // SONG_H

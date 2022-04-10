@@ -78,6 +78,8 @@ void Highway::init()
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();
 
+  //Global::oggStartTime = -30.0f;
+
   texture = loadDDS(Data::Texture::texture, sizeof(Data::Texture::texture));
 }
 

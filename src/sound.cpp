@@ -239,7 +239,7 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
     const std::vector<double> chroma = chromagram.getChromagram();
     chordDetector.detectChord(chroma);
 
-    Global::chordDetectorRootNote = chordDetector.rootNote;
+    Global::chordDetectorRootNote = (chordDetector.rootNote + 3)  % 12;
     Global::chordDetectorQuality = chordDetector.quality;
     Global::chordDetectorIntervals = chordDetector.intervals;
   }

@@ -648,6 +648,16 @@ static void drawFretNoteNames()
   }
 }
 
+static void drawCurrentChord()
+{
+  GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
+
+  Font::drawNoteNameFlat(Global::chordDetectorRootNote, -0.2f, 0.8f, 0.0f, 0.1f);
+  Font::drawFretNumber(Global::chordDetectorQuality, 0.0f, 0.8f, 0.0f, 0.1f);
+  Font::drawFretNumber(Global::chordDetectorIntervals, 0.2f, 0.8f, 0.0f, 0.1f);
+}
+
 void Highway::render()
 {
   //GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
@@ -709,4 +719,6 @@ void Highway::render()
 
   if (fretNoteNames)
     drawFretNoteNames();
+
+  drawCurrentChord();
 }

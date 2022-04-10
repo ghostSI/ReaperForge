@@ -404,10 +404,10 @@ static void drawAnchor(GLuint shader, const Song::TranscriptionTrack::Anchor& an
   // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
 
   const GLfloat v[] = {
-  left , 0.02f, front, 0.8418f, 1.0f,
-  right, 0.02f, front, 0.9922f, 1.0f,
-  left, 0.02f, back, 0.8418f, 0.0f,
-  right, 0.02f, back, 0.9922f, 0.0f,
+  left , -0.26f, front, 0.8418f, 1.0f,
+  right, -0.26f, front, 0.9922f, 1.0f,
+  left, -0.26f, back, 0.8418f, 0.0f,
+  right, -0.26f, back, 0.9922f, 0.0f,
   };
 
   Shader::useShader(Shader::Stem::anchorWorld);
@@ -442,7 +442,7 @@ static void drawAnchors(GLuint shader)
 
 static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chord, f32 noteTime, f32 fretboardNoteDistance[7][24])
 {
-  u32 fretsInCord = 0;
+  u32 fretsInChord = 0;
 
   i32 chordBoxLeft = 24;
   i32 chordBoxRight = 0;
@@ -458,7 +458,7 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
     if (note.fret > chordBoxRight)
       chordBoxRight = note.fret;
 
-    fretsInCord |= 1 << note.fret;
+    fretsInChord |= 1 << note.fret;
   }
 
   { // draw ChordBox
@@ -501,11 +501,11 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
     OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
     for (i32 i = 1; i < 24; ++i)
     {
-      if (fretsInCord & (1 << i))
+      if (fretsInChord & (1 << i))
       {
         const f32 x = frets[i - 1] + 0.5f * (frets[i] - frets[i - 1]);
 
-        Font::drawFretNumber(i, x, -0.03f, noteTime * highwaySpeedMultiplier, 0.5f);
+        Font::drawFretNumber(i, x, -0.03f, noteTime * highwaySpeedMultiplier + 0.1f, 0.5f);
       }
     }
 

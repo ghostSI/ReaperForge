@@ -50,6 +50,7 @@ static void mainloop() {
 
     //if (Global::frameDelta >= 16.666_f32)
     { // render frame
+        Sound::tick();
         Scene::tick();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

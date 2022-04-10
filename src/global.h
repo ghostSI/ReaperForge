@@ -97,6 +97,10 @@ namespace Global {
     extern char searchText[256];
     extern i32 searchTextLength;
 
+    extern std::atomic<i32> chordDetectorRootNote;
+    extern std::atomic<i32> chordDetectorQuality;
+    extern std::atomic<i32> chordDetectorIntervals;
+
     extern f32 frameDelta;
     extern f32 time;
 

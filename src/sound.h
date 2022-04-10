@@ -16,6 +16,7 @@ namespace Sound
   };
 
   void init();
+  void tick();
   void playOgg();
 
   void play(Sound::Effect type, i32 volume = 64);

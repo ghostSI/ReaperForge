@@ -46,6 +46,7 @@ static std::vector<u32> createTextBitmap(const char* text, u64 letters)
 }
 
 static std::vector<u32> fretNumberBitmap[24];
+static std::vector<u32> noteNameFlatBitmap[12];
 
 void Font::init2()
 {
@@ -55,6 +56,11 @@ void Font::init2()
     sprintf(fretNumber, "%d", i + 1);
 
     fretNumberBitmap[i] = createTextBitmap(fretNumber, i >= 9 ? 2 : 1);
+  }
+
+  for (i32 i = 0; i < 12; ++i)
+  {
+    noteNameFlatBitmap[i] = createTextBitmap(Const::notesFlat[i], strlen(Const::notesFlat[i]));
   }
 }
 
@@ -102,7 +108,20 @@ void Font::draw(const char* text, f32 posX, f32 posY, f32 posZ, f32 scale)
 
 void Font::drawFretNumber(i32 fretNumber, f32 posX, f32 posY, f32 posZ, f32 scale)
 {
+  assert(fretNumber > 0);
+  assert(fretNumber < 25);
+
   const u64 letters = fretNumber >= 10 ? 2 : 1;
 
   drawBitmap(fretNumberBitmap[fretNumber - 1], letters, posX, posY, posZ, scale);
+}
+
+void Font::drawNoteNameFlat(i32 note, f32 posX, f32 posY, f32 posZ, f32 scale)
+{
+  assert(note >= 0);
+  assert(note < 12);
+
+  const u64 letters = strlen(Const::notesFlat[note]);
+
+  drawBitmap(noteNameFlatBitmap[note], letters, posX, posY, posZ, scale);
 }

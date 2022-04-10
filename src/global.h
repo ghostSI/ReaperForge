@@ -19,6 +19,48 @@ namespace Const {
     inline constexpr i32 randomIntMax = 65535;
     inline constexpr i16 controllerAxisDeadZone = 3000;
     inline constexpr i16 controllerTriggerDeadZone = -30000;
+    inline constexpr const char notesFlat[][3] =
+    {
+      "A",
+      "B\b",
+      "B",
+      "C",
+      "D\b",
+      "D",
+      "E\b",
+      "E",
+      "F",
+      "G\b",
+      "G",
+      "A\b"
+    };
+    inline constexpr const char notesSharp[][3] =
+    {
+      "A",
+      "A#",
+      "B",
+      "C",
+      "C#",
+      "D",
+      "D#",
+      "E",
+      "F",
+      "F#",
+      "G",
+      "G#"
+    };
+    inline constexpr i32 stringStandardTuningOffset[9] // Standard Tuning
+    {
+      7,  // e
+      2,  // b
+      10, // g
+      5,  // D
+      0,  // A
+      7,  // E
+      2,  // B
+      9,  // F#
+      4,  // C#
+    };
 }
 
 namespace Global {

@@ -16,6 +16,7 @@
 
 static const f32 stringSpacing = 0.42f;
 static f32 highwaySpeedMultiplier = 1.0f;
+static bool fretNoteNames = false;
 
 static const f32 frets[]
 {
@@ -53,6 +54,7 @@ static GLuint texture;
 
 static i32 stringCount = 6;
 static i32 stringOffset = 0;
+static i32 songTuning[6];
 
 void Highway::init()
 {
@@ -71,6 +73,10 @@ void Highway::init()
     stringCount = 6;
     stringOffset = 0;
   }
+
+  memcpy(songTuning, &songInfo.tuning.string0, sizeof(i32) * 6);
+
+  auto a = Song::tuningName(songInfo.tuning);
 
   transcriptionTrack = Song::loadTranscriptionTrack(psarcInfo, Song::Info::InstrumentFlags::LeadGuitar);
   vocals = Song::loadVocals(psarcInfo);
@@ -214,6 +220,7 @@ static void tickLyrics()
 void Highway::tick()
 {
   highwaySpeedMultiplier = atof(Settings::get("Highway", "SpeedMultiplier").c_str());
+  fretNoteNames = bool(atoi(Settings::get("Highway", "FretNoteNames").c_str()));
   tickLyrics();
 }
 
@@ -415,7 +422,7 @@ static void drawAnchors(GLuint shader)
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (i32 i = 0; i <  transcriptionTrack.anchors.size() - 2; ++i)
+  for (i32 i = 0; i < transcriptionTrack.anchors.size() - 2; ++i)
   {
     const Song::TranscriptionTrack::Anchor& anchor0 = transcriptionTrack.anchors[i];
     const Song::TranscriptionTrack::Anchor& anchor1 = transcriptionTrack.anchors[i + 1];
@@ -608,6 +615,39 @@ static void drawFretNumbers()
   }
 }
 
+static i32 getStringTuning(i32 string)
+{
+  const i32 psarcString = stringOffset + 5 - string;
+  
+  if (psarcString < 0 || psarcString >= 6)
+    return Const::stringStandardTuningOffset[string];
+
+  return (12 + Const::stringStandardTuningOffset[string - stringOffset] + songTuning[psarcString]) % 12;
+}
+
+static void drawFretNoteNames()
+{
+  GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.5f, 0.5f, 0.5f, 0.8f);
+
+  for (i32 y = 0; y < stringCount; ++y)
+  {
+    const f32 yy = f32(y) * stringSpacing;
+    const i32 stringTuning = getStringTuning(y);
+
+    // AEADGBe
+
+    Font::drawNoteNameFlat(stringTuning, -0.2f, yy, 0.03f, 0.3f);
+
+    for (i32 i = 1; i <= 24; ++i)
+    {
+      const f32 x = frets[i - 1] + 0.2f;
+
+      Font::drawNoteNameFlat((stringTuning + i) % 12, x, yy, 0.03f, 0.3f);
+    }
+  }
+}
+
 void Highway::render()
 {
   //GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
@@ -666,4 +706,7 @@ void Highway::render()
   shader = Shader::useShader(Shader::Stem::fontWorld);
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
   drawFretNumbers();
+
+  if (fretNoteNames)
+    drawFretNoteNames();
 }

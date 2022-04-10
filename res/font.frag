@@ -8,6 +8,10 @@ uniform sampler2D texture0;
 void main()
 {
   vec4 tex = texture(texture0, Texcoord);
+  
+  if (tex.a == 0.0)
+    discard;
+  
   outColor = mix(color, tex, 1.0 - tex.a);
 }
 )"

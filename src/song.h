@@ -47,6 +47,30 @@ namespace Song {
 
     Info psarcInfoToSongInfo(const Psarc::PsarcInfo &psarcInfo);
 
+    struct ChordTemplate
+    {
+      std::string chordName;
+      std::string displayName;
+      i32 finger0;
+      i32 finger1;
+      i32 finger2;
+      i32 finger3;
+      i32 finger4;
+      i32 finger5;
+      i32 fret0;
+      i32 fret1;
+      i32 fret2;
+      i32 fret3;
+      i32 fret4;
+      i32 fret5;
+    };
+
+    struct Ebeat
+    {
+      f32 time;
+      i32 measure;
+    };
+
     struct TranscriptionTrack
     {
       struct Note
@@ -103,7 +127,15 @@ namespace Song {
       std::vector<Anchor> anchors;
       std::vector<HandShape> handShape;
     };
-    TranscriptionTrack loadTranscriptionTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentFlags instrumentFlags);
+
+    struct Track
+    {
+      std::vector<ChordTemplate> chordTemplates;
+      std::vector<Ebeat> ebeats;
+      TranscriptionTrack transcriptionTrack;
+    };
+
+    Track loadTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentFlags instrumentFlags);
 
     struct Vocal
     {

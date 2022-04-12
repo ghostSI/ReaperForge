@@ -96,11 +96,51 @@ Song::Info Song::psarcInfoToSongInfo(const Psarc::PsarcInfo& psarcInfo) {
   return songInfo;
 }
 
-static void readSongNotes(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::TranscriptionTrack& transcriptionTrack) {
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
-  assert(result.status == pugi::status_ok);
+static void readChordTemplates(const pugi::xml_document& doc, std::vector<Song::ChordTemplate>& chordTemplates)
+{
+  pugi::xml_node chordTemplates_ = doc.child("song").child("chordTemplates");
 
+  //chordTemplates.resize(chordTemplates_.attribute("count").as_int());
+
+  for (pugi::xml_node chordTemplate : chordTemplates_.children("chordTemplate")) {
+    Song::ChordTemplate chordTemplate_;
+
+    chordTemplate_.chordName = chordTemplate.attribute("chordName").as_string();
+    chordTemplate_.displayName = chordTemplate.attribute("displayName").as_string();
+    chordTemplate_.finger0 = chordTemplate.attribute("finger0").as_int();
+    chordTemplate_.finger1 = chordTemplate.attribute("finger1").as_int();
+    chordTemplate_.finger2 = chordTemplate.attribute("finger2").as_int();
+    chordTemplate_.finger3 = chordTemplate.attribute("finger3").as_int();
+    chordTemplate_.finger4 = chordTemplate.attribute("finger4").as_int();
+    chordTemplate_.finger5 = chordTemplate.attribute("finger5").as_int();
+    chordTemplate_.fret0 = chordTemplate.attribute("fret0").as_int();
+    chordTemplate_.fret1 = chordTemplate.attribute("fret1").as_int();
+    chordTemplate_.fret2 = chordTemplate.attribute("fret2").as_int();
+    chordTemplate_.fret3 = chordTemplate.attribute("fret3").as_int();
+    chordTemplate_.fret4 = chordTemplate.attribute("fret4").as_int();
+    chordTemplate_.fret5 = chordTemplate.attribute("fret5").as_int();
+
+    chordTemplates.push_back(chordTemplate_);
+  }
+}
+
+static void readEbeats(const pugi::xml_document& doc, std::vector<Song::Ebeat>& ebeats)
+{
+  pugi::xml_node ebeats_ = doc.child("song").child("ebeats");
+
+  //ebeats.resize(ebeats_.attribute("count").as_int());
+
+  for (pugi::xml_node ebeat : ebeats_.children("ebeat")) {
+    Song::Ebeat ebeat_;
+
+    ebeat_.time = ebeat.attribute("time").as_float();
+    ebeat_.measure = ebeat.attribute("displayName").as_int();
+
+    ebeats.push_back(ebeat_);
+  }
+}
+
+static void readSongNotes(const pugi::xml_document& doc, Song::TranscriptionTrack& transcriptionTrack) {
   pugi::xml_node notes = doc.child("song").child("transcriptionTrack").child("notes");
 
   //songNotes.notes.resize(notes.attribute("count").as_int());
@@ -139,11 +179,7 @@ static void readSongNotes(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::Tran
   }
 }
 
-static void readSongChords(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::TranscriptionTrack& transcriptionTrack) {
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
-  assert(result.status == pugi::status_ok);
-
+static void readSongChords(const pugi::xml_document& doc, Song::TranscriptionTrack& transcriptionTrack) {
   pugi::xml_node cords = doc.child("song").child("transcriptionTrack").child("chords");
 
   //songNotes.notes.resize(notes.attribute("count").as_int());
@@ -192,11 +228,7 @@ static void readSongChords(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::Tra
   }
 }
 
-static void readSongAnchors(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::TranscriptionTrack& transcriptionTrack) {
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
-  assert(result.status == pugi::status_ok);
-
+static void readSongAnchors(const pugi::xml_document& doc, Song::TranscriptionTrack& transcriptionTrack) {
   pugi::xml_node anchors = doc.child("song").child("transcriptionTrack").child("anchors");
 
   //songNotes.notes.resize(notes.attribute("count").as_int());
@@ -212,11 +244,7 @@ static void readSongAnchors(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::Tr
   }
 }
 
-static void readSongHandShape(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::TranscriptionTrack& transcriptionTrack) {
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
-  assert(result.status == pugi::status_ok);
-
+static void readSongHandShape(const pugi::xml_document& doc, Song::TranscriptionTrack& transcriptionTrack) {
   pugi::xml_node handShapes = doc.child("song").child("transcriptionTrack").child("handShapes");
 
   //songNotes.notes.resize(notes.attribute("count").as_int());
@@ -233,9 +261,9 @@ static void readSongHandShape(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::
 }
 
 
-Song::TranscriptionTrack Song::loadTranscriptionTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentFlags instrumentFlags)
+Song::Track Song::loadTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentFlags instrumentFlags)
 {
-  Song::TranscriptionTrack transcriptionTrack;
+  Song::Track track;
 
   for (const Psarc::PsarcInfo::TOCEntry& tocEntry : psarcInfo.tocEntries)
   {
@@ -244,40 +272,58 @@ Song::TranscriptionTrack Song::loadTranscriptionTrack(const Psarc::PsarcInfo& ps
     case Info::InstrumentFlags::LeadGuitar:
       if (tocEntry.name.ends_with("_lead.xml"))
       {
-        readSongNotes(tocEntry, transcriptionTrack);
-        readSongChords(tocEntry, transcriptionTrack);
-        readSongAnchors(tocEntry, transcriptionTrack);
-        readSongHandShape(tocEntry, transcriptionTrack);
+        pugi::xml_document doc;
+        pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
+        assert(result.status == pugi::status_ok);
 
-        return transcriptionTrack;
+        readChordTemplates(doc, track.chordTemplates);
+        readEbeats(doc, track.ebeats);
+        readSongNotes(doc, track.transcriptionTrack);
+        readSongChords(doc, track.transcriptionTrack);
+        readSongAnchors(doc, track.transcriptionTrack);
+        readSongHandShape(doc, track.transcriptionTrack);
+
+        return track;
       }
       break;
     case Info::InstrumentFlags::RhythmGuitar:
       if (tocEntry.name.ends_with("_rhythm.xml"))
       {
-        readSongNotes(tocEntry, transcriptionTrack);
-        readSongChords(tocEntry, transcriptionTrack);
-        readSongAnchors(tocEntry, transcriptionTrack);
-        readSongHandShape(tocEntry, transcriptionTrack);
+        pugi::xml_document doc;
+        pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
+        assert(result.status == pugi::status_ok);
 
-        return transcriptionTrack;
+        readChordTemplates(doc, track.chordTemplates);
+        readEbeats(doc, track.ebeats);
+        readSongNotes(doc, track.transcriptionTrack);
+        readSongChords(doc, track.transcriptionTrack);
+        readSongAnchors(doc, track.transcriptionTrack);
+        readSongHandShape(doc, track.transcriptionTrack);
+
+        return track;
       }
       break;
     case Info::InstrumentFlags::BassGuitar:
       if (tocEntry.name.ends_with("_bass.xml"))
       {
-        readSongNotes(tocEntry, transcriptionTrack);
-        readSongChords(tocEntry, transcriptionTrack);
-        readSongAnchors(tocEntry, transcriptionTrack);
-        readSongHandShape(tocEntry, transcriptionTrack);
+        pugi::xml_document doc;
+        pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
+        assert(result.status == pugi::status_ok);
 
-        return transcriptionTrack;
+        readChordTemplates(doc, track.chordTemplates);
+        readEbeats(doc, track.ebeats);
+        readSongNotes(doc, track.transcriptionTrack);
+        readSongChords(doc, track.transcriptionTrack);
+        readSongAnchors(doc, track.transcriptionTrack);
+        readSongHandShape(doc, track.transcriptionTrack);
+
+        return track;
       }
       break;
     }
   }
 
-  return transcriptionTrack;
+  return track;
 }
 
 std::vector<Song::Vocal> Song::loadVocals(const Psarc::PsarcInfo& psarcInfo) {

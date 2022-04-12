@@ -48,7 +48,7 @@ static const f32 frets[]
   24.00f
 };
 
-static Song::TranscriptionTrack transcriptionTrack;
+static Song::Track track;
 static std::vector<Song::Vocal> vocals;
 
 static GLuint texture;
@@ -79,7 +79,7 @@ void Highway::init()
 
   auto a = Song::tuningName(songInfo.tuning);
 
-  transcriptionTrack = Song::loadTranscriptionTrack(psarcInfo, Song::Info::InstrumentFlags::LeadGuitar);
+  track = Song::loadTrack(psarcInfo, Song::Info::InstrumentFlags::LeadGuitar);
   vocals = Song::loadVocals(psarcInfo);
 
   Psarc::loadOgg(psarcInfo, false);
@@ -367,7 +367,7 @@ static void drawNotes(GLuint shader, f32 fretboardNoteDistance[7][24])
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (const Song::TranscriptionTrack::Note& note : transcriptionTrack.notes)
+  for (const Song::TranscriptionTrack::Note& note : track.transcriptionTrack.notes)
   {
     const f32 noteTime = -note.time + oggElapsed;
 
@@ -423,10 +423,10 @@ static void drawAnchors(GLuint shader)
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (i32 i = 0; i < transcriptionTrack.anchors.size() - 2; ++i)
+  for (i32 i = 0; i < track.transcriptionTrack.anchors.size() - 2; ++i)
   {
-    const Song::TranscriptionTrack::Anchor& anchor0 = transcriptionTrack.anchors[i];
-    const Song::TranscriptionTrack::Anchor& anchor1 = transcriptionTrack.anchors[i + 1];
+    const Song::TranscriptionTrack::Anchor& anchor0 = track.transcriptionTrack.anchors[i];
+    const Song::TranscriptionTrack::Anchor& anchor1 = track.transcriptionTrack.anchors[i + 1];
 
     const f32 noteTimeBegin = -anchor0.time + oggElapsed;
     const f32 noteTimeEnd = -anchor1.time + oggElapsed;
@@ -540,9 +540,9 @@ static void drawChords(GLuint shader, f32 fretboardNoteDistance[7][24])
   i32 nextChord = -1;
   //f32 nextChordNoteTime = 0.0f;
 
-  for (i32 i = 0; i < transcriptionTrack.chords.size(); ++i)
+  for (i32 i = 0; i < track.transcriptionTrack.chords.size(); ++i)
   {
-    const Song::TranscriptionTrack::Chord& chord = transcriptionTrack.chords[i];
+    const Song::TranscriptionTrack::Chord& chord = track.transcriptionTrack.chords[i];
 
     const f32 noteTime = -chord.time + oggElapsed;
 
@@ -565,7 +565,7 @@ static void drawChords(GLuint shader, f32 fretboardNoteDistance[7][24])
 
   if (nextChord != -1)
   {
-    const Song::TranscriptionTrack::Chord& chord = transcriptionTrack.chords[nextChord];
+    const Song::TranscriptionTrack::Chord& chord = track.transcriptionTrack.chords[nextChord];
 
     const f32 noteTime = -chord.time + oggElapsed;
 
@@ -652,7 +652,7 @@ static void drawHandShape(GLuint shader, const Song::TranscriptionTrack::HandSha
   i32 chordBoxLeft = 1;
   i32 chordBoxRight = 6;
 
-  for (const Song::TranscriptionTrack::Note& note : transcriptionTrack.notes)
+  for (const Song::TranscriptionTrack::Note& note : track.transcriptionTrack.notes)
   {
     if (note.time >= handShape.startTime && note.time <= handShape.endTime)
     {
@@ -692,9 +692,9 @@ static void drawHandShapes(GLuint shader)
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (i32 i = 0; i < transcriptionTrack.handShape.size(); ++i)
+  for (i32 i = 0; i < track.transcriptionTrack.handShape.size(); ++i)
   {
-    const Song::TranscriptionTrack::HandShape& handShape = transcriptionTrack.handShape[i];
+    const Song::TranscriptionTrack::HandShape& handShape = track.transcriptionTrack.handShape[i];
 
     const f32 noteTime = -handShape.startTime + oggElapsed;
 

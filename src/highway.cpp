@@ -411,7 +411,7 @@ static void drawAnchor(GLuint shader, const Song::TranscriptionTrack::Anchor& an
   };
 
   Shader::useShader(Shader::Stem::anchorWorld);
-  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.5f, 0.1f, 0.1f, 0.4f);
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.5f, 0.1f, 0.1f, 0.2f);
 
   OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -576,6 +576,137 @@ static void drawChords(GLuint shader, f32 fretboardNoteDistance[7][24])
   }
 }
 
+static void drawArpeggio(GLuint shader, const Song::TranscriptionTrack::Note& note, f32 noteTime, i32 chordBoxLeft, i32 chordBoxWidth)
+{
+  if (note.fret == 0)
+  {
+    setStringColor(shader, 5 - note.string + stringOffset);
+
+    {
+      mat4 modelMat;
+      modelMat.m30 = frets[chordBoxLeft] + frets[0] + 0.05f;
+      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+      modelMat.m32 = noteTime * highwaySpeedMultiplier;
+      OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroLeft), Data::Geometry::zeroLeft, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::zeroLeft) / (sizeof(float) * 5));
+
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::arpeggioZeroLeft), Data::Geometry::arpeggioZeroLeft, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::arpeggioZeroLeft) / (sizeof(float) * 5));
+    }
+
+    {
+      mat4 modelMat;
+      modelMat.m00 = 16.0f;
+      modelMat.m30 = frets[chordBoxLeft] + frets[0] + 0.266f;
+      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+      modelMat.m32 = noteTime * highwaySpeedMultiplier;
+      OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroMiddle), Data::Geometry::zeroMiddle, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::zeroMiddle) / (sizeof(float) * 5));
+    }
+
+    {
+      mat4 modelMat;
+      modelMat.m30 = frets[chordBoxLeft] + frets[0] + 3.73f;
+      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+      modelMat.m32 = noteTime * highwaySpeedMultiplier;
+      OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroRight), Data::Geometry::zeroRight, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::zeroRight) / (sizeof(float) * 5));
+
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::arpeggioZeroRight), Data::Geometry::arpeggioZeroRight, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::arpeggioZeroRight) / (sizeof(float) * 5));
+    }
+
+    {
+      mat4 modelMat;
+      modelMat.m30 = frets[chordBoxLeft] + frets[0] + 2.0f;
+      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+      modelMat.m32 = noteTime * highwaySpeedMultiplier;
+      OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+    }
+  }
+  else
+  {
+    const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+
+    mat4 modelMat;
+    modelMat.m30 = x;
+    modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+    modelMat.m32 = noteTime * highwaySpeedMultiplier;
+    OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+    setStringColor(shader, 5 - note.string + stringOffset);
+
+    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::arpeggio), Data::Geometry::arpeggio, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::arpeggio) / (sizeof(float) * 5));
+  }
+}
+
+static void drawHandShape(GLuint shader, const Song::TranscriptionTrack::HandShape& handShape, f32 noteTime)
+{
+  i32 chordBoxLeft = 1;
+  i32 chordBoxRight = 6;
+
+  for (const Song::TranscriptionTrack::Note& note : transcriptionTrack.notes)
+  {
+    if (note.time >= handShape.startTime && note.time <= handShape.endTime)
+    {
+      drawArpeggio(shader, note, noteTime, chordBoxLeft - 1, chordBoxRight - chordBoxLeft);
+    }
+  }
+
+  { // draw ChordBox
+    if (chordBoxRight - chordBoxLeft < 4)
+      chordBoxRight = chordBoxLeft + 4;
+
+    const f32 left = chordBoxLeft - 1;
+    const f32 top = f32(stringCount + stringOffset) * stringSpacing;
+    const f32 right = chordBoxRight - 1;
+    const f32 bottom = 0.0f;
+    const f32 posZ = noteTime * highwaySpeedMultiplier;
+
+    // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
+    const GLfloat v[] = {
+      left , top, posZ, 0.0f, 1.0f,
+      right, top, posZ, 1.0f, 1.0f,
+      left, bottom, posZ, 0.0f, 0.0f,
+      right, bottom, posZ, 1.0f, 0.0f,
+    };
+
+    Shader::useShader(Shader::Stem::anchorWorld);
+    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.1f, 1.0f, 0.1f, 0.1f);
+
+    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    Shader::useShader(Shader::Stem::defaultWorld);
+  }
+}
+
+static void drawHandShapes(GLuint shader)
+{
+  const f32 oggElapsed = Global::time - Global::oggStartTime;
+
+  for (i32 i = 0; i < transcriptionTrack.handShape.size(); ++i)
+  {
+    const Song::TranscriptionTrack::HandShape& handShape = transcriptionTrack.handShape[i];
+
+    const f32 noteTime = -handShape.startTime + oggElapsed;
+
+    if (noteTime > 0.0f)
+      continue;
+    if (noteTime < -10.0f)
+      continue;
+
+    drawHandShape(shader, handShape, noteTime);
+  }
+}
+
 static void drawNoteFretboard(GLuint shader, i32 fret, i32 string, f32 size)
 {
   mat4 modelMat;
@@ -724,6 +855,7 @@ void Highway::render()
   drawAnchors(shader);
   drawNotes(shader, fretboardNoteDistance);
   drawChords(shader, fretboardNoteDistance);
+  drawHandShapes(shader);
   drawNoteFreadboard(shader, fretboardNoteDistance);
 
   shader = Shader::useShader(Shader::Stem::fontWorld);

@@ -26,6 +26,11 @@ namespace Data {
     extern const f32 ground[30];
     extern const f32 string[180];
 
+
+    extern const f32 arpeggio[180];
+    extern const f32 arpeggioZeroLeft[120];
+    extern const f32 arpeggioZeroRight[120];
+
     extern const f32 fretMute[540];
     extern const f32 hammerOn[105];
     extern const f32 harmonic[8610];

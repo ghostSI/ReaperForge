@@ -2,7 +2,9 @@
 
 #include "global.h"
 
-const char* Chords::name()
+#include <regex>
+
+const char* Chords::chordDetectorName()
 {
   if (Global::chordDetectorQuality == Chords::Quality::Major && Global::chordDetectorIntervals == 0)
   {
@@ -170,4 +172,17 @@ const char* Chords::name()
   assert(false);
 
   return "Unknown";
+}
+
+std::string Chords::translatedName(const std::string& name)
+{
+  std::string tName = name;
+
+  if (const size_t pos = tName.find("min"); pos != std::string::npos)
+    tName.replace(tName.find("min"), sizeof("min") - 1, "m");
+
+  if (const size_t pos = tName.find("Maj"); pos != std::string::npos)
+    tName.replace(tName.find("Maj"), sizeof("Maj") - 1, "");
+
+  return tName;
 }

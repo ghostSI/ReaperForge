@@ -71,6 +71,13 @@ namespace Song {
       i32 measure;
     };
 
+    struct Section
+    {
+      std::string name;
+      i32 number;
+      f32 startTime;
+    };
+
     struct TranscriptionTrack
     {
       struct Note
@@ -132,6 +139,7 @@ namespace Song {
     {
       std::vector<ChordTemplate> chordTemplates;
       std::vector<Ebeat> ebeats;
+      std::vector<Section> sections;
       TranscriptionTrack transcriptionTrack;
     };
 

@@ -440,6 +440,18 @@ static void drawAnchors(GLuint shader)
   }
 }
 
+static void drawChordName(i32 chordId, f32 noteTime, i32 chordBoxLeft)
+{
+  const Song::ChordTemplate& chordTemplate = track.chordTemplates[chordId];
+
+  GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0, 1.0f, 1.0f, 1.0f);
+  Font::draw(Chords::translatedName(chordTemplate.chordName).c_str(), frets[chordBoxLeft] - 2.0f, 3.0f, noteTime * highwaySpeedMultiplier, 1.0f);
+
+  Shader::useShader(Shader::Stem::defaultWorld);
+  glBindTexture(GL_TEXTURE_2D, texture);
+}
+
 static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chord, f32 noteTime, f32 fretboardNoteDistance[7][24])
 {
   u32 fretsInChord = 0;
@@ -493,9 +505,6 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
     drawNote(shader, note, noteTime, fretboardNoteDistance, chordBoxLeft - 1, chordBoxRight - chordBoxLeft);
   }
 
-
-
-
   { // Draw Fret Numbers for Chord
     GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
     OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
@@ -512,6 +521,8 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
     Shader::useShader(Shader::Stem::defaultWorld);
     glBindTexture(GL_TEXTURE_2D, texture);
   }
+
+  drawChordName(chord.chordId, noteTime, chordBoxLeft);
 }
 
 static void drawChordLeftHand(const Song::TranscriptionTrack::Chord& chord)
@@ -686,6 +697,8 @@ static void drawHandShape(GLuint shader, const Song::TranscriptionTrack::HandSha
 
     Shader::useShader(Shader::Stem::defaultWorld);
   }
+
+  drawChordName(handShape.chordId, noteTime, chordBoxLeft);
 }
 
 static void drawHandShapes(GLuint shader)
@@ -799,7 +812,7 @@ static void drawCurrentChordName()
   Font::drawFretNumber(to_underlying(quality), 0.0f, 0.8f, 0.0f, 0.1f);
   Font::drawFretNumber(Global::chordDetectorIntervals, 0.2f, 0.8f, 0.0f, 0.1f);
 
-  Font::draw(Chords::name(), 0.0f, 0.7f, 0.0f, 0.1f);
+  Font::draw(Chords::chordDetectorName(), 0.0f, 0.7f, 0.0f, 0.1f);
 }
 
 void Highway::render()

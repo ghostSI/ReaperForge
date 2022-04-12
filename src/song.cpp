@@ -140,12 +140,28 @@ static void readEbeats(const pugi::xml_document& doc, std::vector<Song::Ebeat>& 
   }
 }
 
-static void readSongNotes(const pugi::xml_document& doc, Song::TranscriptionTrack& transcriptionTrack) {
-  pugi::xml_node notes = doc.child("song").child("transcriptionTrack").child("notes");
+static void readSections(const pugi::xml_document& doc, std::vector<Song::Section>& sections) {
+  pugi::xml_node sections_ = doc.child("song").child("sections");
+
+  //sections.resize(sections_.attribute("count").as_int());
+
+  for (pugi::xml_node section : sections_.children("section")) {
+    Song::Section section_;
+
+    section_.name = section.attribute("name").as_string();
+    section_.number = section.attribute("number").as_int();
+    section_.startTime = section.attribute("startTime").as_float();
+
+    sections.push_back(section_);
+  }
+}
+
+static void readSongNotes(const pugi::xml_document& doc, std::vector<Song::TranscriptionTrack::Note>& notes) {
+  pugi::xml_node notes_ = doc.child("song").child("transcriptionTrack").child("notes");
 
   //songNotes.notes.resize(notes.attribute("count").as_int());
 
-  for (pugi::xml_node note : notes.children("note")) {
+  for (pugi::xml_node note : notes_.children("note")) {
 
     Song::TranscriptionTrack::Note note_;
 
@@ -175,16 +191,16 @@ static void readSongNotes(const pugi::xml_document& doc, Song::TranscriptionTrac
     note_.tap = note.attribute("tap").as_bool();
     note_.vibrato = note.attribute("vibrato").as_int();
 
-    transcriptionTrack.notes.push_back(note_);
+    notes.push_back(note_);
   }
 }
 
-static void readSongChords(const pugi::xml_document& doc, Song::TranscriptionTrack& transcriptionTrack) {
-  pugi::xml_node cords = doc.child("song").child("transcriptionTrack").child("chords");
+static void readSongChords(const pugi::xml_document& doc, std::vector<Song::TranscriptionTrack::Chord>& chords) {
+  pugi::xml_node chords_ = doc.child("song").child("transcriptionTrack").child("chords");
 
   //songNotes.notes.resize(notes.attribute("count").as_int());
 
-  for (pugi::xml_node chord : cords.children("chord")) {
+  for (pugi::xml_node chord : chords_.children("chord")) {
     Song::TranscriptionTrack::Chord chord_;
 
     chord_.time = chord.attribute("time").as_float();
@@ -224,42 +240,41 @@ static void readSongChords(const pugi::xml_document& doc, Song::TranscriptionTra
       chord_.chordNotes.push_back(note_);
     }
 
-    transcriptionTrack.chords.push_back(chord_);
+    chords.push_back(chord_);
   }
 }
 
-static void readSongAnchors(const pugi::xml_document& doc, Song::TranscriptionTrack& transcriptionTrack) {
-  pugi::xml_node anchors = doc.child("song").child("transcriptionTrack").child("anchors");
+static void readSongAnchors(const pugi::xml_document& doc, std::vector<Song::TranscriptionTrack::Anchor>& anchors) {
+  pugi::xml_node anchors_ = doc.child("song").child("transcriptionTrack").child("anchors");
 
   //songNotes.notes.resize(notes.attribute("count").as_int());
 
-  for (pugi::xml_node anchor : anchors.children("anchor")) {
+  for (pugi::xml_node anchor : anchors_.children("anchor")) {
     Song::TranscriptionTrack::Anchor anchor_;
 
     anchor_.time = anchor.attribute("time").as_float();
     anchor_.fret = anchor.attribute("fret").as_int();
     anchor_.width = anchor.attribute("width").as_int();
 
-    transcriptionTrack.anchors.push_back(anchor_);
+    anchors.push_back(anchor_);
   }
 }
 
-static void readSongHandShape(const pugi::xml_document& doc, Song::TranscriptionTrack& transcriptionTrack) {
-  pugi::xml_node handShapes = doc.child("song").child("transcriptionTrack").child("handShapes");
+static void readSongHandShape(const pugi::xml_document& doc, std::vector<Song::TranscriptionTrack::HandShape>& handShapes) {
+  pugi::xml_node handShapes_ = doc.child("song").child("transcriptionTrack").child("handShapes");
 
   //songNotes.notes.resize(notes.attribute("count").as_int());
 
-  for (pugi::xml_node handShape : handShapes.children("handShape")) {
+  for (pugi::xml_node handShape : handShapes_.children("handShape")) {
     Song::TranscriptionTrack::HandShape handShape_;
 
     handShape_.chordId = handShape.attribute("chordId").as_int();
     handShape_.endTime = handShape.attribute("endTime").as_float();
     handShape_.startTime = handShape.attribute("startTime").as_float();
 
-    transcriptionTrack.handShape.push_back(handShape_);
+    handShapes.push_back(handShape_);
   }
 }
-
 
 Song::Track Song::loadTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentFlags instrumentFlags)
 {
@@ -278,10 +293,10 @@ Song::Track Song::loadTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentF
 
         readChordTemplates(doc, track.chordTemplates);
         readEbeats(doc, track.ebeats);
-        readSongNotes(doc, track.transcriptionTrack);
-        readSongChords(doc, track.transcriptionTrack);
-        readSongAnchors(doc, track.transcriptionTrack);
-        readSongHandShape(doc, track.transcriptionTrack);
+        readSongNotes(doc, track.transcriptionTrack.notes);
+        readSongChords(doc, track.transcriptionTrack.chords);
+        readSongAnchors(doc, track.transcriptionTrack.anchors);
+        readSongHandShape(doc, track.transcriptionTrack.handShape);
 
         return track;
       }
@@ -295,10 +310,10 @@ Song::Track Song::loadTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentF
 
         readChordTemplates(doc, track.chordTemplates);
         readEbeats(doc, track.ebeats);
-        readSongNotes(doc, track.transcriptionTrack);
-        readSongChords(doc, track.transcriptionTrack);
-        readSongAnchors(doc, track.transcriptionTrack);
-        readSongHandShape(doc, track.transcriptionTrack);
+        readSongNotes(doc, track.transcriptionTrack.notes);
+        readSongChords(doc, track.transcriptionTrack.chords);
+        readSongAnchors(doc, track.transcriptionTrack.anchors);
+        readSongHandShape(doc, track.transcriptionTrack.handShape);
 
         return track;
       }
@@ -312,10 +327,10 @@ Song::Track Song::loadTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentF
 
         readChordTemplates(doc, track.chordTemplates);
         readEbeats(doc, track.ebeats);
-        readSongNotes(doc, track.transcriptionTrack);
-        readSongChords(doc, track.transcriptionTrack);
-        readSongAnchors(doc, track.transcriptionTrack);
-        readSongHandShape(doc, track.transcriptionTrack);
+        readSongNotes(doc, track.transcriptionTrack.notes);
+        readSongChords(doc, track.transcriptionTrack.chords);
+        readSongAnchors(doc, track.transcriptionTrack.anchors);
+        readSongHandShape(doc, track.transcriptionTrack.handShape);
 
         return track;
       }

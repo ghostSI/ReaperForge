@@ -77,8 +77,6 @@ void Highway::init()
 
   memcpy(songTuning, &songInfo.tuning.string0, sizeof(i32) * 6);
 
-  auto a = Song::tuningName(songInfo.tuning);
-
   track = Song::loadTrack(psarcInfo, Song::Info::InstrumentFlags::LeadGuitar);
   vocals = Song::loadVocals(psarcInfo);
 

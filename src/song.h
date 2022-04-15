@@ -37,6 +37,43 @@ namespace Song {
           i32 string5;
         } tuning;
 
+        struct ArrangementProperties
+        {
+          bool represent;
+          bool standardTuning;
+          bool nonStandardChords;
+          bool barreChords;
+          bool powerChords;
+          bool dropDPower;
+          bool openChords;
+          bool fingerPicking;
+          bool pickDirection;
+          bool doubleStops;
+          bool palmMutes;
+          bool harmonics;
+          bool pinchHarmonics;
+          bool hopo;
+          bool tremolo;
+          bool slides;
+          bool unpitchedSlides;
+          bool bends;
+          bool tapping;
+          bool vibrato;
+          bool fretHandMutes;
+          bool slapPop;
+          bool twoFingerPicking;
+          bool fifthsAndOctaves;
+          bool syncopation;
+          bool bassPick;
+          bool sustain; 
+          bool bonusArr;
+          bool Metronome;
+          bool pathLead;
+          bool pathRhythm;
+          bool pathBass;
+          bool routeMask;
+        } arrangementProperties;
+
         i32 albumCover64_tocIndex = -1;
         mutable GLuint albumCover64_ogl = 0;
         i32 albumCover128_tocIndex = -1;

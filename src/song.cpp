@@ -44,6 +44,41 @@ static void readSongInfoXml(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::In
   songInfo.tuning.string4 = tuning.attribute("string4").as_int();
   songInfo.tuning.string5 = tuning.attribute("string5").as_int();
 
+  pugi::xml_node arrangementProperties = root.child("arrangementProperties");
+  songInfo.arrangementProperties.represent = arrangementProperties.attribute("represent").as_bool();
+  songInfo.arrangementProperties.standardTuning = arrangementProperties.attribute("standardTuning").as_bool();
+  songInfo.arrangementProperties.nonStandardChords = arrangementProperties.attribute("nonStandardChords").as_bool();
+  songInfo.arrangementProperties.barreChords = arrangementProperties.attribute("barreChords").as_bool();
+  songInfo.arrangementProperties.powerChords = arrangementProperties.attribute("powerChords").as_bool();
+  songInfo.arrangementProperties.dropDPower = arrangementProperties.attribute("dropDPower").as_bool();
+  songInfo.arrangementProperties.openChords = arrangementProperties.attribute("openChords").as_bool();
+  songInfo.arrangementProperties.fingerPicking = arrangementProperties.attribute("fingerPicking").as_bool();
+  songInfo.arrangementProperties.pickDirection = arrangementProperties.attribute("pickDirection").as_bool();
+  songInfo.arrangementProperties.doubleStops = arrangementProperties.attribute("doubleStops").as_bool();
+  songInfo.arrangementProperties.palmMutes = arrangementProperties.attribute("palmMutes").as_bool();
+  songInfo.arrangementProperties.harmonics = arrangementProperties.attribute("harmonics").as_bool();
+  songInfo.arrangementProperties.pinchHarmonics = arrangementProperties.attribute("pinchHarmonics").as_bool();
+  songInfo.arrangementProperties.hopo = arrangementProperties.attribute("hopo").as_bool();
+  songInfo.arrangementProperties.tremolo = arrangementProperties.attribute("tremolo").as_bool();
+  songInfo.arrangementProperties.slides = arrangementProperties.attribute("slides").as_bool();
+  songInfo.arrangementProperties.unpitchedSlides = arrangementProperties.attribute("unpitchedSlides").as_bool();
+  songInfo.arrangementProperties.bends = arrangementProperties.attribute("bends").as_bool();
+  songInfo.arrangementProperties.tapping = arrangementProperties.attribute("tapping").as_bool();
+  songInfo.arrangementProperties.vibrato = arrangementProperties.attribute("vibrato").as_bool();
+  songInfo.arrangementProperties.fretHandMutes = arrangementProperties.attribute("fretHandMutes").as_bool();
+  songInfo.arrangementProperties.slapPop = arrangementProperties.attribute("slapPop").as_bool();
+  songInfo.arrangementProperties.twoFingerPicking = arrangementProperties.attribute("twoFingerPicking").as_bool();
+  songInfo.arrangementProperties.fifthsAndOctaves = arrangementProperties.attribute("fifthsAndOctaves").as_bool();
+  songInfo.arrangementProperties.syncopation = arrangementProperties.attribute("syncopation").as_bool();
+  songInfo.arrangementProperties.bassPick = arrangementProperties.attribute("bassPick").as_bool();
+  songInfo.arrangementProperties.sustain = arrangementProperties.attribute("sustain").as_bool();
+  songInfo.arrangementProperties.bonusArr = arrangementProperties.attribute("bonusArr").as_bool();
+  songInfo.arrangementProperties.Metronome = arrangementProperties.attribute("Metronome").as_bool();
+  songInfo.arrangementProperties.pathLead = arrangementProperties.attribute("pathLead").as_bool();
+  songInfo.arrangementProperties.pathRhythm = arrangementProperties.attribute("pathRhythm").as_bool();
+  songInfo.arrangementProperties.pathBass = arrangementProperties.attribute("pathBass").as_bool();
+  songInfo.arrangementProperties.routeMask = arrangementProperties.attribute("routeMask").as_bool();
+
   for (pugi::xml_node node : root.child("capo")) {
     songInfo.capo = node.value();
   }

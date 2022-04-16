@@ -84,7 +84,7 @@ void Highway::init()
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();
 
-  //Global::oggStartTime = -30.0f;
+  Global::oggStartTime = -30.0f;
 
   texture = loadDDS(Data::Texture::texture, sizeof(Data::Texture::texture));
 }
@@ -243,54 +243,116 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
       fretboardNoteDistance[note.string][note.fret] = noteTime;
   }
 
-  if (note.fret == 0)
+  if (noteTime < 0.0f)
+  {
+    if (note.fret == 0)
+    {
+      setStringColor(shader, 5 - note.string + stringOffset);
+
+      {
+        mat4 modelMat;
+        modelMat.m30 = frets[chordBoxLeft] + frets[0] + 0.05f;
+        modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+        modelMat.m32 = noteTime * highwaySpeedMultiplier;
+        OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+        OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroLeft), Data::Geometry::zeroLeft, GL_STATIC_DRAW);
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::zeroLeft) / (sizeof(float) * 5));
+      }
+
+      {
+        mat4 modelMat;
+        modelMat.m00 = 16.0f;
+        modelMat.m30 = frets[chordBoxLeft] + frets[0] + 0.266f;
+        modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+        modelMat.m32 = noteTime * highwaySpeedMultiplier;
+        OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+        OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroMiddle), Data::Geometry::zeroMiddle, GL_STATIC_DRAW);
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::zeroMiddle) / (sizeof(float) * 5));
+      }
+
+      {
+        mat4 modelMat;
+        modelMat.m30 = frets[chordBoxLeft] + frets[0] + 3.73f;
+        modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+        modelMat.m32 = noteTime * highwaySpeedMultiplier;
+        OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+        OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroRight), Data::Geometry::zeroRight, GL_STATIC_DRAW);
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::zeroRight) / (sizeof(float) * 5));
+      }
+
+      {
+        mat4 modelMat;
+        modelMat.m30 = frets[chordBoxLeft] + frets[0] + 2.0f;
+        modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+        modelMat.m32 = noteTime * highwaySpeedMultiplier;
+        OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+      }
+    }
+    else
+    {
+      const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+
+      mat4 modelMat;
+      modelMat.m30 = x;
+      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+      modelMat.m32 = noteTime * highwaySpeedMultiplier;
+      OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+      setStringColor(shader, 5 - note.string + stringOffset);
+
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::note), Data::Geometry::note, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::note) / (sizeof(float) * 5));
+    }
+
+
+    if (note.hammerOn)
+    {
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::hammerOn), Data::Geometry::hammerOn, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::hammerOn) / (sizeof(float) * 5));
+    }
+    if (note.harmonic)
+    {
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::harmonic), Data::Geometry::harmonic, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::harmonic) / (sizeof(float) * 5));
+    }
+    if (note.mute)
+    {
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::fretMute), Data::Geometry::fretMute, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::fretMute) / (sizeof(float) * 5));
+    }
+    if (note.palmMute)
+    {
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::palmMute), Data::Geometry::palmMute, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::palmMute) / (sizeof(float) * 5));
+    }
+    if (note.pullOff)
+    {
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::pullOff), Data::Geometry::pullOff, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::pullOff) / (sizeof(float) * 5));
+    }
+    if (note.slap)
+    {
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::slap), Data::Geometry::slap, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::slap) / (sizeof(float) * 5));
+    }
+    if (note.harmonicPinch)
+    {
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::harmonicPinch), Data::Geometry::harmonicPinch, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::harmonicPinch) / (sizeof(float) * 5));
+    }
+    if (note.tap)
+    {
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::tap), Data::Geometry::tap, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::tap) / (sizeof(float) * 5));
+    }
+  }
+  if (note.sustain != 0.0f)
   {
     setStringColor(shader, 5 - note.string + stringOffset);
 
-    {
-      mat4 modelMat;
-      modelMat.m30 = frets[chordBoxLeft] + frets[0] + 0.05f;
-      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
-      modelMat.m32 = noteTime * highwaySpeedMultiplier;
-      OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
-
-      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroLeft), Data::Geometry::zeroLeft, GL_STATIC_DRAW);
-      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::zeroLeft) / (sizeof(float) * 5));
-    }
-
-    {
-      mat4 modelMat;
-      modelMat.m00 = 16.0f;
-      modelMat.m30 = frets[chordBoxLeft] + frets[0] + 0.266f;
-      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
-      modelMat.m32 = noteTime * highwaySpeedMultiplier;
-      OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
-
-      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroMiddle), Data::Geometry::zeroMiddle, GL_STATIC_DRAW);
-      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::zeroMiddle) / (sizeof(float) * 5));
-    }
-
-    {
-      mat4 modelMat;
-      modelMat.m30 = frets[chordBoxLeft] + frets[0] + 3.73f;
-      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
-      modelMat.m32 = noteTime * highwaySpeedMultiplier;
-      OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
-
-      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::zeroRight), Data::Geometry::zeroRight, GL_STATIC_DRAW);
-      glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::zeroRight) / (sizeof(float) * 5));
-    }
-
-    {
-      mat4 modelMat;
-      modelMat.m30 = frets[chordBoxLeft] + frets[0] + 2.0f;
-      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
-      modelMat.m32 = noteTime * highwaySpeedMultiplier;
-      OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
-    }
-  }
-  else
-  {
     const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
 
     mat4 modelMat;
@@ -299,55 +361,6 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
     modelMat.m32 = noteTime * highwaySpeedMultiplier;
     OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
-    setStringColor(shader, 5 - note.string + stringOffset);
-
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::note), Data::Geometry::note, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::note) / (sizeof(float) * 5));
-  }
-
-
-  if (note.hammerOn)
-  {
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::hammerOn), Data::Geometry::hammerOn, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::hammerOn) / (sizeof(float) * 5));
-  }
-  if (note.harmonic)
-  {
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::harmonic), Data::Geometry::harmonic, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::harmonic) / (sizeof(float) * 5));
-  }
-  if (note.mute)
-  {
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::fretMute), Data::Geometry::fretMute, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::fretMute) / (sizeof(float) * 5));
-  }
-  if (note.palmMute)
-  {
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::palmMute), Data::Geometry::palmMute, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::palmMute) / (sizeof(float) * 5));
-  }
-  if (note.pullOff)
-  {
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::pullOff), Data::Geometry::pullOff, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::pullOff) / (sizeof(float) * 5));
-  }
-  if (note.slap)
-  {
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::slap), Data::Geometry::slap, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::slap) / (sizeof(float) * 5));
-  }
-  if (note.harmonicPinch)
-  {
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::harmonicPinch), Data::Geometry::harmonicPinch, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::harmonicPinch) / (sizeof(float) * 5));
-  }
-  if (note.tap)
-  {
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::tap), Data::Geometry::tap, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::tap) / (sizeof(float) * 5));
-  }
-  if (note.sustain != 0.0f)
-  {
     const f32 sustainTime = -note.sustain * highwaySpeedMultiplier;
 
     const GLfloat v[] = {
@@ -370,24 +383,27 @@ static void drawNotes(GLuint shader, f32 fretboardNoteDistance[7][24])
   {
     const f32 noteTime = -note.time + oggElapsed;
 
-    if (noteTime > 0.0f)
+    if (noteTime - note.sustain > 0.0f)
       continue;
-    if (noteTime < -10.0f)
+    if (noteTime < Const::highwayRenderMaxFutureTime)
       continue;
 
     drawNote(shader, note, noteTime, fretboardNoteDistance, 0, 4);
 
-    if (note.fret >= 1)  // Draw Fret Numbers for Chord
+    if (noteTime < 0.0f)
     {
-      GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
-      OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
+      if (note.fret >= 1)  // Draw Fret Numbers for Chord
+      {
+        GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
+        OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
 
-      const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+        const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
 
-      Font::drawFretNumber(note.fret, x, -0.03f, noteTime * highwaySpeedMultiplier, 0.5f);
+        Font::drawFretNumber(note.fret, x, -0.03f, noteTime * highwaySpeedMultiplier, 0.5f);
 
-      Shader::useShader(Shader::Stem::defaultWorld);
-      glBindTexture(GL_TEXTURE_2D, texture);
+        Shader::useShader(Shader::Stem::defaultWorld);
+        glBindTexture(GL_TEXTURE_2D, texture);
+      }
     }
   }
 }
@@ -432,7 +448,7 @@ static void drawAnchors(GLuint shader)
 
     if (noteTimeEnd > 0.0f)
       continue;
-    if (noteTimeBegin < -10.0f)
+    if (noteTimeBegin < Const::highwayRenderMaxFutureTime)
       continue;
 
     drawAnchor(shader, anchor0, noteTimeBegin, noteTimeEnd);
@@ -472,6 +488,12 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
     fretsInChord |= 1 << note.fret;
   }
 
+  for (const Song::TranscriptionTrack::Note& note : chord.chordNotes)
+  {
+    drawNote(shader, note, noteTime, fretboardNoteDistance, chordBoxLeft - 1, chordBoxRight - chordBoxLeft);
+  }
+
+  if (noteTime < 0.0f)
   { // draw ChordBox
     if (chordBoxRight - chordBoxLeft < 4)
       chordBoxRight = chordBoxLeft + 4;
@@ -499,11 +521,9 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
     Shader::useShader(Shader::Stem::defaultWorld);
   }
 
-  for (const Song::TranscriptionTrack::Note& note : chord.chordNotes)
-  {
-    drawNote(shader, note, noteTime, fretboardNoteDistance, chordBoxLeft - 1, chordBoxRight - chordBoxLeft);
-  }
 
+
+  if (noteTime < 0.0f)
   { // Draw Fret Numbers for Chord
     GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
     OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
@@ -556,9 +576,15 @@ static void drawChords(GLuint shader, f32 fretboardNoteDistance[7][24])
 
     const f32 noteTime = -chord.time + oggElapsed;
 
-    if (noteTime > 0.0f)
+    f32 chordSustain = 0.0f;
+    for (const Song::TranscriptionTrack::Note& note : chord.chordNotes)
+    {
+      chordSustain = max_(chordSustain, note.sustain);
+    }
+
+    if (noteTime - chordSustain > 0.0f)
       continue;
-    if (noteTime < -10.0f)
+    if (noteTime < Const::highwayRenderMaxFutureTime)
       continue;
 
     drawChord(shader, chord, noteTime, fretboardNoteDistance);
@@ -712,7 +738,7 @@ static void drawHandShapes(GLuint shader)
 
     if (noteTime > 0.0f)
       continue;
-    if (noteTime < -10.0f)
+    if (noteTime < Const::highwayRenderMaxFutureTime)
       continue;
 
     drawHandShape(shader, handShape, noteTime);
@@ -938,5 +964,6 @@ void Highway::render()
   if (fretNoteNames)
     drawFretNoteNames();
 
-  drawCurrentChordName();
+  if (Global::instrumentVolume > Const::chordDetectorVolumeThreshhold)
+    drawCurrentChordName();
 }

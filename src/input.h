@@ -9,6 +9,8 @@ namespace Input {
     void pollEvent(SDL_Event &event);
 
     void postPollEvent();
+
+    void proccessInputEvents();
 }
 
 

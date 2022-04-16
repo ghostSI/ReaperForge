@@ -23,6 +23,13 @@ static const std::map<std::string, std::map<std::string, std::string>> defaultSe
 
                 }
         },
+        //{
+        //        "Audio",
+        //        {
+        //                {"SampleRate",             "44100"},
+        //                {"BufferSize",             "1024"}
+        //        }
+        //},
         {
                 "Highway",
                 {

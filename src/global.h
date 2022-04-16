@@ -19,6 +19,10 @@ namespace Const {
     inline constexpr i32 randomIntMax = 65535;
     inline constexpr i16 controllerAxisDeadZone = 3000;
     inline constexpr i16 controllerTriggerDeadZone = -30000;
+    inline constexpr f32 chordDetectorVolumeThreshhold = 0.005f;
+    inline constexpr i32 audioSampleRate = 44100;
+    inline constexpr i32 audioBufferSize = 1024;
+    inline constexpr f32 highwayRenderMaxFutureTime = -10.0f;
     inline constexpr const char notesFlat[][3] =
     {
       "A",
@@ -97,6 +101,7 @@ namespace Global {
     extern char searchText[256];
     extern i32 searchTextLength;
 
+    extern std::atomic<f32> instrumentVolume;
     extern std::atomic<Chords::Note> chordDetectorRootNote;
     extern std::atomic<Chords::Quality> chordDetectorQuality;
     extern std::atomic<i32> chordDetectorIntervals;

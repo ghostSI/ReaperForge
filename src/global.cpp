@@ -35,6 +35,7 @@ f32 Global::oggStartTime = 0.0f;
 char Global::searchText[256] = "";
 i32 Global::searchTextLength = 0;
 
+std::atomic<f32> Global::instrumentVolume;
 std::atomic<Chords::Note> Global::chordDetectorRootNote;
 std::atomic<Chords::Quality> Global::chordDetectorQuality;
 std::atomic<i32> Global::chordDetectorIntervals;

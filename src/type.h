@@ -36,8 +36,7 @@ enum struct InputDebugMode : u16 {
 enum struct DisplayMode : u8 {
     windowed,
     fullscreen,
-    borderless,
-    COUNT,
+    windowedFullscreen
 };
 
 enum struct Instrument {

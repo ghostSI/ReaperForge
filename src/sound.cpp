@@ -21,9 +21,9 @@ namespace Const
 
 static SDL_AudioDeviceID devid_in = 0;
 static SDL_AudioSpec want_in;
-static u8 buffer_in[8192];
-static u8 buffer_mixer[8192];
-std::vector<double> frame(1024);
+static u8 buffer_in[Const::audioBufferSize * sizeof(f32) * 2];
+static u8 buffer_mixer[Const::audioBufferSize * sizeof(f32) * 2];
+std::vector<double> frame(Const::audioBufferSize);
 
 static SDL_AudioDeviceID devid_out;
 static SDL_AudioSpec want_out;
@@ -32,7 +32,7 @@ static std::condition_variable cv;
 static std::mutex mutex;
 bool recordingFirst = true;
 
-static Chromagram chromagram(1024, 44100);
+static Chromagram chromagram(Const::audioBufferSize, Const::audioSampleRate);
 static ChordDetector chordDetector;
 
 static std::atomic<i32> musicVolume;
@@ -210,27 +210,34 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
 {
   ASSERT(len == sizeof(buffer_in));
 
-  std::unique_lock<std::mutex> lock(mutex);
-  cv.wait(lock, [] { return recordingFirst ? true : false; });
+  //std::unique_lock<std::mutex> lock(mutex);
+  //cv.wait(lock, [] { return recordingFirst ? true : false; });
+
 
   // right channel to stereo
   for (i32 i = 0; i < len; i += 8)
   {
+    // Left Output Channel
     buffer_in[i] = stream[i + 4];
     buffer_in[i + 1] = stream[i + 5];
     buffer_in[i + 2] = stream[i + 6];
     buffer_in[i + 3] = stream[i + 7];
 
+    // Right Output Channel
     buffer_in[i + 4] = stream[i + 4];
     buffer_in[i + 5] = stream[i + 5];
     buffer_in[i + 6] = stream[i + 6];
     buffer_in[i + 7] = stream[i + 7];
   }
 
+  f32 instrumentVolume = 0.0f;
   for (i32 i = 0; i < len / 8; ++i)
   {
-    frame[i++] = reinterpret_cast<f32*>(stream)[i * 2 + 1];
+    const f32 value = reinterpret_cast<f32*>(stream)[i * 2 + 1];
+    frame[i++] = value;
+    instrumentVolume = max_(instrumentVolume, abs(value));
   }
+  Global::instrumentVolume = instrumentVolume;
 
   chromagram.processAudioFrame(frame);
 
@@ -245,7 +252,7 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
   }
 
   recordingFirst = !recordingFirst;
-  cv.notify_one();
+  //cv.notify_one();
 }
 
 //param userdata      Poi32s to linked list of sounds to play, first being a placeholder
@@ -255,8 +262,8 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
 {
   ASSERT(len == sizeof(buffer_in));
 
-  std::unique_lock<std::mutex> lock(mutex);
-  cv.wait(lock, [] { return !recordingFirst ? true : false; });
+  //std::unique_lock<std::mutex> lock(mutex);
+  //cv.wait(lock, [] { return !recordingFirst ? true : false; });
 
   SDL_memset(stream, 0, len);
 
@@ -315,7 +322,7 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
     }
     else if (getSoundType(audio) == SoundType::Ogg)
     {
-      stb_vorbis_get_samples_short_interleaved(audio->vorbis, 2, (short*)buffer_mixer, len / sizeof(short));
+      stb_vorbis_get_samples_float_interleaved(audio->vorbis, 2, (f32*)buffer_mixer, len / sizeof(f32));
       SDL_MixAudio(stream, buffer_mixer, len, musicVolume);
 
       previous = audio;
@@ -337,7 +344,7 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
   }
 
   recordingFirst = !recordingFirst;
-  cv.notify_one();
+  //cv.notify_one();
 }
 
 static void initAudio()
@@ -345,10 +352,10 @@ static void initAudio()
   { // Input
     SDL_memset(&want_in, 0, sizeof(want_in));
 
-    want_in.freq = 44100;
+    want_in.freq = Const::audioSampleRate;
     want_in.format = AUDIO_F32LSB;
     want_in.channels = 2;
-    want_in.samples = 1024;
+    want_in.samples = Const::audioBufferSize;
     want_in.callback = audioRecordingCallback;
     want_in.userdata = nullptr;
 
@@ -361,10 +368,10 @@ static void initAudio()
   { // Output
     SDL_memset(&want_out, 0, sizeof(want_out));
 
-    want_out.freq = 44100;
+    want_out.freq = Const::audioSampleRate;
     want_out.format = AUDIO_F32LSB;
     want_out.channels = 2;
-    want_out.samples = 1024;
+    want_out.samples = Const::audioBufferSize;
     want_out.callback = audioPlaybackCallback;
     want_out.userdata = &head;
 
@@ -403,29 +410,28 @@ void Sound::tick()
 
 void Sound::playOgg()
 {
+  Audio* audio = new Audio;
 
-  //Audio* audio = new Audio;
-
-  //audio->vorbis = stb_vorbis_open_memory(Global::ogg.data(), Global::ogg.size(), nullptr, nullptr);
-  //audio->soundId = 30000;
-  //Global::oggStartTime = Global::time;
+  audio->vorbis = stb_vorbis_open_memory(Global::ogg.data(), Global::ogg.size(), nullptr, nullptr);
+  audio->soundId = 30000;
+  Global::oggStartTime = Global::time;
 
 
-  //stb_vorbis_info info = stb_vorbis_get_info(audio->vorbis);
+  stb_vorbis_info info = stb_vorbis_get_info(audio->vorbis);
 
-  //SDL_AudioSpec spec;
-  //spec.freq = info.sample_rate;
-  //spec.format = AUDIO_S16;
-  //spec.channels = info.channels;
-  //spec.samples = 1024;
-  //spec.callback = audioPlaybackCallback;
-  //spec.userdata = audio;
+  SDL_AudioSpec spec;
+  spec.freq = info.sample_rate;
+  spec.format = AUDIO_F32LSB;
+  spec.channels = info.channels;
+  spec.samples = Const::audioBufferSize;
+  spec.callback = audioPlaybackCallback;
+  spec.userdata = audio;
 
-  //SDL_OpenAudio(&spec, NULL);
+  SDL_OpenAudio(&spec, NULL);
 
-  //addAudio(audio);
+  addAudio(audio);
 
-  //SDL_PauseAudio(0);
+  SDL_PauseAudio(0);
 }
 
 void Sound::play(Sound::Effect effect, i32 volume)

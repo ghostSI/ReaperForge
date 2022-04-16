@@ -7,20 +7,6 @@
 
 #include "SDL2/SDL_events.h"
 
-static void proccessInputEvents() {
-    const DisplayMode displayMode = Global::inputFullscreen.toggle ? DisplayMode::fullscreen : DisplayMode::windowed;
-    if (Global::inputFullscreen.up) {
-        Global::displayMode = displayMode;
-        SDL_SetWindowFullscreen(Global::window, displayMode == DisplayMode::fullscreen ? SDL_WINDOW_FULLSCREEN
-                                                                                       : SDL_WINDOW_FULLSCREEN_DESKTOP);
-    }
-
-    if (Global::inputPause.up) {
-        Global::pauseAudio = Global::inputPause.toggle;
-        Sound::setPauseAudio(Global::pauseAudio);
-    }
-}
-
 static void prePollEventKeyInput(KeyInput &keyInput) {
     keyInput.pressedLastFrame = keyInput.pressed;
     keyInput.down = false;
@@ -242,7 +228,7 @@ void Input::pollEvent(SDL_Event &event) {
               break;*/
         case SDL_WINDOWEVENT: {
             switch (event.window.event) {
-                case SDL_WINDOWEVENT_RESIZED: {
+                case SDL_WINDOWEVENT_SIZE_CHANGED: {
                     Global::windowWidth = event.window.data1;
                     Global::windowHeight = event.window.data2;
                     glViewport(0, 0, Global::windowWidth, Global::windowHeight);
@@ -253,7 +239,6 @@ void Input::pollEvent(SDL_Event &event) {
             break;
     }
 
-    proccessInputEvents();
 }
 
 static void postPollEventKeyInput(KeyInput &keyInput) {
@@ -276,4 +261,27 @@ void Input::postPollEvent() {
   postPollEventKeyInput(Global::inputPause);
   postPollEventKeyInput(Global::inputWireframe);
   postPollEventKeyInput(Global::inputDebug);
+}
+
+void Input::proccessInputEvents() {
+  if (Global::inputFullscreen.up) {
+    Global::displayMode = Global::inputFullscreen.toggle ? DisplayMode::windowedFullscreen : DisplayMode::windowed;
+    switch (Global::displayMode)
+    {
+    case DisplayMode::windowed:
+      SDL_SetWindowFullscreen(Global::window, 0);
+      break;
+    case DisplayMode::fullscreen:
+      SDL_SetWindowFullscreen(Global::window, SDL_WINDOW_FULLSCREEN);
+      break;
+    case DisplayMode::windowedFullscreen:
+      SDL_SetWindowFullscreen(Global::window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+      break;
+    }
+  }
+
+  if (Global::inputPause.up) {
+    Global::pauseAudio = Global::inputPause.toggle;
+    Sound::setPauseAudio(Global::pauseAudio);
+  }
 }

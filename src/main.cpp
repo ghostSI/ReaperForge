@@ -46,6 +46,8 @@ static void mainloop() {
         }
         //Ui::handleInputEnd();
         Input::postPollEvent();
+
+        Input::proccessInputEvents();
     }
 
     //if (Global::frameDelta >= 16.666_f32)

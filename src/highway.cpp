@@ -48,6 +48,7 @@ static const f32 frets[]
   24.00f
 };
 
+static Song::Info songInfo;
 static Song::Track track;
 static std::vector<Song::Vocal> vocals;
 
@@ -62,7 +63,7 @@ void Highway::init()
   const std::vector<u8> psarcData = Psarc::readPsarcData("songs/test.psarc");
 
   const Psarc::PsarcInfo psarcInfo = Psarc::parse(psarcData);
-  const Song::Info songInfo = Song::psarcInfoToSongInfo(psarcInfo);
+  songInfo = Song::psarcInfoToSongInfo(psarcInfo);
 
   if (songInfo.tuning.string0 <= -3)
   {
@@ -75,7 +76,7 @@ void Highway::init()
     stringOffset = 0;
   }
 
-  memcpy(songTuning, &songInfo.tuning.string0, sizeof(i32) * 6);
+  memcpy(songTuning, &songInfo.tuning.string0, sizeof(Song::Info::Tuning));
 
   track = Song::loadTrack(psarcInfo, Song::Info::InstrumentFlags::LeadGuitar);
   vocals = Song::loadVocals(psarcInfo);
@@ -805,12 +806,72 @@ static void drawCurrentChordName()
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
 
   const Chords::Note rootNote = Global::chordDetectorRootNote;
-  Font::drawNoteNameFlat(to_underlying(rootNote), -0.2f, 0.8f, 0.0f, 0.1f);
+  Font::drawNoteNameFlat(to_underlying(rootNote), -0.2f, 0.6f, 0.0f, 0.1f);
   const Chords::Quality quality = Global::chordDetectorQuality;
-  Font::drawFretNumber(to_underlying(quality), 0.0f, 0.8f, 0.0f, 0.1f);
-  Font::drawFretNumber(Global::chordDetectorIntervals, 0.2f, 0.8f, 0.0f, 0.1f);
+  Font::drawFretNumber(to_underlying(quality), 0.0f, 0.6f, 0.0f, 0.1f);
+  Font::drawFretNumber(Global::chordDetectorIntervals, 0.2f, 0.6f, 0.0f, 0.1f);
 
-  Font::draw(Chords::chordDetectorName(), 0.0f, 0.7f, 0.0f, 0.1f);
+  Font::draw(Chords::chordDetectorName(), 0.0f, 0.5f, 0.0f, 0.1f);
+}
+
+static void drawPhrases()
+{
+  GLuint shader = Shader::useShader(Shader::Stem::defaultScreen);
+
+  i32 maxDifficulty = 0;
+  for (const Song::Phrase& phase : track.phrases)
+    if (phase.maxDifficulty > maxDifficulty)
+      maxDifficulty = phase.maxDifficulty;
+
+  for (i32 i = 0; i < i32(track.phraseIterations.size()) - 1; ++i)
+  {
+    const Song::PhraseIteration& phraseIteration0 = track.phraseIterations[i];
+    const Song::PhraseIteration& phraseIteration1 = track.phraseIterations[i + 1];
+
+    const Song::Phrase& phase = track.phrases[phraseIteration0.phraseId];
+
+    f32 begin = phraseIteration0.time / songInfo.songLength;
+    f32 end = phraseIteration1.time / songInfo.songLength;
+    f32 difficulty = f32(phase.maxDifficulty) / f32(maxDifficulty);
+
+    const f32 left = -0.7985 + begin * 1.6f;
+    const f32 right = -0.8015 + end * 1.6f;
+    const f32 posZ = 0.3f;
+    {
+      const f32 top = 0.75f + difficulty * 0.17f;
+      const f32 bottom = 0.75f;
+
+      // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
+      const GLfloat v[] = {
+        left , top, posZ, 0.0f, 1.0f,
+        right, top, posZ, 1.0f, 1.0f,
+        left, bottom, posZ, 0.0f, 0.0f,
+        right, bottom, posZ, 1.0f, 0.0f,
+      };
+
+      OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.29f, 0.0f, 0.5f, 1.0f);
+
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
+    {
+      const f32 top = 0.745f;
+      const f32 bottom = 0.73f;
+
+      // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
+      const GLfloat v[] = {
+        left , top, posZ, 0.0f, 1.0f,
+        right, top, posZ, 1.0f, 1.0f,
+        left, bottom, posZ, 0.0f, 0.0f,
+        right, bottom, posZ, 1.0f, 0.0f,
+      };
+
+      OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 0.5f, 0.0f, 1.0f);
+
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
+  }
 }
 
 void Highway::render()
@@ -868,6 +929,7 @@ void Highway::render()
   drawChords(shader, fretboardNoteDistance);
   drawHandShapes(shader);
   drawNoteFreadboard(shader, fretboardNoteDistance);
+  drawPhrases();
 
   shader = Shader::useShader(Shader::Stem::fontWorld);
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);

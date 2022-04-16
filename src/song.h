@@ -24,8 +24,8 @@ namespace Song {
         std::string artist;
         bool capo = false;
         std::string albumName;
-        std::string albumYear;
-        std::string songLength;
+        i32 albumYear;
+        f32 songLength;
 
         struct Tuning
         {
@@ -83,6 +83,26 @@ namespace Song {
     };
 
     Info psarcInfoToSongInfo(const Psarc::PsarcInfo &psarcInfo);
+
+    struct Phrase
+    {
+      i32 maxDifficulty;
+      std::string name;
+    };
+
+    struct HeroLevel
+    {
+      i32 difficulty;
+      i32 hero;
+    };
+
+    struct PhraseIteration
+    {
+      f32 time;
+      i32 phraseId;
+      std::string variation;
+      std::vector<HeroLevel> heroLevels;
+    };
 
     struct ChordTemplate
     {
@@ -174,6 +194,8 @@ namespace Song {
 
     struct Track
     {
+      std::vector<Phrase> phrases;
+      std::vector<PhraseIteration> phraseIterations;
       std::vector<ChordTemplate> chordTemplates;
       std::vector<Ebeat> ebeats;
       std::vector<Section> sections;

@@ -1863,7 +1863,7 @@ static bool filterSongOut(const Song::Info &songInfo) {
         return false;
     if (stristr(songInfo.albumName.c_str(), searchText2))
         return false;
-    if (stristr(songInfo.albumYear.c_str(), searchText2))
+    if (stristr(std::to_string(songInfo.albumYear).c_str(), searchText2))
         return false;
     if (stristr(Song::tuningName(songInfo.tuning), searchText2))
         return false;
@@ -1957,11 +1957,11 @@ static void songWindow() {
                     nk_button_label(ctx, "Rhythm Guitar");
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Year:", NK_TEXT_LEFT);
-                    nk_label(ctx, songInfo.albumYear.c_str(), NK_TEXT_LEFT);
+                    nk_label(ctx, std::to_string(songInfo.albumYear).c_str(), NK_TEXT_LEFT);
                     nk_button_label(ctx, "Bass Guitar");
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Length:", NK_TEXT_LEFT);
-                    nk_label(ctx, songInfo.songLength.c_str(), NK_TEXT_LEFT);
+                    nk_label(ctx, std::to_string(songInfo.songLength).c_str(), NK_TEXT_LEFT);
                     nk_label(ctx, "Score:       98.4%", NK_TEXT_LEFT);
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Tuning:", NK_TEXT_LEFT);

@@ -32,9 +32,7 @@ static void readSongInfoXml(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::In
 
   pugi::xml_node root = doc.child("song");
 
-  for (pugi::xml_node node : root.child("title")) {
-    songInfo.title = node.value();
-  }
+  songInfo.title = root.child("title").text().as_string();
 
   pugi::xml_node tuning = root.child("tuning");
   songInfo.tuning.string0 = tuning.attribute("string0").as_int();
@@ -43,6 +41,12 @@ static void readSongInfoXml(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::In
   songInfo.tuning.string3 = tuning.attribute("string3").as_int();
   songInfo.tuning.string4 = tuning.attribute("string4").as_int();
   songInfo.tuning.string5 = tuning.attribute("string5").as_int();
+
+  songInfo.capo = root.child("capo").text().as_string();
+  songInfo.artist = root.child("artistName").text().as_string();
+  songInfo.albumName = root.child("albumName").text().as_string();
+  songInfo.albumYear = root.child("albumYear").text().as_int();
+  songInfo.songLength = root.child("songLength").text().as_int();
 
   pugi::xml_node arrangementProperties = root.child("arrangementProperties");
   songInfo.arrangementProperties.represent = arrangementProperties.attribute("represent").as_bool();
@@ -78,22 +82,6 @@ static void readSongInfoXml(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::In
   songInfo.arrangementProperties.pathRhythm = arrangementProperties.attribute("pathRhythm").as_bool();
   songInfo.arrangementProperties.pathBass = arrangementProperties.attribute("pathBass").as_bool();
   songInfo.arrangementProperties.routeMask = arrangementProperties.attribute("routeMask").as_bool();
-
-  for (pugi::xml_node node : root.child("capo")) {
-    songInfo.capo = node.value();
-  }
-
-  for (pugi::xml_node node : root.child("artistName")) {
-    songInfo.artist = node.value();
-  }
-
-  for (pugi::xml_node node : root.child("albumName")) {
-    songInfo.albumName = node.value();
-  }
-
-  for (pugi::xml_node node : root.child("albumYear")) {
-    songInfo.albumYear = node.value();
-  }
 }
 
 Song::Info Song::psarcInfoToSongInfo(const Psarc::PsarcInfo& psarcInfo) {
@@ -129,6 +117,49 @@ Song::Info Song::psarcInfoToSongInfo(const Psarc::PsarcInfo& psarcInfo) {
   }
 
   return songInfo;
+}
+
+static void readPhrases(const pugi::xml_document& doc, std::vector<Song::Phrase>& phrases)
+{
+  pugi::xml_node phrases_ = doc.child("song").child("phrases");
+
+  //phrases.resize(phrases_.attribute("count").as_int());
+
+  for (pugi::xml_node phrase : phrases_.children("phrase")) {
+    Song::Phrase phrase_;
+
+    phrase_.maxDifficulty = phrase.attribute("maxDifficulty").as_int();
+    phrase_.name = phrase.attribute("name").as_string();
+
+    phrases.push_back(phrase_);
+  }
+}
+
+static void readPhraseIterations(const pugi::xml_document& doc, std::vector<Song::PhraseIteration>& phraseIterations)
+{
+  pugi::xml_node phraseIterations_ = doc.child("song").child("phraseIterations");
+
+  //phrases.resize(phrases_.attribute("count").as_int());
+
+  for (pugi::xml_node phraseIteration : phraseIterations_.children("phraseIteration")) {
+    Song::PhraseIteration phraseIteration_;
+
+    phraseIteration_.time = phraseIteration.attribute("time").as_float();
+    phraseIteration_.phraseId = phraseIteration.attribute("phraseId").as_int();
+    phraseIteration_.variation = phraseIteration.attribute("variation").as_string();
+
+    for (pugi::xml_node heroLevel : phraseIteration.child("heroLevels").children("heroLevel")) {
+
+      Song::HeroLevel heroLevel_;
+
+      heroLevel_.difficulty = heroLevel.attribute("difficulty").as_int();
+      heroLevel_.hero = heroLevel.attribute("hero").as_int();
+
+      phraseIteration_.heroLevels.push_back(heroLevel_);
+    }
+
+    phraseIterations.push_back(phraseIteration_);
+  }
 }
 
 static void readChordTemplates(const pugi::xml_document& doc, std::vector<Song::ChordTemplate>& chordTemplates)
@@ -326,6 +357,8 @@ Song::Track Song::loadTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentF
         pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
         assert(result.status == pugi::status_ok);
 
+        readPhrases(doc, track.phrases);
+        readPhraseIterations(doc, track.phraseIterations);
         readChordTemplates(doc, track.chordTemplates);
         readEbeats(doc, track.ebeats);
         readSongNotes(doc, track.transcriptionTrack.notes);
@@ -343,6 +376,8 @@ Song::Track Song::loadTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentF
         pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
         assert(result.status == pugi::status_ok);
 
+        readPhrases(doc, track.phrases);
+        readPhraseIterations(doc, track.phraseIterations);
         readChordTemplates(doc, track.chordTemplates);
         readEbeats(doc, track.ebeats);
         readSongNotes(doc, track.transcriptionTrack.notes);
@@ -360,6 +395,8 @@ Song::Track Song::loadTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentF
         pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
         assert(result.status == pugi::status_ok);
 
+        readPhrases(doc, track.phrases);
+        readPhraseIterations(doc, track.phraseIterations);
         readChordTemplates(doc, track.chordTemplates);
         readEbeats(doc, track.ebeats);
         readSongNotes(doc, track.transcriptionTrack.notes);

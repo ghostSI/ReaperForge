@@ -816,7 +816,7 @@ static void drawCurrentChordName()
 
 static void drawPhrases()
 {
-  GLuint shader = Shader::useShader(Shader::Stem::defaultScreen);
+  GLuint shader = Shader::useShader(Shader::Stem::phrasesScreen);
 
   i32 maxDifficulty = 0;
   for (const Song::Phrase& phase : track.phrases)

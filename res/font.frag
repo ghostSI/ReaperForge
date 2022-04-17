@@ -9,7 +9,7 @@ void main()
 {
   vec4 tex = texture(texture0, Texcoord);
   
-  if (tex.a == 0.0)
+  if (tex.a <= 0.0)
     discard;
   
   outColor = mix(color, tex, 1.0 - tex.a);

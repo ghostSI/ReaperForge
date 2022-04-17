@@ -270,7 +270,7 @@ static void readSongChords(const pugi::xml_document& doc, std::vector<Song::Tran
     Song::TranscriptionTrack::Chord chord_;
 
     chord_.time = chord.attribute("time").as_float();
-    chord_.chordId = chord.attribute("chordId").as_int();
+    chord_.chordId = chord.attribute("chordId").as_int(-1);
     chord_.strum = chord.attribute("strum").as_bool();
 
     for (pugi::xml_node chordNote : chord.children("chordNote")) {
@@ -334,7 +334,7 @@ static void readSongHandShape(const pugi::xml_document& doc, std::vector<Song::T
   for (pugi::xml_node handShape : handShapes_.children("handShape")) {
     Song::TranscriptionTrack::HandShape handShape_;
 
-    handShape_.chordId = handShape.attribute("chordId").as_int();
+    handShape_.chordId = handShape.attribute("chordId").as_int(-1);
     handShape_.endTime = handShape.attribute("endTime").as_float();
     handShape_.startTime = handShape.attribute("startTime").as_float();
 

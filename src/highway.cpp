@@ -222,11 +222,11 @@ void Highway::tick()
   tickLyrics();
 }
 
-static void setStringColor(GLuint shader, i32 string)
+static void setStringColor(GLuint shader, i32 string, f32 alpha = 1.0f)
 {
-  const std::string colorStr = Settings::get("Instrument", std::string("GuitarStringColor") + std::to_string(string)).substr(1) + "FF";
+  const std::string colorStr = Settings::get("Instrument", std::string("GuitarStringColor") + std::to_string(string)).substr(1) + n2hexStr(i32(alpha * 255.0f));
 
-  const Color color = (Color)strtoul(colorStr.c_str(), NULL, 16);
+  const Color color = makeColor(colorStr.c_str());
 
   vec4 colorVec = colorVec4(color);
 
@@ -349,7 +349,7 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
   }
   if (note.sustain != 0.0f)
   {
-    setStringColor(shader, 5 - note.string + stringOffset);
+    setStringColor(shader, 5 - note.string + stringOffset, 0.85f);
 
     if (note.tremolo)
     {
@@ -420,7 +420,7 @@ static void drawNotes(GLuint shader, f32 fretboardNoteDistance[7][24])
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (i32 i = 0; i < track.transcriptionTrack.notes.size() - 1; ++i)
+  for (i32 i = track.transcriptionTrack.notes.size() - 1; i >= 0; --i)
   {
     const Song::TranscriptionTrack::Note& note = track.transcriptionTrack.notes[i];
 
@@ -559,11 +559,12 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
   if (chordBoxRight - chordBoxLeft < 4)
     chordBoxRight = chordBoxLeft + 4;
 
-  for (const Song::TranscriptionTrack::Note& note : chord.chordNotes)
+  for (i32 i = chord.chordNotes.size() - 1; i >= 0; --i)
   {
+    const Song::TranscriptionTrack::Note& note = chord.chordNotes[i];
+
     drawNote(shader, note, noteTime, fretboardNoteDistance, chordBoxLeft, chordBoxRight - chordBoxLeft);
   }
-
 
   if (noteTime < 0.0f)
   { // draw ChordBox

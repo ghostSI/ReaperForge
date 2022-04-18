@@ -9,6 +9,9 @@ void main()
 {
   vec2 texcoord = vec2(Texcoord.x , 1.0 - Texcoord.y);
   vec4 tex = texture(texture0, texcoord);
-  outColor = mix(color, vec4(tex.rgb, 1.0), tex.a);
+
+  vec3 col = mix(color.rgb, tex.rgb, tex.a);
+  
+  outColor = vec4(col.rgb, color.a);
 }
 )"

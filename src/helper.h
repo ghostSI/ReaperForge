@@ -8,6 +8,8 @@
 
 Color makeColor(u8 r, u8 g, u8 b, u8 a);
 
+Color makeColor(const char* hexColor);
+
 u8 colorR(Color color);
 
 u8 colorG(Color color);
@@ -21,6 +23,8 @@ vec4 colorVec4(const Color& color);
 Color getColor(const u8 *rgbaData, i32 index);
 
 void setColor(std::vector<u8> &rgbaData, i32 index, Color color);
+
+std::string n2hexStr(i32 value);
 
 f32 x2GlScreen(f32 x);
 

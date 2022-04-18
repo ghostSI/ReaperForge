@@ -19,6 +19,10 @@ Color makeColor(u8 r, u8 g, u8 b, u8 a) {
     return r << 24 | g << 16 | b << 8 | a;
 }
 
+Color makeColor(const char* hexColor) {
+  return (Color)strtoul(hexColor, NULL, 16);
+}
+
 u8 colorR(Color color) {
     return color >> 24;
 }
@@ -50,6 +54,14 @@ Color getColor(const u8 *rgbaData, i32 index) {
 
 void setColor(std::vector<u8> &rgbaData, i32 index, Color color) {
     reinterpret_cast<std::vector<Color> &>(rgbaData)[index] = color;
+}
+
+std::string n2hexStr(i32 value) {
+    assert(value >= 0);
+    assert(value <= 255);
+    char hexString[4 * sizeof(int) + 1];
+    sprintf(hexString, "%X", value);
+    return std::string(hexString);
 }
 
 f32 x2GlScreen(f32 x)

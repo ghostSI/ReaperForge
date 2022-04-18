@@ -460,10 +460,10 @@ static void drawAnchor(GLuint shader, const Song::TranscriptionTrack::Anchor& an
   // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
 
   const GLfloat v[] = {
-  left , -0.26f, front, 0.8418f, 1.0f,
-  right, -0.26f, front, 0.9922f, 1.0f,
-  left, -0.26f, back, 0.8418f, 0.0f,
-  right, -0.26f, back, 0.9922f, 0.0f,
+  left , -0.26f, front, 0.0f, 1.0f,
+  right, -0.26f, front, 1.0f, 1.0f,
+  left, -0.26f, back, 0.0f, 0.0f,
+  right, -0.26f, back, 1.0f, 0.0f,
   };
 
   Shader::useShader(Shader::Stem::anchorWorld);
@@ -589,8 +589,6 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
 
     Shader::useShader(Shader::Stem::defaultWorld);
   }
-
-
 
   if (noteTime < 0.0f)
   { // Draw Fret Numbers for Chord
@@ -803,8 +801,8 @@ static void drawHandShape(GLuint shader, const Song::TranscriptionTrack::HandSha
   
   { // drawHandShapeAnchor
 
-    const f32 left = chordBoxLeft - 1;
-    const f32 right = chordBoxRight - 1;
+    const f32 left = frets[chordBoxLeft - 1] - 0.1f;
+    const f32 right = frets[chordBoxRight - 1] + 0.1f;
     const f32 front = min_(noteTimeBegin * highwaySpeedMultiplier, 0.0f);
     const f32 back = noteTimeEnd * highwaySpeedMultiplier;
 
@@ -819,8 +817,8 @@ static void drawHandShape(GLuint shader, const Song::TranscriptionTrack::HandSha
     };
 
     Shader::useShader(Shader::Stem::handShapeAnchorWorld);
-    
-    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.5f, 0.7f, 0.1f, 0.2f);
+
+    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.588f, 0.487f, 1.0f, 0.8f);
 
     OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -855,7 +853,7 @@ static void drawHandShape(GLuint shader, const Song::TranscriptionTrack::HandSha
     Shader::useShader(Shader::Stem::defaultWorld);
   }
 
-  //drawChordName(handShape.chordId, noteTimeBegin, chordBoxLeft);
+  drawChordName(handShape.chordId, noteTimeBegin, chordBoxLeft);
 }
 
 static void drawHandShapes(GLuint shader)
@@ -1082,8 +1080,6 @@ void Highway::render()
   }
 
   f32 fretboardNoteDistance[7][24] = { };
-
-  // Draw Note
 
   drawAnchors(shader);
   drawNotes(shader, fretboardNoteDistance);

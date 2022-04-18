@@ -526,7 +526,7 @@ const char* Song::tuningName(const Song::Info::Tuning& tuning) {
   if (tuning.string0 == -7 && tuning.string1 == -5 && tuning.string2 == -5 && tuning.string3 == -5 && tuning.string4 == -4 && tuning.string5 == -5)
     return "AEADG";
 
-  assert(false);
+  //assert(false);
 
   return "Custom Tuning";
 }

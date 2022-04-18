@@ -22,15 +22,19 @@ elseif (CMAKE_HOST_WIN32)
 endif ()
 
 set(HEADER_FILES
-        src/configuration.h
+        src/_kiss_fft_guts.h
+        src/camera.h
+        src/chordDetector.h
+        src/chords.h
+        src/chromagram.h
         src/collection.h
+        src/configuration.h
         src/data.h
         src/debug.h
         src/devutil.h
-        src/typedefs.h
-        src/camera.h
         src/file.h
         src/font.h
+        src/font2.h
         src/getopt.h
         src/global.h
         src/helper.h
@@ -39,6 +43,7 @@ set(HEADER_FILES
         src/inflate.h
         src/input.h
         src/installer.h
+        src/kiss_fft.h
         src/log.h
         src/nuklear.h
         src/oggvorbis.h
@@ -51,8 +56,9 @@ set(HEADER_FILES
         src/song.h
         src/sound.h
         src/sprite.h
-        src/type.h
         src/texture.h
+        src/type.h
+        src/typedefs.h
         src/ui.h
         src/ww2ogg.h
         src/xml.h
@@ -61,11 +67,15 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
         src/camera.cpp
+		src/chordDetector.cpp
+		src/chords.cpp
+        src/chromagram.cpp
         src/collection.cpp
         src/data.cpp
         src/debug.cpp
         src/file.cpp
         src/font.cpp
+        src/font2.cpp
         src/getopt.cpp
         src/global.cpp
         src/helper.cpp
@@ -74,6 +84,7 @@ set(SOURCE_FILES
         src/inflate.cpp
         src/input.cpp
         src/installer.cpp
+        src/kiss_fft.c
         src/log.cpp
         src/main.cpp
         src/oggvorbis.cpp
@@ -95,13 +106,6 @@ set(SOURCE_FILES
         )
 
 set(RESOURCE_FILES
-        res/defaultScreen.vert
-        res/defaultWorld.frag
-        res/defaultWorld.vert
-        res/font.png
-        res/menuHover.wav
-        res/menuSelect.wav
-        res/random.txt
         )
 
 add_executable(ReaperForge WIN32 ${HEADER_FILES} ${SOURCE_FILES} ${RESOURCE_FILES} ReaperForge.rc)

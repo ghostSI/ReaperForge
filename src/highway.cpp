@@ -15,7 +15,7 @@
 #include "sound.h"
 #include "imageload.h"
 
-static const f32 stringSpacing = 0.42f;
+static const f32 stringSpacing = 0.5f;
 static f32 highwaySpeedMultiplier = 1.0f;
 static bool fretNoteNames = false;
 

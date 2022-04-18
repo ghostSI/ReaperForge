@@ -11,13 +11,13 @@
 #include "psarc.h"
 #include "song.h"
 #include "font.h"
-#include "font2.h"
 #include "sound.h"
 #include "imageload.h"
 
 static const f32 stringSpacing = 0.5f;
 static f32 highwaySpeedMultiplier = 1.0f;
 static bool fretNoteNames = false;
+static bool showLyrics = false;
 
 static const f32 frets[]
 {
@@ -89,139 +89,11 @@ void Highway::init()
   texture = loadDDS(Data::Texture::texture, sizeof(Data::Texture::texture));
 }
 
-static void tickLyrics()
-{
-  if (Settings::get("Highway", "Lyrics") == "0")
-    return;
-
-  if (vocals.size() == 0)
-    return;
-
-  const f32 oggElapsed = Global::time - Global::oggStartTime;
-
-  i32 line0Begin = 0;
-  i32 line0End = 0;
-  for (i32 i = 0; i < vocals.size(); ++i)
-  {
-    const Song::Vocal& vocal = vocals[i];
-
-    if (vocal.lyric[vocal.lyric.size() - 1] == '+')
-    {
-      if (vocal.time + vocal.length > oggElapsed)
-      {
-        line0End = i;
-        break;
-      }
-      else
-      {
-        line0Begin = i + 1;
-      }
-    }
-  }
-
-  i32 line1End = 0;
-  for (i32 i = line0End + 1; i < vocals.size(); ++i)
-  {
-    const Song::Vocal& vocal = vocals[i];
-
-    if (vocal.lyric[vocal.lyric.size() - 1] == '+')
-    {
-      line1End = i;
-      break;
-    }
-  }
-
-  char line0[4096];
-  i32 line0Cur = 0;
-
-  for (i32 i = line0Begin; i < line0End; ++i)
-  {
-    const Song::Vocal& vocal = vocals[i];
-
-    i32 j = 0;
-    while (vocal.lyric[j] != '\0')
-    {
-      line0[line0Cur + j] = vocal.lyric[j];
-      ++j;
-    }
-    line0[line0Cur + j] = ' ';
-    line0Cur += j + 1;
-  }
-  const Song::Vocal& vocal = vocals[line0End];
-  i32 j = 0;
-  while (vocal.lyric[j] != '+')
-  {
-    line0[line0Cur + j] = vocal.lyric[j];
-    ++j;
-  }
-  line0[line0Cur + j] = '\0';
-
-  static Font::Handle line0Handle;
-  Font::Info fontInfo{
-    .text = line0,
-    .fontHandle = line0Handle,
-    .posX = 80.0f,
-    .posY = 200.0f,
-    .space = Space::screenSpace,
-    .color = makeColor(255, 0, 0, 255)
-  };
-  line0Handle = Font::print(fontInfo);
-
-  {
-    char line1[4096];
-    i32 line1Cur = 0;
-
-    i32 line1End = 0;
-    for (i32 i = line0End + 1; i < vocals.size(); ++i)
-    {
-      const Song::Vocal& vocal = vocals[i];
-
-      if (vocal.lyric[vocal.lyric.size() - 1] == '+')
-      {
-        line1End = i;
-        break;
-      }
-    }
-
-    for (i32 i = line0End + 1; i < line1End; ++i)
-    {
-      const Song::Vocal& vocal = vocals[i];
-
-      i32 j = 0;
-      while (vocal.lyric[j] != '\0')
-      {
-        line1[line1Cur + j] = vocal.lyric[j];
-        ++j;
-      }
-      line1[line1Cur + j] = ' ';
-      line1Cur += j + 1;
-    }
-    const Song::Vocal& vocal = vocals[line1End];
-    i32 j = 0;
-    while (vocal.lyric[j] != '+')
-    {
-      line1[line1Cur + j] = vocal.lyric[j];
-      ++j;
-    }
-    line1[line1Cur + j] = '\0';
-
-    static Font::Handle line1Handle;
-    Font::Info fontInfo{
-      .text = line1,
-      .fontHandle = line1Handle,
-      .posX = 80.0f,
-      .posY = 230.0f,
-      .space = Space::screenSpace,
-    };
-    line1Handle = Font::print(fontInfo);
-  }
-}
-
 void Highway::tick()
 {
   highwaySpeedMultiplier = atof(Settings::get("Highway", "SpeedMultiplier").c_str());
   fretNoteNames = bool(atoi(Settings::get("Highway", "FretNoteNames").c_str()));
-  tickLyrics();
+  showLyrics = bool(atoi(Settings::get("Highway", "Lyrics").c_str()));
 }
 
 static void setStringColor(GLuint shader, i32 string, f32 alpha = 1.0f)
@@ -1076,6 +948,127 @@ static void drawSongInfo()
   }
 }
 
+static void drawLyrics()
+{
+  if (vocals.size() == 0)
+    return;
+
+  const f32 oggElapsed = Global::time - Global::oggStartTime;
+
+  i32 line0Begin = 0;
+  i32 line0End = 0;
+  for (i32 i = 0; i < vocals.size(); ++i)
+  {
+    const Song::Vocal& vocal = vocals[i];
+
+    if (vocal.lyric[vocal.lyric.size() - 1] == '+')
+    {
+      if (vocal.time + vocal.length > oggElapsed)
+      {
+        line0End = i;
+        break;
+      }
+      else
+      {
+        line0Begin = i + 1;
+      }
+    }
+  }
+
+  i32 line1End = 0;
+  for (i32 i = line0End + 1; i < vocals.size(); ++i)
+  {
+    const Song::Vocal& vocal = vocals[i];
+
+    if (vocal.lyric[vocal.lyric.size() - 1] == '+')
+    {
+      line1End = i;
+      break;
+    }
+  }
+
+  char line0[4096];
+  i32 line0Cur = 0;
+
+  for (i32 i = line0Begin; i < line0End; ++i)
+  {
+    const Song::Vocal& vocal = vocals[i];
+
+    i32 j = 0;
+    while (vocal.lyric[j] != '\0')
+    {
+      line0[line0Cur + j] = vocal.lyric[j];
+      ++j;
+    }
+    line0[line0Cur + j] = ' ';
+    line0Cur += j + 1;
+  }
+  const Song::Vocal& vocal = vocals[line0End];
+  i32 j = 0;
+  while (vocal.lyric[j] != '+')
+  {
+    line0[line0Cur + j] = vocal.lyric[j];
+    ++j;
+  }
+  line0[line0Cur + j] = '\0';
+
+  GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
+
+  {
+    const i32 letters = songInfo.title.size();
+    const f32 scaleX = (0.7f / Const::fontCharWidth) * letters;
+    const f32 scaleY = (0.7f / Const::fontCharHeight) * Const::aspectRatio;
+    Font::draw(line0, -0.95f + 0.5f * scaleX, 0.5f, 0.0f, scaleX, scaleY);
+  }
+
+  {
+    char line1[4096];
+    i32 line1Cur = 0;
+
+    i32 line1End = 0;
+    for (i32 i = line0End + 1; i < vocals.size(); ++i)
+    {
+      const Song::Vocal& vocal = vocals[i];
+
+      if (vocal.lyric[vocal.lyric.size() - 1] == '+')
+      {
+        line1End = i;
+        break;
+      }
+    }
+
+    for (i32 i = line0End + 1; i < line1End; ++i)
+    {
+      const Song::Vocal& vocal = vocals[i];
+
+      i32 j = 0;
+      while (vocal.lyric[j] != '\0')
+      {
+        line1[line1Cur + j] = vocal.lyric[j];
+        ++j;
+      }
+      line1[line1Cur + j] = ' ';
+      line1Cur += j + 1;
+    }
+    const Song::Vocal& vocal = vocals[line1End];
+    i32 j = 0;
+    while (vocal.lyric[j] != '+')
+    {
+      line1[line1Cur + j] = vocal.lyric[j];
+      ++j;
+    }
+    line1[line1Cur + j] = '\0';
+
+    {
+      const i32 letters = songInfo.title.size();
+      const f32 scaleX = (0.7f / Const::fontCharWidth) * letters;
+      const f32 scaleY = (0.7f / Const::fontCharHeight) * Const::aspectRatio;
+      Font::draw(line1, -0.95f + 0.5f * scaleX, 0.4f, 0.0f, scaleX, scaleY);
+    }
+  }
+}
+
 void Highway::render()
 {
   GLuint shader = Shader::useShader(Shader::Stem::ground);
@@ -1141,4 +1134,7 @@ void Highway::render()
 
   if (showSongInfo)
     drawSongInfo();
+
+  if (showLyrics)
+    drawLyrics();
 }

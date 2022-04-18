@@ -1,163 +1,122 @@
 #include "font.h"
-
-#include "sprite.h"
-#include "global.h"
+#include "texture.h"
 #include "opengl.h"
+#include "shader.h"
+#include "zorder.h"
 
 #include <vector>
-#include <string.h>
 
-static const i32 charWidth = 12;
-static const i32 charHeight = 18;
+static std::vector<u32> fretNumberBitmap[25];
+static std::vector<u32> noteNameFlatBitmap[12];
 
-struct Text {
-    Space space;
-    Font::Handle fontHandle;
-    f32 textPosX;
-    f32 textPosY;
-    i32 letters;
-    f32 autoDelete;
-    f32 scale;
-    Color color;
-    std::vector<u32> textBitmap;
-};
+static std::vector<u32> createTextBitmap(const char* text, u64 letters)
+{
+  std::vector<u32> textBitmap;
 
-static std::vector<Text> texts;
+  const u32* texture = reinterpret_cast<const u32*>(Texture::texture(Texture::Type::font));
+  const i32 textureWidth_ = Texture::width(Texture::Type::font);
+  const i32 rowOffset = (letters - 1) * Const::fontCharWidth;
 
-static i32 indexOfHandle(Font::Handle fontHandle) {
-    ASSERT(fontHandle >= 1);
+  textBitmap.resize(i64(letters) * Const::fontCharWidth * Const::fontCharHeight);
 
-    for (i32 i = 0; i < i32(texts.size()); ++i)
-        if (fontHandle == texts.at(i).fontHandle)
-            return i;
+  for (int c = 0; c < letters; ++c) {
+    char letter = text[c];
 
-    return -1;
-}
+    if (letter < ' ' || letter > '~')
+      letter = '~' + 1;
 
-static Texture::Type textureType(Font::Type fontType) {
-    return Texture::Type(to_underlying(Texture::Type::font) + to_underlying(fontType));
-}
+    i32 offsetY = ((letter - ' ') / 16) * Const::fontCharHeight;
+    i32 offsetX = (letter % 16) * Const::fontCharWidth;
 
-static const u32 *texture(Font::Type fontType) {
-    return reinterpret_cast<const u32 *>(Texture::texture(textureType(fontType)));
-}
+    i32 i = Const::fontCharWidth * c;
+    for (i32 y = 0; y < Const::fontCharHeight; ++y) {
+      for (i32 x = 0; x < Const::fontCharWidth; ++x) {
+        textBitmap[i] = texture[(y + offsetY) * textureWidth_ + (x + offsetX)];
 
-static const i32 textureWidth(Font::Type fontType) {
-    return Texture::width(textureType(fontType));
-}
+        ++i;
 
-void Font::init() {
-    texts.clear();
-}
-
-Font::Handle Font::print(const Info &fontInfo) {
-    Text text;
-    text.space = fontInfo.space;
-    text.autoDelete = fontInfo.autoDelete;
-
-    static i32 fontHandle;
-    i32 foundIndex = -1;
-    if (fontInfo.fontHandle == 0) {
-        text.fontHandle = ++fontHandle;
-    } else {
-        foundIndex = indexOfHandle(fontInfo.fontHandle);
-        if (foundIndex >= 0)
-            text.fontHandle = texts[foundIndex].fontHandle;
-        else
-            text.fontHandle = ++fontHandle;
+        if (i % Const::fontCharWidth == 0)
+          i += rowOffset;
+      }
     }
+  }
 
-    text.letters = i32(strlen(fontInfo.text));
-
-    switch (fontInfo.alignment) {
-        case Font::Alignment::left:
-            text.textPosX = fontInfo.posX + 0.5_f32 * f32(text.letters * charWidth);
-            break;
-        case Font::Alignment::center:
-            text.textPosX = fontInfo.posX;
-            break;
-        case Font::Alignment::right:
-            text.textPosX = fontInfo.posX - 0.5_f32 * f32(text.letters * charWidth);
-            break;
-    }
-    text.textPosY = fontInfo.posY;
-    text.scale = fontInfo.scale;
-    text.color = fontInfo.color;
-
-    text.textBitmap.resize(i64(text.letters) * charWidth * charHeight);
-
-    const i32 rowOffset = (text.letters - 1) * charWidth;
-
-    const i32 textureWidth_ = textureWidth(fontInfo.type);
-
-    for (int c = 0; c < text.letters; ++c) {
-        char letter = fontInfo.text[c];
-
-        if (letter < ' ' || letter > '~')
-            letter = '~' + 1;
-
-        i32 offsetY = ((letter - ' ') / 16) * charHeight;
-        i32 offsetX = (letter % 16) * charWidth;
-
-        i32 i = charWidth * c;
-        for (i32 y = 0; y < charHeight; ++y) {
-            for (i32 x = 0; x < charWidth; ++x) {
-                text.textBitmap[i] = texture(fontInfo.type)[(y + offsetY) * textureWidth_ + (x + offsetX)];
-
-                ++i;
-
-                if (i % charWidth == 0)
-                    i += rowOffset;
-            }
-        }
-    }
-    if (fontInfo.fontHandle == 0 || foundIndex == -1)
-        texts.push_back(text); // add new text
-    else
-        texts[foundIndex] = text; // update existing text
-
-    return text.fontHandle;
+  return textBitmap;
 }
 
-void Font::remove(Font::Handle fontHandle) {
-    if (fontHandle <= 0)
-        return;
+void Font::init()
+{
+  for (i32 i = 0; i <= 24; ++i)
+  {
+    char fretNumber[3];
+    sprintf(fretNumber, "%d", i);
 
-    const i32 index = indexOfHandle(fontHandle);
-    if (index >= 0)
-        texts.erase(texts.begin() + index);
+    fretNumberBitmap[i] = createTextBitmap(fretNumber, i >= 10 ? 2 : 1);
+  }
+
+  for (i32 i = 0; i < 12; ++i)
+  {
+    noteNameFlatBitmap[i] = createTextBitmap(Const::notesFlat[i], strlen(Const::notesFlat[i]));
+  }
 }
 
-void Font::tick() {
-    for (i32 i = i32(texts.size()) - 1; i >= 0; --i) {
-        if (texts[i].autoDelete != F32::inf) {
-            texts[i].autoDelete -= Global::frameDelta;
-            if (texts[i].autoDelete < 0.0_f32) {
-                remove(texts[i].fontHandle);
-            }
-        }
-    }
+static void drawBitmap(const std::vector<u32>& textBitmap, u64 letters, f32 posX, f32 posY, f32 posZ, f32 scaleX, f32 scaleY)
+{
+  const f32 left = posX - 0.5_f32 * scaleX;
+  const f32 top = posY - 0.5_f32 * scaleY;
+  const f32 right = posX + 0.5_f32 * scaleX;
+  const f32 bottom = posY + 0.5_f32 * scaleY;
+
+  // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
+  const GLfloat v[] = {
+    left , top, posZ, 0.0f, 1.0f,
+    right, top, posZ, 1.0f, 1.0f,
+    left, bottom, posZ, 0.0f, 0.0f,
+    right, bottom, posZ, 1.0f, 0.0f,
+  };
+
+  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+
+  GLuint tex;
+  glGenTextures(1, &tex);
+  glBindTexture(GL_TEXTURE_2D, tex);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Const::fontCharWidth * letters, Const::fontCharHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textBitmap.data());
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+  glDeleteTextures(1, &tex);
 }
 
-void Font::render() {
-    for (const Text &text: texts) {
+void Font::draw(const char* text, f32 posX, f32 posY, f32 posZ, f32 scaleX, f32 scaleY)
+{
+  const u64 letters = strlen(text);
 
-        Sprite::Info spriteInfo{
-                .shaderStem = text.space == Space::worldSpace ? Shader::Stem::fontWorld
-                                                              : Shader::Stem::fontScreen,
-                .zOrder = text.space == Space::worldSpace ? ZOrder::fontWorld : ZOrder::fontUi,
-                .posX = text.textPosX,
-                .posY = text.textPosY,
-                .flip = text.space == Space::worldSpace ? Sprite::Flip::Horizontal : Sprite::Flip::none,
-                .scaleWidth = text.space == Space::worldSpace ? text.scale * text.letters * charWidth : 0.0f,
-                .scaleHeight = text.space == Space::worldSpace ? text.scale * charHeight : 0.0f,
-                .space = text.space,
-                .skipTextureCache = true,
-                .color = text.color,
-                .rawTexture = reinterpret_cast<const u8 *>(text.textBitmap.data()),
-                .rawTextureWidth = text.letters * charWidth,
-                .rawTextureHeight = charHeight
-        };
-        Sprite::render(spriteInfo);
-    }
+  const std::vector<u32> textBitmap = createTextBitmap(text, letters);
+
+  drawBitmap(textBitmap, letters, posX, posY, posZ, scaleX, scaleY);
+}
+
+void Font::drawFretNumber(i32 fretNumber, f32 posX, f32 posY, f32 posZ, f32 scaleX, f32 scaleY)
+{
+  assert(fretNumber >= 0);
+  assert(fretNumber < 25);
+
+  const u64 letters = fretNumber >= 10 ? 2 : 1;
+
+  drawBitmap(fretNumberBitmap[fretNumber], letters, posX, posY, posZ, scaleX, scaleY);
+}
+
+void Font::drawNoteNameFlat(i32 note, f32 posX, f32 posY, f32 posZ, f32 scaleX, f32 scaleY)
+{
+  assert(note >= 0);
+  assert(note < 12);
+
+  const u64 letters = strlen(Const::notesFlat[note]);
+
+  drawBitmap(noteNameFlatBitmap[note], letters, posX, posY, posZ, scaleX, scaleY);
 }

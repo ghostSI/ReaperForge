@@ -5,7 +5,7 @@
 
 namespace Debug
 {
-void tick();
+void render();
 }
 
 #endif // DEBUGDRAW_H

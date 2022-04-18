@@ -84,7 +84,7 @@ set(SOURCE_FILES
         src/inflate.cpp
         src/input.cpp
         src/installer.cpp
-        src/kiss_fft.c
+        src/kiss_fft.cpp
         src/log.cpp
         src/main.cpp
         src/oggvorbis.cpp

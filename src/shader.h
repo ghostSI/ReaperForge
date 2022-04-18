@@ -13,7 +13,8 @@ namespace Shader {
         anchorWorld,
         chordBoxWorld,
         phrasesScreen,
-        handShapeWorld,
+        arpeggioBoxWorld,
+        handShapeAnchorWorld,
     };
 
     void init();

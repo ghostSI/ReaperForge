@@ -6,6 +6,10 @@ uniform vec4 color;
 
 void main()
 {
-  outColor = color;
+  vec4 col = color;
+
+  col.a = pow(sin(Texcoord.x * 154.0), 100);
+
+  outColor = col;
 }
 )"

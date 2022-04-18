@@ -20,7 +20,7 @@ namespace Const {
     inline constexpr i16 controllerAxisDeadZone = 3000;
     inline constexpr i16 controllerTriggerDeadZone = -30000;
     inline constexpr f32 chordDetectorVolumeThreshhold = 0.005f;
-    inline constexpr i32 audioSampleRate = 44100;
+    inline constexpr i32 audioSampleRate = 48000;
     inline constexpr i32 audioBufferSize = 1024;
     inline constexpr f32 highwayRenderMaxFutureTime = -10.0f;
     inline constexpr f32 highwayRenderTremoloFrequency = 0.04f;

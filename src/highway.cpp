@@ -635,10 +635,11 @@ static void drawChords(GLuint shader, f32 fretboardNoteDistance[7][24])
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  i32 nextChord = -1;
-  //f32 nextChordNoteTime = 0.0f;
+  i32 leftHandNextChord = -1;
+  f32 leftHandNoteTimeBegin = Const::highwayRenderLeftHandPreTime;
+  //f32 leftHandNoteTimeEnd;
 
-  for (i32 i = 0; i < track.transcriptionTrack.chords.size(); ++i)
+  for (i32 i = track.transcriptionTrack.chords.size() - 1; i >= 0; --i)
   {
     const Song::TranscriptionTrack::Chord& chord = track.transcriptionTrack.chords[i];
 
@@ -657,26 +658,19 @@ static void drawChords(GLuint shader, f32 fretboardNoteDistance[7][24])
 
     drawChord(shader, chord, noteTime, fretboardNoteDistance);
 
-    if (nextChord == -1)
+    if (noteTime < 0.0f && noteTime > leftHandNoteTimeBegin)
     {
-      //if (nextChordNoteTime == 0.0f || nextChordNoteTime > noteTime)
-      {
-        nextChord = i;
-        //nextChordNoteTime = noteTime;
-      }
+      leftHandNextChord = i;
+      //leftHandNoteTimeEnd = leftHandNoteTimeBegin;
+      leftHandNoteTimeBegin = noteTime;
     }
   }
 
-  if (nextChord != -1)
+  if (leftHandNextChord >= 0)
   {
-    const Song::TranscriptionTrack::Chord& chord = track.transcriptionTrack.chords[nextChord];
+    const Song::TranscriptionTrack::Chord& chord = track.transcriptionTrack.chords[leftHandNextChord];
 
-    const f32 noteTime = -chord.time + oggElapsed;
-
-    if (noteTime > -1.0f)
-    {
-      drawChordLeftHand(chord);
-    }
+    drawChordLeftHand(chord);
   }
 }
 

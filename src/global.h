@@ -24,6 +24,7 @@ namespace Const {
     inline constexpr i32 audioBufferSize = 1024;
     inline constexpr f32 highwayRenderMaxFutureTime = -10.0f;
     inline constexpr f32 highwayRenderTremoloFrequency = 0.04f;
+    inline constexpr f32 highwayRenderLeftHandPreTime = -2.0f;
     inline constexpr const char notesFlat[][3] =
     {
       "A",

@@ -51,6 +51,7 @@ static const f32 frets[]
 static Song::Info songInfo;
 static Song::Track track;
 static std::vector<Song::Vocal> vocals;
+static bool showSongInfo;
 
 static GLuint texture;
 
@@ -81,6 +82,7 @@ void Highway::init()
   track = Song::loadTrack(psarcInfo, Song::Info::InstrumentFlags::LeadGuitar);
   vocals = Song::loadVocals(psarcInfo);
 
+  showSongInfo = true;
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();
 
@@ -442,7 +444,7 @@ static void drawNotes(GLuint shader, f32 fretboardNoteDistance[7][24])
 
         const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
 
-        Font::drawFretNumber(note.fret, x, -0.03f, noteTime * highwaySpeedMultiplier, 0.5f);
+        Font::drawFretNumber(note.fret, x, -0.03f, noteTime * highwaySpeedMultiplier, 0.5f, 0.5f);
 
         Shader::useShader(Shader::Stem::defaultWorld);
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -512,7 +514,7 @@ static void drawChordName(i32 chordId, f32 noteTime, i32 chordBoxLeft)
 
     GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
     OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0, 1.0f, 1.0f, 1.0f);
-    Font::draw(Chords::translatedName(chordTemplate.chordName).c_str(), frets[chordBoxLeft] - 2.0f, 3.0f, noteTime * highwaySpeedMultiplier, 1.0f);
+    Font::draw(Chords::translatedName(chordTemplate.chordName).c_str(), frets[chordBoxLeft] - 2.0f, 3.0f, noteTime * highwaySpeedMultiplier, 1.0f, 1.0f);
 
     Shader::useShader(Shader::Stem::defaultWorld);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -603,7 +605,7 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
       {
         const f32 x = frets[i - 1] + 0.5f * (frets[i] - frets[i - 1]);
 
-        Font::drawFretNumber(i, x, -0.03f, noteTime * highwaySpeedMultiplier + 0.1f, 0.5f);
+        Font::drawFretNumber(i, x, -0.03f, noteTime * highwaySpeedMultiplier + 0.1f, 0.5f, 0.5f);
       }
     }
 
@@ -627,7 +629,7 @@ static void drawChordLeftHand(const Song::TranscriptionTrack::Chord& chord)
 
     const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
 
-    Font::drawFretNumber(note.leftHand, x, f32(5 - note.string + stringOffset) * stringSpacing, 0.1f, 0.4f);
+    Font::drawFretNumber(note.leftHand, x, f32(5 - note.string + stringOffset) * stringSpacing, 0.1f, 0.4f, 0.4f);
 
     Shader::useShader(Shader::Stem::defaultWorld);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -917,7 +919,7 @@ static void drawFretNumbers()
   {
     const f32 x = frets[i - 1] + 0.5f * (frets[i] - frets[i - 1]);
 
-    Font::drawFretNumber(i, x, -0.7f, 0.0f, 0.4f);
+    Font::drawFretNumber(i, x, -0.7f, 0.0f, 0.4f, 0.4f);
   }
 }
 
@@ -943,13 +945,13 @@ static void drawFretNoteNames()
 
     // AEADGBe
 
-    Font::drawNoteNameFlat(stringTuning, -0.2f, yy, 0.03f, 0.3f);
+    Font::drawNoteNameFlat(stringTuning, -0.2f, yy, 0.03f, 0.3f, 0.3f);
 
     for (i32 i = 1; i <= 24; ++i)
     {
       const f32 x = frets[i - 1] + 0.2f;
 
-      Font::drawNoteNameFlat((stringTuning + i) % 12, x, yy, 0.03f, 0.3f);
+      Font::drawNoteNameFlat((stringTuning + i) % 12, x, yy, 0.03f, 0.3f, 0.3f);
     }
   }
 }
@@ -960,12 +962,12 @@ static void drawCurrentChordName()
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
 
   const Chords::Note rootNote = Global::chordDetectorRootNote;
-  Font::drawNoteNameFlat(to_underlying(rootNote), -0.2f, 0.6f, 0.0f, 0.1f);
+  Font::drawNoteNameFlat(to_underlying(rootNote), -0.2f, 0.6f, 0.0f, 0.1f, 0.1f);
   const Chords::Quality quality = Global::chordDetectorQuality;
-  Font::drawFretNumber(to_underlying(quality), 0.0f, 0.6f, 0.0f, 0.1f);
-  Font::drawFretNumber(Global::chordDetectorIntervals, 0.2f, 0.6f, 0.0f, 0.1f);
+  Font::drawFretNumber(to_underlying(quality), 0.0f, 0.6f, 0.0f, 0.1f, 0.1f);
+  Font::drawFretNumber(Global::chordDetectorIntervals, 0.2f, 0.6f, 0.0f, 0.1f, 0.1f);
 
-  Font::draw(Chords::chordDetectorName(), 0.0f, 0.5f, 0.0f, 0.1f);
+  Font::draw(Chords::chordDetectorName(), 0.0f, 0.5f, 0.0f, 0.1f, 0.1f);
 }
 
 static void drawPhrases()
@@ -1028,12 +1030,34 @@ static void drawPhrases()
   }
 }
 
+static void drawSongInfo()
+{
+  const f32 oggElapsed = Global::time - Global::oggStartTime;
+
+  if (Const::highwayRenderDrawSongInfoEndTime < oggElapsed)
+  {
+    showSongInfo = false;
+    return;
+  }
+
+  if (Const::highwayRenderDrawSongInfoStartTime > oggElapsed)
+    return;
+
+
+  GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
+
+
+
+  songInfo.title.size();
+
+  Font::draw(songInfo.title.c_str(), 0.6f, 0.5f, 0.0f, 0.3f, 0.3f);
+
+  Font::draw(songInfo.artist.c_str(), 0.6f, 0.2f, 0.0f, 0.2f, 0.2f);
+}
+
 void Highway::render()
 {
-  //GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
-  //OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.0f, 1.0f, 1.0f, 1.0f);
-  //Font::draw2D("test", 0.4f, 0.4f, 0.1f);
-
   GLuint shader = Shader::useShader(Shader::Stem::ground);
 
   // Draw Ground
@@ -1094,4 +1118,7 @@ void Highway::render()
 
   if (Global::instrumentVolume > Const::chordDetectorVolumeThreshhold)
     drawCurrentChordName();
+
+  if (showSongInfo)
+    drawSongInfo();
 }

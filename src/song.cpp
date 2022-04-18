@@ -248,7 +248,7 @@ static void readSongNotes(const pugi::xml_document& doc, std::vector<Song::Trans
     note_.slap = note.attribute("slap").as_bool();
     note_.slideTo = note.attribute("slideTo").as_int();
     note_.string = note.attribute("string").as_int();
-    note_.sustain = note.attribute("sustain").as_bool();
+    note_.sustain = note.attribute("sustain").as_float();
     note_.tremolo = note.attribute("tremolo").as_bool();
     note_.harmonicPinch = note.attribute("harmonicPinch").as_bool();
     note_.pickDirection = note.attribute("pickDirection").as_bool();

@@ -420,8 +420,10 @@ static void drawNotes(GLuint shader, f32 fretboardNoteDistance[7][24])
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (const Song::TranscriptionTrack::Note& note : track.transcriptionTrack.notes)
+  for (i32 i = 0; i < track.transcriptionTrack.notes.size() - 1; ++i)
   {
+    const Song::TranscriptionTrack::Note& note = track.transcriptionTrack.notes[i];
+
     const f32 noteTime = -note.time + oggElapsed;
 
     if (noteTime - note.sustain > 0.0f)

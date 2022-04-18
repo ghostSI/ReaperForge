@@ -1030,6 +1030,16 @@ static void drawPhrases()
   }
 }
 
+static f32 leftAlign(f32 x, f32 scaleX)
+{
+  return x + 0.5f * scaleX;
+}
+
+static f32 rightAlign(f32 x, f32 scaleX)
+{
+  return x - 0.5f * scaleX;
+}
+
 static void drawSongInfo()
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
@@ -1043,17 +1053,27 @@ static void drawSongInfo()
   if (Const::highwayRenderDrawSongInfoStartTime > oggElapsed)
     return;
 
+  f32 alpha = 1.0f;
+  if (Const::highwayRenderDrawSongInfoFadeInTime > oggElapsed)
+    alpha = (oggElapsed - Const::highwayRenderDrawSongInfoStartTime) / (Const::highwayRenderDrawSongInfoFadeInTime - Const::highwayRenderDrawSongInfoStartTime);
+  else if (Const::highwayRenderDrawSongInfoFadeOutTime < oggElapsed)
+    alpha = (oggElapsed - Const::highwayRenderDrawSongInfoEndTime) / (Const::highwayRenderDrawSongInfoFadeOutTime - Const::highwayRenderDrawSongInfoEndTime);
 
   GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
-  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, alpha);
 
-
-
-  songInfo.title.size();
-
-  Font::draw(songInfo.title.c_str(), 0.6f, 0.5f, 0.0f, 0.3f, 0.3f);
-
-  Font::draw(songInfo.artist.c_str(), 0.6f, 0.2f, 0.0f, 0.2f, 0.2f);
+  {
+    const i32 letters = songInfo.title.size();
+    const f32 scaleX = (0.7f / Const::fontCharWidth) * letters;
+    const f32 scaleY = (0.7f / Const::fontCharHeight) * Const::aspectRatio;
+    Font::draw(songInfo.title.c_str(), 0.95f - 0.5f * scaleX, 0.5f, 0.0f, scaleX, scaleY);
+  }
+  {
+    const i32 letters = songInfo.artist.size();
+    const f32 scaleX = (0.5f / Const::fontCharWidth) * letters;
+    const f32 scaleY = (0.5f / Const::fontCharHeight) * Const::aspectRatio;
+    Font::draw(songInfo.artist.c_str(), 0.95f - 0.5f * scaleX, 0.4f, 0.0f, scaleX, scaleY);
+  }
 }
 
 void Highway::render()

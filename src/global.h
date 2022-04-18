@@ -22,12 +22,15 @@ namespace Const {
     inline constexpr f32 chordDetectorVolumeThreshhold = 0.005f;
     inline constexpr i32 audioSampleRate = 48000;
     inline constexpr i32 audioBufferSize = 1024;
+    inline constexpr f32 aspectRatio = (16.0f / 9.0f);
     inline constexpr i32 fontCharWidth = 12;
     inline constexpr i32 fontCharHeight = 18;
     inline constexpr f32 highwayRenderMaxFutureTime = -10.0f;
     inline constexpr f32 highwayRenderTremoloFrequency = 0.04f;
     inline constexpr f32 highwayRenderLeftHandPreTime = -2.0f;
     inline constexpr f32 highwayRenderDrawSongInfoStartTime = 1.0f;
+    inline constexpr f32 highwayRenderDrawSongInfoFadeInTime = 1.5f;
+    inline constexpr f32 highwayRenderDrawSongInfoFadeOutTime = 3.5f;
     inline constexpr f32 highwayRenderDrawSongInfoEndTime = 4.0f;
     inline constexpr const char notesFlat[][3] =
     {

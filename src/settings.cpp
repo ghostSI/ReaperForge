@@ -35,6 +35,7 @@ static const std::map<std::string, std::map<std::string, std::string>> defaultSe
                 {
                         {"SpeedMultiplier",  "20"},
                         {"Lyrics",           "1"},
+                        {"StringNoteNames",  "1"},
                         {"FretNoteNames",    "1"},
                         {"LyricsColor0",     "#E05A01"},
                         {"LyricsColor1",     "#2381E9"},

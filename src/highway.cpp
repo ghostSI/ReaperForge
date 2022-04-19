@@ -16,6 +16,7 @@
 
 static const f32 stringSpacing = 0.5f;
 static f32 highwaySpeedMultiplier = 1.0f;
+static bool stringNoteNames = false;
 static bool fretNoteNames = false;
 static bool showLyrics = false;
 
@@ -92,6 +93,7 @@ void Highway::init()
 void Highway::tick()
 {
   highwaySpeedMultiplier = atof(Settings::get("Highway", "SpeedMultiplier").c_str());
+  stringNoteNames = bool(atoi(Settings::get("Highway", "StringNoteNames").c_str()));
   fretNoteNames = bool(atoi(Settings::get("Highway", "FretNoteNames").c_str()));
   showLyrics = bool(atoi(Settings::get("Highway", "Lyrics").c_str()));
 }
@@ -368,7 +370,7 @@ static void drawNotes(GLuint shader, f32 fretboardNoteDistance[7][24])
 
         const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
 
-        Font::drawFretNumber(note.fret, x, -0.03f, noteTime * highwaySpeedMultiplier, 0.5f, 0.5f);
+        Font::drawFretNumber(note.fret, x, -0.2f, noteTime * highwaySpeedMultiplier, 0.5f, 0.5f);
 
         Shader::useShader(Shader::Stem::defaultWorld);
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -494,12 +496,10 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
 
   if (noteTime < 0.0f)
   { // draw ChordBox
-    //const f32 left = chordBoxLeft - 1;
     const f32 left = frets[chordBoxLeft - 1];
-    const f32 top = f32(stringCount + stringOffset) * stringSpacing - 0.25f * stringSpacing;
-    //const f32 right = chordBoxRight - 1;
+    const f32 top = f32(stringCount + stringOffset) * stringSpacing - 0.40f * stringSpacing;
     const f32 right = frets[chordBoxRight - 1];
-    const f32 bottom = -0.75f * stringSpacing;
+    const f32 bottom = -0.60f * stringSpacing;
     const f32 posZ = noteTime * highwaySpeedMultiplier;
 
     // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
@@ -529,7 +529,7 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
       {
         const f32 x = frets[i - 1] + 0.5f * (frets[i] - frets[i - 1]);
 
-        Font::drawFretNumber(i, x, -0.03f, noteTime * highwaySpeedMultiplier + 0.1f, 0.5f, 0.5f);
+        Font::drawFretNumber(i, x, -0.2f, noteTime * highwaySpeedMultiplier + 0.1f, 0.5f, 0.5f);
       }
     }
 
@@ -751,12 +751,10 @@ static void drawHandShape(GLuint shader, const Song::TranscriptionTrack::HandSha
 
   if (hasArpeggio)
   { // draw ArpeggioBox
-    //const f32 left = chordBoxLeft - 1;
     const f32 left = frets[chordBoxLeft - 1];
-    const f32 top = f32(stringCount + stringOffset) * stringSpacing - 0.25f * stringSpacing;
-    //const f32 right = chordBoxRight - 1;
+    const f32 top = f32(stringCount + stringOffset) * stringSpacing - 0.40f * stringSpacing;
     const f32 right = frets[chordBoxRight - 1];
-    const f32 bottom = -0.75f * stringSpacing;
+    const f32 bottom = -0.60f * stringSpacing;
     const f32 posZ = noteTimeBegin * highwaySpeedMultiplier;
 
     // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
@@ -857,7 +855,7 @@ static i32 getStringTuning(i32 string)
   return (12 + Const::stringStandardTuningOffset[string - stringOffset] + songTuning[psarcString]) % 12;
 }
 
-static void drawFretNoteNames()
+static void drawStringNoteNames()
 {
   GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.5f, 0.5f, 0.5f, 0.8f);
@@ -867,9 +865,19 @@ static void drawFretNoteNames()
     const f32 yy = f32(y) * stringSpacing;
     const i32 stringTuning = getStringTuning(y);
 
-    // AEADGBe
-
     Font::drawNoteNameFlat(stringTuning, -0.2f, yy, 0.03f, 0.3f, 0.3f);
+  }
+}
+
+static void drawFretNoteNames()
+{
+  GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.5f, 0.5f, 0.5f, 0.8f);
+
+  for (i32 y = 0; y < stringCount; ++y)
+  {
+    const f32 yy = f32(y) * stringSpacing;
+    const i32 stringTuning = getStringTuning(y);
 
     for (i32 i = 1; i <= 24; ++i)
     {
@@ -1144,6 +1152,9 @@ void Highway::render()
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
   drawFretNumbers();
 
+
+  if (stringNoteNames)
+    drawStringNoteNames();
   if (fretNoteNames)
     drawFretNoteNames();
 

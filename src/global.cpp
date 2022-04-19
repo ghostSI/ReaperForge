@@ -28,7 +28,7 @@ mat4 Global::cameraMat;
 bool Global::isInstalled = false;
 Instrument Global::filterInstrument;
 bool Global::collectionLoaded;
-std::vector<Psarc::PsarcInfo> Global::psarcInfos;
+std::vector<Psarc::Info> Global::psarcInfos;
 std::vector<Song::Info> Global::collection;
 std::vector<u8> Global::ogg;
 f32 Global::oggStartTime = 0.0f;

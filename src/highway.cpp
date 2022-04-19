@@ -64,7 +64,7 @@ void Highway::init()
 {
   const std::vector<u8> psarcData = Psarc::readPsarcData("songs/test.psarc");
 
-  const Psarc::PsarcInfo psarcInfo = Psarc::parse(psarcData);
+  const Psarc::Info psarcInfo = Psarc::parse(psarcData);
   songInfo = Song::psarcInfoToSongInfo(psarcInfo);
 
   if (songInfo.tuning.string0 <= -3)
@@ -80,7 +80,7 @@ void Highway::init()
 
   memcpy(songTuning, &songInfo.tuning.string0, sizeof(Song::Info::Tuning));
 
-  track = Song::loadTrack(psarcInfo, Song::Info::InstrumentFlags::LeadGuitar);
+  track = Song::loadTrack(psarcInfo, Song::Info::InstrumentFlags::RhythmGuitar);
   vocals = Song::loadVocals(psarcInfo);
 
   showSongInfo = true;
@@ -405,12 +405,11 @@ static void drawAnchor(GLuint shader, const Song::TranscriptionTrack::Anchor& an
   Shader::useShader(Shader::Stem::defaultWorld);
 }
 
-static i32 drawAnchors(GLuint shader)
+static void drawAnchors(GLuint shader)
 {
-  i32 currentAnchor = -1;
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (i32 i = 0; i < track.transcriptionTrack.anchors.size() - 2; ++i)
+  for (i32 i = 0; i < i32(track.transcriptionTrack.anchors.size()) - 2; ++i)
   {
     const Song::TranscriptionTrack::Anchor& anchor0 = track.transcriptionTrack.anchors[i];
     const Song::TranscriptionTrack::Anchor& anchor1 = track.transcriptionTrack.anchors[i + 1];
@@ -423,13 +422,8 @@ static i32 drawAnchors(GLuint shader)
     if (noteTimeBegin < Const::highwayRenderMaxFutureTime)
       continue;
 
-    if (noteTimeBegin >= 0.0f && noteTimeEnd <= 0.0f)
-      currentAnchor = i;
-
     drawAnchor(shader, anchor0, noteTimeBegin, noteTimeEnd);
   }
-
-  return currentAnchor;
 }
 
 static void drawChordName(i32 chordId, f32 noteTime, i32 chordBoxLeft)

@@ -103,7 +103,7 @@ namespace Global {
     extern bool isInstalled;
     extern Instrument filterInstrument;
     extern bool collectionLoaded;
-    extern std::vector<Psarc::PsarcInfo> psarcInfos;
+    extern std::vector<Psarc::Info> psarcInfos;
     extern std::vector<Song::Info> collection;
     extern std::vector<u8> ogg;
     extern f32 oggStartTime;

@@ -5,7 +5,7 @@
 
 #include <vector>
 
-namespace Psarc { struct PsarcInfo; }
+namespace Psarc { struct Info; }
 
 namespace Song {
 
@@ -82,7 +82,7 @@ namespace Song {
         mutable GLuint albumCover256_ogl = 0;
     };
 
-    Info psarcInfoToSongInfo(const Psarc::PsarcInfo &psarcInfo);
+    Info psarcInfoToSongInfo(const Psarc::Info &psarcInfo);
 
     struct Phrase
     {
@@ -202,7 +202,7 @@ namespace Song {
       TranscriptionTrack transcriptionTrack;
     };
 
-    Track loadTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentFlags instrumentFlags);
+    Track loadTrack(const Psarc::Info& psarcInfo, Info::InstrumentFlags instrumentFlags);
 
     struct Vocal
     {
@@ -211,7 +211,7 @@ namespace Song {
       f32 length;
       std::string lyric;
     };
-    std::vector<Vocal> loadVocals(const Psarc::PsarcInfo& psarcInfo);
+    std::vector<Vocal> loadVocals(const Psarc::Info& psarcInfo);
 
     const char* tuningName(const Song::Info::Tuning& tuning);
 }

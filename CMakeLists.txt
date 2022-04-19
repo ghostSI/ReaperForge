@@ -53,6 +53,7 @@ set(HEADER_FILES
         src/scene.h
         src/settings.h
         src/shader.h
+        src/sng.h
         src/song.h
         src/sound.h
         src/sprite.h
@@ -94,6 +95,7 @@ set(SOURCE_FILES
         src/scene.cpp
         src/settings.cpp
         src/shader.cpp
+        src/sng.cpp
         src/song.cpp
         src/sound.cpp
         src/sprite.cpp

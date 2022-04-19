@@ -88,7 +88,7 @@ static i32 tocBNum(const u32 blockSizeAlloc) {
     return {};
 }
 
-static void inflateTocEntry(Psarc::PsarcInfo::TOCEntry &tocEntry, const u32 blockSizeAlloc, const u8 *psarcData,
+static void inflateTocEntry(Psarc::Info::TOCEntry &tocEntry, const u32 blockSizeAlloc, const u8 *psarcData,
                             const std::vector<u32> &zBlockSizeList) {
     if (tocEntry.length == 0)
         return;
@@ -123,9 +123,9 @@ static void inflateTocEntry(Psarc::PsarcInfo::TOCEntry &tocEntry, const u32 bloc
     } while (outCur < tocEntry.length);
 }
 
-static void readManifest(std::vector<Psarc::PsarcInfo::TOCEntry> &tocEnties, u32 blockSizeAlloc, const u8 *psarcData,
+static void readManifest(std::vector<Psarc::Info::TOCEntry> &tocEnties, u32 blockSizeAlloc, const u8 *psarcData,
                          const std::vector<u32> &zBlockSizeList) {
-    Psarc::PsarcInfo::TOCEntry &tocEntry = tocEnties[0];
+    Psarc::Info::TOCEntry &tocEntry = tocEnties[0];
 
     ASSERT(tocEntry.name.empty());
 
@@ -149,8 +149,8 @@ static void readManifest(std::vector<Psarc::PsarcInfo::TOCEntry> &tocEnties, u32
     }
 }
 
-Psarc::PsarcInfo Psarc::parse(const std::vector<u8> &psarcData) {
-    PsarcInfo psarcInfo;
+Psarc::Info Psarc::parse(const std::vector<u8> &psarcData) {
+    Info psarcInfo;
 
     { // parse Header
         psarcInfo.header.magicNumber = u32BigEndian(&psarcData[0]);
@@ -168,7 +168,7 @@ Psarc::PsarcInfo Psarc::parse(const std::vector<u8> &psarcData) {
         psarcInfo.tocRaw = decryptPsarc(psarcData, 32, psarcInfo.header.totalTocSize);
         for (u32 i = 0; i < psarcInfo.header.numFiles; ++i) {
             const u64 offset = i * 30;
-            PsarcInfo::TOCEntry tocEntry;
+            Info::TOCEntry tocEntry;
             memcpy(tocEntry.md5, &psarcInfo.tocRaw[offset], 16);
             tocEntry.zIndexBegin = u32BigEndian(&psarcInfo.tocRaw[offset + 16]);
             tocEntry.length = u40BigEndian(&psarcInfo.tocRaw[offset + 20]);
@@ -211,7 +211,7 @@ Psarc::PsarcInfo Psarc::parse(const std::vector<u8> &psarcData) {
     }
 
     { // inflate entries
-        for (PsarcInfo::TOCEntry &tocEntry: psarcInfo.tocEntries) {
+        for (Info::TOCEntry &tocEntry: psarcInfo.tocEntries) {
             if (tocEntry.name == "NameBlock.bin")
                 continue;
 
@@ -240,9 +240,9 @@ static u32 readWemFileIdFromBnkFile(const u8* data, u64 size)
   return fileId;
 }
 
-void Psarc::loadOgg(const PsarcInfo& psarcInfo, bool preview)
+void Psarc::loadOgg(const Psarc::Info& psarcInfo, bool preview)
 {
-  for (const Psarc::PsarcInfo::TOCEntry& tocEntry : psarcInfo.tocEntries)
+  for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries)
   {
     if ((preview && !tocEntry.name.ends_with("_preview.bnk")) || !tocEntry.name.ends_with(".bnk"))
       continue;
@@ -252,7 +252,7 @@ void Psarc::loadOgg(const PsarcInfo& psarcInfo, bool preview)
     char wemFileName[40];
     sprintf(wemFileName, "%u.wem", wemFileId);
 
-    for (const Psarc::PsarcInfo::TOCEntry& tocEntry : psarcInfo.tocEntries)
+    for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries)
     {
       if (!tocEntry.name.ends_with(wemFileName))
         continue;

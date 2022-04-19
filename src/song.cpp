@@ -24,7 +24,7 @@ static bool isXmlForInstrument(std::string filename, Instrument instrument) {
   return false;
 }
 
-static void readSongInfoXml(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::Info& songInfo) {
+static void readSongInfoXml(const Psarc::Info::TOCEntry& tocEntry, Song::Info& songInfo) {
 
   pugi::xml_document doc;
   pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
@@ -84,12 +84,18 @@ static void readSongInfoXml(const Psarc::PsarcInfo::TOCEntry& tocEntry, Song::In
   songInfo.arrangementProperties.routeMask = arrangementProperties.attribute("routeMask").as_bool();
 }
 
-Song::Info Song::psarcInfoToSongInfo(const Psarc::PsarcInfo& psarcInfo) {
+static void readSongInfoSngFile(const Psarc::Info::TOCEntry& tocEntry, Song::Info& songInfo) {
+
+
+
+}
+
+Song::Info Song::psarcInfoToSongInfo(const Psarc::Info& psarcInfo) {
 
   Song::Info songInfo;
 
   for (i32 i = 0; i < psarcInfo.tocEntries.size(); ++i) {
-    const Psarc::PsarcInfo::TOCEntry& tocEntry = psarcInfo.tocEntries[i];
+    const Psarc::Info::TOCEntry& tocEntry = psarcInfo.tocEntries[i];
 
     if (tocEntry.name.ends_with("_lead.xml")) {
       songInfo.instrumentFlags |= Info::InstrumentFlags::LeadGuitar;
@@ -113,6 +119,26 @@ Song::Info Song::psarcInfoToSongInfo(const Psarc::PsarcInfo& psarcInfo) {
     }
     else if (tocEntry.name.ends_with("_256.dds")) {
       songInfo.albumCover256_tocIndex = i;
+    }
+    else if (tocEntry.name.ends_with("_lead.sng"))
+    {
+      Song::Info songInfo2;
+      readSongInfoSngFile(tocEntry, songInfo2);
+    }
+    else if (tocEntry.name.ends_with("_rhythm.sng"))
+    {
+      Song::Info songInfo2;
+      readSongInfoSngFile(tocEntry, songInfo2);
+    }
+    else if (tocEntry.name.ends_with("_bass.sng"))
+    {
+      Song::Info songInfo2;
+      readSongInfoSngFile(tocEntry, songInfo2);
+    }
+    else if (tocEntry.name.ends_with("_vocals.sng"))
+    {
+      Song::Info songInfo2;
+      readSongInfoSngFile(tocEntry, songInfo2);
     }
   }
 
@@ -342,11 +368,11 @@ static void readSongHandShape(const pugi::xml_document& doc, std::vector<Song::T
   }
 }
 
-Song::Track Song::loadTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentFlags instrumentFlags)
+Song::Track Song::loadTrack(const Psarc::Info& psarcInfo, Info::InstrumentFlags instrumentFlags)
 {
   Song::Track track;
 
-  for (const Psarc::PsarcInfo::TOCEntry& tocEntry : psarcInfo.tocEntries)
+  for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries)
   {
     switch (instrumentFlags)
     {
@@ -413,8 +439,8 @@ Song::Track Song::loadTrack(const Psarc::PsarcInfo& psarcInfo, Info::InstrumentF
   return track;
 }
 
-std::vector<Song::Vocal> Song::loadVocals(const Psarc::PsarcInfo& psarcInfo) {
-  for (const Psarc::PsarcInfo::TOCEntry& tocEntry : psarcInfo.tocEntries)
+std::vector<Song::Vocal> Song::loadVocals(const Psarc::Info& psarcInfo) {
+  for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries)
   {
     if (tocEntry.name.ends_with("_vocals.xml"))
     {

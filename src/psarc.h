@@ -7,7 +7,7 @@
 namespace Psarc {
     std::vector<u8> readPsarcData(const char *filepath);
 
-    struct PsarcInfo {
+    struct Info {
         struct {
             u32 magicNumber;
             u32 version;
@@ -29,15 +29,11 @@ namespace Psarc {
             std::vector<u8> content;
         };
         std::vector<TOCEntry> tocEntries;
-
-        struct {
-
-        } image;
     };
 
-    PsarcInfo parse(const std::vector<u8> &psarcData);
+    Info parse(const std::vector<u8> &psarcData);
 
-    void loadOgg(const PsarcInfo& psarcInfo, bool preview);
+    void loadOgg(const Info& psarcInfo, bool preview);
 }
 
 #endif // PSARC_H

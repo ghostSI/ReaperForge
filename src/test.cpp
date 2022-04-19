@@ -24377,7 +24377,7 @@ static void psarcTOCTest2() {
       0x26, 0xe3, 0xee, 0x3f, 0xc5, 0x4f, 0xcc, 0x70, 0x0a, 0xf6
   };
 
-  const Psarc::PsarcInfo psarcInfo = Psarc::parse(psarcData);
+  const Psarc::Info psarcInfo = Psarc::parse(psarcData);
   const Song::Info songInfo = Song::psarcInfoToSongInfo(psarcInfo);
 
   ASSERT(songInfo.title == "You Suffer");

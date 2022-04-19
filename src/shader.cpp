@@ -67,6 +67,9 @@ void Shader::init()
   shaderPrograms.push_back(compileShader(Data::Shader::defaultScreenVert, Data::Shader::phrasesScreenFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::arpeggioBoxWorldFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::handShapeAnchorWorldFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::defaultWorldFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fretSilverWorldFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fretBronzeWorldFrag));
 }
 
 GLuint Shader::useShader(Shader::Stem shaderStem)

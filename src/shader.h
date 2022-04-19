@@ -15,6 +15,9 @@ namespace Shader {
         phrasesScreen,
         arpeggioBoxWorld,
         handShapeAnchorWorld,
+        fretGoldWorld,
+        fretSilverWorld,
+        fretBronzeWorld,
     };
 
     void init();

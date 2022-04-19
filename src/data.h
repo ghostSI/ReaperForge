@@ -16,6 +16,9 @@ namespace Data {
     extern const char* phrasesScreenFrag;
     extern const char* arpeggioBoxWorldFrag;
     extern const char* handShapeAnchorWorldFrag;
+    extern const char* fretGoldWorldFrag;
+    extern const char* fretSilverWorldFrag;
+    extern const char* fretBronzeWorldFrag;
   }
   namespace Texture
   {
@@ -25,7 +28,7 @@ namespace Data {
   }
   namespace Geometry
   {
-    extern const f32 fret[15060];
+    extern const f32 fret[20820];
     extern const f32 ground[30];
     extern const f32 string[180];
 

@@ -25,17 +25,28 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
   u8 iv[16];
   memcpy(iv, &sngData[8], sizeof(iv));
 
-  const i64 len = sngData.size() - 24;
+  const i64 len = /*sngData.size() - 24*/ 32;
   std::vector<u8> decrypedData(len);
   for (i64 i = 0; i < len; i += 16)
   {
-    Rijndael::decrypt(sngKey, &sngData[24 + i], &decrypedData[i], 16);
+    Rijndael::decrypt(sngKey, &sngData[24 + i], &decrypedData[i], 16, iv);
 
     {
       bool carry = false;
       for (i64 j = (sizeof(iv)) - 1, carry = true; j >= 0 && carry; j--)
         carry = ((iv[j] = (u8)(iv[j] + 1)) == 0);
     }
+  }
+
+  u8 expectedData[] = { 7,5,89,0,120,218,236,221,125,148,100,101,125,232,251,93,213,187,95,167,103,24,1,67,240,109,26,4,211,136,72,35 };
+  for (i32 i = 0; i < sizeof(expectedData); ++i)
+  {
+    if (i == 16)
+    {
+      i = i;
+    }
+
+    assert(expectedData[i] == decrypedData[i]);
   }
 
   return sngInfo;

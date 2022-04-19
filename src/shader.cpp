@@ -67,7 +67,7 @@ void Shader::init()
   shaderPrograms.push_back(compileShader(Data::Shader::defaultScreenVert, Data::Shader::phrasesScreenFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::arpeggioBoxWorldFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::handShapeAnchorWorldFrag));
-  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::defaultWorldFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fretGoldWorldFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fretSilverWorldFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fretBronzeWorldFrag));
 }
@@ -108,6 +108,7 @@ GLuint Shader::useShader(Shader::Stem shaderStem)
 
   OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projectionMat.m00);
 
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shaderProgram, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
 
   return shaderProgram;
 }

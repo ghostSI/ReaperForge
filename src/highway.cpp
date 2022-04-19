@@ -107,25 +107,30 @@ static void drawGround(GLuint shader)
 
 static void drawFrets()
 {
-  GLuint shader = Shader::useShader(Shader::Stem::defaultWorld);
+  GLuint shader = Shader::useShader(Shader::Stem::fretBronzeWorld);
   glBindTexture(GL_TEXTURE_2D, texture);
+  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
+
+  mat4 modelMat;
+  if (stringCount == 6)
+    modelMat.m11 = 0.92f;
+  else if (stringCount == 7)
+    modelMat.m11 = 1.07f;
+  else
+    assert(false);
+  modelMat.m31 = -0.3f;
 
   for (i32 i = 0; i < sizeof(frets); ++i)
   {
-    mat4 modelMat;
-    if (stringCount == 6)
-      modelMat.m11 = 0.92f;
-    else if (stringCount == 7)
-      modelMat.m11 = 1.07f;
-    else
-      assert(false);
     modelMat.m30 = frets[i];
-    modelMat.m31 = -0.3f;
     OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
     OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::fret), Data::Geometry::fret, GL_STATIC_DRAW);
     glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::fret) / (sizeof(float) * 5));
   }
+
+  shader = Shader::useShader(Shader::Stem::defaultWorld);
+  glBindTexture(GL_TEXTURE_2D, texture);
 }
 
 static void setStringColor(GLuint shader, i32 string, f32 alpha = 1.0f)

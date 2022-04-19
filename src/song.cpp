@@ -1,6 +1,7 @@
 #include "song.h"
 
 #include "psarc.h"
+#include "sng.h"
 #include "xml.h"
 #include "global.h"
 
@@ -86,7 +87,7 @@ static void readSongInfoXml(const Psarc::Info::TOCEntry& tocEntry, Song::Info& s
 
 static void readSongInfoSngFile(const Psarc::Info::TOCEntry& tocEntry, Song::Info& songInfo) {
 
-
+  Sng::parse(tocEntry.content);
 
 }
 

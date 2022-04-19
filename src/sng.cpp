@@ -25,7 +25,7 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
   u8 iv[16];
   memcpy(iv, &sngData[8], sizeof(iv));
 
-  const i64 len = /*sngData.size() - 24*/ 32;
+  const i64 len = sngData.size() - 24;
   std::vector<u8> decrypedData(len);
   for (i64 i = 0; i < len; i += 16)
   {

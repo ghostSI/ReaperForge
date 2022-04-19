@@ -585,9 +585,9 @@ static int m_Ke[15][4];
 static u8 m_chain[16];
 static int tk[4];
 
-static void makeKey(const u8 *key) {
+static void makeKey(const u8 *key, const u8* iv) {
     //Initialize the chain
-    memset(m_chain, 0, sizeof(m_chain));
+    memcpy(m_chain, iv, sizeof(m_chain));
     int BC = 4;
     int i, j;
     int m_Kd[15][4] = {};
@@ -735,19 +735,10 @@ static void decrypt_(const u8 *in, u8 *result, size_t n) {
 void Rijndael::decrypt(const u8 *key, const u8 *in, u8 *result, size_t n, const u8* iv) {
   if (iv == nullptr)
   {
-    makeKey(key);
-    decrypt_(in, result, n);
+    const u8 iv[16] = {};
+    makeKey(key, iv);
   }
   else
-  {
-    assert(n == 16);
-
-    u8 in2[16];
-    for (i32 i = 0; i < 16; ++i)
-      in2[i] = in[i] ^ iv[i];
-
-    makeKey(key);
-
-    decrypt_(in2, result, n);
-  }
+    makeKey(key, iv);
+  decrypt_(in, result, n);
 }

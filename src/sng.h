@@ -6,6 +6,29 @@
 
 namespace Sng {
   struct Info {
+    struct Bpm
+    {
+      f32 time;
+      i16 measure;
+      i16 beat;
+      i32 phraseIteration;
+      i32 mask;
+    };
+    std::vector<Bpm> bpm;
+
+    struct Phrase
+    {
+      u8 solo;
+      u8 disparity;
+      u8 ignore;
+      u8 paddin;
+      i32 maxDifficulty;
+      i32 phraseIterationLinks;
+      u8 name_[32];
+      std::string name;
+    };
+    std::vector<Phrase> phrase;
+
     std::string Bpm;
     std::string Phrase;
     std::string Chord;

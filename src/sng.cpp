@@ -15,9 +15,24 @@ static u16 u16LittleEndian(const u8* bytes)
   return *reinterpret_cast<const u16*>(bytes);
 }
 
+static i16 i16LittleEndian(const u8* bytes)
+{
+  return *reinterpret_cast<const i16*>(bytes);
+}
+
 static u32 u32LittleEndian(const u8* bytes)
 {
   return *reinterpret_cast<const u32*>(bytes);
+}
+
+static i32 i32LittleEndian(const u8* bytes)
+{
+  return *reinterpret_cast<const i32*>(bytes);
+}
+
+static f32 f32LittleEndian(const u8* bytes)
+{
+  return *reinterpret_cast<const f32*>(bytes);
 }
 
 static std::vector<u8> decryptSngData(const std::vector<u8>& sngData)
@@ -47,7 +62,7 @@ static std::vector<u8> decryptSngData(const std::vector<u8>& sngData)
 
 static std::vector<u8> inflateSngPlainText(const std::vector<u8>& decrypedSngData)
 {
-  const i64 plainTextLen = u32LittleEndian(&decrypedSngData[0]);
+  const i32 plainTextLen = u32LittleEndian(&decrypedSngData[0]);
   const u16 zHeader = u16LittleEndian(&decrypedSngData[4]);
   assert(zHeader == 0x78DA || zHeader == 0xDA78); //LE 55928 //BE 30938
 
@@ -63,6 +78,38 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
 
   const std::vector<u8> decrypedSngData = decryptSngData(sngData);
   const std::vector<u8> plainText = inflateSngPlainText(decrypedSngData);
+
+  // WIP
+
+  {
+    const i32 bpmCount = u32LittleEndian(&plainText[0]);
+    sngInfo.bpm.resize(bpmCount);
+    for (i32 i = 0; i < bpmCount; ++i)
+    {
+      const u64 o = i * sizeof(Sng::Info::Bpm) / 2; // Why /2?
+      sngInfo.bpm[i].time = f32LittleEndian(&plainText[o + 4]);
+      sngInfo.bpm[i].measure = i16LittleEndian(&plainText[o + 8]);
+      sngInfo.bpm[i].beat = i16LittleEndian(&plainText[o + 10]);
+      sngInfo.bpm[i].phraseIteration = i32LittleEndian(&plainText[o + 12]);
+      sngInfo.bpm[i].mask = i32LittleEndian(&plainText[o + 16]);
+    }
+  }
+
+  {
+    const i32 phraseCount = u32LittleEndian(&plainText[0]);
+    sngInfo.phrase.resize(phraseCount);
+    for (i32 i = 0; i < phraseCount; ++i)
+    {
+      const u64 o = i * sizeof(Sng::Info::Phrase) / 2; // Why /2?
+      sngInfo.phrase[i].solo = plainText[o + 4];
+      sngInfo.phrase[i].disparity = plainText[o + 8];
+      sngInfo.phrase[i].ignore = plainText[o + 10];
+      sngInfo.phrase[i].paddin = plainText[o + 12];
+      sngInfo.phrase[i].maxDifficulty = i32LittleEndian(&plainText[o + 16]);
+      sngInfo.phrase[i].phraseIterationLinks = i32LittleEndian(&plainText[o + 16]);
+      memcpy(&sngInfo.phrase[i].name_, &plainText[o + 16], sizeof(sngInfo.phrase[i].name_));
+    }
+  }
 
   return sngInfo;
 }

@@ -79,35 +79,66 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
   const std::vector<u8> decrypedSngData = decryptSngData(sngData);
   const std::vector<u8> plainText = inflateSngPlainText(decrypedSngData);
 
-  // WIP
-
+  u64 j = 0;
   {
-    const i32 bpmCount = u32LittleEndian(&plainText[0]);
+    const i32 bpmCount = u32LittleEndian(&plainText[j]);
+    j += 4;
     sngInfo.bpm.resize(bpmCount);
     for (i32 i = 0; i < bpmCount; ++i)
     {
-      const u64 o = i * sizeof(Sng::Info::Bpm) / 2; // Why /2?
-      sngInfo.bpm[i].time = f32LittleEndian(&plainText[o + 4]);
-      sngInfo.bpm[i].measure = i16LittleEndian(&plainText[o + 8]);
-      sngInfo.bpm[i].beat = i16LittleEndian(&plainText[o + 10]);
-      sngInfo.bpm[i].phraseIteration = i32LittleEndian(&plainText[o + 12]);
-      sngInfo.bpm[i].mask = i32LittleEndian(&plainText[o + 16]);
+      sngInfo.bpm[i].time = f32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.bpm[i].measure = i16LittleEndian(&plainText[j]);
+      j += 2;
+      sngInfo.bpm[i].beat = i16LittleEndian(&plainText[j]);
+      j += 2;
+      sngInfo.bpm[i].phraseIteration = i32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.bpm[i].mask = i32LittleEndian(&plainText[j]);
+      j += 4;
+    }
+  }
+
+
+  {
+    const i32 phraseCount = u32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.phrase.resize(phraseCount);
+    for (i32 i = 0; i < phraseCount; ++i)
+    {
+      sngInfo.phrase[i].solo = plainText[j];
+      j += 1;
+      sngInfo.phrase[i].disparity = plainText[j];
+      j += 1;
+      sngInfo.phrase[i].ignore = plainText[j];
+      j += 1;
+      sngInfo.phrase[i].paddin = plainText[j];
+      j += 1;
+      sngInfo.phrase[i].maxDifficulty = i32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.phrase[i].phraseIterationLinks = i32LittleEndian(&plainText[j]);
+      j += 4;
+      memcpy(&sngInfo.phrase[i].name, &plainText[j], 32);
+      j += 32;
     }
   }
 
   {
-    const i32 phraseCount = u32LittleEndian(&plainText[0]);
-    sngInfo.phrase.resize(phraseCount);
-    for (i32 i = 0; i < phraseCount; ++i)
+    const i32 chordCount = u32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.chord.resize(chordCount);
+    for (i32 i = 0; i < chordCount; ++i)
     {
-      const u64 o = i * sizeof(Sng::Info::Phrase) / 2; // Why /2?
-      sngInfo.phrase[i].solo = plainText[o + 4];
-      sngInfo.phrase[i].disparity = plainText[o + 8];
-      sngInfo.phrase[i].ignore = plainText[o + 10];
-      sngInfo.phrase[i].paddin = plainText[o + 12];
-      sngInfo.phrase[i].maxDifficulty = i32LittleEndian(&plainText[o + 16]);
-      sngInfo.phrase[i].phraseIterationLinks = i32LittleEndian(&plainText[o + 16]);
-      memcpy(&sngInfo.phrase[i].name_, &plainText[o + 16], sizeof(sngInfo.phrase[i].name_));
+      sngInfo.chord[i].mask = plainText[j];
+      j += 4;
+      memcpy(&sngInfo.chord[i].frets, &plainText[j], 6);
+      j += 6;
+      memcpy(&sngInfo.chord[i].fingers, &plainText[j], 6);
+      j += 6;
+      memcpy(&sngInfo.chord[i].notes, &plainText[j], 24);
+      j += 24;
+      memcpy(&sngInfo.chord[i].name, &plainText[j], 32);
+      j += 32;
     }
   }
 

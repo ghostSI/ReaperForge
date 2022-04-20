@@ -116,7 +116,6 @@ namespace Sng {
       f32 startTime;
       f32 nextPhraseTime;
       i32 difficulty[3];
-
     };
     std::vector<PhraseIteration> phraseIteration;
 
@@ -135,7 +134,7 @@ namespace Sng {
     {
       i32 levelBreak;
       i32 phraseCount;
-      //i32[] nLDPhrase;
+      std::vector<i32> nLDPhrase;
     };
     std::vector<NLinkedDifficulty> nLinkedDifficulty;
 
@@ -150,7 +149,6 @@ namespace Sng {
     {
       f32 time;
       u8 eventName[256];
-
     };
     std::vector<Event> event;
 
@@ -177,7 +175,6 @@ namespace Sng {
       i32 startPhraseIterationId;
       i32 endPhraseIterationId;
       u8 stringMask[36];
-
     };
     std::vector<Section> section;
 
@@ -206,11 +203,11 @@ namespace Sng {
 
       struct Fingerprint
       {
-        i32 ChordId;
-        f32 StartTime;
-        f32 EndTime;
-        f32 Unk3_FirstNoteTime;
-        f32 Unk4_LastNoteTime;
+        i32 chordId;
+        f32 startTime;
+        f32 endTime;
+        f32 unk3_FirstNoteTime;
+        f32 unk4_LastNoteTime;
       };
 
       struct Note
@@ -251,11 +248,11 @@ namespace Sng {
       Fingerprint fingerprints2;
       std::vector<Note> notes;
       i32 phraseCount;
-      //f32 averageNotesPerIteration[];
+      std::vector<f32> averageNotesPerIteration;
       i32 phraseIterationCount1;
-      //i32 notesInIteration1[];
+      std::vector<i32> notesInIteration1;
       i32 phraseIterationCount2;
-      //i32 notesInIteration2[];
+      std::vector<i32> notesInIteration2;
     };
     std::vector<Arrangement> arrangement;
 
@@ -272,7 +269,7 @@ namespace Sng {
       i16 part;
       f32 songLength;
       i32 stringCount;
-      //i16 tuning[];
+      std::vector<i16> tuning;
       f32 unk11FirstNoteTime;
       f32 unk12FirstNoteTime;
       i32 maxDifficulty;

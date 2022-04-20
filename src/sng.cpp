@@ -35,6 +35,11 @@ static f32 f32LittleEndian(const u8* bytes)
   return *reinterpret_cast<const f32*>(bytes);
 }
 
+static f64 f64LittleEndian(const u8* bytes)
+{
+  return *reinterpret_cast<const f64*>(bytes);
+}
+
 static std::vector<u8> decryptSngData(const std::vector<u8>& sngData)
 {
   const u32 magicNumber = u32LittleEndian(&sngData[0]);
@@ -99,7 +104,6 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
     }
   }
 
-
   {
     const i32 phraseCount = u32LittleEndian(&plainText[j]);
     j += 4;
@@ -141,6 +145,477 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
       j += 32;
     }
   }
+
+  {
+    const i32 chordNotesCount = u32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.chordNotes.resize(chordNotesCount);
+    for (i32 i = 0; i < chordNotesCount; ++i)
+    {
+      memcpy(&sngInfo.chordNotes[i].noteMask, &plainText[j], 24);
+      j += 24;
+      memcpy(&sngInfo.chordNotes[i].bendData, &plainText[j], 2328);
+      j += 2328;
+      memcpy(&sngInfo.chordNotes[i].slideTo, &plainText[j], 6);
+      j += 6;
+      memcpy(&sngInfo.chordNotes[i].slideUnpitchTo, &plainText[j], 6);
+      j += 6;
+      memcpy(&sngInfo.chordNotes[i].vibrato, &plainText[j], 12);
+      j += 12;
+    }
+  }
+
+  {
+    const i32 vocalCount = u32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.vocal.resize(vocalCount);
+    for (i32 i = 0; i < vocalCount; ++i)
+    {
+      sngInfo.vocal[i].time = f32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.vocal[i].note = i32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.vocal[i].length = f32LittleEndian(&plainText[j]);
+      j += 4;
+      memcpy(&sngInfo.vocal[i].lyric, &plainText[j], 48);
+      j += 48;
+    }
+  }
+
+  if (sngInfo.vocal.size() > 0)
+  {
+    {
+      const i32 symbolsHeaderCount = u32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.symbolsHeader.resize(symbolsHeaderCount);
+      for (i32 i = 0; i < symbolsHeaderCount; ++i)
+      {
+        sngInfo.symbolsHeader[i].unk1 = i32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.symbolsHeader[i].unk2 = i32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.symbolsHeader[i].unk3 = i32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.symbolsHeader[i].unk4 = i32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.symbolsHeader[i].unk5 = i32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.symbolsHeader[i].unk6 = i32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.symbolsHeader[i].unk7 = i32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.symbolsHeader[i].unk8 = i32LittleEndian(&plainText[j]);
+        j += 4;
+      }
+    }
+
+    {
+      const i32 symbolsTextureCount = u32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.symbolsHeader.resize(symbolsTextureCount);
+      for (i32 i = 0; i < symbolsTextureCount; ++i)
+      {
+        memcpy(&sngInfo.symbolsTexture[i].font, &plainText[j], 128);
+        j += 128;
+        sngInfo.symbolsTexture[i].fontpathLength = i32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.symbolsTexture[i].unk10 = i32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.symbolsTexture[i].width = i32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.symbolsTexture[i].height = i32LittleEndian(&plainText[j]);
+        j += 4;
+      }
+    }
+
+    {
+      const i32 symbolDefinitionCount = u32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.symbolDefinition.resize(symbolDefinitionCount);
+      for (i32 i = 0; i < symbolDefinitionCount; ++i)
+      {
+        memcpy(&sngInfo.symbolDefinition[i].text, &plainText[j], 12);
+        j += 12;
+        memcpy(&sngInfo.symbolDefinition[i].rectOutter, &plainText[j], 16);
+        j += 16;
+        memcpy(&sngInfo.symbolDefinition[i].rectInner, &plainText[j], 16);
+        j += 16;
+      }
+    }
+  }
+
+  {
+    const i32 phraseIterationCount = u32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.phraseIteration.resize(phraseIterationCount);
+    for (i32 i = 0; i < phraseIterationCount; ++i)
+    {
+      sngInfo.phraseIteration[i].phraseId = i32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.phraseIteration[i].startTime = f32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.phraseIteration[i].nextPhraseTime = f32LittleEndian(&plainText[j]);
+      j += 4;
+      memcpy(&sngInfo.phraseIteration[i].difficulty, &plainText[j], 12);
+      j += 12;
+    }
+  }
+
+  {
+    const i32 phraseExtraInfoByLevelCount = u32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.phraseExtraInfoByLevel.resize(phraseExtraInfoByLevelCount);
+    for (i32 i = 0; i < phraseExtraInfoByLevelCount; ++i)
+    {
+      sngInfo.phraseExtraInfoByLevel[i].phraseId = i32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.phraseExtraInfoByLevel[i].difficulty = i32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.phraseExtraInfoByLevel[i].empty = i32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.phraseExtraInfoByLevel[i].levelJump = plainText[j];
+      j += 1;
+      sngInfo.phraseExtraInfoByLevel[i].redundant = i16LittleEndian(&plainText[j]);
+      j += 2;
+      sngInfo.phraseExtraInfoByLevel[i].padding = plainText[j];
+      j += 1;
+    }
+  }
+
+  {
+    const i32 nLinkedDifficultyCount = u32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.nLinkedDifficulty.resize(nLinkedDifficultyCount);
+    for (i32 i = 0; i < nLinkedDifficultyCount; ++i)
+    {
+      sngInfo.nLinkedDifficulty[i].levelBreak = i32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.nLinkedDifficulty[i].phraseCount = i32LittleEndian(&plainText[j]);
+      j += 4;
+      const i32 nLDPhraseCount = u32LittleEndian(&plainText[j]);
+      j += 4;
+      {
+        sngInfo.nLinkedDifficulty[i].nLDPhrase.resize(nLDPhraseCount);
+        for (i32 ii = 0; ii < nLDPhraseCount; ++ii)
+        {
+          sngInfo.nLinkedDifficulty[i].nLDPhrase[ii] = i32LittleEndian(&plainText[j]);
+          j += 4;
+        }
+      }
+    }
+  }
+
+  {
+    const i32 actionCount = u32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.action.resize(actionCount);
+    for (i32 i = 0; i < actionCount; ++i)
+    {
+      sngInfo.action[i].time = f32LittleEndian(&plainText[j]);
+      j += 4;
+      memcpy(&sngInfo.action[i].actionName, &plainText[j], 256);
+      j += 256;
+    }
+  }
+
+  {
+    const i32 eventCount = u32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.event.resize(eventCount);
+    for (i32 i = 0; i < eventCount; ++i)
+    {
+      sngInfo.event[i].time = f32LittleEndian(&plainText[j]);
+      j += 4;
+      memcpy(&sngInfo.event[i].eventName, &plainText[j], 256);
+      j += 256;
+    }
+  }
+
+  {
+    const i32 toneCount = u32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.tone.resize(toneCount);
+    for (i32 i = 0; i < toneCount; ++i)
+    {
+      sngInfo.tone[i].time = f32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.tone[i].toneId = i32LittleEndian(&plainText[j]);
+      j += 4;
+    }
+  }
+
+  {
+    const i32 dnaCount = u32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.dna.resize(dnaCount);
+    for (i32 i = 0; i < dnaCount; ++i)
+    {
+      sngInfo.dna[i].time = f32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.dna[i].dnaId = i32LittleEndian(&plainText[j]);
+      j += 4;
+    }
+  }
+
+  {
+    const i32 sectionCount = u32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.section.resize(sectionCount);
+    for (i32 i = 0; i < sectionCount; ++i)
+    {
+      memcpy(&sngInfo.section[i].name, &plainText[j], 32);
+      j += 32;
+      sngInfo.section[i].number = i32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.section[i].startTime = f32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.section[i].endTime = f32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.section[i].startPhraseIterationId = i32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.section[i].endPhraseIterationId = i32LittleEndian(&plainText[j]);
+      j += 4;
+      memcpy(&sngInfo.section[i].stringMask, &plainText[j], 36);
+      j += 36;
+    }
+  }
+
+  {
+    const i32 arrangementCount = u32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.arrangement.resize(arrangementCount);
+    for (i32 i = 0; i < arrangementCount; ++i)
+    {
+      sngInfo.arrangement[i].difficulty = i32LittleEndian(&plainText[j]);
+      j += 4;
+      const i32 anchorCount = u32LittleEndian(&plainText[j]);
+      j += 4;
+      {
+        sngInfo.arrangement[i].anchors.resize(anchorCount);
+        for (i32 ii = 0; ii < anchorCount; ++ii)
+        {
+          sngInfo.arrangement[i].anchors[ii].startBeatTime = f32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].anchors[ii].endBeatTime = f32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].anchors[ii].unk3_FirstNoteTime = f32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].anchors[ii].unk4_LastNoteTime = f32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].anchors[ii].fretId = plainText[j];
+          j += 1;
+          memcpy(&sngInfo.arrangement[i].anchors[ii].padding, &plainText[j], 3);
+          j += 3;
+          sngInfo.arrangement[i].anchors[ii].width = i32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].anchors[ii].phraseIterationId = i32LittleEndian(&plainText[j]);
+          j += 4;
+        }
+      }
+      const i32 anchorExtensionCount = u32LittleEndian(&plainText[j]);
+      j += 4;
+      {
+        sngInfo.arrangement[i].anchorExtensions.resize(anchorExtensionCount);
+        for (i32 ii = 0; ii < anchorExtensionCount; ++ii)
+        {
+          sngInfo.arrangement[i].anchorExtensions[ii].beatTime = f32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].anchorExtensions[ii].fretId = plainText[j];
+          j += 1;
+          sngInfo.arrangement[i].anchorExtensions[ii].unk2_0 = i32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].anchorExtensions[ii].unk3_0 = i16LittleEndian(&plainText[j]);
+          j += 2;
+          sngInfo.arrangement[i].anchorExtensions[ii].unk4_0 = plainText[j];
+          j += 1;
+        }
+      }
+      {
+        sngInfo.arrangement[i].fingerprints1.chordId = i32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.arrangement[i].fingerprints1.startTime = f32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.arrangement[i].fingerprints1.endTime = f32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.arrangement[i].fingerprints1.unk3_FirstNoteTime = f32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.arrangement[i].fingerprints1.unk4_LastNoteTime = f32LittleEndian(&plainText[j]);
+        j += 4;
+      }
+      {
+        sngInfo.arrangement[i].fingerprints2.chordId = i32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.arrangement[i].fingerprints2.startTime = f32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.arrangement[i].fingerprints2.endTime = f32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.arrangement[i].fingerprints2.unk3_FirstNoteTime = f32LittleEndian(&plainText[j]);
+        j += 4;
+        sngInfo.arrangement[i].fingerprints2.unk4_LastNoteTime = f32LittleEndian(&plainText[j]);
+        j += 4;
+      }
+      const i32 noteCount = u32LittleEndian(&plainText[j]);
+      j += 4;
+      {
+        sngInfo.arrangement[i].notes.resize(noteCount);
+        for (i32 ii = 0; ii < noteCount; ++ii)
+        {
+          sngInfo.arrangement[i].notes[ii].noteMask = u32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].notes[ii].noteFlags = u32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].notes[ii].hash = u32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].notes[ii].time = f32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].notes[ii].stringIndex = plainText[j];
+          j += 1;
+          sngInfo.arrangement[i].notes[ii].fretId = plainText[j];
+          j += 1;
+          sngInfo.arrangement[i].notes[ii].anchorFretId = plainText[j];
+          j += 1;
+          sngInfo.arrangement[i].notes[ii].anchorWidth = plainText[j];
+          j += 1;
+          sngInfo.arrangement[i].notes[ii].chordId = i32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].notes[ii].chordNotesId = i32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].notes[ii].phraseId = i32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].notes[ii].phraseIterationId = i32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].notes[ii].fingerPrintId[0] = i16LittleEndian(&plainText[j]);
+          j += 2;
+          sngInfo.arrangement[i].notes[ii].fingerPrintId[1] = i16LittleEndian(&plainText[j]);
+          j += 2;
+          sngInfo.arrangement[i].notes[ii].nextIterNote = i16LittleEndian(&plainText[j]);
+          j += 2;
+          sngInfo.arrangement[i].notes[ii].prevIterNote = i16LittleEndian(&plainText[j]);
+          j += 2;
+          sngInfo.arrangement[i].notes[ii].parentPrevNote = i16LittleEndian(&plainText[j]);
+          j += 2;
+          sngInfo.arrangement[i].notes[ii].slideTo = plainText[j];
+          j += 1;
+          sngInfo.arrangement[i].notes[ii].slideUnpitchTo = plainText[j];
+          j += 1;
+          sngInfo.arrangement[i].notes[ii].leftHand = plainText[j];
+          j += 1;
+          sngInfo.arrangement[i].notes[ii].tap = plainText[j];
+          j += 1;
+          sngInfo.arrangement[i].notes[ii].pickDirection = plainText[j];
+          j += 1;
+          sngInfo.arrangement[i].notes[ii].slap = plainText[j];
+          j += 1;
+          sngInfo.arrangement[i].notes[ii].pluck = plainText[j];
+          j += 1;
+          sngInfo.arrangement[i].notes[ii].vibrato = i16LittleEndian(&plainText[j]);
+          j += 2;
+          sngInfo.arrangement[i].notes[ii].sustain = f32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].notes[ii].maxBend = f32LittleEndian(&plainText[j]);
+          j += 4;
+          memcpy(&sngInfo.arrangement[i].notes[ii].bendData, &plainText[j], 2328);
+          j += 2328;
+        }
+      }
+      sngInfo.arrangement[i].phraseCount = i32LittleEndian(&plainText[j]);
+      j += 4;
+      {
+        sngInfo.arrangement[i].averageNotesPerIteration.resize(sngInfo.arrangement[i].phraseCount);
+        for (i32 ii = 0; ii < sngInfo.arrangement[i].phraseCount; ++ii)
+        {
+          sngInfo.arrangement[i].averageNotesPerIteration[ii] = f32LittleEndian(&plainText[j]);
+          j += 4;
+        }
+      }
+      sngInfo.arrangement[i].phraseIterationCount1 = i32LittleEndian(&plainText[j]);
+      j += 4;
+      {
+        sngInfo.arrangement[i].notesInIteration1.resize(sngInfo.arrangement[i].phraseIterationCount1);
+        for (i32 ii = 0; ii < sngInfo.arrangement[i].phraseIterationCount1; ++ii)
+        {
+          sngInfo.arrangement[i].notesInIteration1[ii] = f32LittleEndian(&plainText[j]);
+          j += 4;
+        }
+      }
+      sngInfo.arrangement[i].phraseIterationCount2 = i32LittleEndian(&plainText[j]);
+      j += 4;
+      {
+        sngInfo.arrangement[i].notesInIteration2.resize(sngInfo.arrangement[i].phraseIterationCount2);
+        for (i32 ii = 0; ii < sngInfo.arrangement[i].phraseIterationCount2; ++ii)
+        {
+          sngInfo.arrangement[i].notesInIteration2[ii] = f32LittleEndian(&plainText[j]);
+          j += 4;
+        }
+      }
+    }
+  }
+
+  {
+    const i32 metadataCount = u32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.metadata.resize(metadataCount);
+    for (i32 i = 0; i < metadataCount; ++i)
+    {
+      sngInfo.metadata[i].maxScore = f64LittleEndian(&plainText[j]);
+      j += 8;
+      sngInfo.metadata[i].maxNotesAndChords = f64LittleEndian(&plainText[j]);
+      j += 8;
+      sngInfo.metadata[i].maxNotesAndChordsReal = f64LittleEndian(&plainText[j]);
+      j += 8;
+      sngInfo.metadata[i].pointsPerNote = f64LittleEndian(&plainText[j]);
+      j += 8;
+      sngInfo.metadata[i].firstBeatLength = f32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.metadata[i].startTime = f32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.metadata[i].capoFretId = plainText[j];
+      j += 1;
+      memcpy(&sngInfo.metadata[i].lastConversionDateTime, &plainText[j], 32);
+      j += 32;
+      sngInfo.metadata[i].part = i16LittleEndian(&plainText[j]);
+      j += 2;
+      sngInfo.metadata[i].songLength = f32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.metadata[i].stringCount = i32LittleEndian(&plainText[j]);
+      j += 4;
+      const i32 tuningCount = u32LittleEndian(&plainText[j]);
+      j += 4;
+      {
+        sngInfo.metadata[i].tuning.resize(tuningCount);
+        for (i32 ii = 0; ii < tuningCount; ++ii)
+        {
+          sngInfo.metadata[i].tuning[ii] = i16LittleEndian(&plainText[j]);
+          j += 2;
+        }
+      }
+      sngInfo.metadata[i].unk11FirstNoteTime = f32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.metadata[i].unk12FirstNoteTime = f32LittleEndian(&plainText[j]);
+      j += 4;
+      sngInfo.metadata[i].maxDifficulty = i32LittleEndian(&plainText[j]);
+      j += 4;
+    }
+  }
+
+  struct metadata
+  {
+    f64 maxScore;
+    f64 maxNotesAndChords;
+    f64 maxNotesAndChordsReal;
+    f64 pointsPerNote;
+    f32 firstBeatLength;
+    f32 startTime;
+    u8 capoFretId;
+    u8 lastConversionDateTime[32];
+    i16 part;
+    f32 songLength;
+    i32 stringCount;
+    //i16 tuning[];
+    f32 unk11FirstNoteTime;
+    f32 unk12FirstNoteTime;
+    i32 maxDifficulty;
+  };
 
   return sngInfo;
 }

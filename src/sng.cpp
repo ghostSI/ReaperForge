@@ -1,6 +1,7 @@
 #include "sng.h"
 
 #include "rijndael.h"
+#include "inflate.h"
 
 static const u8 sngKey[32] = {
   0xCB, 0x64, 0x8D, 0xF3, 0xD1, 0x2A, 0x16, 0xBF,
@@ -9,15 +10,18 @@ static const u8 sngKey[32] = {
   0x59, 0xDE, 0x7A, 0xDD, 0xA1, 0x8A, 0x3A, 0x30
 };
 
+static u16 u16LittleEndian(const u8* bytes)
+{
+  return *reinterpret_cast<const u16*>(bytes);
+}
+
 static u32 u32LittleEndian(const u8* bytes)
 {
   return *reinterpret_cast<const u32*>(bytes);
 }
 
-Sng::Info Sng::parse(const std::vector<u8>& sngData)
+static std::vector<u8> decryptSngData(const std::vector<u8>& sngData)
 {
-  Sng::Info sngInfo;
-
   const u32 magicNumber = u32LittleEndian(&sngData[0]);
 
   assert(magicNumber == 0x4A);
@@ -38,16 +42,27 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
     }
   }
 
-  u8 expectedData[] = { 7,5,89,0,120,218,236,221,125,148,100,101,125,232,251,93,213,187,95,167,103,24,1,67,240,109,26,4,211,136,72,35 };
-  for (i32 i = 0; i < sizeof(expectedData); ++i)
-  {
-    if (i == 16)
-    {
-      i = i;
-    }
+  return decrypedData;
+}
 
-    assert(expectedData[i] == decrypedData[i]);
-  }
+static std::vector<u8> inflateSngPlainText(const std::vector<u8>& decrypedSngData)
+{
+  const i64 plainTextLen = u32LittleEndian(&decrypedSngData[0]);
+  const u16 zHeader = u16LittleEndian(&decrypedSngData[4]);
+  assert(zHeader == 0x78DA || zHeader == 0xDA78); //LE 55928 //BE 30938
+
+  std::vector<u8> plainText(plainTextLen);
+  Inflate::inflate(&decrypedSngData[4], decrypedSngData.size() - 4, &plainText[0], plainTextLen);
+
+  return plainText;
+}
+
+Sng::Info Sng::parse(const std::vector<u8>& sngData)
+{
+  Sng::Info sngInfo;
+
+  const std::vector<u8> decrypedSngData = decryptSngData(sngData);
+  const std::vector<u8> plainText = inflateSngPlainText(decrypedSngData);
 
   return sngInfo;
 }

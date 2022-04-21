@@ -85,12 +85,6 @@ static void readSongInfoXml(const Psarc::Info::TOCEntry& tocEntry, Song::Info& s
   songInfo.arrangementProperties.routeMask = arrangementProperties.attribute("routeMask").as_bool();
 }
 
-static void readSongInfoSngFile(const Psarc::Info::TOCEntry& tocEntry, Song::Info& songInfo) {
-
-  Sng::parse(tocEntry.content);
-
-}
-
 Song::Info Song::psarcInfoToSongInfo(const Psarc::Info& psarcInfo) {
 
   Song::Info songInfo;
@@ -123,23 +117,19 @@ Song::Info Song::psarcInfoToSongInfo(const Psarc::Info& psarcInfo) {
     }
     else if (tocEntry.name.ends_with("_lead.sng"))
     {
-      Song::Info songInfo2;
-      readSongInfoSngFile(tocEntry, songInfo2);
+      const Sng::Info sngInfo = Sng::parse(tocEntry.content);
     }
     else if (tocEntry.name.ends_with("_rhythm.sng"))
     {
-      Song::Info songInfo2;
-      readSongInfoSngFile(tocEntry, songInfo2);
+      const Sng::Info sngInfo = Sng::parse(tocEntry.content);
     }
     else if (tocEntry.name.ends_with("_bass.sng"))
     {
-      Song::Info songInfo2;
-      readSongInfoSngFile(tocEntry, songInfo2);
+      const Sng::Info sngInfo = Sng::parse(tocEntry.content);
     }
     else if (tocEntry.name.ends_with("_vocals.sng"))
     {
-      Song::Info songInfo2;
-      readSongInfoSngFile(tocEntry, songInfo2);
+      const Sng::Info sngInfo = Sng::parse(tocEntry.content);
     }
   }
 

@@ -430,29 +430,41 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
           j += 1;
         }
       }
+      const i32 fingerprints1Count = u32LittleEndian(&plainText[j]);
+      j += 4;
       {
-        sngInfo.arrangement[i].fingerprints1.chordId = i32LittleEndian(&plainText[j]);
-        j += 4;
-        sngInfo.arrangement[i].fingerprints1.startTime = f32LittleEndian(&plainText[j]);
-        j += 4;
-        sngInfo.arrangement[i].fingerprints1.endTime = f32LittleEndian(&plainText[j]);
-        j += 4;
-        sngInfo.arrangement[i].fingerprints1.unk3_FirstNoteTime = f32LittleEndian(&plainText[j]);
-        j += 4;
-        sngInfo.arrangement[i].fingerprints1.unk4_LastNoteTime = f32LittleEndian(&plainText[j]);
-        j += 4;
+        sngInfo.arrangement[i].fingerprints1.resize(fingerprints1Count);
+        for (i32 ii = 0; ii < fingerprints1Count; ++ii)
+        {
+          sngInfo.arrangement[i].fingerprints1[ii].chordId = i32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].fingerprints1[ii].startTime = f32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].fingerprints1[ii].endTime = f32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].fingerprints1[ii].unk3_FirstNoteTime = f32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].fingerprints1[ii].unk4_LastNoteTime = f32LittleEndian(&plainText[j]);
+          j += 4;
+        }
       }
+      const i32 fingerprints2Count = u32LittleEndian(&plainText[j]);
+      j += 4;
       {
-        sngInfo.arrangement[i].fingerprints2.chordId = i32LittleEndian(&plainText[j]);
-        j += 4;
-        sngInfo.arrangement[i].fingerprints2.startTime = f32LittleEndian(&plainText[j]);
-        j += 4;
-        sngInfo.arrangement[i].fingerprints2.endTime = f32LittleEndian(&plainText[j]);
-        j += 4;
-        sngInfo.arrangement[i].fingerprints2.unk3_FirstNoteTime = f32LittleEndian(&plainText[j]);
-        j += 4;
-        sngInfo.arrangement[i].fingerprints2.unk4_LastNoteTime = f32LittleEndian(&plainText[j]);
-        j += 4;
+        sngInfo.arrangement[i].fingerprints2.resize(fingerprints2Count);
+        for (i32 ii = 0; ii < fingerprints2Count; ++ii)
+        {
+          sngInfo.arrangement[i].fingerprints2[ii].chordId = i32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].fingerprints2[ii].startTime = f32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].fingerprints2[ii].endTime = f32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].fingerprints2[ii].unk3_FirstNoteTime = f32LittleEndian(&plainText[j]);
+          j += 4;
+          sngInfo.arrangement[i].fingerprints2[ii].unk4_LastNoteTime = f32LittleEndian(&plainText[j]);
+          j += 4;
+        }
       }
       const i32 noteCount = u32LittleEndian(&plainText[j]);
       j += 4;
@@ -514,8 +526,16 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
           j += 4;
           sngInfo.arrangement[i].notes[ii].maxBend = f32LittleEndian(&plainText[j]);
           j += 4;
-          memcpy(&sngInfo.arrangement[i].notes[ii].bendData, &plainText[j], 2328);
-          j += 2328;
+          const i32 bendDataCount = u32LittleEndian(&plainText[j]);
+          j += 4;
+          {
+            sngInfo.arrangement[i].notes[ii].bendData.resize(bendDataCount);
+            for (i32 ii = 0; ii < bendDataCount; ++ii)
+            {
+              memcpy(&sngInfo.arrangement[i].notes[ii].bendData, &plainText[j], 2328);
+              j += 2328;
+            }
+          }
         }
       }
       sngInfo.arrangement[i].phraseCount = i32LittleEndian(&plainText[j]);
@@ -534,7 +554,7 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
         sngInfo.arrangement[i].notesInIteration1.resize(sngInfo.arrangement[i].phraseIterationCount1);
         for (i32 ii = 0; ii < sngInfo.arrangement[i].phraseIterationCount1; ++ii)
         {
-          sngInfo.arrangement[i].notesInIteration1[ii] = f32LittleEndian(&plainText[j]);
+          sngInfo.arrangement[i].notesInIteration1[ii] = i32LittleEndian(&plainText[j]);
           j += 4;
         }
       }
@@ -544,7 +564,7 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
         sngInfo.arrangement[i].notesInIteration2.resize(sngInfo.arrangement[i].phraseIterationCount2);
         for (i32 ii = 0; ii < sngInfo.arrangement[i].phraseIterationCount2; ++ii)
         {
-          sngInfo.arrangement[i].notesInIteration2[ii] = f32LittleEndian(&plainText[j]);
+          sngInfo.arrangement[i].notesInIteration2[ii] = i32LittleEndian(&plainText[j]);
           j += 4;
         }
       }
@@ -552,70 +572,43 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
   }
 
   {
-    const i32 metadataCount = u32LittleEndian(&plainText[j]);
+    sngInfo.metadata.maxScore = f64LittleEndian(&plainText[j]);
+    j += 8;
+    sngInfo.metadata.maxNotesAndChords = f64LittleEndian(&plainText[j]);
+    j += 8;
+    sngInfo.metadata.maxNotesAndChordsReal = f64LittleEndian(&plainText[j]);
+    j += 8;
+    sngInfo.metadata.pointsPerNote = f64LittleEndian(&plainText[j]);
+    j += 8;
+    sngInfo.metadata.firstBeatLength = f32LittleEndian(&plainText[j]);
     j += 4;
-    sngInfo.metadata.resize(metadataCount);
-    for (i32 i = 0; i < metadataCount; ++i)
+    sngInfo.metadata.startTime = f32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.metadata.capoFretId = plainText[j];
+    j += 1;
+    memcpy(&sngInfo.metadata.lastConversionDateTime, &plainText[j], 32);
+    j += 32;
+    sngInfo.metadata.part = i16LittleEndian(&plainText[j]);
+    j += 2;
+    sngInfo.metadata.songLength = f32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.metadata.stringCount = i32LittleEndian(&plainText[j]);
+    j += 4;
     {
-      sngInfo.metadata[i].maxScore = f64LittleEndian(&plainText[j]);
-      j += 8;
-      sngInfo.metadata[i].maxNotesAndChords = f64LittleEndian(&plainText[j]);
-      j += 8;
-      sngInfo.metadata[i].maxNotesAndChordsReal = f64LittleEndian(&plainText[j]);
-      j += 8;
-      sngInfo.metadata[i].pointsPerNote = f64LittleEndian(&plainText[j]);
-      j += 8;
-      sngInfo.metadata[i].firstBeatLength = f32LittleEndian(&plainText[j]);
-      j += 4;
-      sngInfo.metadata[i].startTime = f32LittleEndian(&plainText[j]);
-      j += 4;
-      sngInfo.metadata[i].capoFretId = plainText[j];
-      j += 1;
-      memcpy(&sngInfo.metadata[i].lastConversionDateTime, &plainText[j], 32);
-      j += 32;
-      sngInfo.metadata[i].part = i16LittleEndian(&plainText[j]);
-      j += 2;
-      sngInfo.metadata[i].songLength = f32LittleEndian(&plainText[j]);
-      j += 4;
-      sngInfo.metadata[i].stringCount = i32LittleEndian(&plainText[j]);
-      j += 4;
-      const i32 tuningCount = u32LittleEndian(&plainText[j]);
-      j += 4;
+      sngInfo.metadata.tuning.resize(sngInfo.metadata.stringCount);
+      for (i32 ii = 0; ii < sngInfo.metadata.stringCount; ++ii)
       {
-        sngInfo.metadata[i].tuning.resize(tuningCount);
-        for (i32 ii = 0; ii < tuningCount; ++ii)
-        {
-          sngInfo.metadata[i].tuning[ii] = i16LittleEndian(&plainText[j]);
-          j += 2;
-        }
+        sngInfo.metadata.tuning[ii] = i16LittleEndian(&plainText[j]);
+        j += 2;
       }
-      sngInfo.metadata[i].unk11FirstNoteTime = f32LittleEndian(&plainText[j]);
-      j += 4;
-      sngInfo.metadata[i].unk12FirstNoteTime = f32LittleEndian(&plainText[j]);
-      j += 4;
-      sngInfo.metadata[i].maxDifficulty = i32LittleEndian(&plainText[j]);
-      j += 4;
     }
+    sngInfo.metadata.unk11FirstNoteTime = f32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.metadata.unk12FirstNoteTime = f32LittleEndian(&plainText[j]);
+    j += 4;
+    sngInfo.metadata.maxDifficulty = i32LittleEndian(&plainText[j]);
+    j += 4;
   }
-
-  struct metadata
-  {
-    f64 maxScore;
-    f64 maxNotesAndChords;
-    f64 maxNotesAndChordsReal;
-    f64 pointsPerNote;
-    f32 firstBeatLength;
-    f32 startTime;
-    u8 capoFretId;
-    u8 lastConversionDateTime[32];
-    i16 part;
-    f32 songLength;
-    i32 stringCount;
-    //i16 tuning[];
-    f32 unk11FirstNoteTime;
-    f32 unk12FirstNoteTime;
-    i32 maxDifficulty;
-  };
 
   return sngInfo;
 }

@@ -238,14 +238,14 @@ namespace Sng {
         i16 vibrato;
         f32 sustain;
         f32 maxBend;
-        BendData bendData;
+        std::vector<BendData> bendData;
       };
 
       i32 difficulty;
       std::vector<Anchor> anchors;
       std::vector<AnchorExtension> anchorExtensions;
-      Fingerprint fingerprints1;
-      Fingerprint fingerprints2;
+      std::vector<Fingerprint> fingerprints1;
+      std::vector<Fingerprint> fingerprints2;
       std::vector<Note> notes;
       i32 phraseCount;
       std::vector<f32> averageNotesPerIteration;
@@ -274,7 +274,7 @@ namespace Sng {
       f32 unk12FirstNoteTime;
       i32 maxDifficulty;
     };
-    std::vector<Metadata> metadata;
+    Metadata metadata;
   };
 
   Sng::Info parse(const std::vector<u8>& sngData);

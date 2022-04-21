@@ -43,8 +43,10 @@ set(HEADER_FILES
         src/inflate.h
         src/input.h
         src/installer.h
+        src/json.h
         src/kiss_fft.h
         src/log.h
+        src/manifest.h
         src/nuklear.h
         src/oggvorbis.h
         src/opengl.h
@@ -85,9 +87,11 @@ set(SOURCE_FILES
         src/inflate.cpp
         src/input.cpp
         src/installer.cpp
+        src/json.cpp
         src/kiss_fft.cpp
         src/log.cpp
         src/main.cpp
+        src/manifest.cpp
         src/oggvorbis.cpp
         src/opengl.cpp
         src/psarc.cpp

@@ -212,7 +212,7 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
     {
       const i32 symbolsTextureCount = u32LittleEndian(&plainText[j]);
       j += 4;
-      sngInfo.symbolsHeader.resize(symbolsTextureCount);
+      sngInfo.symbolsTexture.resize(symbolsTextureCount);
       for (i32 i = 0; i < symbolsTextureCount; ++i)
       {
         memcpy(&sngInfo.symbolsTexture[i].font, &plainText[j], 128);

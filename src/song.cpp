@@ -4,6 +4,7 @@
 #include "sng.h"
 #include "xml.h"
 #include "global.h"
+#include "manifest.h"
 
 static bool isXmlForInstrument(std::string filename, Instrument instrument) {
 
@@ -92,7 +93,11 @@ Song::Info Song::psarcInfoToSongInfo(const Psarc::Info& psarcInfo) {
   for (i32 i = 0; i < psarcInfo.tocEntries.size(); ++i) {
     const Psarc::Info::TOCEntry& tocEntry = psarcInfo.tocEntries[i];
 
-    if (tocEntry.name.ends_with("_lead.xml")) {
+    if (tocEntry.name.ends_with(".hsan"))
+    {
+      Manifest::readHsan(tocEntry.content);
+    }
+    else if (tocEntry.name.ends_with("_lead.xml")) {
       songInfo.instrumentFlags |= Info::InstrumentFlags::LeadGuitar;
       readSongInfoXml(tocEntry, songInfo);
     }

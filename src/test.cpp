@@ -24378,9 +24378,10 @@ static void psarcTOCTest2() {
   };
 
   const Psarc::Info psarcInfo = Psarc::parse(psarcData);
-  const Song::Info songInfo = Song::psarcInfoToSongInfo(psarcInfo);
+  Song::Info songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
+  Song::loadSongInfoComplete(psarcInfo, songInfo);
 
-  ASSERT(songInfo.title == "You Suffer");
+  ASSERT(songInfo.manifest.attributes[0].songName == "You Suffer");
 
   Psarc::loadOgg(psarcInfo, false);
 

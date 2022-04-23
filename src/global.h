@@ -101,7 +101,7 @@ namespace Global {
     extern mat4 cameraMat;
 
     extern bool isInstalled;
-    extern Instrument filterInstrument;
+    extern InstrumentFlags filterInstrument;
     extern bool collectionLoaded;
     extern std::vector<Psarc::Info> psarcInfos;
     extern std::vector<Song::Info> collection;

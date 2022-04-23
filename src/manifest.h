@@ -1,7 +1,7 @@
 #ifndef MANIFEST_H
 #define MANIFEST_H
 
-#include "typedefs.h"
+#include "type.h"
 #include <vector>
 #include <string>
 

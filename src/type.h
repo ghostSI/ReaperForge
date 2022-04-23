@@ -39,13 +39,18 @@ enum struct DisplayMode : u8 {
     windowedFullscreen
 };
 
-enum struct Instrument {
+enum struct InstrumentFlags {
     none,
     LeadGuitar = 1 << 0,
     RhythmGuitar = 1 << 1,
     BassGuitar = 1 << 2,
-    All = LeadGuitar | RhythmGuitar | BassGuitar
-}BIT_FLAGS(Instrument);
+    AllGuitars = LeadGuitar | RhythmGuitar | BassGuitar,
+    Vocals = 1 << 3,
+    LeadGuitar2 = 1 << 4,
+    RhythmGuitar2 = 1 << 5,
+    BassGuitar2 = 1 << 6,
+    Keyboard = 1 << 7
+}BIT_FLAGS(InstrumentFlags);
 
 namespace Chords
 {
@@ -126,6 +131,16 @@ struct Rect {
     i32 right;
     i32 top;
     i32 bottom;
+};
+
+struct Tuning
+{
+  i32 string0;
+  i32 string1;
+  i32 string2;
+  i32 string3;
+  i32 string4;
+  i32 string5;
 };
 
 #pragma pack(push, 1)

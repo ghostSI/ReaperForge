@@ -23,6 +23,7 @@ endif ()
 
 set(HEADER_FILES
         src/_kiss_fft_guts.h
+        src/arrangement.h
         src/camera.h
         src/chordDetector.h
         src/chords.h
@@ -64,11 +65,13 @@ set(HEADER_FILES
         src/typedefs.h
         src/ui.h
         src/ww2ogg.h
+        src/xblock.h
         src/xml.h
         src/zorder.h
         )
 
 set(SOURCE_FILES
+        src/arrangement.cpp
         src/camera.cpp
 		src/chordDetector.cpp
 		src/chords.cpp
@@ -107,6 +110,7 @@ set(SOURCE_FILES
         src/texture.cpp
         src/ui.cpp
         src/ww2ogg.cpp
+        src/xblock.cpp
         src/xml.cpp
         src/zorder.cpp
         )

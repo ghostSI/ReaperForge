@@ -1857,15 +1857,15 @@ static bool filterSongOut(const Song::Info &songInfo) {
     }
     searchText2[i] = '\0';
 
-    if (stristr(songInfo.title.c_str(), searchText2))
+    if (stristr(songInfo.arrangements[0].title.c_str(), searchText2))
         return false;
-    if (stristr(songInfo.artist.c_str(), searchText2))
+    if (stristr(songInfo.arrangements[0].artist.c_str(), searchText2))
         return false;
-    if (stristr(songInfo.albumName.c_str(), searchText2))
+    if (stristr(songInfo.arrangements[0].albumName.c_str(), searchText2))
         return false;
-    if (stristr(std::to_string(songInfo.albumYear).c_str(), searchText2))
+    if (stristr(std::to_string(songInfo.arrangements[0].albumYear).c_str(), searchText2))
         return false;
-    if (stristr(Song::tuningName(songInfo.tuning), searchText2))
+    if (stristr(Song::tuningName(songInfo.arrangements[0].tuning), searchText2))
         return false;
 
     return true;
@@ -1938,7 +1938,7 @@ static void songWindow() {
 
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Title:", NK_TEXT_LEFT);
-                    nk_label(ctx, songInfo.title.c_str(), NK_TEXT_LEFT);
+                    nk_label(ctx, songInfo.arrangements[0].title.c_str(), NK_TEXT_LEFT);
                     if (nk_button_label(ctx, "Preview"))
                     {
                       Psarc::loadOgg(Global::psarcInfos[i], true);
@@ -1946,26 +1946,26 @@ static void songWindow() {
                     }
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Artist:", NK_TEXT_LEFT);
-                    nk_label(ctx, songInfo.artist.c_str(), NK_TEXT_LEFT);
+                    nk_label(ctx, songInfo.arrangements[0].artist.c_str(), NK_TEXT_LEFT);
                     if (nk_button_label(ctx, "Lead Guitar"))
                     {
                       Sound::play(Sound::Effect::menuHover);
                     }
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Album:", NK_TEXT_LEFT);
-                    nk_label(ctx, songInfo.albumName.c_str(), NK_TEXT_LEFT);
+                    nk_label(ctx, songInfo.arrangements[0].albumName.c_str(), NK_TEXT_LEFT);
                     nk_button_label(ctx, "Rhythm Guitar");
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Year:", NK_TEXT_LEFT);
-                    nk_label(ctx, std::to_string(songInfo.albumYear).c_str(), NK_TEXT_LEFT);
+                    nk_label(ctx, std::to_string(songInfo.arrangements[0].albumYear).c_str(), NK_TEXT_LEFT);
                     nk_button_label(ctx, "Bass Guitar");
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Length:", NK_TEXT_LEFT);
-                    nk_label(ctx, std::to_string(songInfo.songLength).c_str(), NK_TEXT_LEFT);
+                    nk_label(ctx, std::to_string(songInfo.arrangements[0].songLength).c_str(), NK_TEXT_LEFT);
                     nk_label(ctx, "Score:       98.4%", NK_TEXT_LEFT);
                     nk_spacing(ctx, 1);
                     nk_label(ctx, "Tuning:", NK_TEXT_LEFT);
-                    nk_label(ctx, Song::tuningName(songInfo.tuning), NK_TEXT_LEFT);
+                    nk_label(ctx, Song::tuningName(songInfo.arrangements[0].tuning), NK_TEXT_LEFT);
                     nk_label(ctx, "Accuracy:    98.4%", NK_TEXT_LEFT);
 
                     nk_group_end(ctx);

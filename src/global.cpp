@@ -26,7 +26,7 @@ f32 Global::cameraMidY = f32(Global::windowHeight / 2);
 mat4 Global::cameraMat;
 
 bool Global::isInstalled = false;
-Instrument Global::filterInstrument;
+InstrumentFlags Global::filterInstrument;
 bool Global::collectionLoaded;
 std::vector<Psarc::Info> Global::psarcInfos;
 std::vector<Song::Info> Global::collection;

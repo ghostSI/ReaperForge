@@ -2,22 +2,21 @@
 
 #include "psarc.h"
 #include "sng.h"
-#include "xml.h"
 #include "global.h"
-#include "manifest.h"
+#include "xml.h"
 
-static bool isXmlForInstrument(std::string filename, Instrument instrument) {
+static bool isXmlForInstrument(std::string filename, InstrumentFlags instrument) {
 
   switch (instrument) {
-  case Instrument::LeadGuitar:
+  case InstrumentFlags::LeadGuitar:
     if (filename.ends_with("_lead.xml"))
       return true;
     break;
-  case Instrument::RhythmGuitar:
+  case InstrumentFlags::RhythmGuitar:
     if (filename.ends_with("_rhythm.xml"))
       return true;
     break;
-  case Instrument::BassGuitar:
+  case InstrumentFlags::BassGuitar:
     if (filename.ends_with("_bass.xml"))
       return true;
     break;
@@ -26,90 +25,70 @@ static bool isXmlForInstrument(std::string filename, Instrument instrument) {
   return false;
 }
 
-static void readSongInfoXml(const Psarc::Info::TOCEntry& tocEntry, Song::Info& songInfo) {
-
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
-  assert(result.status == pugi::status_ok);
-
-  pugi::xml_node root = doc.child("song");
-
-  songInfo.title = root.child("title").text().as_string();
-
-  pugi::xml_node tuning = root.child("tuning");
-  songInfo.tuning.string0 = tuning.attribute("string0").as_int();
-  songInfo.tuning.string1 = tuning.attribute("string1").as_int();
-  songInfo.tuning.string2 = tuning.attribute("string2").as_int();
-  songInfo.tuning.string3 = tuning.attribute("string3").as_int();
-  songInfo.tuning.string4 = tuning.attribute("string4").as_int();
-  songInfo.tuning.string5 = tuning.attribute("string5").as_int();
-
-  songInfo.capo = root.child("capo").text().as_string();
-  songInfo.artist = root.child("artistName").text().as_string();
-  songInfo.albumName = root.child("albumName").text().as_string();
-  songInfo.albumYear = root.child("albumYear").text().as_int();
-  songInfo.songLength = root.child("songLength").text().as_int();
-
-  pugi::xml_node arrangementProperties = root.child("arrangementProperties");
-  songInfo.arrangementProperties.represent = arrangementProperties.attribute("represent").as_bool();
-  songInfo.arrangementProperties.standardTuning = arrangementProperties.attribute("standardTuning").as_bool();
-  songInfo.arrangementProperties.nonStandardChords = arrangementProperties.attribute("nonStandardChords").as_bool();
-  songInfo.arrangementProperties.barreChords = arrangementProperties.attribute("barreChords").as_bool();
-  songInfo.arrangementProperties.powerChords = arrangementProperties.attribute("powerChords").as_bool();
-  songInfo.arrangementProperties.dropDPower = arrangementProperties.attribute("dropDPower").as_bool();
-  songInfo.arrangementProperties.openChords = arrangementProperties.attribute("openChords").as_bool();
-  songInfo.arrangementProperties.fingerPicking = arrangementProperties.attribute("fingerPicking").as_bool();
-  songInfo.arrangementProperties.pickDirection = arrangementProperties.attribute("pickDirection").as_bool();
-  songInfo.arrangementProperties.doubleStops = arrangementProperties.attribute("doubleStops").as_bool();
-  songInfo.arrangementProperties.palmMutes = arrangementProperties.attribute("palmMutes").as_bool();
-  songInfo.arrangementProperties.harmonics = arrangementProperties.attribute("harmonics").as_bool();
-  songInfo.arrangementProperties.pinchHarmonics = arrangementProperties.attribute("pinchHarmonics").as_bool();
-  songInfo.arrangementProperties.hopo = arrangementProperties.attribute("hopo").as_bool();
-  songInfo.arrangementProperties.tremolo = arrangementProperties.attribute("tremolo").as_bool();
-  songInfo.arrangementProperties.slides = arrangementProperties.attribute("slides").as_bool();
-  songInfo.arrangementProperties.unpitchedSlides = arrangementProperties.attribute("unpitchedSlides").as_bool();
-  songInfo.arrangementProperties.bends = arrangementProperties.attribute("bends").as_bool();
-  songInfo.arrangementProperties.tapping = arrangementProperties.attribute("tapping").as_bool();
-  songInfo.arrangementProperties.vibrato = arrangementProperties.attribute("vibrato").as_bool();
-  songInfo.arrangementProperties.fretHandMutes = arrangementProperties.attribute("fretHandMutes").as_bool();
-  songInfo.arrangementProperties.slapPop = arrangementProperties.attribute("slapPop").as_bool();
-  songInfo.arrangementProperties.twoFingerPicking = arrangementProperties.attribute("twoFingerPicking").as_bool();
-  songInfo.arrangementProperties.fifthsAndOctaves = arrangementProperties.attribute("fifthsAndOctaves").as_bool();
-  songInfo.arrangementProperties.syncopation = arrangementProperties.attribute("syncopation").as_bool();
-  songInfo.arrangementProperties.bassPick = arrangementProperties.attribute("bassPick").as_bool();
-  songInfo.arrangementProperties.sustain = arrangementProperties.attribute("sustain").as_bool();
-  songInfo.arrangementProperties.bonusArr = arrangementProperties.attribute("bonusArr").as_bool();
-  songInfo.arrangementProperties.Metronome = arrangementProperties.attribute("Metronome").as_bool();
-  songInfo.arrangementProperties.pathLead = arrangementProperties.attribute("pathLead").as_bool();
-  songInfo.arrangementProperties.pathRhythm = arrangementProperties.attribute("pathRhythm").as_bool();
-  songInfo.arrangementProperties.pathBass = arrangementProperties.attribute("pathBass").as_bool();
-  songInfo.arrangementProperties.routeMask = arrangementProperties.attribute("routeMask").as_bool();
-}
-
-Song::Info Song::psarcInfoToSongInfo(const Psarc::Info& psarcInfo) {
+Song::Info Song::loadSongInfoManifestOnly(const Psarc::Info& psarcInfo) {
 
   Song::Info songInfo;
+
+  bool xblockRead = false;
+  for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries) {
+    if (tocEntry.name.ends_with(".xblock"))
+    {
+      songInfo.xblock = XBlock::readXBlock(tocEntry.content);
+      xblockRead = true;
+      break;
+    }
+  }
+  assert(xblockRead);
+
+  for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries) {
+    if (tocEntry.name.ends_with(".hsan"))
+    {
+      songInfo.manifest = Manifest::readHsan(tocEntry.content);
+      songInfo.loadState = LoadState::manifest;
+      break;
+    }
+  }
+
+  return songInfo;
+}
+
+void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songInfo)
+{
+  assert(songInfo.loadState == LoadState::manifest);
 
   for (i32 i = 0; i < psarcInfo.tocEntries.size(); ++i) {
     const Psarc::Info::TOCEntry& tocEntry = psarcInfo.tocEntries[i];
 
-    if (tocEntry.name.ends_with(".hsan"))
+    if (tocEntry.name.ends_with(".bin")
+      || tocEntry.name.ends_with(".flat")
+      || tocEntry.name.ends_with(".xblock")
+      || tocEntry.name.ends_with(".hsan")
+      || tocEntry.name.ends_with(".dds")
+      || tocEntry.name.ends_with(".bnk")
+      || tocEntry.name.ends_with(".wem")
+      || tocEntry.name.ends_with(".nt")
+      || tocEntry.name.ends_with(".sng")
+      || tocEntry.name.ends_with(".version")
+      || tocEntry.name.ends_with(".appid")
+      || tocEntry.name.ends_with(".json")
+      || tocEntry.name.ends_with(".xml"))
     {
-      Manifest::readHsan(tocEntry.content);
+      continue;
     }
     else if (tocEntry.name.ends_with("_lead.xml")) {
-      songInfo.instrumentFlags |= Info::InstrumentFlags::LeadGuitar;
-      readSongInfoXml(tocEntry, songInfo);
+      Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
+      arrangement.instrumentFlags |= InstrumentFlags::LeadGuitar;
+      songInfo.arrangements.push_back(arrangement);
     }
     else if (tocEntry.name.ends_with("_rhythm.xml")) {
-      songInfo.instrumentFlags |= Info::InstrumentFlags::RhythmGuitar;
-      if (songInfo.title.empty())
-        readSongInfoXml(tocEntry, songInfo);
+      Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
+      arrangement.instrumentFlags |= InstrumentFlags::RhythmGuitar;
+      songInfo.arrangements.push_back(arrangement);
     }
     else if (tocEntry.name.ends_with("_bass.xml")) {
-      songInfo.instrumentFlags |= Info::InstrumentFlags::BassGuitar;
-      if (songInfo.title.empty())
-        readSongInfoXml(tocEntry, songInfo);
+      Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
+      arrangement.instrumentFlags |= InstrumentFlags::BassGuitar;
+      songInfo.arrangements.push_back(arrangement);
     }
     else if (tocEntry.name.ends_with("_64.dds")) {
       songInfo.albumCover64_tocIndex = i;
@@ -136,9 +115,9 @@ Song::Info Song::psarcInfoToSongInfo(const Psarc::Info& psarcInfo) {
     {
       const Sng::Info sngInfo = Sng::parse(tocEntry.content);
     }
-  }
 
-  return songInfo;
+    assert(false);
+  }
 }
 
 static void readPhrases(const pugi::xml_document& doc, std::vector<Song::Phrase>& phrases)
@@ -364,7 +343,7 @@ static void readSongHandShape(const pugi::xml_document& doc, std::vector<Song::T
   }
 }
 
-Song::Track Song::loadTrack(const Psarc::Info& psarcInfo, Info::InstrumentFlags instrumentFlags)
+Song::Track Song::loadTrack(const Psarc::Info& psarcInfo, InstrumentFlags instrumentFlags)
 {
   Song::Track track;
 
@@ -372,7 +351,7 @@ Song::Track Song::loadTrack(const Psarc::Info& psarcInfo, Info::InstrumentFlags 
   {
     switch (instrumentFlags)
     {
-    case Info::InstrumentFlags::LeadGuitar:
+    case InstrumentFlags::LeadGuitar:
       if (tocEntry.name.ends_with("_lead.xml"))
       {
         pugi::xml_document doc;
@@ -391,7 +370,7 @@ Song::Track Song::loadTrack(const Psarc::Info& psarcInfo, Info::InstrumentFlags 
         return track;
       }
       break;
-    case Info::InstrumentFlags::RhythmGuitar:
+    case InstrumentFlags::RhythmGuitar:
       if (tocEntry.name.ends_with("_rhythm.xml"))
       {
         pugi::xml_document doc;
@@ -410,7 +389,7 @@ Song::Track Song::loadTrack(const Psarc::Info& psarcInfo, Info::InstrumentFlags 
         return track;
       }
       break;
-    case Info::InstrumentFlags::BassGuitar:
+    case InstrumentFlags::BassGuitar:
       if (tocEntry.name.ends_with("_bass.xml"))
       {
         pugi::xml_document doc;
@@ -468,7 +447,7 @@ std::vector<Song::Vocal> Song::loadVocals(const Psarc::Info& psarcInfo) {
   return {};
 }
 
-const char* Song::tuningName(const Song::Info::Tuning& tuning) {
+const char* Song::tuningName(const Tuning& tuning) {
   if (tuning.string0 == 0 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == 0 && tuning.string4 == 0 && tuning.string5 == 0)
     return "E Standard";
   if (tuning.string0 == -2 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == 0 && tuning.string4 == 0 && tuning.string5 == 0)

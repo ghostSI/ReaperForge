@@ -21,7 +21,7 @@ void Collection::init() {
             continue;
 
         Global::psarcInfos.push_back(Psarc::parse(Psarc::readPsarcData(file.path().string().c_str())));
-        Global::collection.push_back(Song::psarcInfoToSongInfo(Global::psarcInfos[Global::psarcInfos.size() - 1]));
+        Global::collection.push_back(Song::loadSongInfoManifestOnly(Global::psarcInfos[Global::psarcInfos.size() - 1]));
     }
 
     Global::collectionLoaded = true;

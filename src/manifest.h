@@ -9,7 +9,7 @@ namespace Manifest {
 
   struct Info
   {
-    struct Entry
+    struct Attributes
     {
       struct Tuning
       {
@@ -68,7 +68,7 @@ namespace Manifest {
       std::string persistentID;
     };
 
-    std::vector<Entry> entries;
+    std::vector<Attributes> attributes;
     std::string insertRoot;
   };
 

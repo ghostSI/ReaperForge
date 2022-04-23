@@ -121,33 +121,33 @@ enum struct ParseError {
 };
 
 /* A JSON string value (extended). */
-struct string_ex_s {
+struct string_ex {
   /* The JSON string this extends. */
-  struct Json::string_s string;
+  struct Json::string string;
 
   /* The character offset for the value in the JSON input. */
-  size_t offset;
+  u64 offset;
 
   /* The line number for the value in the JSON input. */
-  size_t line_no;
+  u64 line_no;
 
   /* The row number for the value in the JSON input, in bytes. */
-  size_t row_no;
+  u64 row_no;
 };
 
 /* a JSON value (extended). */
-struct value_ex_s {
+struct value_ex {
   /* the JSON value this extends. */
-  struct Json::value_s value;
+  struct Json::value value;
 
   /* the character offset for the value in the JSON input. */
-  size_t offset;
+  u64 offset;
 
   /* the line number for the value in the JSON input. */
-  size_t line_no;
+  u64 line_no;
 
   /* the row number for the value in the JSON input, in bytes. */
-  size_t row_no;
+  u64 row_no;
 };
 
 /* error report from parse_ex(). */
@@ -156,26 +156,26 @@ struct parse_result_s {
   ParseError error;
 
   /* the character offset for the error in the JSON input. */
-  size_t error_offset;
+  u64 error_offset;
 
   /* the line number for the error in the JSON input. */
-  size_t error_line_no;
+  u64 error_line_no;
 
   /* the row number for the error, in bytes. */
-  size_t error_row_no;
+  u64 error_row_no;
 };
 
 struct parse_state_s {
   const char* src;
-  size_t size;
-  size_t offset;
+  u64 size;
+  u64 offset;
   ParseFlags flags_bitset;
   char* data;
   char* dom;
-  size_t dom_size;
-  size_t data_size;
-  size_t line_no;  /* line counter for error reporting. */
-  size_t line_offset; /* (offset-line_offset) is the character number (in
+  u64 dom_size;
+  u64 data_size;
+  u64 line_no;  /* line counter for error reporting. */
+  u64 line_offset; /* (offset-line_offset) is the character number (in
           bytes). */
   ParseError error;
 };
@@ -186,19 +186,19 @@ struct extract_state_s {
 };
 
 struct extract_result_s {
-  size_t dom_size;
-  size_t data_size;
+  u64 dom_size;
+  u64 data_size;
 };
 
-static int get_object_size(struct parse_state_s* state, int is_global_object);
-static void parse_value(struct parse_state_s* state, int is_global_object, struct Json::value_s* value);
-static int get_array_size(struct parse_state_s* state);
-static extract_result_s extract_get_array_size(const Json::array_s* const array);
-static extract_result_s extract_get_object_size(const Json::object_s* const object);
+static i32 get_object_size(struct parse_state_s* state, i32 is_global_object);
+static void parse_value(struct parse_state_s* state, i32 is_global_object, struct Json::value* value);
+static i32 get_array_size(struct parse_state_s* state);
+static extract_result_s extract_get_array_size(const Json::array* const array);
+static extract_result_s extract_get_object_size(const Json::object* const object);
 
 
 
-static int hexadecimal_digit(const char c) {
+static i32 hexadecimal_digit(const char c) {
   if ('0' <= c && c <= '9') {
     return c - '0';
   }
@@ -211,29 +211,29 @@ static int hexadecimal_digit(const char c) {
   return -1;
 }
 
-static int hexadecimal_value(const char* c, const unsigned long size, unsigned long* result) {
+static i32 hexadecimal_value(const char* c, const u32 size, u32* result) {
   const char* p;
-  int digit;
+  i32 digit;
 
-  if (size > sizeof(unsigned long) * 2) {
+  if (size > sizeof(u32) * 2) {
     return 0;
   }
 
   *result = 0;
-  for (p = c; (unsigned long)(p - c) < size; ++p) {
+  for (p = c; (u32)(p - c) < size; ++p) {
     *result <<= 4;
     digit = hexadecimal_digit(*p);
     if (digit < 0 || digit > 15) {
       return 0;
     }
-    *result |= (unsigned char)digit;
+    *result |= (u8)digit;
   }
   return 1;
 }
 
-static int skip_whitespace(parse_state_s* state) {
-  size_t offset = state->offset;
-  const size_t size = state->size;
+static i32 skip_whitespace(parse_state_s* state) {
+  u64 offset = state->offset;
+  const u64 size = state->size;
   const char* const src = state->src;
 
   /* the only valid whitespace according to ECMA-404 is ' ', '\n', '\r' and
@@ -272,7 +272,7 @@ static int skip_whitespace(parse_state_s* state) {
   return 1;
 }
 
-static int skip_c_style_comments(parse_state_s* state) {
+static i32 skip_c_style_comments(parse_state_s* state) {
   /* do we have a comment?. */
   if ('/' == state->src[state->offset]) {
     /* skip '/'. */
@@ -336,14 +336,14 @@ static int skip_c_style_comments(parse_state_s* state) {
   return 0;
 }
 
-static int skip_all_skippables(parse_state_s* state) {
+static i32 skip_all_skippables(parse_state_s* state) {
   /* skip all whitespace and other skippables until there are none left. note
    * that the previous version suffered from read past errors should. the
    * stream end on skip_c_style_comments eg. '{"a" ' with comments flag.
    */
 
-  int did_consume = 0;
-  const size_t size = state->size;
+  i32 did_consume = 0;
+  const u64 size = state->size;
 
   if (to_underlying(ParseFlags::allow_c_style_comments & state->flags_bitset)) {
     do {
@@ -383,23 +383,23 @@ static int skip_all_skippables(parse_state_s* state) {
   return 0;
 }
 
-static int get_string_size(parse_state_s* state, size_t is_key) {
-  size_t offset = state->offset;
-  const size_t size = state->size;
-  size_t data_size = 0;
+static i32 get_string_size(parse_state_s* state, u64 is_key) {
+  u64 offset = state->offset;
+  const u64 size = state->size;
+  u64 data_size = 0;
   const char* const src = state->src;
-  const int is_single_quote = '\'' == src[offset];
+  const i32 is_single_quote = '\'' == src[offset];
   const char quote_to_use = is_single_quote ? '\'' : '"';
   const ParseFlags flags_bitset = state->flags_bitset;
-  unsigned long codepoint;
-  unsigned long high_surrogate = 0;
+  u32 codepoint;
+  u32 high_surrogate = 0;
 
   if (to_underlying(ParseFlags::allow_location_information & flags_bitset) != 0 &&
     is_key != 0) {
-    state->dom_size += sizeof(string_ex_s);
+    state->dom_size += sizeof(string_ex);
   }
   else {
-    state->dom_size += sizeof(Json::string_s);
+    state->dom_size += sizeof(Json::string);
   }
 
   if ('"' != src[offset]) {
@@ -572,19 +572,19 @@ static int get_string_size(parse_state_s* state, size_t is_key) {
   return 0;
 }
 
-static int is_valid_unquoted_key_char(const char c) {
+static i32 is_valid_unquoted_key_char(const char c) {
   return (('0' <= c && c <= '9') || ('a' <= c && c <= 'z') ||
     ('A' <= c && c <= 'Z') || ('_' == c));
 }
 
-static int get_key_size(parse_state_s* state) {
+static i32 get_key_size(parse_state_s* state) {
   const ParseFlags flags_bitset = state->flags_bitset;
 
   if (to_underlying(ParseFlags::allow_unquoted_keys & flags_bitset)) {
-    size_t offset = state->offset;
-    const size_t size = state->size;
+    u64 offset = state->offset;
+    const u64 size = state->size;
     const char* const src = state->src;
-    size_t data_size = state->data_size;
+    u64 data_size = state->data_size;
 
     /* if we are allowing unquoted keys, first grok for a quote... */
     if ('"' == src[offset]) {
@@ -606,10 +606,10 @@ static int get_key_size(parse_state_s* state) {
       data_size++;
 
       if (to_underlying(ParseFlags::allow_location_information & flags_bitset)) {
-        state->dom_size += sizeof(string_ex_s);
+        state->dom_size += sizeof(string_ex);
       }
       else {
-        state->dom_size += sizeof(Json::string_s);
+        state->dom_size += sizeof(Json::string);
       }
 
       /* update offset. */
@@ -627,14 +627,14 @@ static int get_key_size(parse_state_s* state) {
   }
 }
 
-static int get_number_size(parse_state_s* state) {
+static i32 get_number_size(parse_state_s* state) {
   const ParseFlags flags_bitset = state->flags_bitset;
-  size_t offset = state->offset;
-  const size_t size = state->size;
-  int had_leading_digits = 0;
+  u64 offset = state->offset;
+  const u64 size = state->size;
+  i32 had_leading_digits = 0;
   const char* const src = state->src;
 
-  state->dom_size += sizeof(Json::number_s);
+  state->dom_size += sizeof(Json::number);
 
   if (to_underlying(ParseFlags::allow_hexadecimal_numbers & flags_bitset) &&
     (offset + 1 < size) && ('0' == src[offset]) &&
@@ -650,8 +650,8 @@ static int get_number_size(parse_state_s* state) {
     }
   }
   else {
-    int found_sign = 0;
-    int inf_or_nan = 0;
+    i32 found_sign = 0;
+    i32 inf_or_nan = 0;
 
     if ((offset < size) &&
       (('-' == src[offset]) ||
@@ -665,13 +665,13 @@ static int get_number_size(parse_state_s* state) {
 
     if (to_underlying(ParseFlags::allow_inf_and_nan & flags_bitset)) {
       const char inf[9] = "Infinity";
-      const size_t inf_strlen = sizeof(inf) - 1;
+      const u64 inf_strlen = sizeof(inf) - 1;
       const char nan[4] = "NaN";
-      const size_t nan_strlen = sizeof(nan) - 1;
+      const u64 nan_strlen = sizeof(nan) - 1;
 
       if (offset + inf_strlen < size) {
-        int found = 1;
-        size_t i;
+        i32 found = 1;
+        u64 i;
         for (i = 0; i < inf_strlen; i++) {
           if (inf[i] != src[offset + i]) {
             found = 0;
@@ -688,8 +688,8 @@ static int get_number_size(parse_state_s* state) {
       }
 
       if (offset + nan_strlen < size) {
-        int found = 1;
-        size_t i;
+        i32 found = 1;
+        u64 i;
         for (i = 0; i < nan_strlen; i++) {
           if (nan[i] != src[offset + i]) {
             found = 0;
@@ -824,17 +824,17 @@ static int get_number_size(parse_state_s* state) {
   return 0;
 }
 
-static int get_value_size(parse_state_s* state, int is_global_object) {
+static i32 get_value_size(parse_state_s* state, i32 is_global_object) {
   const ParseFlags flags_bitset = state->flags_bitset;
   const char* const src = state->src;
-  size_t offset;
-  const size_t size = state->size;
+  u64 offset;
+  const u64 size = state->size;
 
   if (to_underlying(ParseFlags::allow_location_information & flags_bitset)) {
-    state->dom_size += sizeof(value_ex_s);
+    state->dom_size += sizeof(value_ex);
   }
   else {
-    state->dom_size += sizeof(Json::value_s);
+    state->dom_size += sizeof(Json::value);
   }
 
   if (is_global_object) {
@@ -937,13 +937,13 @@ static int get_value_size(parse_state_s* state, int is_global_object) {
   }
 }
 
-static int get_object_size(parse_state_s* state, int is_global_object) {
+static i32 get_object_size(parse_state_s* state, i32 is_global_object) {
   const ParseFlags flags_bitset = state->flags_bitset;
   const char* const src = state->src;
-  const size_t size = state->size;
-  size_t elements = 0;
-  int allow_comma = 0;
-  int found_closing_brace = 0;
+  const u64 size = state->size;
+  u64 elements = 0;
+  i32 allow_comma = 0;
+  i32 found_closing_brace = 0;
 
   if (is_global_object) {
     /* if we found an opening '{' of an object, we actually have a normal JSON
@@ -964,7 +964,7 @@ static int get_object_size(parse_state_s* state, int is_global_object) {
     state->offset++;
   }
 
-  state->dom_size += sizeof(Json::object_s);
+  state->dom_size += sizeof(Json::object);
 
   if ((state->offset == size) && !is_global_object) {
     state->error = ParseError::premature_end_of_buffer;
@@ -1072,17 +1072,17 @@ static int get_object_size(parse_state_s* state, int is_global_object) {
     return 1;
   }
 
-  state->dom_size += sizeof(Json::object_element_s) * elements;
+  state->dom_size += sizeof(Json::object_element) * elements;
 
   return 0;
 }
 
-static int get_array_size(parse_state_s* state) {
+static i32 get_array_size(parse_state_s* state) {
   const ParseFlags flags_bitset = state->flags_bitset;
-  size_t elements = 0;
-  int allow_comma = 0;
+  u64 elements = 0;
+  i32 allow_comma = 0;
   const char* const src = state->src;
-  const size_t size = state->size;
+  const u64 size = state->size;
 
   if ('[' != src[state->offset]) {
     /* expected array to begin with leading '['. */
@@ -1093,7 +1093,7 @@ static int get_array_size(parse_state_s* state) {
   /* skip leading '['. */
   state->offset++;
 
-  state->dom_size += sizeof(Json::array_s);
+  state->dom_size += sizeof(Json::array);
 
   while (state->offset < size) {
     if (skip_all_skippables(state)) {
@@ -1105,7 +1105,7 @@ static int get_array_size(parse_state_s* state) {
       /* skip trailing ']'. */
       state->offset++;
 
-      state->dom_size += sizeof(Json::array_element_s) * elements;
+      state->dom_size += sizeof(Json::array_element) * elements;
 
       /* finished the object! */
       return 0;
@@ -1151,14 +1151,14 @@ static int get_array_size(parse_state_s* state) {
   return 1;
 }
 
-static void parse_string(parse_state_s* state, Json::string_s* string) {
-  size_t offset = state->offset;
-  size_t bytes_written = 0;
+static void parse_string(parse_state_s* state, Json::string* string) {
+  u64 offset = state->offset;
+  u64 bytes_written = 0;
   const char* const src = state->src;
   const char quote_to_use = '\'' == src[offset] ? '\'' : '"';
   char* data = state->data;
-  unsigned long high_surrogate = 0;
-  unsigned long codepoint;
+  u32 high_surrogate = 0;
+  u32 codepoint;
 
   string->string = data;
 
@@ -1200,7 +1200,7 @@ static void parse_string(parse_state_s* state, Json::string_s* string) {
           codepoint <= 0xdfff) { /* low surrogate. */
  /* combine with the previously read half to obtain the complete
   * codepoint. */
-          const unsigned long surrogate_offset =
+          const u32 surrogate_offset =
             0x10000u - (0xD800u << 10) - 0xDC00u;
           codepoint = (high_surrogate << 10) + codepoint + surrogate_offset;
           high_surrogate = 0;
@@ -1285,11 +1285,11 @@ static void parse_string(parse_state_s* state, Json::string_s* string) {
   state->offset = offset;
 }
 
-static void parse_key(parse_state_s* state, Json::string_s* string) {
+static void parse_key(parse_state_s* state, Json::string* string) {
   if (to_underlying(ParseFlags::allow_unquoted_keys & state->flags_bitset)) {
     const char* const src = state->src;
     char* const data = state->data;
-    size_t offset = state->offset;
+    u64 offset = state->offset;
 
     /* if we are allowing unquoted keys, check for quoted anyway... */
     if (('"' == src[offset]) || ('\'' == src[offset])) {
@@ -1297,7 +1297,7 @@ static void parse_key(parse_state_s* state, Json::string_s* string) {
       parse_string(state, string);
     }
     else {
-      size_t size = 0;
+      u64 size = 0;
 
       string->string = state->data;
 
@@ -1324,13 +1324,13 @@ static void parse_key(parse_state_s* state, Json::string_s* string) {
   }
 }
 
-static void parse_object(parse_state_s* state, int is_global_object, Json::object_s* object) {
+static void parse_object(parse_state_s* state, i32 is_global_object, Json::object* object) {
   const ParseFlags flags_bitset = state->flags_bitset;
-  const size_t size = state->size;
+  const u64 size = state->size;
   const char* const src = state->src;
-  size_t elements = 0;
-  int allow_comma = 0;
-  Json::object_element_s* previous = nullptr;
+  u64 elements = 0;
+  i32 allow_comma = 0;
+  Json::object_element* previous = nullptr;
 
   if (is_global_object) {
     /* if we skipped some whitespace, and then found an opening '{' of an. */
@@ -1353,9 +1353,9 @@ static void parse_object(parse_state_s* state, int is_global_object, Json::objec
   elements = 0;
 
   while (state->offset < size) {
-    Json::object_element_s* element = nullptr;
-    Json::string_s* string = nullptr;
-    Json::value_s* value = nullptr;
+    Json::object_element* element = nullptr;
+    Json::string* string = nullptr;
+    Json::value* value = nullptr;
 
     if (!is_global_object) {
       (void)skip_all_skippables(state);
@@ -1385,9 +1385,9 @@ static void parse_object(parse_state_s* state, int is_global_object, Json::objec
       }
     }
 
-    element = (Json::object_element_s*)state->dom;
+    element = (Json::object_element*)state->dom;
 
-    state->dom += sizeof(Json::object_element_s);
+    state->dom += sizeof(Json::object_element);
 
     if (nullptr == previous) {
       /* this is our first element, so record it in our object. */
@@ -1400,19 +1400,19 @@ static void parse_object(parse_state_s* state, int is_global_object, Json::objec
     previous = element;
 
     if (to_underlying(ParseFlags::allow_location_information & flags_bitset)) {
-      string_ex_s* string_ex =
-        (string_ex_s*)state->dom;
-      state->dom += sizeof(string_ex_s);
+      string_ex* string_ex_ =
+        (string_ex*)state->dom;
+      state->dom += sizeof(string_ex);
 
-      string_ex->offset = state->offset;
-      string_ex->line_no = state->line_no;
-      string_ex->row_no = state->offset - state->line_offset;
+      string_ex_->offset = state->offset;
+      string_ex_->line_no = state->line_no;
+      string_ex_->row_no = state->offset - state->line_offset;
 
-      string = &(string_ex->string);
+      string = &(string_ex_->string);
     }
     else {
-      string = (Json::string_s*)state->dom;
-      state->dom += sizeof(Json::string_s);
+      string = (Json::string*)state->dom;
+      state->dom += sizeof(Json::string);
     }
 
     element->name = string;
@@ -1427,18 +1427,18 @@ static void parse_object(parse_state_s* state, int is_global_object, Json::objec
     (void)skip_all_skippables(state);
 
     if (to_underlying(ParseFlags::allow_location_information & flags_bitset)) {
-      value_ex_s* value_ex = (value_ex_s*)state->dom;
-      state->dom += sizeof(value_ex_s);
+      value_ex* value_ex_ = (value_ex*)state->dom;
+      state->dom += sizeof(value_ex_);
 
-      value_ex->offset = state->offset;
-      value_ex->line_no = state->line_no;
-      value_ex->row_no = state->offset - state->line_offset;
+      value_ex_->offset = state->offset;
+      value_ex_->line_no = state->line_no;
+      value_ex_->row_no = state->offset - state->line_offset;
 
-      value = &(value_ex->value);
+      value = &(value_ex_->value);
     }
     else {
-      value = (Json::value_s*)state->dom;
-      state->dom += sizeof(Json::value_s);
+      value = (Json::value*)state->dom;
+      state->dom += sizeof(Json::value);
     }
 
     element->value = value;
@@ -1462,12 +1462,12 @@ static void parse_object(parse_state_s* state, int is_global_object, Json::objec
   object->length = elements;
 }
 
-static void parse_array(parse_state_s* state, Json::array_s* array) {
+static void parse_array(parse_state_s* state, Json::array* array) {
   const char* const src = state->src;
-  const size_t size = state->size;
-  size_t elements = 0;
-  int allow_comma = 0;
-  Json::array_element_s* previous = nullptr;
+  const u64 size = state->size;
+  u64 elements = 0;
+  i32 allow_comma = 0;
+  Json::array_element* previous = nullptr;
 
   /* skip leading '['. */
   state->offset++;
@@ -1478,8 +1478,8 @@ static void parse_array(parse_state_s* state, Json::array_s* array) {
   elements = 0;
 
   do {
-    Json::array_element_s* element = nullptr;
-    Json::value_s* value = nullptr;
+    Json::array_element* element = nullptr;
+    Json::value* value = nullptr;
 
     (void)skip_all_skippables(state);
 
@@ -1501,9 +1501,9 @@ static void parse_array(parse_state_s* state, Json::array_s* array) {
       }
     }
 
-    element = (Json::array_element_s*)state->dom;
+    element = (Json::array_element*)state->dom;
 
-    state->dom += sizeof(Json::array_element_s);
+    state->dom += sizeof(Json::array_element);
 
     if (nullptr == previous) {
       /* this is our first element, so record it in our array. */
@@ -1516,18 +1516,18 @@ static void parse_array(parse_state_s* state, Json::array_s* array) {
     previous = element;
 
     if (to_underlying(ParseFlags::allow_location_information & state->flags_bitset)) {
-      value_ex_s* value_ex = (value_ex_s*)state->dom;
-      state->dom += sizeof(value_ex_s);
+      value_ex* value_ex_ = (value_ex*)state->dom;
+      state->dom += sizeof(value_ex);
 
-      value_ex->offset = state->offset;
-      value_ex->line_no = state->line_no;
-      value_ex->row_no = state->offset - state->line_offset;
+      value_ex_->offset = state->offset;
+      value_ex_->line_no = state->line_no;
+      value_ex_->row_no = state->offset - state->line_offset;
 
-      value = &(value_ex->value);
+      value = &(value_ex_->value);
     }
     else {
-      value = (Json::value_s*)state->dom;
-      state->dom += sizeof(Json::value_s);
+      value = (Json::value*)state->dom;
+      state->dom += sizeof(Json::value);
     }
 
     element->value = value;
@@ -1551,11 +1551,11 @@ static void parse_array(parse_state_s* state, Json::array_s* array) {
   array->length = elements;
 }
 
-static void parse_number(parse_state_s* state, Json::number_s* number) {
+static void parse_number(parse_state_s* state, Json::number* number) {
   const ParseFlags flags_bitset = state->flags_bitset;
-  size_t offset = state->offset;
-  const size_t size = state->size;
-  size_t bytes_written = 0;
+  u64 offset = state->offset;
+  const u64 size = state->size;
+  u64 bytes_written = 0;
   const char* const src = state->src;
   char* data = state->data;
 
@@ -1576,7 +1576,7 @@ static void parse_number(parse_state_s* state, Json::number_s* number) {
   }
 
   while (offset < size) {
-    int end = 0;
+    i32 end = 0;
 
     switch (src[offset]) {
     case '0':
@@ -1607,12 +1607,12 @@ static void parse_number(parse_state_s* state, Json::number_s* number) {
   }
 
   if (to_underlying(ParseFlags::allow_inf_and_nan & flags_bitset)) {
-    const size_t inf_strlen = 8; /* = strlen("Infinity");. */
-    const size_t nan_strlen = 3; /* = strlen("NaN");. */
+    const u64 inf_strlen = 8; /* = strlen("Infinity");. */
+    const u64 nan_strlen = 3; /* = strlen("NaN");. */
 
     if (offset + inf_strlen < size) {
       if ('I' == src[offset]) {
-        size_t i;
+        u64 i;
         /* We found our special 'Infinity' keyword! */
         for (i = 0; i < inf_strlen; i++) {
           data[bytes_written++] = src[offset++];
@@ -1622,7 +1622,7 @@ static void parse_number(parse_state_s* state, Json::number_s* number) {
 
     if (offset + nan_strlen < size) {
       if ('N' == src[offset]) {
-        size_t i;
+        u64 i;
         /* We found our special 'NaN' keyword! */
         for (i = 0; i < nan_strlen; i++) {
           data[bytes_written++] = src[offset++];
@@ -1641,11 +1641,11 @@ static void parse_number(parse_state_s* state, Json::number_s* number) {
   state->offset = offset;
 }
 
-static void parse_value(parse_state_s* state, int is_global_object, Json::value_s* value) {
+static void parse_value(parse_state_s* state, i32 is_global_object, Json::value* value) {
   const ParseFlags flags_bitset = state->flags_bitset;
   const char* const src = state->src;
-  const size_t size = state->size;
-  size_t offset;
+  const u64 size = state->size;
+  u64 offset;
 
   (void)skip_all_skippables(state);
 
@@ -1655,9 +1655,9 @@ static void parse_value(parse_state_s* state, int is_global_object, Json::value_
   if (is_global_object) {
     value->type = Json::type_object;
     value->payload = state->dom;
-    state->dom += sizeof(Json::object_s);
+    state->dom += sizeof(Json::object);
     parse_object(state, /* is_global_object = */ 1,
-      (Json::object_s*)value->payload);
+      (Json::object*)value->payload);
   }
   else {
     switch (src[offset]) {
@@ -1665,21 +1665,21 @@ static void parse_value(parse_state_s* state, int is_global_object, Json::value_
     case '\'':
       value->type = Json::type_string;
       value->payload = state->dom;
-      state->dom += sizeof(Json::string_s);
-      parse_string(state, (Json::string_s*)value->payload);
+      state->dom += sizeof(Json::string);
+      parse_string(state, (Json::string*)value->payload);
       break;
     case '{':
       value->type = Json::type_object;
       value->payload = state->dom;
-      state->dom += sizeof(Json::object_s);
+      state->dom += sizeof(Json::object);
       parse_object(state, /* is_global_object = */ 0,
-        (Json::object_s*)value->payload);
+        (Json::object*)value->payload);
       break;
     case '[':
       value->type = Json::type_array;
       value->payload = state->dom;
-      state->dom += sizeof(Json::array_s);
-      parse_array(state, (Json::array_s*)value->payload);
+      state->dom += sizeof(Json::array);
+      parse_array(state, (Json::array*)value->payload);
       break;
     case '-':
     case '+':
@@ -1696,8 +1696,8 @@ static void parse_value(parse_state_s* state, int is_global_object, Json::value_
     case '.':
       value->type = Json::type_number;
       value->payload = state->dom;
-      state->dom += sizeof(Json::number_s);
-      parse_number(state, (Json::number_s*)value->payload);
+      state->dom += sizeof(Json::number);
+      parse_number(state, (Json::number*)value->payload);
       break;
     default:
       if ((offset + 4) <= size && 't' == src[offset + 0] &&
@@ -1726,8 +1726,8 @@ static void parse_value(parse_state_s* state, int is_global_object, Json::value_
         'a' == src[offset + 1] && 'N' == src[offset + 2]) {
         value->type = Json::type_number;
         value->payload = state->dom;
-        state->dom += sizeof(Json::number_s);
-        parse_number(state, (Json::number_s*)value->payload);
+        state->dom += sizeof(Json::number);
+        parse_number(state, (Json::number*)value->payload);
       }
       else if (to_underlying(ParseFlags::allow_inf_and_nan & flags_bitset) &&
         (offset + 8) <= size && 'I' == src[offset + 0] &&
@@ -1737,29 +1737,29 @@ static void parse_value(parse_state_s* state, int is_global_object, Json::value_
         'y' == src[offset + 7]) {
         value->type = Json::type_number;
         value->payload = state->dom;
-        state->dom += sizeof(Json::number_s);
-        parse_number(state, (Json::number_s*)value->payload);
+        state->dom += sizeof(Json::number);
+        parse_number(state, (Json::number*)value->payload);
       }
       break;
     }
   }
 }
 
-static extract_result_s extract_get_number_size(const Json::number_s* const number) {
+static extract_result_s extract_get_number_size(const Json::number* const number) {
   extract_result_s result;
-  result.dom_size = sizeof(Json::number_s);
+  result.dom_size = sizeof(Json::number);
   result.data_size = number->number_size;
   return result;
 }
 
-static extract_result_s extract_get_string_size(const Json::string_s* const string) {
+static extract_result_s extract_get_string_size(const Json::string* const string) {
   extract_result_s result;
-  result.dom_size = sizeof(Json::string_s);
+  result.dom_size = sizeof(Json::string);
   result.data_size = string->string_size + 1;
   return result;
 }
 
-static extract_result_s extract_get_value_size(const Json::value_s* const value) {
+static extract_result_s extract_get_value_size(const Json::value* const value) {
   extract_result_s result = { 0, 0 };
 
   switch (value->type) {
@@ -1767,34 +1767,34 @@ static extract_result_s extract_get_value_size(const Json::value_s* const value)
     break;
   case Json::type_object:
     result = extract_get_object_size(
-      (const Json::object_s*)value->payload);
+      (const Json::object*)value->payload);
     break;
   case Json::type_array:
     result = extract_get_array_size(
-      (const Json::array_s*)value->payload);
+      (const Json::array*)value->payload);
     break;
   case Json::type_number:
     result = extract_get_number_size(
-      (const Json::number_s*)value->payload);
+      (const Json::number*)value->payload);
     break;
   case Json::type_string:
     result = extract_get_string_size(
-      (const Json::string_s*)value->payload);
+      (const Json::string*)value->payload);
     break;
   }
 
-  result.dom_size += sizeof(Json::value_s);
+  result.dom_size += sizeof(Json::value);
 
   return result;
 }
 
-static extract_result_s extract_get_object_size(const Json::object_s* const object) {
+static extract_result_s extract_get_object_size(const Json::object* const object) {
   extract_result_s result;
-  size_t i;
-  const Json::object_element_s* element = object->start;
+  u64 i;
+  const Json::object_element* element = object->start;
 
-  result.dom_size = sizeof(Json::object_s) +
-    (sizeof(Json::object_element_s) * object->length);
+  result.dom_size = sizeof(Json::object) +
+    (sizeof(Json::object_element) * object->length);
   result.data_size = 0;
 
   for (i = 0; i < object->length; i++) {
@@ -1815,13 +1815,13 @@ static extract_result_s extract_get_object_size(const Json::object_s* const obje
   return result;
 }
 
-static extract_result_s extract_get_array_size(const Json::array_s* const array) {
+static extract_result_s extract_get_array_size(const Json::array* const array) {
   extract_result_s result;
-  size_t i;
-  const Json::array_element_s* element = array->start;
+  u64 i;
+  const Json::array_element* element = array->start;
 
-  result.dom_size = sizeof(Json::array_s) +
-    (sizeof(Json::array_element_s) * array->length);
+  result.dom_size = sizeof(Json::array) +
+    (sizeof(Json::array_element) * array->length);
   result.data_size = 0;
 
   for (i = 0; i < array->length; i++) {
@@ -1837,59 +1837,59 @@ static extract_result_s extract_get_array_size(const Json::array_s* const array)
   return result;
 }
 
-static void extract_copy_value(extract_state_s* const state, const Json::value_s* const value) {
-  Json::string_s* string;
-  Json::number_s* number;
-  Json::object_s* object;
-  Json::array_s* array;
-  Json::value_s* new_value;
+static void extract_copy_value(extract_state_s* const state, const Json::value* const value) {
+  Json::string* string;
+  Json::number* number;
+  Json::object* object;
+  Json::array* array;
+  Json::value* new_value;
 
-  memcpy(state->dom, value, sizeof(Json::value_s));
-  new_value = (Json::value_s*)state->dom;
-  state->dom += sizeof(Json::value_s);
+  memcpy(state->dom, value, sizeof(Json::value));
+  new_value = (Json::value*)state->dom;
+  state->dom += sizeof(Json::value);
   new_value->payload = state->dom;
 
   if (Json::type_string == value->type) {
-    memcpy(state->dom, value->payload, sizeof(Json::string_s));
-    string = (Json::string_s*)state->dom;
-    state->dom += sizeof(Json::string_s);
+    memcpy(state->dom, value->payload, sizeof(Json::string));
+    string = (Json::string*)state->dom;
+    state->dom += sizeof(Json::string);
 
     memcpy(state->data, string->string, string->string_size + 1);
     string->string = state->data;
     state->data += string->string_size + 1;
   }
   else if (Json::type_number == value->type) {
-    memcpy(state->dom, value->payload, sizeof(Json::number_s));
-    number = (Json::number_s*)state->dom;
-    state->dom += sizeof(Json::number_s);
+    memcpy(state->dom, value->payload, sizeof(Json::number));
+    number = (Json::number*)state->dom;
+    state->dom += sizeof(Json::number);
 
     memcpy(state->data, number->number, number->number_size);
     number->number = state->data;
     state->data += number->number_size;
   }
   else if (Json::type_object == value->type) {
-    Json::object_element_s* element;
-    size_t i;
+    Json::object_element* element;
+    u64 i;
 
-    memcpy(state->dom, value->payload, sizeof(Json::object_s));
-    object = (Json::object_s*)state->dom;
-    state->dom += sizeof(Json::object_s);
+    memcpy(state->dom, value->payload, sizeof(Json::object));
+    object = (Json::object*)state->dom;
+    state->dom += sizeof(Json::object);
 
     element = object->start;
-    object->start = (Json::object_element_s*)state->dom;
+    object->start = (Json::object_element*)state->dom;
 
     for (i = 0; i < object->length; i++) {
-      Json::value_s* previous_value;
-      Json::object_element_s* previous_element;
+      Json::value* previous_value;
+      Json::object_element* previous_element;
 
-      memcpy(state->dom, element, sizeof(Json::object_element_s));
-      element = (Json::object_element_s*)state->dom;
-      state->dom += sizeof(Json::object_element_s);
+      memcpy(state->dom, element, sizeof(Json::object_element));
+      element = (Json::object_element*)state->dom;
+      state->dom += sizeof(Json::object_element);
 
       string = element->name;
-      memcpy(state->dom, string, sizeof(Json::string_s));
-      string = (Json::string_s*)state->dom;
-      state->dom += sizeof(Json::string_s);
+      memcpy(state->dom, string, sizeof(Json::string));
+      string = (Json::string*)state->dom;
+      state->dom += sizeof(Json::string);
       element->name = string;
 
       memcpy(state->data, string->string, string->string_size + 1);
@@ -1897,56 +1897,56 @@ static void extract_copy_value(extract_state_s* const state, const Json::value_s
       state->data += string->string_size + 1;
 
       previous_value = element->value;
-      element->value = (Json::value_s*)state->dom;
+      element->value = (Json::value*)state->dom;
       extract_copy_value(state, previous_value);
 
       previous_element = element;
       element = element->next;
 
       if (element) {
-        previous_element->next = (Json::object_element_s*)state->dom;
+        previous_element->next = (Json::object_element*)state->dom;
       }
     }
   }
   else if (Json::type_array == value->type) {
-    Json::array_element_s* element;
-    size_t i;
+    Json::array_element* element;
+    u64 i;
 
-    memcpy(state->dom, value->payload, sizeof(Json::array_s));
-    array = (Json::array_s*)state->dom;
-    state->dom += sizeof(Json::array_s);
+    memcpy(state->dom, value->payload, sizeof(Json::array));
+    array = (Json::array*)state->dom;
+    state->dom += sizeof(Json::array);
 
     element = array->start;
-    array->start = (Json::array_element_s*)state->dom;
+    array->start = (Json::array_element*)state->dom;
 
     for (i = 0; i < array->length; i++) {
-      Json::value_s* previous_value;
-      Json::array_element_s* previous_element;
+      Json::value* previous_value;
+      Json::array_element* previous_element;
 
-      memcpy(state->dom, element, sizeof(Json::array_element_s));
-      element = (Json::array_element_s*)state->dom;
-      state->dom += sizeof(Json::array_element_s);
+      memcpy(state->dom, element, sizeof(Json::array_element));
+      element = (Json::array_element*)state->dom;
+      state->dom += sizeof(Json::array_element);
 
       previous_value = element->value;
-      element->value = (Json::value_s*)state->dom;
+      element->value = (Json::value*)state->dom;
       extract_copy_value(state, previous_value);
 
       previous_element = element;
       element = element->next;
 
       if (element) {
-        previous_element->next = (Json::array_element_s*)state->dom;
+        previous_element->next = (Json::array_element*)state->dom;
       }
     }
   }
 }
 
-static Json::value_s* parse_ex(const void* src, size_t src_size, ParseFlags flags_bitset, void* (*alloc_func_ptr)(void* user_data, size_t size), void* user_data, parse_result_s* result) {
+static Json::value* parse_ex(const void* src, u64 src_size, ParseFlags flags_bitset, void* (*alloc_func_ptr)(void* user_data, u64 size), void* user_data, parse_result_s* result) {
   parse_state_s state;
   void* allocation;
-  Json::value_s* value;
-  size_t total_size;
-  int input_error;
+  Json::value* value;
+  u64 total_size;
+  i32 input_error;
 
   if (result) {
     result->error = ParseError::none;
@@ -1971,7 +1971,7 @@ static Json::value_s* parse_ex(const void* src, size_t src_size, ParseFlags flag
   state.flags_bitset = flags_bitset;
 
   input_error = get_value_size(
-    &state, (int)(ParseFlags::allow_global_object & state.flags_bitset));
+    &state, (i32)(ParseFlags::allow_global_object & state.flags_bitset));
 
   if (0 == input_error) {
     skip_all_skippables(&state);
@@ -2031,28 +2031,28 @@ static Json::value_s* parse_ex(const void* src, size_t src_size, ParseFlags flag
   state.data = state.dom + state.dom_size;
 
   if (to_underlying(ParseFlags::allow_location_information & state.flags_bitset)) {
-    value_ex_s* value_ex = (value_ex_s*)state.dom;
-    state.dom += sizeof(value_ex_s);
+    value_ex* value_ex_ = (value_ex*)state.dom;
+    state.dom += sizeof(value_ex);
 
-    value_ex->offset = state.offset;
-    value_ex->line_no = state.line_no;
-    value_ex->row_no = state.offset - state.line_offset;
+    value_ex_->offset = state.offset;
+    value_ex_->line_no = state.line_no;
+    value_ex_->row_no = state.offset - state.line_offset;
 
-    value = &(value_ex->value);
+    value = &(value_ex_->value);
   }
   else {
-    value = (Json::value_s*)state.dom;
-    state.dom += sizeof(Json::value_s);
+    value = (Json::value*)state.dom;
+    state.dom += sizeof(Json::value);
   }
 
   parse_value(
-    &state, (int)(ParseFlags::allow_global_object & state.flags_bitset),
+    &state, (i32)(ParseFlags::allow_global_object & state.flags_bitset),
     value);
 
-  return (Json::value_s*)allocation;
+  return (Json::value*)allocation;
 }
 
-Json::value_s* Json::parse(const void* src, size_t src_size) {
+Json::value* Json::parse(const void* src, u64 src_size) {
   return parse_ex(src, src_size, ParseFlags::default_, nullptr,
     nullptr, nullptr);
 }

@@ -6,7 +6,7 @@
 namespace Json
 {
   /* The various types JSON values can be. Used to identify what a value is. */
-  enum type_e : u64 {
+  enum type : u64 {
     type_string,
     type_number,
     type_object,
@@ -17,72 +17,72 @@ namespace Json
   };
 
   /* a JSON value. */
-  struct value_s {
-    /* a pointer to either a string_s, number_s, object_s, or. */
-    /* array_s. Should be cast to the appropriate struct type based on what.
+  struct value {
+    /* a pointer to either a string, number, object, or. */
+    /* array. Should be cast to the appropriate struct type based on what.
      */
      /* the type of this value is. */
     void* payload;
-    /* must be one of type_e. If type is type_true, type_false, or.
+    /* must be one of type. If type is type_true, type_false, or.
      */
      /* type_null, payload will be NULL. */
-    type_e type;
+    type type;
   };
 
   /* A JSON string value. */
-  struct string_s {
+  struct string {
     /* utf-8 string */
     const char* string;
     /* The size (in bytes) of the string */
-    size_t string_size;
+    u64 string_size;
   };
 
   /* A JSON number value. */
-  struct number_s {
+  struct number {
     /* ASCII string containing representation of the number. */
     const char* number;
     /* the size (in bytes) of the number. */
-    size_t number_size;
+    u64 number_size;
   };
 
   /* an element of a JSON object. */
-  struct object_element_s {
+  struct object_element {
     /* the name of this element. */
-    struct string_s* name;
+    struct string* name;
     /* the value of this element. */
-    struct value_s* value;
+    struct value* value;
     /* the next object element (can be NULL if the last element in the object). */
-    struct object_element_s* next;
+    struct object_element* next;
   };
 
   /* a JSON object value. */
-  struct object_s {
+  struct object {
     /* a linked list of the elements in the object. */
-    struct object_element_s* start;
+    struct object_element* start;
     /* the number of elements in the object. */
-    size_t length;
+    u64 length;
   };
 
   /* an element of a JSON array. */
-  struct array_element_s {
+  struct array_element {
     /* the value of this element. */
-    struct value_s* value;
+    struct value* value;
     /* the next array element (can be NULL if the last element in the array). */
-    struct array_element_s* next;
+    struct array_element* next;
   };
 
   /* a JSON array value. */
-  struct array_s {
+  struct array {
     /* a linked list of the elements in the array. */
-    struct array_element_s* start;
+    struct array_element* start;
     /* the number of elements in the array. */
-    size_t length;
+    u64 length;
   };
 
   /* Parse a JSON text file, returning a pointer to the root of the JSON
    * structure. parse performs 1 call to malloc for the entire encoding.
    * Returns 0 if an error occurred (malformed JSON input, or malloc failed). */
-  value_s* parse(const void* src, size_t src_size);
+  value* parse(const void* src, u64 src_size);
 }
 
 #endif // JSON_H

@@ -13,6 +13,7 @@ namespace Data {
     extern const char* fontFrag;
     extern const char* anchorWorldFrag;
     extern const char* chordBoxWorldFrag;
+    extern const char* consecutiveChordBoxWorldFrag;
     extern const char* phrasesScreenFrag;
     extern const char* arpeggioBoxWorldFrag;
     extern const char* handShapeAnchorWorldFrag;

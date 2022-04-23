@@ -88,6 +88,8 @@ void Highway::init()
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();
 
+  Global::oggStartTime = -85.0f;
+
   texture = loadDDS(Data::Texture::texture, sizeof(Data::Texture::texture));
 }
 
@@ -442,7 +444,7 @@ static void drawChordName(i32 chordId, f32 noteTime, i32 chordBoxLeft)
   }
 }
 
-static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chord, f32 noteTime, f32 fretboardNoteDistance[7][24])
+static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chord, f32 noteTime, bool consecutiveChord, f32 fretboardNoteDistance[7][24])
 {
   u32 fretsInChord = 0;
 
@@ -482,58 +484,88 @@ static void drawChord(GLuint shader, const Song::TranscriptionTrack::Chord& chor
   if (chordBoxRight - chordBoxLeft < 4)
     chordBoxRight = chordBoxLeft + 4;
 
-  for (i32 i = chord.chordNotes.size() - 1; i >= 0; --i)
+  if (!consecutiveChord)
   {
-    const Song::TranscriptionTrack::Note& note = chord.chordNotes[i];
-
-    drawNote(shader, note, noteTime, fretboardNoteDistance, chordBoxLeft, chordBoxRight - chordBoxLeft);
-  }
-
-  if (noteTime < 0.0f)
-  { // draw ChordBox
-    const f32 left = frets[chordBoxLeft - 1];
-    const f32 top = f32(stringCount + stringOffset) * stringSpacing - 0.40f * stringSpacing;
-    const f32 right = frets[chordBoxRight - 1];
-    const f32 bottom = -0.60f * stringSpacing;
-    const f32 posZ = noteTime * highwaySpeedMultiplier;
-
-    // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
-    const GLfloat v[] = {
-      left , top, posZ, 0.0f, 1.0f,
-      right, top, posZ, 1.0f, 1.0f,
-      left, bottom, posZ, 0.0f, 0.0f,
-      right, bottom, posZ, 1.0f, 0.0f,
-    };
-
-    Shader::useShader(Shader::Stem::chordBoxWorld);
-    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.2f, 0.2f, 1.0f, 0.1f);
-
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    Shader::useShader(Shader::Stem::defaultWorld);
-  }
-
-  if (noteTime < 0.0f)
-  { // Draw Fret Numbers for Chord
-    GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
-    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
-    for (i32 i = 1; i < 24; ++i)
+    for (i32 i = chord.chordNotes.size() - 1; i >= 0; --i)
     {
-      if (fretsInChord & (1 << i))
-      {
-        const f32 x = frets[i - 1] + 0.5f * (frets[i] - frets[i - 1]);
+      const Song::TranscriptionTrack::Note& note = chord.chordNotes[i];
 
-        Font::drawFretNumber(i, x, -0.2f, noteTime * highwaySpeedMultiplier + 0.1f, 0.5f, 0.5f);
-      }
+      drawNote(shader, note, noteTime, fretboardNoteDistance, chordBoxLeft, chordBoxRight - chordBoxLeft);
     }
 
-    Shader::useShader(Shader::Stem::defaultWorld);
-    glBindTexture(GL_TEXTURE_2D, texture);
-  }
+    if (noteTime < 0.0f)
+    { // draw ChordBox
+      const f32 left = frets[chordBoxLeft - 1];
+      const f32 top = f32(stringCount + stringOffset) * stringSpacing - 0.40f * stringSpacing;
+      const f32 right = frets[chordBoxRight - 1];
+      const f32 bottom = -0.60f * stringSpacing;
+      const f32 posZ = noteTime * highwaySpeedMultiplier;
 
-  //drawChordName(chord.chordId, noteTime, chordBoxLeft);
-  drawChordName(chord.chordId, noteTime, frets[chordBoxLeft]);
+      // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
+      const GLfloat v[] = {
+        left , top, posZ, 0.0f, 1.0f,
+        right, top, posZ, 1.0f, 1.0f,
+        left, bottom, posZ, 0.0f, 0.0f,
+        right, bottom, posZ, 1.0f, 0.0f,
+      };
+
+      Shader::useShader(Shader::Stem::chordBoxWorld);
+      OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.2f, 0.2f, 1.0f, 0.1f);
+
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+      Shader::useShader(Shader::Stem::defaultWorld);
+    }
+
+    if (noteTime < 0.0f)
+    { // Draw Fret Numbers for Chord
+      GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
+      OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
+      for (i32 i = 1; i < 24; ++i)
+      {
+        if (fretsInChord & (1 << i))
+        {
+          const f32 x = frets[i - 1] + 0.5f * (frets[i] - frets[i - 1]);
+
+          Font::drawFretNumber(i, x, -0.2f, noteTime * highwaySpeedMultiplier + 0.1f, 0.5f, 0.5f);
+        }
+      }
+
+      Shader::useShader(Shader::Stem::defaultWorld);
+      glBindTexture(GL_TEXTURE_2D, texture);
+    }
+
+    //drawChordName(chord.chordId, noteTime, chordBoxLeft);
+    drawChordName(chord.chordId, noteTime, frets[chordBoxLeft]);
+  }
+  else
+  {
+    if (noteTime < 0.0f)
+    { // draw consecutive ChordBox
+      const f32 left = frets[chordBoxLeft - 1];
+      const f32 top = 0.5f * (f32(stringCount + stringOffset) * stringSpacing - 0.40f * stringSpacing);
+      const f32 right = frets[chordBoxRight - 1];
+      const f32 bottom = -0.60f * stringSpacing;
+      const f32 posZ = noteTime * highwaySpeedMultiplier;
+
+      // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
+      const GLfloat v[] = {
+        left , top, posZ, 0.0f, 1.0f,
+        right, top, posZ, 1.0f, 1.0f,
+        left, bottom, posZ, 0.0f, 0.0f,
+        right, bottom, posZ, 1.0f, 0.0f,
+      };
+
+      Shader::useShader(Shader::Stem::consecutiveChordBoxWorld);
+      OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.2f, 0.2f, 1.0f, 0.1f);
+
+      OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+      Shader::useShader(Shader::Stem::defaultWorld);
+    }
+  }
 }
 
 static void drawChordLeftHand(const Song::TranscriptionTrack::Chord& chord)
@@ -580,7 +612,25 @@ static void drawChords(GLuint shader, f32 fretboardNoteDistance[7][24])
     if (noteTime < Const::highwayRenderMaxFutureTime)
       continue;
 
-    drawChord(shader, chord, noteTime, fretboardNoteDistance);
+    bool consecutiveChrod = false;
+    if (i >= 1)
+    {
+      const Song::TranscriptionTrack::Chord& prevChord = track.transcriptionTrack.chords[i - 1];
+      if (chord.chordNotes.size() == prevChord.chordNotes.size())
+      {
+        consecutiveChrod = true;
+        for (i32 i = 0; i < chord.chordNotes.size(); ++i)
+        {
+          if (chord.chordNotes[i].string != prevChord.chordNotes[i].string || chord.chordNotes[i].fret != prevChord.chordNotes[i].fret)
+          {
+            consecutiveChrod = false;
+            break;
+          }
+        }
+      }
+    }
+
+    drawChord(shader, chord, noteTime, consecutiveChrod, fretboardNoteDistance);
 
     if (noteTime < 0.0f && noteTime > leftHandNoteTimeBegin)
     {

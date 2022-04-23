@@ -12,6 +12,7 @@ namespace Shader {
         fontWorld,
         anchorWorld,
         chordBoxWorld,
+        consecutiveChordBoxWorld,
         phrasesScreen,
         arpeggioBoxWorld,
         handShapeAnchorWorld,

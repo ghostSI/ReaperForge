@@ -57,20 +57,20 @@ static GLuint compileShader(const char* vertexSource, const char* fragSource)
 
 void Shader::init()
 {
-  shaderPrograms.push_back(compileShader(Data::Shader::defaultScreenVert, Data::Shader::defaultWorldFrag));
-  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::defaultWorldFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultScreenVert, Data::Shader::defaultFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::defaultFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::groundFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultScreenVert, Data::Shader::fontFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fontFrag));
-  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::anchorWorldFrag));
-  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::chordBoxWorldFrag));
-  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::consecutiveChordBoxWorldFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::anchorFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::chordBoxFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::consecutiveChordBoxFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultScreenVert, Data::Shader::phrasesScreenFrag));
-  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::arpeggioBoxWorldFrag));
-  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::handShapeAnchorWorldFrag));
-  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fretGoldWorldFrag));
-  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fretSilverWorldFrag));
-  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fretBronzeWorldFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::chordBoxArpeggioFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::handShapeAnchorFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fretGoldFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fretSilverFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fretBronzeFrag));
 }
 
 GLuint Shader::useShader(Shader::Stem shaderStem)

@@ -8,18 +8,18 @@ namespace Data {
   {
     extern const char* defaultScreenVert;
     extern const char* defaultWorldVert;
-    extern const char* defaultWorldFrag;
+    extern const char* defaultFrag;
     extern const char* groundFrag;
     extern const char* fontFrag;
-    extern const char* anchorWorldFrag;
-    extern const char* chordBoxWorldFrag;
-    extern const char* consecutiveChordBoxWorldFrag;
+    extern const char* anchorFrag;
+    extern const char* chordBoxFrag;
+    extern const char* consecutiveChordBoxFrag;
+    extern const char* chordBoxArpeggioFrag;
     extern const char* phrasesScreenFrag;
-    extern const char* arpeggioBoxWorldFrag;
-    extern const char* handShapeAnchorWorldFrag;
-    extern const char* fretGoldWorldFrag;
-    extern const char* fretSilverWorldFrag;
-    extern const char* fretBronzeWorldFrag;
+    extern const char* handShapeAnchorFrag;
+    extern const char* fretGoldFrag;
+    extern const char* fretSilverFrag;
+    extern const char* fretBronzeFrag;
   }
   namespace Texture
   {

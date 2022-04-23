@@ -1,3 +1,5 @@
+#ifdef ARRANGEMENT_XML
+
 #include "arrangement.h"
 
 #include "xml.h"
@@ -65,3 +67,5 @@ Arrangement::Info Arrangement::readArrangement(const std::vector<u8>& arrangemen
 
   return arrangementInfo;
 }
+
+#endif // ARRANGEMENT_XML

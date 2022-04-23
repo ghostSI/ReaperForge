@@ -4,5 +4,6 @@
 #define TEST_BUILD // build the test instead of bulding the game
 
 //#define XBLOCK_FULL // read all data from xblock files
+//#define ARRANGEMENT_XML // read all data from xblock files
 
 #endif // CONFIGURATION_H

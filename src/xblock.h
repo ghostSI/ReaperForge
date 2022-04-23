@@ -9,8 +9,9 @@ namespace XBlock {
   {
     struct Entry
     {
-      InstrumentFlags instrument;
+      InstrumentFlags instrumentFlags;
       char id[32];
+#ifdef XBLOCK_FULL
       struct Properties
       {
         std::string header;
@@ -24,6 +25,7 @@ namespace XBlock {
         std::string soundBank;
         std::string previewSoundBank;
       } properties;
+#endif
     };
 
     std::vector<Entry> entries;

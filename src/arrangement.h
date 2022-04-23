@@ -1,6 +1,8 @@
 #ifndef ARRANGEMENT_H
 #define ARRANGEMENT_H
 
+#ifdef ARRANGEMENT_XML
+
 #include "type.h"
 #include <vector>
 
@@ -57,5 +59,7 @@ namespace Arrangement {
 
   Arrangement::Info readArrangement(const std::vector<u8>& arrangementData);
 }
+
+#endif // ARRANGEMENT_XML
 
 #endif // ARRANGEMENT_H

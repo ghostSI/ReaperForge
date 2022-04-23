@@ -68,7 +68,7 @@ void Highway::init()
   songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
   Song::loadSongInfoComplete(psarcInfo, songInfo);
 
-  if (songInfo.arrangements[0].tuning.string0 <= -3)
+  if (songInfo.manifest.attributes[0].tuning.string0 <= -3)
   {
     stringCount = 7;
     stringOffset = 1;
@@ -79,7 +79,7 @@ void Highway::init()
     stringOffset = 0;
   }
 
-  memcpy(songTuning, &songInfo.arrangements[0].tuning.string0, sizeof(Tuning));
+  memcpy(songTuning, &songInfo.manifest.attributes[0].tuning.string0, sizeof(Tuning));
 
   track = Song::loadTrack(psarcInfo, InstrumentFlags::RhythmGuitar);
   vocals = Song::loadVocals(psarcInfo);
@@ -913,8 +913,8 @@ static void drawPhrases()
 
     const Song::Phrase& phase = track.phrases[phraseIteration0.phraseId];
 
-    f32 begin = phraseIteration0.time / songInfo.arrangements[0].songLength;
-    f32 end = phraseIteration1.time / songInfo.arrangements[0].songLength;
+    f32 begin = phraseIteration0.time / songInfo.manifest.attributes[0].songLength;
+    f32 end = phraseIteration1.time / songInfo.manifest.attributes[0].songLength;
     f32 difficulty = f32(phase.maxDifficulty) / f32(maxDifficulty);
 
     const f32 left = -0.7985 + begin * 1.6f;
@@ -990,16 +990,16 @@ static void drawSongInfo()
   OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, alpha);
 
   {
-    const i32 letters = songInfo.arrangements[0].title.size();
+    const i32 letters = songInfo.manifest.attributes[0].songName.size();
     const f32 scaleX = (0.7f / Const::fontCharWidth) * letters;
     const f32 scaleY = (0.7f / Const::fontCharHeight) * Const::aspectRatio;
-    Font::draw(songInfo.arrangements[0].title.c_str(), 0.95f - 0.5f * scaleX, 0.5f, 0.0f, scaleX, scaleY);
+    Font::draw(songInfo.manifest.attributes[0].songName.c_str(), 0.95f - 0.5f * scaleX, 0.5f, 0.0f, scaleX, scaleY);
   }
   {
-    const i32 letters = songInfo.arrangements[0].artist.size();
+    const i32 letters = songInfo.manifest.attributes[0].artistName.size();
     const f32 scaleX = (0.5f / Const::fontCharWidth) * letters;
     const f32 scaleY = (0.5f / Const::fontCharHeight) * Const::aspectRatio;
-    Font::draw(songInfo.arrangements[0].artist.c_str(), 0.95f - 0.5f * scaleX, 0.4f, 0.0f, scaleX, scaleY);
+    Font::draw(songInfo.manifest.attributes[0].artistName.c_str(), 0.95f - 0.5f * scaleX, 0.4f, 0.0f, scaleX, scaleY);
   }
 }
 
@@ -1116,7 +1116,7 @@ static void drawLyrics()
     line1[line1Cur + j] = '\0';
 
     {
-      const i32 letters = songInfo.arrangements[0].title.size();
+      const i32 letters = songInfo.manifest.attributes[0].songName.size();
       const f32 scaleX = (0.7f / Const::fontCharWidth) * letters;
       const f32 scaleY = (0.7f / Const::fontCharHeight) * Const::aspectRatio;
       Font::draw(line1, -0.95f + 0.5f * scaleX, 0.4f, 0.0f, scaleX, scaleY);

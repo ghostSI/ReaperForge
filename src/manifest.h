@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 
+namespace XBlock { struct Info; }
+
 namespace Manifest {
 
   struct Info
@@ -46,23 +48,16 @@ namespace Manifest {
       std::string songName;
       std::string songNameSort;
       i32 songYear{};
-      struct
-      {
-        i32 string0{};
-        i32 string1{};
-        i32 string2{};
-        i32 string3{};
-        i32 string4{};
-        i32 string5{};
-      } tuning;
+      Tuning tuning;
       std::string persistentID;
     };
 
+    InstrumentFlags instrumentFlags = InstrumentFlags::none;
     std::vector<Attributes> attributes;
     std::string insertRoot;
   };
 
-  Manifest::Info readHsan(const std::vector<u8>& hsanData);
+  Manifest::Info readHsan(const std::vector<u8>& hsanData, const XBlock::Info& xblock);
 }
 
 #endif // MANIFEST_H

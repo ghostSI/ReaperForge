@@ -3,13 +3,13 @@
 #include "xml.h"
 
 static bool str_ends_with(const char* str, const char* suffix) {
-  size_t str_len = strlen(str);
-  size_t suffix_len = strlen(suffix);
+  const u64 str_len = strlen(str);
+  const u64 suffix_len = strlen(suffix);
 
   return (str_len >= suffix_len) && (!memcmp(str + str_len - suffix_len, suffix, suffix_len));
 }
 
-static InstrumentFlags instrumentFromName(const char* name)
+static InstrumentFlags instrumentFlagsFromName(const char* name)
 {
   if (str_ends_with(name, "_Lead"))
     return InstrumentFlags::LeadGuitar;
@@ -19,12 +19,19 @@ static InstrumentFlags instrumentFromName(const char* name)
     return InstrumentFlags::BassGuitar;
   if (str_ends_with(name, "_Vocals"))
     return InstrumentFlags::Vocals;
+  if (str_ends_with(name, "_Lead2"))
+    return InstrumentFlags::LeadGuitar | InstrumentFlags::Second;
+  if (str_ends_with(name, "_Rhythm2"))
+    return InstrumentFlags::RhythmGuitar | InstrumentFlags::Second;
+  if (str_ends_with(name, "_Bass2"))
+    return InstrumentFlags::BassGuitar | InstrumentFlags::Second;
 
   assert(false);
 
   return InstrumentFlags::LeadGuitar;
 }
 
+#ifdef XBLOCK_FULL
 static void readProperty(pugi::xml_node& property, XBlock::Info::Entry::Properties& properties)
 {
   const char* name = property.attribute("name").as_string();
@@ -81,6 +88,7 @@ static void readProperty(pugi::xml_node& property, XBlock::Info::Entry::Properti
 
   assert(false);
 }
+#endif // XBLOCK_FULL
 
 XBlock::Info XBlock::readXBlock(const std::vector<u8>& xBlockData)
 {
@@ -97,15 +105,18 @@ XBlock::Info XBlock::readXBlock(const std::vector<u8>& xBlockData)
     XBlock::Info::Entry entry;
 
     const char* id = entity.attribute("id").as_string();
+    assert(strlen(id) == 32);
     memcpy(entry.id, id, 32);
 
     const char* name = entity.attribute("name").as_string();
-    entry.instrument = instrumentFromName(name);
+    entry.instrumentFlags = instrumentFlagsFromName(name);
 
+#ifdef XBLOCK_FULL
     pugi::xml_node properties = entity.child("properties");
     for (pugi::xml_node property : properties.children("property")) {
       readProperty(property, entry.properties);
     }
+#endif // XBLOCK_FULL
 
     xblockInfo.entries.push_back(entry);
   }

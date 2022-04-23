@@ -3,6 +3,7 @@
 
 #include "arrangement.h"
 #include "manifest.h"
+#include "sng.h"
 #include "xblock.h"
 
 namespace Psarc { struct Info; }
@@ -29,7 +30,10 @@ namespace Song {
     i32 albumCover256_tocIndex = -1;
     mutable GLuint albumCover256_ogl = 0;
 
+    Sng::Info sng;
+#ifdef ARRANGEMENT_XML
     std::vector<Arrangement::Info> arrangements;
+#endif // ARRANGEMENT_XML
   };
 
   Info loadSongInfoManifestOnly(const Psarc::Info& psarcInfo);

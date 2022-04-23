@@ -5,45 +5,42 @@
 #include "global.h"
 #include "xml.h"
 
-static bool isXmlForInstrument(std::string filename, InstrumentFlags instrument) {
-
-  switch (instrument) {
-  case InstrumentFlags::LeadGuitar:
-    if (filename.ends_with("_lead.xml"))
-      return true;
-    break;
-  case InstrumentFlags::RhythmGuitar:
-    if (filename.ends_with("_rhythm.xml"))
-      return true;
-    break;
-  case InstrumentFlags::BassGuitar:
-    if (filename.ends_with("_bass.xml"))
-      return true;
-    break;
-  }
-
-  return false;
-}
+//static bool isXmlForInstrument(std::string filename, InstrumentFlags instrument) {
+//
+//  switch (instrument) {
+//  case InstrumentFlags::LeadGuitar:
+//    if (filename.ends_with("_lead.xml"))
+//      return true;
+//    break;
+//  case InstrumentFlags::RhythmGuitar:
+//    if (filename.ends_with("_rhythm.xml"))
+//      return true;
+//    break;
+//  case InstrumentFlags::BassGuitar:
+//    if (filename.ends_with("_bass.xml"))
+//      return true;
+//    break;
+//  }
+//
+//  return false;
+//}
 
 Song::Info Song::loadSongInfoManifestOnly(const Psarc::Info& psarcInfo) {
 
   Song::Info songInfo;
 
-  bool xblockRead = false;
   for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries) {
     if (tocEntry.name.ends_with(".xblock"))
     {
       songInfo.xblock = XBlock::readXBlock(tocEntry.content);
-      xblockRead = true;
       break;
     }
   }
-  assert(xblockRead);
 
   for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries) {
     if (tocEntry.name.ends_with(".hsan"))
     {
-      songInfo.manifest = Manifest::readHsan(tocEntry.content);
+      songInfo.manifest = Manifest::readHsan(tocEntry.content, songInfo.xblock);
       songInfo.loadState = LoadState::manifest;
       break;
     }
@@ -76,19 +73,25 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
       continue;
     }
     else if (tocEntry.name.ends_with("_lead.xml")) {
+#ifdef ARRANGEMENT_XML
       Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
       arrangement.instrumentFlags |= InstrumentFlags::LeadGuitar;
       songInfo.arrangements.push_back(arrangement);
+#endif // ARRANGEMENT_XML
     }
     else if (tocEntry.name.ends_with("_rhythm.xml")) {
+#ifdef ARRANGEMENT_XML
       Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
       arrangement.instrumentFlags |= InstrumentFlags::RhythmGuitar;
       songInfo.arrangements.push_back(arrangement);
+#endif // ARRANGEMENT_XML
     }
     else if (tocEntry.name.ends_with("_bass.xml")) {
+#ifdef ARRANGEMENT_XML
       Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
       arrangement.instrumentFlags |= InstrumentFlags::BassGuitar;
       songInfo.arrangements.push_back(arrangement);
+#endif // ARRANGEMENT_XML
     }
     else if (tocEntry.name.ends_with("_64.dds")) {
       songInfo.albumCover64_tocIndex = i;
@@ -105,15 +108,15 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
     }
     else if (tocEntry.name.ends_with("_rhythm.sng"))
     {
-      const Sng::Info sngInfo = Sng::parse(tocEntry.content);
+      songInfo.sng = Sng::parse(tocEntry.content);
     }
     else if (tocEntry.name.ends_with("_bass.sng"))
     {
-      const Sng::Info sngInfo = Sng::parse(tocEntry.content);
+      songInfo.sng = Sng::parse(tocEntry.content);
     }
     else if (tocEntry.name.ends_with("_vocals.sng"))
     {
-      const Sng::Info sngInfo = Sng::parse(tocEntry.content);
+      songInfo.sng = Sng::parse(tocEntry.content);
     }
 
     assert(false);

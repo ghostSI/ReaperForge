@@ -1,6 +1,7 @@
 #include "manifest.h"
 
 #include "json.h"
+#include "xblock.h"
 
 static void readAttribute(Json::object_element* it, Manifest::Info::Attributes& attrs)
 {
@@ -310,7 +311,16 @@ static void readAttribute(Json::object_element* it, Manifest::Info::Attributes& 
   assert(false);
 }
 
-Manifest::Info Manifest::readHsan(const std::vector<u8>& hsanData)
+static bool isSameId(const char* id0, const char* id1)
+{
+  for (i32 i = 0; i < 32; ++i)
+    if (toupper(id0[i]) != toupper(id1[i]))
+      return false;
+
+  return true;
+}
+
+Manifest::Info Manifest::readHsan(const std::vector<u8>& hsanData, const XBlock::Info& xblock)
 {
   Manifest::Info manifestInfo;
 
@@ -333,6 +343,17 @@ Manifest::Info Manifest::readHsan(const std::vector<u8>& hsanData)
   do
   {
     assert(id->name->string_size == 32);
+
+    for (const XBlock::Info::Entry& entry : xblock.entries)
+    {
+      if (isSameId(id->name->string, entry.id))
+      {
+        manifestInfo.instrumentFlags = entry.instrumentFlags;
+        break;
+      }
+    }
+
+    assert(manifestInfo.instrumentFlags != InstrumentFlags::none);
 
     Json::value* id_value = id->value;
 

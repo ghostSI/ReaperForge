@@ -37,12 +37,21 @@ Song::Info Song::loadSongInfoManifestOnly(const Psarc::Info& psarcInfo) {
     }
   }
 
-  for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries) {
+  for (i32 i = 0; i < psarcInfo.tocEntries.size(); ++i) {
+    const Psarc::Info::TOCEntry& tocEntry = psarcInfo.tocEntries[i];
     if (tocEntry.name.ends_with(".hsan"))
     {
       songInfo.manifest = Manifest::readHsan(tocEntry.content, songInfo.xblock);
       songInfo.loadState = LoadState::manifest;
-      break;
+    }
+    else if (tocEntry.name.ends_with("_64.dds")) {
+      songInfo.albumCover64_tocIndex = i;
+    }
+    else if (tocEntry.name.ends_with("_128.dds")) {
+      songInfo.albumCover128_tocIndex = i;
+    }
+    else if (tocEntry.name.ends_with("_256.dds")) {
+      songInfo.albumCover256_tocIndex = i;
     }
   }
 
@@ -92,15 +101,6 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
       arrangement.instrumentFlags |= InstrumentFlags::BassGuitar;
       songInfo.arrangements.push_back(arrangement);
 #endif // ARRANGEMENT_XML
-    }
-    else if (tocEntry.name.ends_with("_64.dds")) {
-      songInfo.albumCover64_tocIndex = i;
-    }
-    else if (tocEntry.name.ends_with("_128.dds")) {
-      songInfo.albumCover128_tocIndex = i;
-    }
-    else if (tocEntry.name.ends_with("_256.dds")) {
-      songInfo.albumCover256_tocIndex = i;
     }
     else if (tocEntry.name.ends_with("_lead.sng"))
     {

@@ -26,6 +26,9 @@ static InstrumentFlags instrumentFlagsFromName(const char* name)
   if (str_ends_with(name, "_Bass2"))
     return InstrumentFlags::BassGuitar | InstrumentFlags::Second;
 
+  if (str_ends_with(name, "_Combo")) // TODO: research what this is.
+    return InstrumentFlags::LeadGuitar;
+
   assert(false);
 
   return InstrumentFlags::LeadGuitar;
@@ -96,7 +99,9 @@ XBlock::Info XBlock::readXBlock(const std::vector<u8>& xBlockData)
 
   pugi::xml_document doc;
   pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(xBlockData.data()));
+#ifndef XML_IGNORE_ERROR
   assert(result.status == pugi::status_ok);
+#endif // XML_IGNORE_ERROR
 
   pugi::xml_node entitySet = doc.child("game").child("entitySet");
 

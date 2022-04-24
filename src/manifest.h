@@ -19,6 +19,7 @@ namespace Manifest {
       std::string arrangementName;
       std::string artistName;
       std::string artistNameSort;
+      i32 bassPick{};
       f32 capoFret{};
       f32 centOffset{};
       bool dLC{};
@@ -48,6 +49,8 @@ namespace Manifest {
       std::string songName;
       std::string songNameSort;
       i32 songYear{};
+      std::string japaneseSongName; // TODO is this in use?
+      std::string japaneseArtist; // TODO is this in use?
       Tuning tuning;
       std::string persistentID;
     };

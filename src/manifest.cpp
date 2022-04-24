@@ -47,6 +47,13 @@ static void readAttribute(Json::object_element* it, Manifest::Info::Attributes& 
     attrs.artistNameSort = string->string;
     return;
   }
+  if (0 == strcmp(it->name->string, "BassPick"))
+  {
+    assert(it->value->type == Json::type_number);
+    Json::number* number = (Json::number*)it->value->payload;
+    attrs.bassPick = atoi(number->number);
+    return;
+  }
   if (0 == strcmp(it->name->string, "CapoFret"))
   {
     assert(it->value->type == Json::type_number);
@@ -246,6 +253,20 @@ static void readAttribute(Json::object_element* it, Manifest::Info::Attributes& 
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
     attrs.songYear = atoi(number->number);
+    return;
+  }
+  if (0 == strcmp(it->name->string, "JapaneseSongName"))
+  {
+    assert(it->value->type == Json::type_string);
+    Json::string* string = (Json::string*)it->value->payload;
+    attrs.japaneseSongName = string->string;
+    return;
+  }
+  if (0 == strcmp(it->name->string, "JapaneseArtist"))
+  {
+    assert(it->value->type == Json::type_string);
+    Json::string* string = (Json::string*)it->value->payload;
+    attrs.japaneseArtist = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "Tuning"))

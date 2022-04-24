@@ -81,14 +81,14 @@ void Highway::init()
 
   memcpy(songTuning, &songInfo.manifest.attributes[0].tuning.string0, sizeof(Tuning));
 
-  track = Song::loadTrack(psarcInfo, InstrumentFlags::RhythmGuitar);
+  track = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
   vocals = Song::loadVocals(psarcInfo);
 
   showSongInfo = true;
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();
 
-  Global::oggStartTime = -125.0f;
+  Global::oggStartTime = -35.0f;
 
   texture = loadDDS(Data::Texture::texture, sizeof(Data::Texture::texture));
 }
@@ -119,7 +119,7 @@ static void drawFrets()
   i32 chordBoxLeftNext = 24;
   i32 chordBoxRightNext = 0;
 
-  for (i32 i = 0; i < track.transcriptionTrack.anchors.size() - 2; ++i)
+  for (i32 i = 0; i < i32(track.transcriptionTrack.anchors.size()) - 2; ++i)
   {
     const Song::TranscriptionTrack::Anchor& anchor0 = track.transcriptionTrack.anchors[i];
     const Song::TranscriptionTrack::Anchor& anchor1 = track.transcriptionTrack.anchors[i + 1];
@@ -389,7 +389,21 @@ static void drawNotes(GLuint shader, f32 fretboardNoteDistance[7][24])
     if (noteTime < Const::highwayRenderMaxFutureTime)
       continue;
 
-    drawNote(shader, note, noteTime, fretboardNoteDistance, 0, 4);
+    i32 currentAnchor = -1;
+    for (i32 i = 0; i < track.transcriptionTrack.anchors.size() - 2; ++i)
+    {
+      const Song::TranscriptionTrack::Anchor& anchor0 = track.transcriptionTrack.anchors[i];
+      const Song::TranscriptionTrack::Anchor& anchor1 = track.transcriptionTrack.anchors[i + 1];
+
+      if (note.time >= anchor0.time && note.time < anchor1.time)
+      {
+        currentAnchor = i;
+        break;
+      }
+    }
+    assert(currentAnchor >= 0);
+
+    drawNote(shader, note, noteTime, fretboardNoteDistance, track.transcriptionTrack.anchors[currentAnchor].fret, track.transcriptionTrack.anchors[currentAnchor].width);
 
     if (noteTime < 0.0f)
     {

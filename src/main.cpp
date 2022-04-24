@@ -11,7 +11,6 @@
 #include "opengl.h"
 #include "installer.h"
 #include "texture.h"
-#include "log.h"
 #include "settings.h"
 #include "ui.h"
 
@@ -31,11 +30,6 @@ static void mainloop() {
 
   Global::frameDelta = std::chrono::duration<f32, std::milli>(current_frame - last_frame).count();
   Global::time += 0.001_f32 * Global::frameDelta;
-
-  if (Global::frameDelta >= 33.333_f32) {
-    Log::infoMsg("Can't keep up. Framedelta %.1f", Global::frameDelta);
-    Global::frameDelta = 33.333_f32;
-  }
 
   {
     Input::prePollEvent();

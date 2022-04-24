@@ -6,6 +6,10 @@ uniform vec4 color;
 
 void main()
 {
-  outColor = color;
+  vec4 col = color;
+  
+  col.a *= pow(0.5 * -cos(Texcoord.x * 6.366) + 0.5, 0.2);
+  
+  outColor = col;
 }
 )"

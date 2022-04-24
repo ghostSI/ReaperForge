@@ -82,7 +82,7 @@ void Highway::init()
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();
 
-  //Global::oggStartTime = -35.0f;
+  Global::oggStartTime = -35.0f;
 
   texture = loadDDS(Data::Texture::texture, sizeof(Data::Texture::texture));
 }
@@ -413,26 +413,30 @@ static void drawNotes(GLuint shader, f32 fretboardNoteDistance[7][24])
 
 static void drawAnchor(GLuint shader, const Song::TranscriptionTrack::Anchor& anchor, f32 noteTimeBegin, f32 noteTimeEnd)
 {
-  const f32 left = anchor.fret - 1;
-  const f32 right = anchor.fret + anchor.width - 1;
   const f32 front = min_(noteTimeBegin * Global::settingsHighwaySpeedMultiplier, 0.0f);
   const f32 back = noteTimeEnd * Global::settingsHighwaySpeedMultiplier;
 
+  Shader::useShader(Shader::Stem::anchor);
+  for (i32 i = 0; i < anchor.width; ++i)
+  {
+    const f32 left = anchor.fret - 1 + i;
+    const f32 right = anchor.fret + i;
 
-  // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
+    const GLfloat v[] = {
+      left , -0.36f, front, 0.0f, 1.0f,
+      right, -0.36f, front, 1.0f, 1.0f,
+      left, -0.36f, back, 0.0f, 0.0f,
+      right, -0.36f, back, 1.0f, 0.0f,
+    };
 
-  const GLfloat v[] = {
-  left , -0.36f, front, 0.0f, 1.0f,
-  right, -0.36f, front, 1.0f, 1.0f,
-  left, -0.36f, back, 0.0f, 0.0f,
-  right, -0.36f, back, 1.0f, 0.0f,
-  };
+    if (Const::isMarkedFret[anchor.fret + i])
+      OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.10f, 0.10f, 0.40f, 0.70f);
+    else
+      OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.06f, 0.06f, 0.28f, 0.70f);
 
-  Shader::useShader(Shader::Stem::anchorWorld);
-  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.5f, 0.1f, 0.1f, 0.2f);
-
-  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  }
 
   Shader::useShader(Shader::Stem::defaultWorld);
 }
@@ -839,32 +843,32 @@ static void drawHandShape(GLuint shader, const Song::TranscriptionTrack::HandSha
     Shader::useShader(Shader::Stem::defaultWorld);
   }
 
-  if (hasArpeggio)
-  { // draw ArpeggioBox
-    const f32 left = frets[chordBoxLeft - 1];
-    const f32 top = f32(stringCount + stringOffset) * stringSpacing - 0.40f * stringSpacing;
-    const f32 right = frets[chordBoxRight - 1];
-    const f32 bottom = -0.60f * stringSpacing;
-    const f32 posZ = noteTimeBegin * Global::settingsHighwaySpeedMultiplier;
+  //if (hasArpeggio)
+  //{ // draw ArpeggioBox
+  //  const f32 left = frets[chordBoxLeft - 1];
+  //  const f32 top = f32(stringCount + stringOffset) * stringSpacing - 0.40f * stringSpacing;
+  //  const f32 right = frets[chordBoxRight - 1];
+  //  const f32 bottom = -0.60f * stringSpacing;
+  //  const f32 posZ = noteTimeBegin * Global::settingsHighwaySpeedMultiplier;
 
-    // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
-    const GLfloat v[] = {
-      left , top, posZ, 0.0f, 1.0f,
-      right, top, posZ, 1.0f, 1.0f,
-      left, bottom, posZ, 0.0f, 0.0f,
-      right, bottom, posZ, 1.0f, 0.0f,
-    };
+  //  // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
+  //  const GLfloat v[] = {
+  //    left , top, posZ, 0.0f, 1.0f,
+  //    right, top, posZ, 1.0f, 1.0f,
+  //    left, bottom, posZ, 0.0f, 0.0f,
+  //    right, bottom, posZ, 1.0f, 0.0f,
+  //  };
 
-    Shader::useShader(Shader::Stem::chordBoxArpeggio);
-    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.392f, 0.325f, 0.580f, 0.1f);
+  //  Shader::useShader(Shader::Stem::chordBoxArpeggio);
+  //  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.392f, 0.325f, 0.580f, 0.1f);
 
-    OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  //  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+  //  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    Shader::useShader(Shader::Stem::defaultWorld);
+  //  Shader::useShader(Shader::Stem::defaultWorld);
 
-    drawChordName(handShape.chordId, noteTimeBegin, chordBoxLeft, false);
-  }
+  //  drawChordName(handShape.chordId, noteTimeBegin, chordBoxLeft, false);
+  //}
 }
 
 static void drawHandShapes(GLuint shader)

@@ -10,7 +10,7 @@ namespace Shader {
         ground,
         fontScreen,
         fontWorld,
-        anchorWorld,
+        anchor,
         chordBox,
         chordBoxConsecutive,
         chordBoxArpeggio,

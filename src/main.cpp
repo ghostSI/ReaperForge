@@ -121,7 +121,7 @@ int main(int argc, char* argv[]) {
   if (Global::gameController == nullptr && SDL_NumJoysticks() >= 1 && SDL_IsGameController(0))
     Global::gameController = SDL_GameControllerOpen(0);
 
-  glClearColor(0.0, 0.007843, 0.180392, 1.0);
+  glClearColor(0.0f, 0.0031372f, 0.0721568f, 1.0f);
 
   Shader::init();
   Sound::init();

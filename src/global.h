@@ -78,7 +78,7 @@ namespace Const {
       9,  // F#
       4,  // C#
     };
-    inline constexpr bool isMarkedFret[]{ 1,1,0,1,0,1,0,1,0,1,0,0,1,0,0,1,0,1,0,1,0,1,0,0,1 };
+    inline constexpr bool isMarkedFret[]{ 0,1,0,1,0,1,0,1,0,1,0,0,1,0,0,1,0,1,0,1,0,1,0,0,1 };
 }
 
 namespace Global {

@@ -207,7 +207,7 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
       {
         mat4 modelMat;
         modelMat.m00 = 16.0f;
-        modelMat.m30 = frets[chordBoxLeft - 1]  + 0.266f;
+        modelMat.m30 = frets[chordBoxLeft - 1] + 0.266f;
         modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
         modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
         OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);

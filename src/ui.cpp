@@ -79,28 +79,28 @@ static void nk_sdl_device_create() {
 
     nk_sdl_device *dev = &sdl.ogl;
     nk_buffer_init_default(&dev->cmds);
-    dev->prog = OpenGl::glCreateProgram();
-    dev->vert_shdr = OpenGl::glCreateShader(GL_VERTEX_SHADER);
-    dev->frag_shdr = OpenGl::glCreateShader(GL_FRAGMENT_SHADER);
-    OpenGl::glShaderSource(dev->vert_shdr, 1, &vertex_shader, 0);
-    OpenGl::glShaderSource(dev->frag_shdr, 1, &fragment_shader, 0);
-    OpenGl::glCompileShader(dev->vert_shdr);
-    OpenGl::glCompileShader(dev->frag_shdr);
-    OpenGl::glGetShaderiv(dev->vert_shdr, GL_COMPILE_STATUS, &status);
+    dev->prog = glCreateProgram();
+    dev->vert_shdr = glCreateShader(GL_VERTEX_SHADER);
+    dev->frag_shdr = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(dev->vert_shdr, 1, &vertex_shader, 0);
+    glShaderSource(dev->frag_shdr, 1, &fragment_shader, 0);
+    glCompileShader(dev->vert_shdr);
+    glCompileShader(dev->frag_shdr);
+    glGetShaderiv(dev->vert_shdr, GL_COMPILE_STATUS, &status);
     assert(status == GL_TRUE);
-    OpenGl::glGetShaderiv(dev->frag_shdr, GL_COMPILE_STATUS, &status);
+    glGetShaderiv(dev->frag_shdr, GL_COMPILE_STATUS, &status);
     assert(status == GL_TRUE);
-    OpenGl::glAttachShader(dev->prog, dev->vert_shdr);
-    OpenGl::glAttachShader(dev->prog, dev->frag_shdr);
-    OpenGl::glLinkProgram(dev->prog);
-    OpenGl::glGetProgramiv(dev->prog, GL_LINK_STATUS, &status);
+    glAttachShader(dev->prog, dev->vert_shdr);
+    glAttachShader(dev->prog, dev->frag_shdr);
+    glLinkProgram(dev->prog);
+    glGetProgramiv(dev->prog, GL_LINK_STATUS, &status);
     assert(status == GL_TRUE);
 
-    dev->uniform_tex = OpenGl::glGetUniformLocation(dev->prog, "Texture");
-    dev->uniform_proj = OpenGl::glGetUniformLocation(dev->prog, "ProjMtx");
-    dev->attrib_pos = OpenGl::glGetAttribLocation(dev->prog, "Position");
-    dev->attrib_uv = OpenGl::glGetAttribLocation(dev->prog, "TexCoord");
-    dev->attrib_col = OpenGl::glGetAttribLocation(dev->prog, "Color");
+    dev->uniform_tex = glGetUniformLocation(dev->prog, "Texture");
+    dev->uniform_proj = glGetUniformLocation(dev->prog, "ProjMtx");
+    dev->attrib_pos = glGetAttribLocation(dev->prog, "Position");
+    dev->attrib_uv = glGetAttribLocation(dev->prog, "TexCoord");
+    dev->attrib_col = glGetAttribLocation(dev->prog, "Color");
 
     {
         GLsizei vs = sizeof(nk_sdl_vertex);
@@ -108,33 +108,33 @@ static void nk_sdl_device_create() {
         size_t vt = offsetof(nk_sdl_vertex, uv);
         size_t vc = offsetof(nk_sdl_vertex, col);
 
-        OpenGl::glGenBuffers(1, &dev->vbo);
-        OpenGl::glGenBuffers(1, &dev->ebo);
-        OpenGl::glGenVertexArrays(1, &dev->vao);
+        glGenBuffers(1, &dev->vbo);
+        glGenBuffers(1, &dev->ebo);
+        glGenVertexArrays(1, &dev->vao);
 
-        OpenGl::glBindVertexArray(dev->vao);
-        OpenGl::glBindBuffer(GL_ARRAY_BUFFER, dev->vbo);
-        OpenGl::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dev->ebo);
+        glBindVertexArray(dev->vao);
+        glBindBuffer(GL_ARRAY_BUFFER, dev->vbo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dev->ebo);
 
-        OpenGl::glEnableVertexAttribArray((GLuint) dev->attrib_pos);
-        OpenGl::glEnableVertexAttribArray((GLuint) dev->attrib_uv);
-        OpenGl::glEnableVertexAttribArray((GLuint) dev->attrib_col);
+        glEnableVertexAttribArray((GLuint) dev->attrib_pos);
+        glEnableVertexAttribArray((GLuint) dev->attrib_uv);
+        glEnableVertexAttribArray((GLuint) dev->attrib_col);
 
-        OpenGl::glVertexAttribPointer((GLuint) dev->attrib_pos, 2, GL_FLOAT, GL_FALSE, vs, (void *) vp);
-        OpenGl::glVertexAttribPointer((GLuint) dev->attrib_uv, 2, GL_FLOAT, GL_FALSE, vs, (void *) vt);
-        OpenGl::glVertexAttribPointer((GLuint) dev->attrib_col, 4, GL_UNSIGNED_BYTE, GL_TRUE, vs, (void *) vc);
+        glVertexAttribPointer((GLuint) dev->attrib_pos, 2, GL_FLOAT, GL_FALSE, vs, (void *) vp);
+        glVertexAttribPointer((GLuint) dev->attrib_uv, 2, GL_FLOAT, GL_FALSE, vs, (void *) vt);
+        glVertexAttribPointer((GLuint) dev->attrib_col, 4, GL_UNSIGNED_BYTE, GL_TRUE, vs, (void *) vc);
     }
 
-    OpenGl::glBindTexture(GL_TEXTURE_2D, 0);
-    OpenGl::glBindBuffer(GL_ARRAY_BUFFER, 0);
-    OpenGl::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    OpenGl::glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 static void nk_sdl_device_upload_atlas(const void *image, int width, int height) {
     nk_sdl_device *dev = &sdl.ogl;
-    OpenGl::glGenTextures(1, &dev->font_tex);
-    OpenGl::glBindTexture(GL_TEXTURE_2D, dev->font_tex);
+    glGenTextures(1, &dev->font_tex);
+    glBindTexture(GL_TEXTURE_2D, dev->font_tex);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei) width, (GLsizei) height, 0,
@@ -143,14 +143,14 @@ static void nk_sdl_device_upload_atlas(const void *image, int width, int height)
 
 static void nk_sdl_device_destroy() {
     nk_sdl_device *dev = &sdl.ogl;
-    OpenGl::glDetachShader(dev->prog, dev->vert_shdr);
-    OpenGl::glDetachShader(dev->prog, dev->frag_shdr);
-    OpenGl::glDeleteShader(dev->vert_shdr);
-    OpenGl::glDeleteShader(dev->frag_shdr);
-    OpenGl::glDeleteProgram(dev->prog);
-    OpenGl::glDeleteTextures(1, &dev->font_tex);
-    OpenGl::glDeleteBuffers(1, &dev->vbo);
-    OpenGl::glDeleteBuffers(1, &dev->ebo);
+    glDetachShader(dev->prog, dev->vert_shdr);
+    glDetachShader(dev->prog, dev->frag_shdr);
+    glDeleteShader(dev->vert_shdr);
+    glDeleteShader(dev->frag_shdr);
+    glDeleteProgram(dev->prog);
+    glDeleteTextures(1, &dev->font_tex);
+    glDeleteBuffers(1, &dev->vbo);
+    glDeleteBuffers(1, &dev->ebo);
     nk_buffer_free(&dev->cmds);
 }
 
@@ -173,20 +173,20 @@ static void nk_sdl_render(enum nk_anti_aliasing AA, int max_vertex_buffer, int m
     scale.x = (float) display_width / (float) width;
     scale.y = (float) display_height / (float) height;
 
-    /* setup OpenGl::global state */
+    /* setup global state */
     glViewport(0, 0, display_width, display_height);
     glEnable(GL_BLEND);
-    OpenGl::glBlendEquation(GL_FUNC_ADD);
+    glBlendEquation(GL_FUNC_ADD);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_SCISSOR_TEST);
-    OpenGl::glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE0);
 
     /* setup program */
-    OpenGl::glUseProgram(dev->prog);
-    OpenGl::glUniform1i(dev->uniform_tex, 0);
-    OpenGl::glUniformMatrix4fv(dev->uniform_proj, 1, GL_FALSE, &ortho[0][0]);
+    glUseProgram(dev->prog);
+    glUniform1i(dev->uniform_tex, 0);
+    glUniformMatrix4fv(dev->uniform_proj, 1, GL_FALSE, &ortho[0][0]);
     {
         /* convert from command queue into draw list and draw to screen */
         const nk_draw_command *cmd;
@@ -195,16 +195,16 @@ static void nk_sdl_render(enum nk_anti_aliasing AA, int max_vertex_buffer, int m
         nk_buffer vbuf, ebuf;
 
         /* allocate vertex and element buffer */
-        OpenGl::glBindVertexArray(dev->vao);
-        OpenGl::glBindBuffer(GL_ARRAY_BUFFER, dev->vbo);
-        OpenGl::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dev->ebo);
+        glBindVertexArray(dev->vao);
+        glBindBuffer(GL_ARRAY_BUFFER, dev->vbo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dev->ebo);
 
-        OpenGl::glBufferData(GL_ARRAY_BUFFER, max_vertex_buffer, NULL, GL_STREAM_DRAW);
-        OpenGl::glBufferData(GL_ELEMENT_ARRAY_BUFFER, max_element_buffer, NULL, GL_STREAM_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, max_vertex_buffer, NULL, GL_STREAM_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, max_element_buffer, NULL, GL_STREAM_DRAW);
 
         /* load vertices/elements directly into vertex/element buffer */
-        vertices = OpenGl::glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-        elements = OpenGl::glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
+        vertices = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+        elements = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
         {
             /* fill convert configuration */
             nk_convert_config config;
@@ -231,13 +231,13 @@ static void nk_sdl_render(enum nk_anti_aliasing AA, int max_vertex_buffer, int m
             nk_buffer_init_fixed(&ebuf, elements, (nk_size) max_element_buffer);
             nk_convert(&sdl.ctx, &dev->cmds, &vbuf, &ebuf, &config);
         }
-        OpenGl::glUnmapBuffer(GL_ARRAY_BUFFER);
-        OpenGl::glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+        glUnmapBuffer(GL_ARRAY_BUFFER);
+        glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
         /* iterate over and execute each draw command */
         nk_draw_foreach(cmd, &sdl.ctx, &dev->cmds) {
             if (!cmd->elem_count) continue;
-            OpenGl::glBindTexture(GL_TEXTURE_2D, (GLuint) cmd->texture.id);
+            glBindTexture(GL_TEXTURE_2D, (GLuint) cmd->texture.id);
             glScissor((GLint) (cmd->clip_rect.x * scale.x),
                       (GLint) ((height - (GLint) (cmd->clip_rect.y + cmd->clip_rect.h)) * scale.y),
                       (GLint) (cmd->clip_rect.w * scale.x),
@@ -249,10 +249,10 @@ static void nk_sdl_render(enum nk_anti_aliasing AA, int max_vertex_buffer, int m
         nk_buffer_clear(&dev->cmds);
     }
 
-    OpenGl::glUseProgram(0);
-    OpenGl::glBindBuffer(GL_ARRAY_BUFFER, 0);
-    OpenGl::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    OpenGl::glBindVertexArray(0);
+    glUseProgram(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
     glDisable(GL_BLEND);
     glDisable(GL_SCISSOR_TEST);
 }

@@ -13,44 +13,44 @@ static GLuint compileShader(const char* vertexSource, const char* fragSource)
   GLint fragmentShader = 0;
 
   { // compile the shaders
-    vertexShader = OpenGl::glCreateShader(GL_VERTEX_SHADER);
-    OpenGl::glShaderSource(vertexShader, 1, &vertexSource, nullptr);
-    OpenGl::glCompileShader(vertexShader);
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexSource, nullptr);
+    glCompileShader(vertexShader);
 
-    fragmentShader = OpenGl::glCreateShader(GL_FRAGMENT_SHADER);
-    OpenGl::glShaderSource(fragmentShader, 1, &fragSource, nullptr);
-    OpenGl::glCompileShader(fragmentShader);
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragSource, nullptr);
+    glCompileShader(fragmentShader);
   }
 
   { // handle compilation errors
     GLint status;
     char buffer[512];
 
-    OpenGl::glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
-      OpenGl::glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
+      glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
       ASSERT(false);
     }
 
-    OpenGl::glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
-      OpenGl::glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
+      glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
       ASSERT(false);
     }
   }
 
-  GLuint programId = OpenGl::glCreateProgram();
-  OpenGl::glAttachShader(programId, vertexShader);
-  OpenGl::glAttachShader(programId, fragmentShader);
+  GLuint programId = glCreateProgram();
+  glAttachShader(programId, vertexShader);
+  glAttachShader(programId, fragmentShader);
 
-  OpenGl::glBindFragDataLocation(programId, 0, "outColor");
+  glBindFragDataLocation(programId, 0, "outColor");
 
-  OpenGl::glLinkProgram(programId);
+  glLinkProgram(programId);
 
   if (vertexShader != 0)
-    OpenGl::glDeleteShader(vertexShader);
+    glDeleteShader(vertexShader);
   if (fragmentShader != 0)
-    OpenGl::glDeleteShader(fragmentShader);
+    glDeleteShader(fragmentShader);
 
   return programId;
 }
@@ -80,23 +80,23 @@ GLuint Shader::useShader(Shader::Stem shaderStem)
 {
   GLuint shaderProgram = shaderPrograms[to_underlying(shaderStem)];
 
-  OpenGl::glUseProgram(shaderProgram);
+  glUseProgram(shaderProgram);
 
-  GLint posAttrib = OpenGl::glGetAttribLocation(shaderProgram, "position");
-  OpenGl::glEnableVertexAttribArray(posAttrib);
-  OpenGl::glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+  GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+  glEnableVertexAttribArray(posAttrib);
+  glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
 
-  GLint texAttrib = OpenGl::glGetAttribLocation(shaderProgram, "texcoord");
-  OpenGl::glEnableVertexAttribArray(texAttrib);
-  OpenGl::glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  GLint texAttrib = glGetAttribLocation(shaderProgram, "texcoord");
+  glEnableVertexAttribArray(texAttrib);
+  glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
 
-  OpenGl::glUniform1i(OpenGl::glGetUniformLocation(shaderProgram, "texture0"), 0);
+  glUniform1i(glGetUniformLocation(shaderProgram, "texture0"), 0);
 
   mat4 modelMat;
-  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &modelMat.m00);
+  glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &modelMat.m00);
 
 
-  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &Global::cameraMat.m00);
+  glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &Global::cameraMat.m00);
 
   mat4 projectionMat;
   const f32 angleOfView = 90;
@@ -110,9 +110,9 @@ GLuint Shader::useShader(Shader::Stem shaderStem)
   projectionMat.m23 = -1.0f;
   projectionMat.m33 = 0.0f;
 
-  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projectionMat.m00);
+  glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projectionMat.m00);
 
-  OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shaderProgram, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
+  glUniform4f(glGetUniformLocation(shaderProgram, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
 
   return shaderProgram;
 }

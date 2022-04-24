@@ -15,7 +15,7 @@ void Debug::render()
     i32 y = 1.0f;
 
     GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
-    OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
+    glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
 
     const f32 aspectRatio = 1.0f;
    // const f32 aspectRatio = f32(Global::windowWidth) / f32(Global::windowHeight);

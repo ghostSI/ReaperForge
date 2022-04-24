@@ -107,11 +107,11 @@ int main(int argc, char* argv[]) {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   OpenGl::init();
-  OpenGl::glGenVertexArrays(1, &Global::vao);
-  OpenGl::glGenBuffers(1, &Global::vbo);
-  OpenGl::glBindVertexArray(Global::vao);
-  OpenGl::glBindBuffer(GL_ARRAY_BUFFER, Global::vbo);
-  OpenGl::glGenFramebuffers(1, &Global::fboRtt);
+  glGenVertexArrays(1, &Global::vao);
+  glGenBuffers(1, &Global::vbo);
+  glBindVertexArray(Global::vao);
+  glBindBuffer(GL_ARRAY_BUFFER, Global::vbo);
+  glGenFramebuffers(1, &Global::fboRtt);
   Global::texture = OpenGl::loadDDSTexture(Data::Texture::texture, sizeof(Data::Texture::texture));
 
   if (Global::gameController == nullptr && SDL_NumJoysticks() >= 1 && SDL_IsGameController(0))

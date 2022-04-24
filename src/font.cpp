@@ -75,7 +75,7 @@ static void drawBitmap(const std::vector<u32>& textBitmap, u64 letters, f32 posX
     right, bottom, posZ, 1.0f, 0.0f,
   };
 
-  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
 
   GLuint tex;
   glGenTextures(1, &tex);

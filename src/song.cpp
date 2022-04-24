@@ -204,7 +204,7 @@ static void readEbeats(const pugi::xml_document& doc, std::vector<Song::Ebeat>& 
     Song::Ebeat ebeat_;
 
     ebeat_.time = ebeat.attribute("time").as_float();
-    ebeat_.measure = ebeat.attribute("displayName").as_int();
+    ebeat_.measure = ebeat.attribute("measure").as_int(-1);
 
     ebeats.push_back(ebeat_);
   }

@@ -66,6 +66,8 @@ i32 Global::inputCursorPosX = 0;
 i32 Global::inputCursorPosY = 0;
 
 RenderOptions Global::renderOptions = RenderOptions::lit;
+std::atomic<u64> Global::debugAudioCallbackRecording = 0;
+std::atomic<u64> Global::debugAudioCallbackPlayback = 0;
 
 GLuint Global::vao = 0;
 GLuint Global::vbo = 0;

@@ -11,6 +11,7 @@ namespace Shader {
         fontScreen,
         fontWorld,
         anchor,
+        ebeat,
         chordBox,
         chordBoxConsecutive,
         chordBoxArpeggio,

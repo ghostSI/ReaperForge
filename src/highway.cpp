@@ -79,7 +79,7 @@ void Highway::init()
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();
 
-  //Global::oggStartTime = -35.0f;
+  Global::oggStartTime = -35.0f;
 }
 
 static void drawGround()
@@ -1256,9 +1256,66 @@ static void drawLyrics()
   }
 }
 
+static void drawEbeat(f32 noteTimeBegin, f32 noteTimeEnd, i32 measure, i32 chordBoxLeft, i32 chordBoxWidth)
+{
+  const f32 left = frets[chordBoxLeft - 1];
+  const f32 right = frets[chordBoxLeft + chordBoxWidth - 1];
+  const f32 front = noteTimeBegin * Global::settingsHighwaySpeedMultiplier;
+  const f32 back = noteTimeEnd * Global::settingsHighwaySpeedMultiplier;
+
+  const GLfloat v[] = {
+    left, -0.355f, front, 0.0f, 1.0f,
+    right, -0.355f, front, 1.0f, 1.0f,
+    left, -0.355f, back, 0.0f, 0.0f,
+    right, -0.355f, back, 1.0f, 0.0f
+  };
+
+  const GLuint shader = Shader::useShader(Shader::Stem::ebeat);
+
+  if (measure >= 0)
+    glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 0.0f, 0.0f, 1.0f);
+  else
+    glUniform4f(glGetUniformLocation(shader, "color"), 0.0f, 1.0f, 0.0f, 1.0f);
+
+  glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+
+static void drawEbeats()
+{
+  const f32 oggElapsed = Global::time - Global::oggStartTime;
+
+  for (i32 i = track.ebeats.size() - 1; i >= 0; --i)
+  {
+    Song::Ebeat& ebeat = track.ebeats[i];
+
+    const f32 noteTimeBegin = -ebeat.time + oggElapsed;
+    const f32 noteTimeEnd = noteTimeBegin - 0.01f;
+
+    if (noteTimeEnd > 0.0f)
+      continue;
+    if (noteTimeBegin < Const::highwayRenderMaxFutureTime)
+      continue;
+
+    for (i32 i = 0; i < i32(track.transcriptionTrack.anchors.size()) - 2; ++i)
+    {
+      const Song::TranscriptionTrack::Anchor& anchor0 = track.transcriptionTrack.anchors[i];
+      const Song::TranscriptionTrack::Anchor& anchor1 = track.transcriptionTrack.anchors[i + 1];
+
+      if (ebeat.time >= anchor0.time && ebeat.time <= anchor1.time)
+      {
+        drawEbeat(noteTimeBegin, noteTimeEnd, ebeat.measure, anchor0.fret, anchor0.width);
+
+        break;
+      }
+    }
+  }
+}
+
 void Highway::render()
 {
   drawGround();
+  drawEbeats();
   drawFrets();
   drawStrings();
   drawAnchors();

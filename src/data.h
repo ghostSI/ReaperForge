@@ -12,6 +12,7 @@ namespace Data {
     extern const char* groundFrag;
     extern const char* fontFrag;
     extern const char* anchorFrag;
+    extern const char* ebeatFrag;
     extern const char* chordBoxFrag;
     extern const char* consecutiveChordBoxFrag;
     extern const char* chordBoxArpeggioFrag;

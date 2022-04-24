@@ -207,6 +207,8 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
 {
   ASSERT(len == sizeof(buffer_in));
 
+  ++Global::debugAudioCallbackRecording;
+
   //std::unique_lock<std::mutex> lock(mutex);
   //cv.wait(lock, [] { return recordingFirst ? true : false; });
 
@@ -258,6 +260,8 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
 static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
 {
   ASSERT(len == sizeof(buffer_in));
+
+  ++Global::debugAudioCallbackPlayback;
 
   //std::unique_lock<std::mutex> lock(mutex);
   //cv.wait(lock, [] { return !recordingFirst ? true : false; });

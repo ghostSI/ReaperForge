@@ -148,6 +148,8 @@ namespace Global {
     extern i32 inputCursorPosY;
 
     extern RenderOptions renderOptions;
+    extern std::atomic<u64> debugAudioCallbackRecording;
+    extern std::atomic<u64> debugAudioCallbackPlayback;
 
     extern GLuint vao; // default vao
     extern GLuint vbo; // default vbo

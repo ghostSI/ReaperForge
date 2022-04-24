@@ -1,5 +1,4 @@
 #include "font.h"
-#include "texture.h"
 #include "opengl.h"
 #include "data.h"
 #include "global.h"

@@ -32,21 +32,17 @@ set(HEADER_FILES
         src/configuration.h
         src/data.h
         src/debug.h
-        src/devutil.h
         src/file.h
         src/font.h
-        src/font2.h
         src/getopt.h
         src/global.h
         src/helper.h
         src/highway.h
-        src/imageload.h
         src/inflate.h
         src/input.h
         src/installer.h
         src/json.h
         src/kiss_fft.h
-        src/log.h
         src/manifest.h
         src/nuklear.h
         src/oggvorbis.h
@@ -59,15 +55,12 @@ set(HEADER_FILES
         src/sng.h
         src/song.h
         src/sound.h
-        src/sprite.h
-        src/texture.h
         src/type.h
         src/typedefs.h
         src/ui.h
         src/ww2ogg.h
         src/xblock.h
         src/xml.h
-        src/zorder.h
         )
 
 set(SOURCE_FILES
@@ -81,18 +74,15 @@ set(SOURCE_FILES
         src/debug.cpp
         src/file.cpp
         src/font.cpp
-        src/font2.cpp
         src/getopt.cpp
         src/global.cpp
         src/helper.cpp
         src/highway.cpp
-        src/imageload.cpp
         src/inflate.cpp
         src/input.cpp
         src/installer.cpp
         src/json.cpp
         src/kiss_fft.cpp
-        src/log.cpp
         src/main.cpp
         src/manifest.cpp
         src/oggvorbis.cpp
@@ -105,14 +95,11 @@ set(SOURCE_FILES
         src/sng.cpp
         src/song.cpp
         src/sound.cpp
-        src/sprite.cpp
         src/test.cpp
-        src/texture.cpp
         src/ui.cpp
         src/ww2ogg.cpp
         src/xblock.cpp
         src/xml.cpp
-        src/zorder.cpp
         )
 
 set(RESOURCE_FILES

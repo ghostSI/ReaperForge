@@ -10,7 +10,6 @@
 #include "shader.h"
 #include "opengl.h"
 #include "installer.h"
-#include "texture.h"
 #include "settings.h"
 #include "ui.h"
 

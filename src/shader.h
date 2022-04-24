@@ -11,14 +11,14 @@ namespace Shader {
         fontScreen,
         fontWorld,
         anchorWorld,
-        chordBoxWorld,
-        consecutiveChordBoxWorld,
+        chordBox,
+        chordBoxConsecutive,
+        chordBoxArpeggio,
         phrasesScreen,
-        arpeggioBoxWorld,
-        handShapeAnchorWorld,
-        fretGoldWorld,
-        fretSilverWorld,
-        fretBronzeWorld,
+        handShapeAnchor,
+        fretGold,
+        fretSilver,
+        fretBronze,
     };
 
     void init();

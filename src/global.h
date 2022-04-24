@@ -32,6 +32,9 @@ namespace Const {
     inline constexpr f32 highwayRenderDrawSongInfoFadeInTime = 1.5f;
     inline constexpr f32 highwayRenderDrawSongInfoFadeOutTime = 3.5f;
     inline constexpr f32 highwayRenderDrawSongInfoEndTime = 4.0f;
+    inline constexpr f32 highwayRenderDrawChordNameWaitTime = 0.2f;
+    inline constexpr f32 highwayRenderDrawChordNameFadeOutTime = 0.2f;
+    inline constexpr f32 highwayRenderDrawChordNameEndTime = 0.3f;
     inline constexpr const char notesFlat[][3] =
     {
       "A",

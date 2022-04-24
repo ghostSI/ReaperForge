@@ -26,14 +26,30 @@ f32 Global::cameraMidY = f32(Global::windowHeight / 2);
 mat4 Global::cameraMat;
 
 bool Global::isInstalled = false;
-InstrumentFlags Global::filterInstrument;
-bool Global::collectionLoaded;
+InstrumentFlags Global::filterInstrument = InstrumentFlags::none;
+bool Global::collectionLoaded = false;
 std::vector<Psarc::Info> Global::psarcInfos;
 std::vector<Song::Info> Global::collection;
 std::vector<u8> Global::ogg;
 f32 Global::oggStartTime = 0.0f;
 char Global::searchText[256] = "";
 i32 Global::searchTextLength = 0;
+
+f32 Global::settingsHighwaySpeedMultiplier = 1.0f;
+bool Global::settingsStringNoteNames = false;
+bool Global::settingsFretNoteNames = false;
+bool Global::settingsShowLyrics = false;
+bool Global::settingsShowSongInfo = false;
+i32 Global::settingsInstrumentBassFirstWoundString;
+vec4 Global::settingsInstrumentBassStringColor[5];
+i32 Global::settingsInstrumentGuitarFirstWoundString;
+vec4 Global::settingsInstrumentGuitarStringColor[7];
+std::atomic<i32> Global::settingsMixerMusicVolume;
+std::atomic<i32> Global::settingsMixerGuitar1Volume;
+std::atomic<i32> Global::settingsMixerBass1Volume;
+std::atomic<i32> Global::settingsMixerGuitar2Volume;
+std::atomic<i32> Global::settingsMixerBass2Volume;
+std::atomic<i32> Global::settingsMixerMicrophoneVolume;
 
 std::atomic<f32> Global::instrumentVolume;
 std::atomic<Chords::Note> Global::chordDetectorRootNote;

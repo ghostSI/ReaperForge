@@ -6,6 +6,7 @@
 namespace Settings {
 
     bool init(int argc, char *argv[]);
+    void tick();
 
     std::string get(const std::string &section, const std::string &key);
     void set(const std::string& section, const std::string& key, const std::string& value);

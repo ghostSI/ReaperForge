@@ -19,6 +19,7 @@ namespace Shader {
         fretGold,
         fretSilver,
         fretBronze,
+        string,
     };
 
     void init();

@@ -35,9 +35,6 @@ bool recordingFirst = true;
 static Chromagram chromagram(Const::audioBufferSize, Const::audioSampleRate);
 static ChordDetector chordDetector;
 
-static std::atomic<i32> musicVolume;
-static std::atomic<i32> guitar1Volume;
-
 enum struct SoundType : i32
 {
   Effect = 10000, // play once
@@ -267,7 +264,7 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
 
   SDL_memset(stream, 0, len);
 
-  SDL_MixAudioFormat(stream, buffer_in, AUDIO_F32LSB, len, guitar1Volume);
+  SDL_MixAudioFormat(stream, buffer_in, AUDIO_F32LSB, len, Global::settingsMixerGuitar1Volume);
 
   Audio* audio = reinterpret_cast<Audio*>(userdata);
   Audio* previous = audio;
@@ -323,7 +320,7 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
     else if (getSoundType(audio) == SoundType::Ogg)
     {
       stb_vorbis_get_samples_float_interleaved(audio->vorbis, 2, (f32*)buffer_mixer, len / sizeof(f32));
-      SDL_MixAudio(stream, buffer_mixer, len, musicVolume);
+      SDL_MixAudio(stream, buffer_mixer, len, Global::settingsMixerMusicVolume);
 
       previous = audio;
       audio = audio->next;
@@ -404,8 +401,6 @@ void Sound::init()
 
 void Sound::tick()
 {
-  musicVolume = atoi(Settings::get("Mixer", "MusicVolume").c_str());
-  guitar1Volume = atoi(Settings::get("Mixer", "Guitar1Volume").c_str());
 }
 
 void Sound::playOgg()

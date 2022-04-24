@@ -35,6 +35,7 @@ namespace Const {
     inline constexpr f32 highwayRenderDrawChordNameWaitTime = 0.2f;
     inline constexpr f32 highwayRenderDrawChordNameFadeOutTime = 0.2f;
     inline constexpr f32 highwayRenderDrawChordNameEndTime = 0.3f;
+    inline constexpr f32 highwayRenderStringGaugeMultiplier = 0.2f;
     inline constexpr const char notesFlat[][3] =
     {
       "A",
@@ -112,6 +113,22 @@ namespace Global {
     extern f32 oggStartTime;
     extern char searchText[256];
     extern i32 searchTextLength;
+
+    extern f32 settingsHighwaySpeedMultiplier;
+    extern bool settingsStringNoteNames;
+    extern bool settingsFretNoteNames;
+    extern bool settingsShowLyrics;
+    extern bool settingsShowSongInfo;
+    extern i32 settingsInstrumentBassFirstWoundString;
+    extern vec4 settingsInstrumentBassStringColor[5];
+    extern i32 settingsInstrumentGuitarFirstWoundString;
+    extern vec4 settingsInstrumentGuitarStringColor[7];
+    extern std::atomic<i32> settingsMixerMusicVolume;
+    extern std::atomic<i32> settingsMixerGuitar1Volume;
+    extern std::atomic<i32> settingsMixerBass1Volume;
+    extern std::atomic<i32> settingsMixerGuitar2Volume;
+    extern std::atomic<i32> settingsMixerBass2Volume;
+    extern std::atomic<i32> settingsMixerMicrophoneVolume;
 
     extern std::atomic<f32> instrumentVolume;
     extern std::atomic<Chords::Note> chordDetectorRootNote;

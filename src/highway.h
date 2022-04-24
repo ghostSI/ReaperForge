@@ -3,7 +3,6 @@
 
 namespace Highway {
   void init();
-  void tick();
   void render();
 }
 

@@ -20,6 +20,7 @@ namespace Data {
     extern const char* fretGoldFrag;
     extern const char* fretSilverFrag;
     extern const char* fretBronzeFrag;
+    extern const char* stringFrag;
   }
   namespace Texture
   {

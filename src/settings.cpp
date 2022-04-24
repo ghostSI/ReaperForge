@@ -39,6 +39,7 @@ static const std::map<std::string, std::map<std::string, std::string>> defaultSe
                         {"LyricsColor0",     "#E05A01"},
                         {"LyricsColor1",     "#2381E9"},
                         {"LyricsColor2",     "#D20000"},
+                        {"SongInfo",         "1"},
                         {"StringNoteNames",  "1"}
                 }
         },
@@ -215,6 +216,35 @@ bool Settings::init(int argc, char *argv[]) {
         gameSettings = File::loadIni("settings.ini");
 
     return true;
+}
+
+void Settings::tick()
+{
+  Global::settingsHighwaySpeedMultiplier = atof(Settings::get("Highway", "SpeedMultiplier").c_str());
+  Global::settingsStringNoteNames = bool(atoi(Settings::get("Highway", "StringNoteNames").c_str()));
+  Global::settingsFretNoteNames = bool(atoi(Settings::get("Highway", "FretNoteNames").c_str()));
+  Global::settingsShowLyrics = bool(atoi(Settings::get("Highway", "Lyrics").c_str()));
+  Global::settingsShowSongInfo = bool(atoi(Settings::get("Highway", "SongInfo").c_str()));
+  Global::settingsInstrumentBassFirstWoundString = atoi(Settings::get("Instrument", "BassFirstWoundString").c_str());
+  Global::settingsInstrumentBassStringColor[0] = colorVec4(makeColor((Settings::get("Instrument", "BassStringColor0").substr(1) + n2hexStr(255)).c_str()));
+  Global::settingsInstrumentBassStringColor[1] = colorVec4(makeColor((Settings::get("Instrument", "BassStringColor1").substr(1) + n2hexStr(255)).c_str()));
+  Global::settingsInstrumentBassStringColor[2] = colorVec4(makeColor((Settings::get("Instrument", "BassStringColor2").substr(1) + n2hexStr(255)).c_str()));
+  Global::settingsInstrumentBassStringColor[3] = colorVec4(makeColor((Settings::get("Instrument", "BassStringColor3").substr(1) + n2hexStr(255)).c_str()));
+  Global::settingsInstrumentBassStringColor[4] = colorVec4(makeColor((Settings::get("Instrument", "BassStringColor4").substr(1) + n2hexStr(255)).c_str()));
+  Global::settingsInstrumentGuitarFirstWoundString = atoi(Settings::get("Instrument", "GuitarFirstWoundString").c_str());
+  Global::settingsInstrumentGuitarStringColor[0] = colorVec4(makeColor((Settings::get("Instrument", "GuitarStringColor0").substr(1) + n2hexStr(255)).c_str()));
+  Global::settingsInstrumentGuitarStringColor[1] = colorVec4(makeColor((Settings::get("Instrument", "GuitarStringColor1").substr(1) + n2hexStr(255)).c_str()));
+  Global::settingsInstrumentGuitarStringColor[2] = colorVec4(makeColor((Settings::get("Instrument", "GuitarStringColor2").substr(1) + n2hexStr(255)).c_str()));
+  Global::settingsInstrumentGuitarStringColor[3] = colorVec4(makeColor((Settings::get("Instrument", "GuitarStringColor3").substr(1) + n2hexStr(255)).c_str()));
+  Global::settingsInstrumentGuitarStringColor[4] = colorVec4(makeColor((Settings::get("Instrument", "GuitarStringColor4").substr(1) + n2hexStr(255)).c_str()));
+  Global::settingsInstrumentGuitarStringColor[5] = colorVec4(makeColor((Settings::get("Instrument", "GuitarStringColor5").substr(1) + n2hexStr(255)).c_str()));
+  Global::settingsInstrumentGuitarStringColor[6] = colorVec4(makeColor((Settings::get("Instrument", "GuitarStringColor6").substr(1) + n2hexStr(255)).c_str()));
+  Global::settingsMixerMusicVolume = atoi(Settings::get("Mixer", "MusicVolume").c_str());
+  Global::settingsMixerGuitar1Volume = atoi(Settings::get("Mixer", "Guitar1Volume").c_str());
+  Global::settingsMixerBass1Volume = atoi(Settings::get("Mixer", "Bass1Volume").c_str());
+  Global::settingsMixerGuitar2Volume = atoi(Settings::get("Mixer", "Guitar2Volume").c_str());
+  Global::settingsMixerBass2Volume = atoi(Settings::get("Mixer", "Bass2Volume").c_str());
+  Global::settingsMixerMicrophoneVolume = atoi(Settings::get("Mixer", "MicrophoneVolume").c_str());
 }
 
 std::string Settings::get(const std::string &section, const std::string &key) {

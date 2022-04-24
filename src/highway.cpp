@@ -365,9 +365,7 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
 
 static void drawNoteStand(const Song::TranscriptionTrack::Note& note, f32 noteTime)
 {
-  const GLuint shader = Shader::useShader(Shader::Stem::defaultWorld);
-
-  const f32 x = ;
+  const GLuint shader = Shader::useShader(Shader::Stem::noteStand);
 
   mat4 modelMat;
   modelMat.m30 = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);

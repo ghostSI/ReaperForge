@@ -179,25 +179,6 @@ static void drawStrings()
   }
 }
 
-static void drawNoteStand(const Song::TranscriptionTrack::Note& note, f32 noteTime)
-{
-  const GLuint shader = Shader::useShader(Shader::Stem::noteStand);
-
-  const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
-
-  mat4 modelMat;
-  modelMat.m30 = x;
-  //modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
-  modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
-  modelMat.m11 = 2.0f * f32(5 - note.string + stringOffset) * stringSpacing;
-  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
-
-  setStringColor(shader, 5 - note.string + stringOffset);
-
-  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::noteStand), Data::Geometry::noteStand, GL_STATIC_DRAW);
-  glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::noteStand) / (sizeof(float) * 5));
-}
-
 static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, f32 noteTime, f32 fretboardNoteDistance[7][24], i32 chordBoxLeft, i32 chordBoxWidth)
 {
   if (noteTime > -1.0f)
@@ -268,8 +249,6 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
 
       OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::note), Data::Geometry::note, GL_STATIC_DRAW);
       glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::note) / (sizeof(float) * 5));
-
-      drawNoteStand(note, noteTime);
     }
     Shader::useShader(Shader::Stem::defaultWorld);
 
@@ -384,6 +363,50 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
   }
 }
 
+static void drawNoteStand(const Song::TranscriptionTrack::Note& note, f32 noteTime)
+{
+  const GLuint shader = Shader::useShader(Shader::Stem::defaultWorld);
+
+  const f32 x = ;
+
+  mat4 modelMat;
+  modelMat.m30 = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+  modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
+  modelMat.m31 = -0.735f * stringSpacing;
+  modelMat.m11 = 2.0f * f32(5 - note.string + stringOffset) * stringSpacing - 2.0f * modelMat.m31;
+  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+  setStringColor(shader, 5 - note.string + stringOffset);
+
+  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::noteStand), Data::Geometry::noteStand, GL_STATIC_DRAW);
+  glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::noteStand) / (sizeof(float) * 5));
+}
+
+static void drawNoteStandZero(const Song::TranscriptionTrack::Note& note, f32 noteTime, i32 chordBoxLeft, i32 chordBoxWidth)
+{
+  const f32 left = frets[chordBoxLeft - 1];
+  const f32 top = f32(5 - note.string + stringOffset) * stringSpacing;
+  const f32 right = frets[chordBoxLeft + chordBoxWidth - 1];
+  const f32 bottom = -0.60f * stringSpacing;
+  const f32 posZ = noteTime * Global::settingsHighwaySpeedMultiplier;
+
+  // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
+  const GLfloat v[] = {
+    left , top, posZ, 0.0f, 1.0f,
+    right, top, posZ, 1.0f, 1.0f,
+    left, bottom, posZ, 0.0f, 0.0f,
+    right, bottom, posZ, 1.0f, 0.0f,
+  };
+
+  GLuint shader = Shader::useShader(Shader::Stem::noteStandZero);
+  setStringColor(shader, 5 - note.string + stringOffset);
+
+  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+  Shader::useShader(Shader::Stem::defaultWorld);
+}
+
 static void drawNotes(GLuint shader, f32 fretboardNoteDistance[7][24])
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
@@ -419,6 +442,8 @@ static void drawNotes(GLuint shader, f32 fretboardNoteDistance[7][24])
     {
       if (note.fret >= 1)  // Draw Fret Numbers for Chord
       {
+        drawNoteStand(note, noteTime);
+
         GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
         OpenGl::glUniform4f(OpenGl::glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
 
@@ -426,8 +451,14 @@ static void drawNotes(GLuint shader, f32 fretboardNoteDistance[7][24])
 
         Font::drawFretNumber(note.fret, x, -0.2f, noteTime * Global::settingsHighwaySpeedMultiplier, 0.5f, 0.5f);
 
+
+
         Shader::useShader(Shader::Stem::defaultWorld);
         glBindTexture(GL_TEXTURE_2D, texture);
+      }
+      else
+      {
+        drawNoteStandZero(note, noteTime, track.transcriptionTrack.anchors[currentAnchor].fret, track.transcriptionTrack.anchors[currentAnchor].width);
       }
     }
   }

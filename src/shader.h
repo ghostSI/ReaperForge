@@ -21,6 +21,7 @@ namespace Shader {
         fretBronze,
         string,
         noteStand,
+        noteStandZero,
     };
 
     void init();

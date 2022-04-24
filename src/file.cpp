@@ -1,6 +1,6 @@
 #include "file.h"
 
-#include "imageload.h"
+#include "opengl.h"
 
 #include <stdio.h>
 #include <string>
@@ -57,29 +57,10 @@ void File::save(const char *filepath, const char *content, size_t len) {
     fclose(file);
 }
 
-std::vector<u8> File::loadPng(const char *filepath, i32 &width, i32 &heigth, bool convertRGBA) {
-    const std::vector<u8> fileData = File::load(filepath, "rb");
-
-    return loadPng(fileData.data(), fileData.size(), width, heigth, convertRGBA);
-}
-
 GLuint File::loadDds(const char *filepath) {
     const std::vector<u8> fileData = File::load(filepath, "rb");
 
-    return loadDDS(fileData.data(), fileData.size());
-}
-
-std::vector<u8> File::loadPng(const u8 *imageData, u32 imageSize, i32 &width, i32 &heigth, bool convertRGBA) {
-    std::vector<u8> color;
-
-    // conversion needed for emscripten
-    unsigned long convWidth = width;
-    unsigned long convHeight = heigth;
-    decodePNG(color, convWidth, convHeight, imageData, imageSize, convertRGBA);
-    width = convWidth;
-    heigth = convHeight;
-
-    return color;
+    return OpenGl::loadDDSTexture(fileData.data(), fileData.size());
 }
 
 std::map<std::string, std::map<std::string, std::string>> File::loadIni(const char *filepath) {

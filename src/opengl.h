@@ -2,31 +2,29 @@
 #define OPENGL_H
 
 #ifdef _WIN32
-
 #include <Windows.h>
-
 #endif // _WIN32
 
 #include <GL/gl.h>
 
 #ifdef _WIN32
-
 #include <SDL2/SDL_opengl_glext.h>
-
 #endif // _WIN32
 
 #include "typedefs.h"
 
 namespace OpenGl {
-    enum struct Type {
-        texture0 = 0,
-    };
+    //enum struct Type {
+    //    texture0 = 0,
+    //};
 
-    inline constexpr GLenum texture(OpenGl::Type location) {
-        return GL_TEXTURE0 + to_underlying(location);
-    }
+    //inline constexpr GLenum texture(OpenGl::Type location) {
+    //    return GL_TEXTURE0 + to_underlying(location);
+    //}
 
     void init();
+
+    GLuint loadDDSTexture(const unsigned char* in_dds, size_t in_size);
 
     void glUseProgram(GLuint program);
 

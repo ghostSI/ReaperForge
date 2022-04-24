@@ -90,7 +90,7 @@ GLuint Shader::useShader(Shader::Stem shaderStem)
   OpenGl::glEnableVertexAttribArray(texAttrib);
   OpenGl::glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
 
-  OpenGl::glUniform1i(OpenGl::glGetUniformLocation(shaderProgram, "texture0"), to_underlying(OpenGl::Type::texture0));
+  OpenGl::glUniform1i(OpenGl::glGetUniformLocation(shaderProgram, "texture0"), 0);
 
   mat4 modelMat;
   OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &modelMat.m00);

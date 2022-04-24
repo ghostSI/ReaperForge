@@ -71,3 +71,4 @@ GLuint Global::vao = 0;
 GLuint Global::vbo = 0;
 GLuint Global::fbo = 0;
 GLuint Global::fboRtt = 0;
+GLuint Global::texture = 0;

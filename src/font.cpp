@@ -1,8 +1,9 @@
 #include "font.h"
 #include "texture.h"
 #include "opengl.h"
+#include "data.h"
+#include "global.h"
 #include "shader.h"
-#include "zorder.h"
 
 #include <vector>
 
@@ -13,8 +14,7 @@ static std::vector<u32> createTextBitmap(const char* text, u64 letters)
 {
   std::vector<u32> textBitmap;
 
-  const u32* texture = reinterpret_cast<const u32*>(Texture::texture(Texture::Type::font));
-  const i32 textureWidth_ = Texture::width(Texture::Type::font);
+  const u32* texture = reinterpret_cast<const u32*>(Data::Texture::font);
   const i32 rowOffset = (letters - 1) * Const::fontCharWidth;
 
   textBitmap.resize(i64(letters) * Const::fontCharWidth * Const::fontCharHeight);
@@ -31,7 +31,7 @@ static std::vector<u32> createTextBitmap(const char* text, u64 letters)
     i32 i = Const::fontCharWidth * c;
     for (i32 y = 0; y < Const::fontCharHeight; ++y) {
       for (i32 x = 0; x < Const::fontCharWidth; ++x) {
-        textBitmap[i] = texture[(y + offsetY) * textureWidth_ + (x + offsetX)];
+        textBitmap[i] = texture[(y + offsetY) * Const::fontTextureWidth + (x + offsetX)];
 
         ++i;
 
@@ -90,6 +90,8 @@ static void drawBitmap(const std::vector<u32>& textBitmap, u64 letters, f32 posX
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
   glDeleteTextures(1, &tex);
+
+  glBindTexture(GL_TEXTURE_2D, Global::texture);
 }
 
 void Font::draw(const char* text, f32 posX, f32 posY, f32 posZ, f32 scaleX, f32 scaleY)

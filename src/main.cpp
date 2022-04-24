@@ -3,6 +3,7 @@
 #ifndef TEST_BUILD
 
 #include "global.h"
+#include "data.h"
 #include "input.h"
 #include "scene.h"
 #include "sound.h"
@@ -117,6 +118,7 @@ int main(int argc, char* argv[]) {
   OpenGl::glBindVertexArray(Global::vao);
   OpenGl::glBindBuffer(GL_ARRAY_BUFFER, Global::vbo);
   OpenGl::glGenFramebuffers(1, &Global::fboRtt);
+  Global::texture = OpenGl::loadDDSTexture(Data::Texture::texture, sizeof(Data::Texture::texture));
 
   if (Global::gameController == nullptr && SDL_NumJoysticks() >= 1 && SDL_IsGameController(0))
     Global::gameController = SDL_GameControllerOpen(0);
@@ -125,7 +127,6 @@ int main(int argc, char* argv[]) {
 
   Shader::init();
   Sound::init();
-  Texture::init();
   Scene::init();
 
 #ifdef __EMSCRIPTEN__

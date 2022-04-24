@@ -117,6 +117,51 @@ void OpenGl::init() {
     glCompressedTexImage2DProc = reinterpret_cast<PFNGLCOMPRESSEDTEXIMAGE2DPROC>(SDL_GL_GetProcAddress("glCompressedTexImage2D"));
 }
 
+GLuint OpenGl::loadDDSTexture(const unsigned char* in_dds, size_t in_size) {
+  assert(memcmp(in_dds, "DDS ", 4) == 0);
+
+  u32 height = (in_dds[12]) | (in_dds[13] << 8) | (in_dds[14] << 16) | (in_dds[15] << 24);
+  u32 width = (in_dds[16]) | (in_dds[17] << 8) | (in_dds[18] << 16) | (in_dds[19] << 24);
+
+  u32 format;
+
+  if (in_dds[84] == 'D') {
+    switch (in_dds[87]) {
+    case '1': // DXT1
+      format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+      break;
+    case '3': // DXT3
+      format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+      break;
+    case '5': // DXT5
+      format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+      break;
+    case '0': // DX10
+    default:
+      assert(false);
+    }
+  }
+  else {
+    assert(false);
+  }
+
+  GLuint texture = 0;
+  glGenTextures(1, &texture);
+  assert(texture != 0);
+
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  OpenGl::glCompressedTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, in_size - 128, &in_dds[128]);
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  return texture;
+}
+
 void OpenGl::glUseProgram(GLuint program) {
     glUseProgramProc(program);
 }

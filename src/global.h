@@ -25,6 +25,8 @@ namespace Const {
     inline constexpr f32 aspectRatio = (16.0f / 9.0f);
     inline constexpr i32 fontCharWidth = 12;
     inline constexpr i32 fontCharHeight = 18;
+    inline constexpr i32 fontTextureWidth = 192;
+    inline constexpr i32 fontTextureHeight = 108;
     inline constexpr f32 highwayRenderMaxFutureTime = -10.0f;
     inline constexpr f32 highwayRenderTremoloFrequency = 0.04f;
     inline constexpr f32 highwayRenderLeftHandPreTime = -2.0f;
@@ -151,6 +153,7 @@ namespace Global {
     extern GLuint vbo; // default vbo
     extern GLuint fbo; // default fbo is 0 if postprocessor is off
     extern GLuint fboRtt; // framebuffer for rendering to texture (make sure to set framebuffer to 0 after using it)
+    extern GLuint texture;
 };
 
 #endif // GLOBAL_H

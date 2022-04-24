@@ -3,7 +3,6 @@
 #include "collection.h"
 #include "global.h"
 #include "opengl.h"
-#include "imageload.h"
 #include "psarc.h"
 #include "installer.h"
 #include "settings.h"
@@ -1922,7 +1921,7 @@ static void songWindow() {
 
                     struct nk_image thumbnail;
                     if (songInfo.albumCover128_ogl == 0 && songInfo.albumCover128_tocIndex >= 1)
-                        songInfo.albumCover128_ogl = loadDDS(
+                        songInfo.albumCover128_ogl = OpenGl::loadDDSTexture(
                                 Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.data(),
                                 Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.size());
 

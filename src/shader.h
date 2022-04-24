@@ -20,6 +20,7 @@ namespace Shader {
         fretSilver,
         fretBronze,
         string,
+        noteStand,
     };
 
     void init();

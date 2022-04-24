@@ -72,6 +72,7 @@ void Shader::init()
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fretSilverFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fretBronzeFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::stringFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::noteStandFrag));
 }
 
 GLuint Shader::useShader(Shader::Stem shaderStem)

@@ -82,7 +82,7 @@ void Highway::init()
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();
 
-  Global::oggStartTime = -35.0f;
+  //Global::oggStartTime = -35.0f;
 
   texture = loadDDS(Data::Texture::texture, sizeof(Data::Texture::texture));
 }
@@ -179,6 +179,25 @@ static void drawStrings()
   }
 }
 
+static void drawNoteStand(const Song::TranscriptionTrack::Note& note, f32 noteTime)
+{
+  const GLuint shader = Shader::useShader(Shader::Stem::noteStand);
+
+  const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+
+  mat4 modelMat;
+  modelMat.m30 = x;
+  //modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+  modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
+  modelMat.m11 = 2.0f * f32(5 - note.string + stringOffset) * stringSpacing;
+  OpenGl::glUniformMatrix4fv(OpenGl::glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+  setStringColor(shader, 5 - note.string + stringOffset);
+
+  OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::noteStand), Data::Geometry::noteStand, GL_STATIC_DRAW);
+  glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::noteStand) / (sizeof(float) * 5));
+}
+
 static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, f32 noteTime, f32 fretboardNoteDistance[7][24], i32 chordBoxLeft, i32 chordBoxWidth)
 {
   if (noteTime > -1.0f)
@@ -249,7 +268,10 @@ static void drawNote(GLuint shader, const Song::TranscriptionTrack::Note& note, 
 
       OpenGl::glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::note), Data::Geometry::note, GL_STATIC_DRAW);
       glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::note) / (sizeof(float) * 5));
+
+      drawNoteStand(note, noteTime);
     }
+    Shader::useShader(Shader::Stem::defaultWorld);
 
 
     if (note.hammerOn)

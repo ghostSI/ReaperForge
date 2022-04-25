@@ -15,6 +15,7 @@ KeyInput Global::inputFullscreen;
 KeyInput Global::inputPause;
 KeyInput Global::inputWireframe;
 KeyInput Global::inputDebug;
+KeyInput Global::debugCamera;
 
 u32 Global::windowWidth = 1024;
 u32 Global::windowHeight = 768;
@@ -30,6 +31,9 @@ InstrumentFlags Global::filterInstrument = InstrumentFlags::none;
 bool Global::collectionLoaded = false;
 std::vector<Psarc::Info> Global::psarcInfos;
 std::vector<Song::Info> Global::collection;
+Song::Info Global::songInfo;
+Song::Track Global::songTrack;
+std::vector<Song::Vocal> Global::songVocals;
 std::vector<u8> Global::ogg;
 f32 Global::oggStartTime = 0.0f;
 char Global::searchText[256] = "";

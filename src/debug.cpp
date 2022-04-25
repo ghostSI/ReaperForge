@@ -63,7 +63,7 @@ void Debug::render()
     }
 
     {
-      sprintf(text, "RecCallback %llu", Global::debugAudioCallbackRecording + 0);
+      sprintf(text, "Camera %.2f %.2f %.2f", Global::cameraMat.m30, Global::cameraMat.m31, Global::cameraMat.m32);
       const i32 letters = strlen(text);
       const f32 scaleX = (1000.0f / Const::fontCharWidth) * letters / Global::windowWidth;
       const f32 scaleY = (1000.0f / Const::fontCharHeight) / Global::windowHeight;
@@ -71,11 +71,19 @@ void Debug::render()
     }
 
     {
-      sprintf(text, "PlayCallback %llu", Global::debugAudioCallbackPlayback + 0);
+      sprintf(text, "RecCallback %llu", Global::debugAudioCallbackRecording + 0);
       const i32 letters = strlen(text);
       const f32 scaleX = (1000.0f / Const::fontCharWidth) * letters / Global::windowWidth;
       const f32 scaleY = (1000.0f / Const::fontCharHeight) / Global::windowHeight;
       Font::draw(text, -1.00f + 0.5f * scaleX, (1.0f - 0.6f * aspectRatio - 0.5f * scaleY), 0.0f, scaleX, scaleY);
+    }
+
+    {
+      sprintf(text, "PlayCallback %llu", Global::debugAudioCallbackPlayback + 0);
+      const i32 letters = strlen(text);
+      const f32 scaleX = (1000.0f / Const::fontCharWidth) * letters / Global::windowWidth;
+      const f32 scaleY = (1000.0f / Const::fontCharHeight) / Global::windowHeight;
+      Font::draw(text, -1.00f + 0.5f * scaleX, (1.0f - 0.7f * aspectRatio - 0.5f * scaleY), 0.0f, scaleX, scaleY);
     }
   }
 }

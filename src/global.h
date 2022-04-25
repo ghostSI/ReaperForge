@@ -37,7 +37,36 @@ namespace Const {
     inline constexpr f32 highwayRenderDrawChordNameWaitTime = 0.2f;
     inline constexpr f32 highwayRenderDrawChordNameFadeOutTime = 0.2f;
     inline constexpr f32 highwayRenderDrawChordNameEndTime = 0.3f;
+    inline constexpr f32 highwayRenderStringSpacing = 0.5f;
     inline constexpr f32 highwayRenderStringGaugeMultiplier = 0.2f;
+    inline constexpr f32 highwayRenderFretPosition[] =
+    {
+      0.0f,
+      1.0f,
+      2.0f,
+      3.0f,
+      4.0f,
+      5.0f,
+      6.0f,
+      7.0f,
+      8.0f,
+      9.0f,
+      10.0f,
+      11.0f,
+      12.0f,
+      13.0f,
+      14.0f,
+      15.0f,
+      16.0f,
+      17.0f,
+      18.0f,
+      19.0f,
+      20.0f,
+      21.0f,
+      22.0f,
+      23.0f,
+      24.0f
+    };
     inline constexpr const char notesFlat[][3] =
     {
       "A",
@@ -97,6 +126,7 @@ namespace Global {
     extern KeyInput inputPause;
     extern KeyInput inputWireframe;
     extern KeyInput inputDebug;
+    extern KeyInput debugCamera;
 
     extern u32 windowWidth;
     extern u32 windowHeight;
@@ -112,6 +142,9 @@ namespace Global {
     extern bool collectionLoaded;
     extern std::vector<Psarc::Info> psarcInfos;
     extern std::vector<Song::Info> collection;
+    extern Song::Info songInfo;
+    extern Song::Track songTrack;
+    extern std::vector<Song::Vocal> songVocals;
     extern std::vector<u8> ogg;
     extern f32 oggStartTime;
     extern char searchText[256];

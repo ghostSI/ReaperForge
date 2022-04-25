@@ -13,41 +13,6 @@
 #include "font.h"
 #include "sound.h"
 
-static const f32 stringSpacing = 0.5f;
-
-static const f32 frets[]
-{
-  0.0f,
-  1.00f,
-  2.00f,
-  3.00f,
-  4.00f,
-  5.00f,
-  6.00f,
-  7.00f,
-  8.00f,
-  9.00f,
-  10.00f,
-  11.00f,
-  12.00f,
-  13.00f,
-  14.00f,
-  15.00f,
-  16.00f,
-  17.00f,
-  18.00f,
-  19.00f,
-  20.00f,
-  21.00f,
-  22.00f,
-  23.00f,
-  24.00f
-};
-
-static Song::Info songInfo;
-static Song::Track track;
-static std::vector<Song::Vocal> vocals;
-
 static i32 stringCount = 6;
 static i32 stringOffset = 0;
 static i32 songTuning[6];
@@ -57,10 +22,10 @@ void Highway::init()
   const std::vector<u8> psarcData = Psarc::readPsarcData("songs/test.psarc");
 
   const Psarc::Info psarcInfo = Psarc::parse(psarcData);
-  songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
-  Song::loadSongInfoComplete(psarcInfo, songInfo);
+  Global::songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
+  Song::loadSongInfoComplete(psarcInfo, Global::songInfo);
 
-  if (songInfo.manifest.attributes[0].tuning.string0 <= -3)
+  if (Global::songInfo.manifest.attributes[0].tuning.string0 <= -3)
   {
     stringCount = 7;
     stringOffset = 1;
@@ -71,10 +36,10 @@ void Highway::init()
     stringOffset = 0;
   }
 
-  memcpy(songTuning, &songInfo.manifest.attributes[0].tuning.string0, sizeof(Tuning));
+  memcpy(songTuning, &Global::songInfo.manifest.attributes[0].tuning.string0, sizeof(Tuning));
 
-  track = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
-  vocals = Song::loadVocals(psarcInfo);
+  Global::songTrack = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
+  Global::songVocals = Song::loadVocals(psarcInfo);
 
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();
@@ -104,10 +69,10 @@ static void drawFrets()
   i32 chordBoxLeftNext = 24;
   i32 chordBoxRightNext = 0;
 
-  for (i32 i = 0; i < i32(track.transcriptionTrack.anchors.size()) - 2; ++i)
+  for (i32 i = 0; i < i32(Global::songTrack.transcriptionTrack.anchors.size()) - 2; ++i)
   {
-    const Song::TranscriptionTrack::Anchor& anchor0 = track.transcriptionTrack.anchors[i];
-    const Song::TranscriptionTrack::Anchor& anchor1 = track.transcriptionTrack.anchors[i + 1];
+    const Song::TranscriptionTrack::Anchor& anchor0 = Global::songTrack.transcriptionTrack.anchors[i];
+    const Song::TranscriptionTrack::Anchor& anchor1 = Global::songTrack.transcriptionTrack.anchors[i + 1];
 
     if (oggElapsed >= anchor0.time && oggElapsed < anchor1.time)
     {
@@ -128,7 +93,7 @@ static void drawFrets()
     assert(false);
   modelMat.m31 = -0.3f;
 
-  for (i32 i = 0; i < sizeof(frets); ++i)
+  for (i32 i = 0; i < sizeof(Const::highwayRenderFretPosition); ++i)
   {
     GLuint shader;
     if (chordBoxLeft - 1 <= i && chordBoxRight - 1 >= i)
@@ -138,7 +103,7 @@ static void drawFrets()
     else
       shader = Shader::useShader(Shader::Stem::fretBronze);
 
-    modelMat.m30 = frets[i];
+    modelMat.m30 = Const::highwayRenderFretPosition[i];
     glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::fret), Data::Geometry::fret, GL_STATIC_DRAW);
@@ -165,7 +130,7 @@ static void drawStrings()
   {
     const f32 alpha = i >= Global::settingsInstrumentGuitarFirstWoundString ? 1.0f : 0.0f;
     setStringColor(shader, i, alpha);
-    modelMat.m31 = f32(i) * stringSpacing;
+    modelMat.m31 = f32(i) * Const::highwayRenderStringSpacing;
     modelMat.m11 = 1.0f + i * Const::highwayRenderStringGaugeMultiplier;
     modelMat.m22 = 1.0f + i * Const::highwayRenderStringGaugeMultiplier;
     glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
@@ -192,8 +157,8 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
 
       {
         mat4 modelMat;
-        modelMat.m30 = frets[chordBoxLeft - 1] + 0.05f;
-        modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+        modelMat.m30 = Const::highwayRenderFretPosition[chordBoxLeft - 1] + 0.05f;
+        modelMat.m31 = f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing;
         modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
         glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
@@ -204,8 +169,8 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
       {
         mat4 modelMat;
         modelMat.m00 = 16.0f;
-        modelMat.m30 = frets[chordBoxLeft - 1] + 0.266f;
-        modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+        modelMat.m30 = Const::highwayRenderFretPosition[chordBoxLeft - 1] + 0.266f;
+        modelMat.m31 = f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing;
         modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
         glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
@@ -215,8 +180,8 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
 
       {
         mat4 modelMat;
-        modelMat.m30 = frets[chordBoxLeft - 1] + 3.73f;
-        modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+        modelMat.m30 = Const::highwayRenderFretPosition[chordBoxLeft - 1] + 3.73f;
+        modelMat.m31 = f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing;
         modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
         glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
@@ -226,19 +191,19 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
 
       {
         mat4 modelMat;
-        modelMat.m30 = frets[chordBoxLeft - 1] + 0.5f * frets[chordBoxWidth];
-        modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+        modelMat.m30 = Const::highwayRenderFretPosition[chordBoxLeft - 1] + 0.5f * Const::highwayRenderFretPosition[chordBoxWidth];
+        modelMat.m31 = f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing;
         modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
         glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
       }
     }
     else
     {
-      const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+      const f32 x = Const::highwayRenderFretPosition[note.fret - 1] + 0.5f * (Const::highwayRenderFretPosition[note.fret] - Const::highwayRenderFretPosition[note.fret - 1]);
 
       mat4 modelMat;
       modelMat.m30 = x;
-      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+      modelMat.m31 = f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing;
       modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
       glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
@@ -297,11 +262,11 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
 
     if (note.tremolo)
     {
-      const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+      const f32 x = Const::highwayRenderFretPosition[note.fret - 1] + 0.5f * (Const::highwayRenderFretPosition[note.fret] - Const::highwayRenderFretPosition[note.fret - 1]);
 
       mat4 modelMat;
       modelMat.m30 = x;
-      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+      modelMat.m31 = f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing;
       modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
       glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
@@ -337,11 +302,11 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
     }
     else
     {
-      const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+      const f32 x = Const::highwayRenderFretPosition[note.fret - 1] + 0.5f * (Const::highwayRenderFretPosition[note.fret] - Const::highwayRenderFretPosition[note.fret - 1]);
 
       mat4 modelMat;
       modelMat.m30 = x;
-      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+      modelMat.m31 = f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing;
       modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
       glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
@@ -365,10 +330,10 @@ static void drawNoteStand(const Song::TranscriptionTrack::Note& note, f32 noteTi
   const GLuint shader = Shader::useShader(Shader::Stem::noteStand);
 
   mat4 modelMat;
-  modelMat.m30 = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+  modelMat.m30 = Const::highwayRenderFretPosition[note.fret - 1] + 0.5f * (Const::highwayRenderFretPosition[note.fret] - Const::highwayRenderFretPosition[note.fret - 1]);
   modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
-  modelMat.m31 = -0.735f * stringSpacing;
-  modelMat.m11 = 2.0f * f32(5 - note.string + stringOffset) * stringSpacing - 2.0f * modelMat.m31;
+  modelMat.m31 = -0.735f * Const::highwayRenderStringSpacing;
+  modelMat.m11 = 2.0f * f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing - 2.0f * modelMat.m31;
   glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
   setStringColor(shader, 5 - note.string + stringOffset);
@@ -381,10 +346,10 @@ static void drawNoteStandZero(const Song::TranscriptionTrack::Note& note, f32 no
 {
   const GLuint shader = Shader::useShader(Shader::Stem::noteStandZero);
 
-  const f32 left = frets[chordBoxLeft - 1];
-  const f32 top = f32(5 - note.string + stringOffset) * stringSpacing;
-  const f32 right = frets[chordBoxLeft + chordBoxWidth - 1];
-  const f32 bottom = -0.60f * stringSpacing;
+  const f32 left = Const::highwayRenderFretPosition[chordBoxLeft - 1];
+  const f32 top = f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing;
+  const f32 right = Const::highwayRenderFretPosition[chordBoxLeft + chordBoxWidth - 1];
+  const f32 bottom = -0.60f * Const::highwayRenderStringSpacing;
   const f32 posZ = noteTime * Global::settingsHighwaySpeedMultiplier;
 
   // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
@@ -407,9 +372,9 @@ static void drawNotes(f32 fretboardNoteDistance[7][24])
 
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (i32 i = track.transcriptionTrack.notes.size() - 1; i >= 0; --i)
+  for (i32 i = Global::songTrack.transcriptionTrack.notes.size() - 1; i >= 0; --i)
   {
-    const Song::TranscriptionTrack::Note& note = track.transcriptionTrack.notes[i];
+    const Song::TranscriptionTrack::Note& note = Global::songTrack.transcriptionTrack.notes[i];
 
     const f32 noteTime = -note.time + oggElapsed;
 
@@ -419,10 +384,10 @@ static void drawNotes(f32 fretboardNoteDistance[7][24])
       continue;
 
     i32 currentAnchor = -1;
-    for (i32 i = 0; i < track.transcriptionTrack.anchors.size() - 2; ++i)
+    for (i32 i = 0; i < Global::songTrack.transcriptionTrack.anchors.size() - 2; ++i)
     {
-      const Song::TranscriptionTrack::Anchor& anchor0 = track.transcriptionTrack.anchors[i];
-      const Song::TranscriptionTrack::Anchor& anchor1 = track.transcriptionTrack.anchors[i + 1];
+      const Song::TranscriptionTrack::Anchor& anchor0 = Global::songTrack.transcriptionTrack.anchors[i];
+      const Song::TranscriptionTrack::Anchor& anchor1 = Global::songTrack.transcriptionTrack.anchors[i + 1];
 
       if (note.time >= anchor0.time && note.time < anchor1.time)
       {
@@ -432,7 +397,7 @@ static void drawNotes(f32 fretboardNoteDistance[7][24])
     }
     assert(currentAnchor >= 0);
 
-    drawNote(note, noteTime, fretboardNoteDistance, track.transcriptionTrack.anchors[currentAnchor].fret, track.transcriptionTrack.anchors[currentAnchor].width);
+    drawNote(note, noteTime, fretboardNoteDistance, Global::songTrack.transcriptionTrack.anchors[currentAnchor].fret, Global::songTrack.transcriptionTrack.anchors[currentAnchor].width);
 
     if (noteTime < 0.0f)
     {
@@ -443,13 +408,13 @@ static void drawNotes(f32 fretboardNoteDistance[7][24])
         const GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
         glUniform4f(glGetUniformLocation(shader, "color"), 0.831f, 0.686f, 0.216f, 1.0f);
 
-        const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+        const f32 x = Const::highwayRenderFretPosition[note.fret - 1] + 0.5f * (Const::highwayRenderFretPosition[note.fret] - Const::highwayRenderFretPosition[note.fret - 1]);
 
         Font::drawFretNumber(note.fret, x, -0.2f, noteTime * Global::settingsHighwaySpeedMultiplier, 0.5f, 0.5f);
       }
       else
       {
-        drawNoteStandZero(note, noteTime, track.transcriptionTrack.anchors[currentAnchor].fret, track.transcriptionTrack.anchors[currentAnchor].width);
+        drawNoteStandZero(note, noteTime, Global::songTrack.transcriptionTrack.anchors[currentAnchor].fret, Global::songTrack.transcriptionTrack.anchors[currentAnchor].width);
       }
     }
   }
@@ -488,10 +453,10 @@ static void drawAnchors()
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (i32 i = 0; i < i32(track.transcriptionTrack.anchors.size()) - 2; ++i)
+  for (i32 i = 0; i < i32(Global::songTrack.transcriptionTrack.anchors.size()) - 2; ++i)
   {
-    const Song::TranscriptionTrack::Anchor& anchor0 = track.transcriptionTrack.anchors[i];
-    const Song::TranscriptionTrack::Anchor& anchor1 = track.transcriptionTrack.anchors[i + 1];
+    const Song::TranscriptionTrack::Anchor& anchor0 = Global::songTrack.transcriptionTrack.anchors[i];
+    const Song::TranscriptionTrack::Anchor& anchor1 = Global::songTrack.transcriptionTrack.anchors[i + 1];
 
     const f32 noteTimeBegin = -anchor0.time + oggElapsed;
     const f32 noteTimeEnd = -anchor1.time + oggElapsed;
@@ -526,11 +491,11 @@ static void drawChordName(i32 chordId, f32 noteTime, i32 chordBoxLeft, bool cons
     }
   }
 
-  const Song::ChordTemplate& chordTemplate = track.chordTemplates[chordId];
+  const Song::ChordTemplate& chordTemplate = Global::songTrack.chordTemplates[chordId];
 
   const GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
   glUniform4f(glGetUniformLocation(shader, "color"), 1.0, 1.0f, 1.0f, alpha);
-  Font::draw(Chords::translatedName(chordTemplate.chordName).c_str(), frets[chordBoxLeft] - 1.5f, f32(stringCount + stringOffset) * stringSpacing - 0.30f * stringSpacing, noteTime * Global::settingsHighwaySpeedMultiplier, 1.0f, 1.0f);
+  Font::draw(Chords::translatedName(chordTemplate.chordName).c_str(), Const::highwayRenderFretPosition[chordBoxLeft] - 1.5f, f32(stringCount + stringOffset) * Const::highwayRenderStringSpacing - 0.30f * Const::highwayRenderStringSpacing, noteTime * Global::settingsHighwaySpeedMultiplier, 1.0f, 1.0f);
 }
 
 static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime, bool consecutiveChord, f32 fretboardNoteDistance[7][24])
@@ -552,10 +517,10 @@ static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime
   }
 
   i32 currentAnchor = -1;
-  for (i32 i = 0; i < track.transcriptionTrack.anchors.size() - 2; ++i)
+  for (i32 i = 0; i < Global::songTrack.transcriptionTrack.anchors.size() - 2; ++i)
   {
-    const Song::TranscriptionTrack::Anchor& anchor0 = track.transcriptionTrack.anchors[i];
-    const Song::TranscriptionTrack::Anchor& anchor1 = track.transcriptionTrack.anchors[i + 1];
+    const Song::TranscriptionTrack::Anchor& anchor0 = Global::songTrack.transcriptionTrack.anchors[i];
+    const Song::TranscriptionTrack::Anchor& anchor1 = Global::songTrack.transcriptionTrack.anchors[i + 1];
 
     if (chord.time >= anchor0.time && chord.time < anchor1.time)
     {
@@ -567,8 +532,8 @@ static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime
 
   if (currentAnchor >= 0)
   {
-    chordBoxLeft = track.transcriptionTrack.anchors[currentAnchor].fret;
-    chordBoxRight = track.transcriptionTrack.anchors[currentAnchor].fret + track.transcriptionTrack.anchors[currentAnchor].width;
+    chordBoxLeft = Global::songTrack.transcriptionTrack.anchors[currentAnchor].fret;
+    chordBoxRight = Global::songTrack.transcriptionTrack.anchors[currentAnchor].fret + Global::songTrack.transcriptionTrack.anchors[currentAnchor].width;
   }
   if (chordBoxRight - chordBoxLeft < 4)
     chordBoxRight = chordBoxLeft + 4;
@@ -585,10 +550,10 @@ static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime
     if (noteTime < 0.0f)
     {
       { // draw ChordBox
-        const f32 left = frets[chordBoxLeft - 1];
-        const f32 top = f32(stringCount + stringOffset) * stringSpacing - 0.40f * stringSpacing;
-        const f32 right = frets[chordBoxRight - 1];
-        const f32 bottom = -0.60f * stringSpacing;
+        const f32 left = Const::highwayRenderFretPosition[chordBoxLeft - 1];
+        const f32 top = f32(stringCount + stringOffset) * Const::highwayRenderStringSpacing - 0.40f * Const::highwayRenderStringSpacing;
+        const f32 right = Const::highwayRenderFretPosition[chordBoxRight - 1];
+        const f32 bottom = -0.60f * Const::highwayRenderStringSpacing;
         const f32 posZ = noteTime * Global::settingsHighwaySpeedMultiplier;
 
         // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
@@ -613,7 +578,7 @@ static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime
         {
           if (fretsInChord & (1 << i))
           {
-            const f32 x = frets[i - 1] + 0.5f * (frets[i] - frets[i - 1]);
+            const f32 x = Const::highwayRenderFretPosition[i - 1] + 0.5f * (Const::highwayRenderFretPosition[i] - Const::highwayRenderFretPosition[i - 1]);
 
             Font::drawFretNumber(i, x, -0.2f, noteTime * Global::settingsHighwaySpeedMultiplier + 0.1f, 0.5f, 0.5f);
           }
@@ -625,10 +590,10 @@ static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime
   {
     if (noteTime < 0.0f)
     { // draw consecutive ChordBox
-      const f32 left = frets[chordBoxLeft - 1];
-      const f32 top = 0.5f * (f32(stringCount + stringOffset) * stringSpacing - 0.40f * stringSpacing);
-      const f32 right = frets[chordBoxRight - 1];
-      const f32 bottom = -0.60f * stringSpacing;
+      const f32 left = Const::highwayRenderFretPosition[chordBoxLeft - 1];
+      const f32 top = 0.5f * (f32(stringCount + stringOffset) * Const::highwayRenderStringSpacing - 0.40f * Const::highwayRenderStringSpacing);
+      const f32 right = Const::highwayRenderFretPosition[chordBoxRight - 1];
+      const f32 bottom = -0.60f * Const::highwayRenderStringSpacing;
       const f32 posZ = noteTime * Global::settingsHighwaySpeedMultiplier;
 
       // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
@@ -647,7 +612,7 @@ static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime
     }
   }
 
-  drawChordName(chord.chordId, noteTime, frets[chordBoxLeft], consecutiveChord);
+  drawChordName(chord.chordId, noteTime, Const::highwayRenderFretPosition[chordBoxLeft], consecutiveChord);
 }
 
 static void drawChordLeftHand(const Song::TranscriptionTrack::Chord& chord)
@@ -660,9 +625,9 @@ static void drawChordLeftHand(const Song::TranscriptionTrack::Chord& chord)
     GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
     glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
 
-    const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+    const f32 x = Const::highwayRenderFretPosition[note.fret - 1] + 0.5f * (Const::highwayRenderFretPosition[note.fret] - Const::highwayRenderFretPosition[note.fret - 1]);
 
-    Font::drawFretNumber(note.leftHand, x, f32(5 - note.string + stringOffset) * stringSpacing, 0.1f, 0.4f, 0.4f);
+    Font::drawFretNumber(note.leftHand, x, f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing, 0.1f, 0.4f, 0.4f);
   }
 }
 
@@ -674,9 +639,9 @@ static void drawChords(f32 fretboardNoteDistance[7][24])
   f32 leftHandNoteTimeBegin = Const::highwayRenderLeftHandPreTime;
   //f32 leftHandNoteTimeEnd;
 
-  for (i32 i = track.transcriptionTrack.chords.size() - 1; i >= 0; --i)
+  for (i32 i = Global::songTrack.transcriptionTrack.chords.size() - 1; i >= 0; --i)
   {
-    const Song::TranscriptionTrack::Chord& chord = track.transcriptionTrack.chords[i];
+    const Song::TranscriptionTrack::Chord& chord = Global::songTrack.transcriptionTrack.chords[i];
 
     const f32 noteTime = -chord.time + oggElapsed;
 
@@ -694,7 +659,7 @@ static void drawChords(f32 fretboardNoteDistance[7][24])
     bool consecutiveChrod = false;
     if (i >= 1)
     {
-      const Song::TranscriptionTrack::Chord& prevChord = track.transcriptionTrack.chords[i - 1];
+      const Song::TranscriptionTrack::Chord& prevChord = Global::songTrack.transcriptionTrack.chords[i - 1];
       if (chord.chordNotes.size() == prevChord.chordNotes.size())
       {
         consecutiveChrod = true;
@@ -721,7 +686,7 @@ static void drawChords(f32 fretboardNoteDistance[7][24])
 
   if (leftHandNextChord >= 0)
   {
-    const Song::TranscriptionTrack::Chord& chord = track.transcriptionTrack.chords[leftHandNextChord];
+    const Song::TranscriptionTrack::Chord& chord = Global::songTrack.transcriptionTrack.chords[leftHandNextChord];
 
     drawChordLeftHand(chord);
   }
@@ -737,8 +702,8 @@ static void drawArpeggio(const Song::TranscriptionTrack::Note& note, f32 noteTim
 
     {
       mat4 modelMat;
-      modelMat.m30 = frets[chordBoxLeft] + 0.05f;
-      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+      modelMat.m30 = Const::highwayRenderFretPosition[chordBoxLeft] + 0.05f;
+      modelMat.m31 = f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing;
       modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
       glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
@@ -752,8 +717,8 @@ static void drawArpeggio(const Song::TranscriptionTrack::Note& note, f32 noteTim
     {
       mat4 modelMat;
       modelMat.m00 = 16.0f;
-      modelMat.m30 = frets[chordBoxLeft] + 0.266f;
-      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+      modelMat.m30 = Const::highwayRenderFretPosition[chordBoxLeft] + 0.266f;
+      modelMat.m31 = f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing;
       modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
       glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
@@ -763,8 +728,8 @@ static void drawArpeggio(const Song::TranscriptionTrack::Note& note, f32 noteTim
 
     {
       mat4 modelMat;
-      modelMat.m30 = frets[chordBoxLeft] + 3.73f;
-      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+      modelMat.m30 = Const::highwayRenderFretPosition[chordBoxLeft] + 3.73f;
+      modelMat.m31 = f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing;
       modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
       glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
@@ -777,19 +742,19 @@ static void drawArpeggio(const Song::TranscriptionTrack::Note& note, f32 noteTim
 
     {
       mat4 modelMat;
-      modelMat.m30 = frets[chordBoxLeft] + 2.0f;
-      modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+      modelMat.m30 = Const::highwayRenderFretPosition[chordBoxLeft] + 2.0f;
+      modelMat.m31 = f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing;
       modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
       glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
     }
   }
   else
   {
-    const f32 x = frets[note.fret - 1] + 0.5f * (frets[note.fret] - frets[note.fret - 1]);
+    const f32 x = Const::highwayRenderFretPosition[note.fret - 1] + 0.5f * (Const::highwayRenderFretPosition[note.fret] - Const::highwayRenderFretPosition[note.fret - 1]);
 
     mat4 modelMat;
     modelMat.m30 = x;
-    modelMat.m31 = f32(5 - note.string + stringOffset) * stringSpacing;
+    modelMat.m31 = f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing;
     modelMat.m32 = noteTime * Global::settingsHighwaySpeedMultiplier;
     glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
@@ -806,7 +771,7 @@ static void drawHandShape(const Song::TranscriptionTrack::HandShape& handShape, 
   i32 chordBoxRight = 0;
 
   bool hasArpeggio = false;
-  for (const Song::TranscriptionTrack::Note& note : track.transcriptionTrack.notes)
+  for (const Song::TranscriptionTrack::Note& note : Global::songTrack.transcriptionTrack.notes)
   {
     if (note.time >= handShape.startTime && note.time <= handShape.endTime)
     {
@@ -826,10 +791,10 @@ static void drawHandShape(const Song::TranscriptionTrack::HandShape& handShape, 
 
   {
     i32 currentAnchor = -1;
-    for (i32 i = 0; i < track.transcriptionTrack.anchors.size() - 2; ++i)
+    for (i32 i = 0; i < Global::songTrack.transcriptionTrack.anchors.size() - 2; ++i)
     {
-      const Song::TranscriptionTrack::Anchor& anchor0 = track.transcriptionTrack.anchors[i];
-      const Song::TranscriptionTrack::Anchor& anchor1 = track.transcriptionTrack.anchors[i + 1];
+      const Song::TranscriptionTrack::Anchor& anchor0 = Global::songTrack.transcriptionTrack.anchors[i];
+      const Song::TranscriptionTrack::Anchor& anchor1 = Global::songTrack.transcriptionTrack.anchors[i + 1];
 
       if (handShape.startTime >= anchor0.time && handShape.endTime < anchor1.time)
       {
@@ -841,8 +806,8 @@ static void drawHandShape(const Song::TranscriptionTrack::HandShape& handShape, 
 
     if (currentAnchor >= 0)
     {
-      chordBoxLeft = track.transcriptionTrack.anchors[currentAnchor].fret;
-      chordBoxRight = track.transcriptionTrack.anchors[currentAnchor].fret + track.transcriptionTrack.anchors[currentAnchor].width;
+      chordBoxLeft = Global::songTrack.transcriptionTrack.anchors[currentAnchor].fret;
+      chordBoxRight = Global::songTrack.transcriptionTrack.anchors[currentAnchor].fret + Global::songTrack.transcriptionTrack.anchors[currentAnchor].width;
     }
     if (chordBoxRight - chordBoxLeft < 4)
       chordBoxRight = chordBoxLeft + 4;
@@ -850,8 +815,8 @@ static void drawHandShape(const Song::TranscriptionTrack::HandShape& handShape, 
 
   { // drawHandShapeAnchor
 
-    const f32 left = frets[chordBoxLeft - 1] - 0.1f;
-    const f32 right = frets[chordBoxRight - 1] + 0.1f;
+    const f32 left = Const::highwayRenderFretPosition[chordBoxLeft - 1] - 0.1f;
+    const f32 right = Const::highwayRenderFretPosition[chordBoxRight - 1] + 0.1f;
     const f32 front = min_(noteTimeBegin * Global::settingsHighwaySpeedMultiplier, 0.0f);
     const f32 back = noteTimeEnd * Global::settingsHighwaySpeedMultiplier;
 
@@ -877,10 +842,10 @@ static void drawHandShape(const Song::TranscriptionTrack::HandShape& handShape, 
 
   //if (hasArpeggio)
   //{ // draw ArpeggioBox
-  //  const f32 left = frets[chordBoxLeft - 1];
-  //  const f32 top = f32(stringCount + stringOffset) * stringSpacing - 0.40f * stringSpacing;
-  //  const f32 right = frets[chordBoxRight - 1];
-  //  const f32 bottom = -0.60f * stringSpacing;
+  //  const f32 left = Const::highwayRenderFretPosition[chordBoxLeft - 1];
+  //  const f32 top = f32(stringCount + stringOffset) * Const::highwayRenderStringSpacing - 0.40f * Const::highwayRenderStringSpacing;
+  //  const f32 right = Const::highwayRenderFretPosition[chordBoxRight - 1];
+  //  const f32 bottom = -0.60f * Const::highwayRenderStringSpacing;
   //  const f32 posZ = noteTimeBegin * Global::settingsHighwaySpeedMultiplier;
 
   //  // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
@@ -907,9 +872,9 @@ static void drawHandShapes()
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (i32 i = 0; i < track.transcriptionTrack.handShape.size(); ++i)
+  for (i32 i = 0; i < Global::songTrack.transcriptionTrack.handShape.size(); ++i)
   {
-    const Song::TranscriptionTrack::HandShape& handShape = track.transcriptionTrack.handShape[i];
+    const Song::TranscriptionTrack::HandShape& handShape = Global::songTrack.transcriptionTrack.handShape[i];
 
     const f32 noteTimeBegin = -handShape.startTime + oggElapsed;
     const f32 noteTimeEnd = -handShape.endTime + oggElapsed;
@@ -931,8 +896,8 @@ static void drawNoteFretboard(i32 fret, i32 string, f32 size)
   modelMat.m00 = size;
   modelMat.m11 = size;
   modelMat.m22 = size;
-  modelMat.m30 = frets[fret - 1] + 0.5f * (frets[fret] - frets[fret - 1]);
-  modelMat.m31 = f32(string) * stringSpacing;
+  modelMat.m30 = Const::highwayRenderFretPosition[fret - 1] + 0.5f * (Const::highwayRenderFretPosition[fret] - Const::highwayRenderFretPosition[fret - 1]);
+  modelMat.m31 = f32(string) * Const::highwayRenderStringSpacing;
   glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
   setStringColor(shader, string);
@@ -969,7 +934,7 @@ static void drawFretNumbers()
 
   for (i32 i = 1; i <= 24; ++i)
   {
-    const f32 x = frets[i - 1] + 0.5f * (frets[i] - frets[i - 1]);
+    const f32 x = Const::highwayRenderFretPosition[i - 1] + 0.5f * (Const::highwayRenderFretPosition[i] - Const::highwayRenderFretPosition[i - 1]);
 
     Font::drawFretNumber(i, x, -0.7f, 0.0f, 0.4f, 0.4f);
   }
@@ -992,7 +957,7 @@ static void drawStringNoteNames()
 
   for (i32 y = 0; y < stringCount; ++y)
   {
-    const f32 yy = f32(y) * stringSpacing;
+    const f32 yy = f32(y) * Const::highwayRenderStringSpacing;
     const i32 stringTuning = getStringTuning(y);
 
     Font::drawNoteNameFlat(stringTuning, -0.2f, yy, 0.03f, 0.3f, 0.3f);
@@ -1006,12 +971,12 @@ static void drawFretNoteNames()
 
   for (i32 y = 0; y < stringCount; ++y)
   {
-    const f32 yy = f32(y) * stringSpacing;
+    const f32 yy = f32(y) * Const::highwayRenderStringSpacing;
     const i32 stringTuning = getStringTuning(y);
 
     for (i32 i = 1; i <= 24; ++i)
     {
-      const f32 x = frets[i - 1] + 0.2f;
+      const f32 x = Const::highwayRenderFretPosition[i - 1] + 0.2f;
 
       Font::drawNoteNameFlat((stringTuning + i) % 12, x, yy, 0.03f, 0.3f, 0.3f);
     }
@@ -1037,19 +1002,19 @@ static void drawPhrases()
   GLuint shader = Shader::useShader(Shader::Stem::phrasesScreen);
 
   i32 maxDifficulty = 0;
-  for (const Song::Phrase& phase : track.phrases)
+  for (const Song::Phrase& phase : Global::songTrack.phrases)
     if (phase.maxDifficulty > maxDifficulty)
       maxDifficulty = phase.maxDifficulty;
 
-  for (i32 i = 0; i < i32(track.phraseIterations.size()) - 1; ++i)
+  for (i32 i = 0; i < i32(Global::songTrack.phraseIterations.size()) - 1; ++i)
   {
-    const Song::PhraseIteration& phraseIteration0 = track.phraseIterations[i];
-    const Song::PhraseIteration& phraseIteration1 = track.phraseIterations[i + 1];
+    const Song::PhraseIteration& phraseIteration0 = Global::songTrack.phraseIterations[i];
+    const Song::PhraseIteration& phraseIteration1 = Global::songTrack.phraseIterations[i + 1];
 
-    const Song::Phrase& phase = track.phrases[phraseIteration0.phraseId];
+    const Song::Phrase& phase = Global::songTrack.phrases[phraseIteration0.phraseId];
 
-    f32 begin = phraseIteration0.time / songInfo.manifest.attributes[0].songLength;
-    f32 end = phraseIteration1.time / songInfo.manifest.attributes[0].songLength;
+    f32 begin = phraseIteration0.time / Global::songInfo.manifest.attributes[0].songLength;
+    f32 end = phraseIteration1.time / Global::songInfo.manifest.attributes[0].songLength;
     f32 difficulty = f32(phase.maxDifficulty) / f32(maxDifficulty);
 
     const f32 left = -0.7985 + begin * 1.6f;
@@ -1122,31 +1087,31 @@ static void drawSongInfo()
   glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, alpha);
 
   {
-    const i32 letters = songInfo.manifest.attributes[0].songName.size();
+    const i32 letters = Global::songInfo.manifest.attributes[0].songName.size();
     const f32 scaleX = (0.7f / Const::fontCharWidth) * letters;
     const f32 scaleY = (0.7f / Const::fontCharHeight) * Const::aspectRatio;
-    Font::draw(songInfo.manifest.attributes[0].songName.c_str(), 0.95f - 0.5f * scaleX, 0.5f, 0.0f, scaleX, scaleY);
+    Font::draw(Global::songInfo.manifest.attributes[0].songName.c_str(), 0.95f - 0.5f * scaleX, 0.5f, 0.0f, scaleX, scaleY);
   }
   {
-    const i32 letters = songInfo.manifest.attributes[0].artistName.size();
+    const i32 letters = Global::songInfo.manifest.attributes[0].artistName.size();
     const f32 scaleX = (0.5f / Const::fontCharWidth) * letters;
     const f32 scaleY = (0.5f / Const::fontCharHeight) * Const::aspectRatio;
-    Font::draw(songInfo.manifest.attributes[0].artistName.c_str(), 0.95f - 0.5f * scaleX, 0.4f, 0.0f, scaleX, scaleY);
+    Font::draw(Global::songInfo.manifest.attributes[0].artistName.c_str(), 0.95f - 0.5f * scaleX, 0.4f, 0.0f, scaleX, scaleY);
   }
 }
 
 static void drawLyrics()
 {
-  if (vocals.size() == 0)
+  if (Global::songVocals.size() == 0)
     return;
 
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
   i32 line0Begin = 0;
   i32 line0End = 0;
-  for (i32 i = 0; i < vocals.size(); ++i)
+  for (i32 i = 0; i < Global::songVocals.size(); ++i)
   {
-    const Song::Vocal& vocal = vocals[i];
+    const Song::Vocal& vocal = Global::songVocals[i];
 
     if (vocal.lyric[vocal.lyric.size() - 1] == '+')
     {
@@ -1163,9 +1128,9 @@ static void drawLyrics()
   }
 
   i32 line1End = 0;
-  for (i32 i = line0End + 1; i < vocals.size(); ++i)
+  for (i32 i = line0End + 1; i < Global::songVocals.size(); ++i)
   {
-    const Song::Vocal& vocal = vocals[i];
+    const Song::Vocal& vocal = Global::songVocals[i];
 
     if (vocal.lyric[vocal.lyric.size() - 1] == '+')
     {
@@ -1179,7 +1144,7 @@ static void drawLyrics()
 
   for (i32 i = line0Begin; i < line0End; ++i)
   {
-    const Song::Vocal& vocal = vocals[i];
+    const Song::Vocal& vocal = Global::songVocals[i];
 
     i32 j = 0;
     while (vocal.lyric[j] != '\0')
@@ -1190,7 +1155,7 @@ static void drawLyrics()
     line0[line0Cur + j] = ' ';
     line0Cur += j + 1;
   }
-  const Song::Vocal& vocal = vocals[line0End];
+  const Song::Vocal& vocal = Global::songVocals[line0End];
   i32 j = 0;
   while (vocal.lyric[j] != '+')
   {
@@ -1203,7 +1168,7 @@ static void drawLyrics()
   glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
 
   {
-    const i32 letters = songInfo.manifest.attributes[0].songName.size();
+    const i32 letters = Global::songInfo.manifest.attributes[0].songName.size();
     const f32 scaleX = (0.7f / Const::fontCharWidth) * letters;
     const f32 scaleY = (0.7f / Const::fontCharHeight) * Const::aspectRatio;
     Font::draw(line0, -0.95f + 0.5f * scaleX, 0.5f, 0.0f, scaleX, scaleY);
@@ -1214,9 +1179,9 @@ static void drawLyrics()
     i32 line1Cur = 0;
 
     i32 line1End = 0;
-    for (i32 i = line0End + 1; i < vocals.size(); ++i)
+    for (i32 i = line0End + 1; i < Global::songVocals.size(); ++i)
     {
-      const Song::Vocal& vocal = vocals[i];
+      const Song::Vocal& vocal = Global::songVocals[i];
 
       if (vocal.lyric[vocal.lyric.size() - 1] == '+')
       {
@@ -1227,7 +1192,7 @@ static void drawLyrics()
 
     for (i32 i = line0End + 1; i < line1End; ++i)
     {
-      const Song::Vocal& vocal = vocals[i];
+      const Song::Vocal& vocal = Global::songVocals[i];
 
       i32 j = 0;
       while (vocal.lyric[j] != '\0')
@@ -1238,7 +1203,7 @@ static void drawLyrics()
       line1[line1Cur + j] = ' ';
       line1Cur += j + 1;
     }
-    const Song::Vocal& vocal = vocals[line1End];
+    const Song::Vocal& vocal = Global::songVocals[line1End];
     i32 j = 0;
     while (vocal.lyric[j] != '+')
     {
@@ -1248,7 +1213,7 @@ static void drawLyrics()
     line1[line1Cur + j] = '\0';
 
     {
-      const i32 letters = songInfo.manifest.attributes[0].songName.size();
+      const i32 letters = Global::songInfo.manifest.attributes[0].songName.size();
       const f32 scaleX = (0.7f / Const::fontCharWidth) * letters;
       const f32 scaleY = (0.7f / Const::fontCharHeight) * Const::aspectRatio;
       Font::draw(line1, -0.95f + 0.5f * scaleX, 0.4f, 0.0f, scaleX, scaleY);
@@ -1258,8 +1223,8 @@ static void drawLyrics()
 
 static void drawEbeat(f32 noteTimeBegin, f32 noteTimeEnd, i32 measure, i32 chordBoxLeft, i32 chordBoxWidth)
 {
-  const f32 left = frets[chordBoxLeft - 1];
-  const f32 right = frets[chordBoxLeft + chordBoxWidth - 1];
+  const f32 left = Const::highwayRenderFretPosition[chordBoxLeft - 1];
+  const f32 right = Const::highwayRenderFretPosition[chordBoxLeft + chordBoxWidth - 1];
   const f32 front = noteTimeBegin * Global::settingsHighwaySpeedMultiplier;
   const f32 back = noteTimeEnd * Global::settingsHighwaySpeedMultiplier;
 
@@ -1285,9 +1250,9 @@ static void drawEbeats()
 {
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
-  for (i32 i = track.ebeats.size() - 1; i >= 0; --i)
+  for (i32 i = Global::songTrack.ebeats.size() - 1; i >= 0; --i)
   {
-    Song::Ebeat& ebeat = track.ebeats[i];
+    Song::Ebeat& ebeat = Global::songTrack.ebeats[i];
 
     const f32 noteTimeBegin = -ebeat.time + oggElapsed;
     const f32 noteTimeEnd = noteTimeBegin - 0.01f;
@@ -1297,10 +1262,10 @@ static void drawEbeats()
     if (noteTimeBegin < Const::highwayRenderMaxFutureTime)
       continue;
 
-    for (i32 i = 0; i < i32(track.transcriptionTrack.anchors.size()) - 2; ++i)
+    for (i32 i = 0; i < i32(Global::songTrack.transcriptionTrack.anchors.size()) - 2; ++i)
     {
-      const Song::TranscriptionTrack::Anchor& anchor0 = track.transcriptionTrack.anchors[i];
-      const Song::TranscriptionTrack::Anchor& anchor1 = track.transcriptionTrack.anchors[i + 1];
+      const Song::TranscriptionTrack::Anchor& anchor0 = Global::songTrack.transcriptionTrack.anchors[i];
+      const Song::TranscriptionTrack::Anchor& anchor1 = Global::songTrack.transcriptionTrack.anchors[i + 1];
 
       if (ebeat.time >= anchor0.time && ebeat.time <= anchor1.time)
       {

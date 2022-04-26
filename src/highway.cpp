@@ -93,7 +93,7 @@ static void drawFrets()
     assert(false);
   modelMat.m31 = -0.3f;
 
-  for (i32 i = 0; i < sizeof(Const::highwayRenderFretPosition); ++i)
+  for (i32 i = 0; i < sizeof(Const::highwayRenderFretPosition) / sizeof(*Const::highwayRenderFretPosition); ++i)
   {
     GLuint shader;
     if (chordBoxLeft - 1 <= i && chordBoxRight - 1 >= i)

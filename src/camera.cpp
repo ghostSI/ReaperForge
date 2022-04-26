@@ -2,27 +2,52 @@
 
 #include "global.h"
 
+
 void Camera::init() {
-  Global::cameraMat.m30 = -6.3f;
-  Global::cameraMat.m31 = -7.0f;
-  Global::cameraMat.m32 = -8.16f;
 }
 
 void Camera::tick() {
+  static vec3 cameraPosition = {
+  .v0 = -6.3f,
+  .v1 = -7.0f,
+  .v2 = -9.16f
+  };
+
   if (Global::debugCamera.toggle)
   {
     if (Global::inputD.pressed)
-      Global::cameraMat.m30 -= 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
+      cameraPosition.v0 -= 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
     else if (Global::inputA.pressed)
-      Global::cameraMat.m30 += 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
+      cameraPosition.v0 += 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
     if (Global::inputW.pressed)
-      Global::cameraMat.m32 += 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
+      cameraPosition.v2 += 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
     else if (Global::inputS.pressed)
-      Global::cameraMat.m32 -= 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
+      cameraPosition.v2 -= 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
     if (Global::inputE.pressed)
-      Global::cameraMat.m31 -= 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
+      cameraPosition.v1 -= 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
     else if (Global::inputC.pressed)
-      Global::cameraMat.m31 += 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
+      cameraPosition.v1 += 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
+
+    const f32 rotX = 0.05f;
+    mat4 rotMatX;
+    rotMatX.m11 = cos(rotX);
+    rotMatX.m12 = sin(rotX);
+    rotMatX.m21 = -sin(rotX);
+    rotMatX.m22 = cos(rotX);
+
+    const f32 rotY = 0.19f;
+    mat4 rotMatY;
+    rotMatY.m00 = cos(rotY);
+    rotMatY.m02 = sin(rotY);
+    rotMatY.m20 = -sin(rotY);
+    rotMatY.m22 = cos(rotY);
+
+    mat4 translation;
+    translation.m30 = cameraPosition.v0;
+    translation.m31 = cameraPosition.v1;
+    translation.m32 = cameraPosition.v2;
+
+    Global::cameraMat = VecMath::multipicate(VecMath::multipicate(rotMatX, rotMatY), translation);
   }
   else
   {
@@ -51,14 +76,28 @@ void Camera::tick() {
       cameraTarget.v0 = -f32(left - 1 + right - 1) * 0.5f;
       cameraTarget.v1 = -1.3f * f32(width) * 0.5f - 1.5f;
       cameraTarget.v2 = -1.3f * f32(width) * 0.5f - 3.0f;
-      
+
     }
 
-    Global::cameraMat.m30 = cameraTarget.v0;
-    Global::cameraMat.m31 = cameraTarget.v1;
-    Global::cameraMat.m32 = cameraTarget.v2;
+    const f32 rotX = 0.05f;
+    mat4 rotMatX;
+    rotMatX.m11 = cos(rotX);
+    rotMatX.m12 = sin(rotX);
+    rotMatX.m21 = -sin(rotX);
+    rotMatX.m22 = cos(rotX);
+
+    const f32 rotY = 0.19f;
+    mat4 rotMatY;
+    rotMatY.m00 = cos(rotY);
+    rotMatY.m02 = sin(rotY);
+    rotMatY.m20 = -sin(rotY);
+    rotMatY.m22 = cos(rotY);
+
+    mat4 translation;
+    translation.m30 = cameraTarget.v0;
+    translation.m31 = cameraTarget.v1;
+    translation.m32 = cameraTarget.v2;
+
+    Global::cameraMat = VecMath::multipicate(VecMath::multipicate(rotMatX, rotMatY), translation);
   }
-
-
-
 }

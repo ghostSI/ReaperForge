@@ -39,11 +39,12 @@ f32 Global::oggStartTime = 0.0f;
 char Global::searchText[256] = "";
 i32 Global::searchTextLength = 0;
 
+f32 Global::settingsGraphicsFieldOfView = 75.0f;
 f32 Global::settingsHighwaySpeedMultiplier = 1.0f;
-bool Global::settingsStringNoteNames = false;
-bool Global::settingsFretNoteNames = false;
-bool Global::settingsShowLyrics = false;
-bool Global::settingsShowSongInfo = false;
+bool Global::settingsHighwayStringNoteNames = false;
+bool Global::settingsHighwayFretNoteNames = false;
+bool Global::settingsHighwayShowLyrics = false;
+bool Global::settingsHighwayShowSongInfo = false;
 i32 Global::settingsInstrumentBassFirstWoundString;
 vec4 Global::settingsInstrumentBassStringColor[5];
 i32 Global::settingsInstrumentGuitarFirstWoundString;

@@ -149,12 +149,13 @@ namespace Global {
     extern f32 oggStartTime;
     extern char searchText[256];
     extern i32 searchTextLength;
-
+    
+    extern f32 settingsGraphicsFieldOfView;
     extern f32 settingsHighwaySpeedMultiplier;
-    extern bool settingsStringNoteNames;
-    extern bool settingsFretNoteNames;
-    extern bool settingsShowLyrics;
-    extern bool settingsShowSongInfo;
+    extern bool settingsHighwayStringNoteNames;
+    extern bool settingsHighwayFretNoteNames;
+    extern bool settingsHighwayShowLyrics;
+    extern bool settingsHighwayShowSongInfo;
     extern i32 settingsInstrumentBassFirstWoundString;
     extern vec4 settingsInstrumentBassStringColor[5];
     extern i32 settingsInstrumentGuitarFirstWoundString;

@@ -16,6 +16,7 @@ static const std::map<std::string, std::map<std::string, std::string>> defaultSe
         {
                 "Graphics",
                 {
+                        {"FieldOfView",      "90"},
                         {"Fullscreen",       "0"},
                         {"ResolutionWidth",  "800"},
                         {"ResolutionHeight", "600"},
@@ -220,11 +221,12 @@ bool Settings::init(int argc, char *argv[]) {
 
 void Settings::tick()
 {
+  Global::settingsGraphicsFieldOfView = atof(Settings::get("Graphics", "FieldOfView").c_str());
   Global::settingsHighwaySpeedMultiplier = atof(Settings::get("Highway", "SpeedMultiplier").c_str());
-  Global::settingsStringNoteNames = bool(atoi(Settings::get("Highway", "StringNoteNames").c_str()));
-  Global::settingsFretNoteNames = bool(atoi(Settings::get("Highway", "FretNoteNames").c_str()));
-  Global::settingsShowLyrics = bool(atoi(Settings::get("Highway", "Lyrics").c_str()));
-  Global::settingsShowSongInfo = bool(atoi(Settings::get("Highway", "SongInfo").c_str()));
+  Global::settingsHighwayStringNoteNames = bool(atoi(Settings::get("Highway", "StringNoteNames").c_str()));
+  Global::settingsHighwayFretNoteNames = bool(atoi(Settings::get("Highway", "FretNoteNames").c_str()));
+  Global::settingsHighwayShowLyrics = bool(atoi(Settings::get("Highway", "Lyrics").c_str()));
+  Global::settingsHighwayShowSongInfo = bool(atoi(Settings::get("Highway", "SongInfo").c_str()));
   Global::settingsInstrumentBassFirstWoundString = atoi(Settings::get("Instrument", "BassFirstWoundString").c_str());
   Global::settingsInstrumentBassStringColor[0] = colorVec4(makeColor((Settings::get("Instrument", "BassStringColor0").substr(1) + n2hexStr(255)).c_str()));
   Global::settingsInstrumentBassStringColor[1] = colorVec4(makeColor((Settings::get("Instrument", "BassStringColor1").substr(1) + n2hexStr(255)).c_str()));

@@ -1294,17 +1294,17 @@ void Highway::render()
   drawFretNumbers();
 
 
-  if (Global::settingsStringNoteNames)
+  if (Global::settingsHighwayStringNoteNames)
     drawStringNoteNames();
-  if (Global::settingsFretNoteNames)
+  if (Global::settingsHighwayFretNoteNames)
     drawFretNoteNames();
 
   if (Global::instrumentVolume > Const::chordDetectorVolumeThreshhold)
     drawCurrentChordName();
 
-  if (Global::settingsShowSongInfo)
+  if (Global::settingsHighwayShowSongInfo)
     drawSongInfo();
 
-  if (Global::settingsShowLyrics)
+  if (Global::settingsHighwayShowLyrics)
     drawLyrics();
 }

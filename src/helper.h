@@ -44,14 +44,20 @@ namespace rnd {
 
 namespace VecMath {
     f32 lengthSquared(f32 x, f32 y);
+    f32 lengthSquared(const vec3& x);
 
     f32 length(f32 x, f32 y);
+    f32 length(const vec3& x);
 
     void norm(f32 &x, f32 &y);
+    vec3 norm(const vec3& x);
 
     void rotate(f32 &x, f32 &y, f32 rad);
 
+    vec3 multipicate(const vec3& x, const f32 scale);
     mat4 multipicate(const mat4& m0, const mat4& m1);
+
+    vec3 truncate(const vec3& x, const f32 max);
 }
 
 template<typename T>

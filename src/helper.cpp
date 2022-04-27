@@ -98,8 +98,16 @@ f32 VecMath::lengthSquared(f32 x, f32 y) {
     return x * x + y * y;
 }
 
+f32 VecMath::lengthSquared(const vec3& x) {
+  return x.v0 * x.v0 + x.v1 * x.v1 + x.v2 * x.v2;
+}
+
 f32 VecMath::length(f32 x, f32 y) {
     return sqrtf(lengthSquared(x, y));
+}
+
+f32 VecMath::length(const vec3& x) {
+  return sqrtf(lengthSquared(x));
 }
 
 void VecMath::rotate(f32 &x, f32 &y, f32 rad) {
@@ -112,6 +120,26 @@ void VecMath::norm(f32 &x, f32 &y) {
     const f32 len = length(x, y);
     x /= len;
     y /= len;
+}
+
+vec3 VecMath::norm(const vec3& x) {
+  const f32 len = VecMath::length(x);
+  vec3 normX
+  {
+    .v0 = x.v0 / len,
+    .v1 = x.v1 / len,
+    .v2 = x.v2 / len
+  };
+  return normX;
+}
+
+vec3 VecMath::multipicate(const vec3& x, const f32 scale)
+{
+  return vec3{
+    .v0 = x.v0 * scale,
+    .v1 = x.v1 * scale,
+    .v2 = x.v2 * scale
+  };
 }
 
 mat4 VecMath::multipicate(const mat4& m0, const mat4& m1)
@@ -137,6 +165,14 @@ mat4 VecMath::multipicate(const mat4& m0, const mat4& m1)
   };
 
   return res;
+}
+
+vec3 VecMath::truncate(const vec3& x, const f32 max)
+{
+  if (VecMath::length(x) > max)
+    return multipicate(VecMath::norm(x), max);
+
+  return x;
 }
 
 std::vector<std::string> string::split(std::string str, char delimeter) {

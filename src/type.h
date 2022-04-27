@@ -39,7 +39,7 @@ enum struct DisplayMode : u8 {
     windowedFullscreen
 };
 
-enum struct InstrumentFlags : u8 {
+enum struct InstrumentFlags : u16 {
     none,
     LeadGuitar = 1 << 0,
     RhythmGuitar = 1 << 1,
@@ -48,7 +48,9 @@ enum struct InstrumentFlags : u8 {
     Vocals = 1 << 3,
     Keyboard = 1 << 4,
     Second = 1 << 5,
-    Third = 1 << 5,
+    Alternative = 1 << 6,
+    Bonus = 1 << 7,
+    //Third = 1 << 8
 }BIT_FLAGS(InstrumentFlags);
 
 namespace Chords

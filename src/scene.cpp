@@ -25,5 +25,6 @@ void Scene::tick() {
 void Scene::render() {
     Debug::render();
     Highway::render();
+    Camera::render();
     //Ui::render();
 }

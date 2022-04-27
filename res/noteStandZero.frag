@@ -12,6 +12,9 @@ void main()
   col.a *= 1.0 - Texcoord.y;
   col.a *= pow(2.0 * abs(Texcoord.x - 0.5), 5.0);
   
+  if (col.a <= 0.001)
+    discard;
+  
   outColor = vec4(col.rgb, col.a);
 }
 )"

@@ -27,6 +27,14 @@ namespace Const {
     inline constexpr i32 fontCharHeight = 18;
     inline constexpr i32 fontTextureWidth = 192;
     inline constexpr i32 fontTextureHeight = 108;
+    inline constexpr f32 cameraXRotation = 0.05f;
+    inline constexpr f32 cameraYRotation = 0.15f;
+    inline constexpr f32 cameraXFactor = 1.3f;
+    inline constexpr f32 cameraYFactor = 1.3f;
+    inline constexpr f32 cameraXOffset = 0.5f;
+    inline constexpr f32 cameraYOffset = 3.0f;
+    inline constexpr f32 cameraMaximumVelocity = 2.0f;
+    inline constexpr f32 cameraBreakRadius = 0.53f;
     inline constexpr f32 highwayRenderMaxFutureTime = -10.0f;
     inline constexpr f32 highwayRenderTremoloFrequency = 0.04f;
     inline constexpr f32 highwayRenderLeftHandPreTime = -2.0f;

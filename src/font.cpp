@@ -61,10 +61,10 @@ void Font::init()
 
 static void drawBitmap(const std::vector<u32>& textBitmap, u64 letters, f32 posX, f32 posY, f32 posZ, f32 scaleX, f32 scaleY)
 {
-  const f32 left = posX - 0.5_f32 * scaleX;
-  const f32 top = posY - 0.5_f32 * scaleY;
-  const f32 right = posX + 0.5_f32 * scaleX;
-  const f32 bottom = posY + 0.5_f32 * scaleY;
+  const f32 left = posX - scaleX;
+  const f32 top = posY - scaleY;
+  const f32 right = posX + scaleX;
+  const f32 bottom = posY + scaleY;
 
   // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
   const GLfloat v[] = {

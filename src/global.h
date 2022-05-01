@@ -34,7 +34,9 @@ namespace Const {
     inline constexpr f32 cameraXOffset = 0.5f;
     inline constexpr f32 cameraYOffset = 3.0f;
     inline constexpr f32 cameraMaximumVelocity = 2.0f;
-    inline constexpr f32 cameraBreakRadius = 0.53f;
+    inline constexpr f32 cameraMaximumForce = 1.0f;
+    inline constexpr f32 cameraMaximumBreakForce = 2.0f;
+    inline constexpr f32 cameraBreakRadius = 2.0f;
     inline constexpr f32 highwayRenderMaxFutureTime = -10.0f;
     inline constexpr f32 highwayRenderTremoloFrequency = 0.04f;
     inline constexpr f32 highwayRenderLeftHandPreTime = -2.0f;

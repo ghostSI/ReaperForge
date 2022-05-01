@@ -25,25 +25,72 @@ static void tickCameraMovement()
     .v2 = cameraTarget.v2 - cameraPosition.v2,
   };
 
-  { 
+  static bool arrived = false;
+  static bool arrivedLastFrame = false;
+  {
     const f32 cameraDesiredDirectionLength = VecMath::length(cameraDesiredDirection);
-    cameraDesiredDirection = VecMath::norm(cameraDesiredDirection);
     if (cameraDesiredDirectionLength < Const::cameraBreakRadius)
     {
-      cameraDesiredDirection = VecMath::multipicate(cameraDesiredDirection, Const::cameraMaximumVelocity * (cameraDesiredDirectionLength / Const::cameraBreakRadius));
+      cameraDesiredDirection = VecMath::multipicate(VecMath::norm(cameraDesiredDirection), Const::cameraMaximumVelocity * (cameraDesiredDirectionLength / Const::cameraBreakRadius));
+      arrivedLastFrame = arrived;
+      arrived = true;
     }
     else
     {
-      cameraDesiredDirection = VecMath::multipicate(cameraDesiredDirection, Const::cameraMaximumVelocity);
+      cameraDesiredDirection = VecMath::multipicate(VecMath::norm(cameraDesiredDirection), Const::cameraMaximumVelocity);
+      arrived = false;
     }
   }
 
-  const vec3 cameraVelocity = VecMath::truncate(cameraDesiredDirection, Const::cameraMaximumVelocity);
-
-  const vec3 framePosChange = VecMath::multipicate(cameraVelocity, Global::frameDelta / 1000.0f);
+#if 1
+  const vec3 framePosChange = VecMath::multipicate(cameraDesiredDirection, Global::frameDelta / 1000.0f);
   cameraPosition.v0 += framePosChange.v0;
   cameraPosition.v1 += framePosChange.v1;
   cameraPosition.v2 += framePosChange.v2;
+#else
+  static vec3 velocity;
+  vec3 steering;
+  steering.v0 = cameraDesiredDirection.v0 - velocity.v0;
+  steering.v1 = cameraDesiredDirection.v1 - velocity.v1;
+  steering.v2 = cameraDesiredDirection.v2 - velocity.v2;
+
+  static f32 cameraDesiredDirectionLengthLastFrame = F32::max;
+  static bool skip;
+  if (arrived)
+  {
+    if (arrivedLastFrame)
+    { // add check to detect if breaking was so hard that we are going backwards now
+      if (skip || VecMath::length(cameraDesiredDirection) > cameraDesiredDirectionLengthLastFrame)
+      {
+        cameraPosition.v0 = cameraTarget.v0;
+        cameraPosition.v1 = cameraTarget.v1;
+        cameraPosition.v2 = cameraTarget.v2;
+        skip = true;
+        return;
+      }
+    }
+    else
+    {
+      steering = VecMath::multipicate(VecMath::norm(steering), Const::cameraMaximumBreakForce);
+    }
+  }
+  else
+  {
+    steering = VecMath::truncate(steering, Const::cameraMaximumForce);
+  }
+  skip = false;
+  cameraDesiredDirectionLengthLastFrame = VecMath::length(cameraDesiredDirection);
+
+  velocity.v0 += steering.v0 * Global::frameDelta / 1000.0f;
+  velocity.v1 += steering.v1 * Global::frameDelta / 1000.0f;
+  velocity.v2 += steering.v2 * Global::frameDelta / 1000.0f;
+  velocity = VecMath::truncate(velocity, Const::cameraMaximumVelocity);
+
+  const vec3 framePosChange = VecMath::multipicate(velocity, Global::frameDelta / 1000.0f);
+  cameraPosition.v0 += framePosChange.v0;
+  cameraPosition.v1 += framePosChange.v1;
+  cameraPosition.v2 += framePosChange.v2;
+#endif
 }
 
 void Camera::tick() {

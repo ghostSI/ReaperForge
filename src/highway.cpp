@@ -44,7 +44,7 @@ void Highway::init()
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();
 
-  Global::oggStartTime = -35.0f;
+  //Global::oggStartTime = -35.0f;
 }
 
 static void drawGround()
@@ -410,7 +410,7 @@ static void drawNotes(f32 fretboardNoteDistance[7][24])
 
         const f32 x = Const::highwayRenderFretPosition[note.fret - 1] + 0.5f * (Const::highwayRenderFretPosition[note.fret] - Const::highwayRenderFretPosition[note.fret - 1]);
 
-        Font::drawFretNumber(note.fret, x, -0.2f, noteTime * Global::settingsHighwaySpeedMultiplier, 0.5f, 0.5f);
+        Font::drawFretNumber(note.fret, x, -0.2f, noteTime * Global::settingsHighwaySpeedMultiplier, 0.25f, 0.25f);
       }
       else
       {
@@ -495,7 +495,7 @@ static void drawChordName(i32 chordId, f32 noteTime, i32 chordBoxLeft, bool cons
 
   const GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
   glUniform4f(glGetUniformLocation(shader, "color"), 1.0, 1.0f, 1.0f, alpha);
-  Font::draw(Chords::translatedName(chordTemplate.chordName).c_str(), Const::highwayRenderFretPosition[chordBoxLeft] - 1.5f, f32(stringCount + stringOffset) * Const::highwayRenderStringSpacing - 0.30f * Const::highwayRenderStringSpacing, noteTime * Global::settingsHighwaySpeedMultiplier, 1.0f, 1.0f);
+  Font::draw(Chords::translatedName(chordTemplate.chordName).c_str(), Const::highwayRenderFretPosition[chordBoxLeft] - 1.5f, f32(stringCount + stringOffset) * Const::highwayRenderStringSpacing - 0.30f * Const::highwayRenderStringSpacing, noteTime * Global::settingsHighwaySpeedMultiplier, 0.5f, 0.5f);
 }
 
 static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime, bool consecutiveChord, f32 fretboardNoteDistance[7][24])
@@ -580,7 +580,7 @@ static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime
           {
             const f32 x = Const::highwayRenderFretPosition[i - 1] + 0.5f * (Const::highwayRenderFretPosition[i] - Const::highwayRenderFretPosition[i - 1]);
 
-            Font::drawFretNumber(i, x, -0.2f, noteTime * Global::settingsHighwaySpeedMultiplier + 0.1f, 0.5f, 0.5f);
+            Font::drawFretNumber(i, x, -0.2f, noteTime * Global::settingsHighwaySpeedMultiplier + 0.1f, 0.25f, 0.25f);
           }
         }
       }
@@ -627,7 +627,7 @@ static void drawChordLeftHand(const Song::TranscriptionTrack::Chord& chord)
 
     const f32 x = Const::highwayRenderFretPosition[note.fret - 1] + 0.5f * (Const::highwayRenderFretPosition[note.fret] - Const::highwayRenderFretPosition[note.fret - 1]);
 
-    Font::drawFretNumber(note.leftHand, x, f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing, 0.1f, 0.4f, 0.4f);
+    Font::drawFretNumber(note.leftHand, x, f32(5 - note.string + stringOffset) * Const::highwayRenderStringSpacing, 0.1f, 0.2f, 0.2f);
   }
 }
 
@@ -936,7 +936,7 @@ static void drawFretNumbers()
   {
     const f32 x = Const::highwayRenderFretPosition[i - 1] + 0.5f * (Const::highwayRenderFretPosition[i] - Const::highwayRenderFretPosition[i - 1]);
 
-    Font::drawFretNumber(i, x, -0.7f, 0.0f, 0.4f, 0.4f);
+    Font::drawFretNumber(i, x, -0.7f, 0.0f, 0.2f, 0.2f);
   }
 }
 
@@ -960,7 +960,7 @@ static void drawStringNoteNames()
     const f32 yy = f32(y) * Const::highwayRenderStringSpacing;
     const i32 stringTuning = getStringTuning(y);
 
-    Font::drawNoteNameFlat(stringTuning, -0.2f, yy, 0.03f, 0.3f, 0.3f);
+    Font::drawNoteNameFlat(stringTuning, -0.2f, yy, 0.03f, 0.15f, 0.15f);
   }
 }
 
@@ -978,7 +978,7 @@ static void drawFretNoteNames()
     {
       const f32 x = Const::highwayRenderFretPosition[i - 1] + 0.2f;
 
-      Font::drawNoteNameFlat((stringTuning + i) % 12, x, yy, 0.03f, 0.3f, 0.3f);
+      Font::drawNoteNameFlat((stringTuning + i) % 12, x, yy, 0.03f, 0.15f, 0.15f);
     }
   }
 }
@@ -994,7 +994,7 @@ static void drawCurrentChordName()
   Font::drawFretNumber(to_underlying(quality), 0.0f, 0.6f, 0.0f, 0.1f, 0.1f);
   Font::drawFretNumber(Global::chordDetectorIntervals, 0.2f, 0.6f, 0.0f, 0.1f, 0.1f);
 
-  Font::draw(Chords::chordDetectorName(), 0.0f, 0.5f, 0.0f, 0.1f, 0.1f);
+  Font::draw(Chords::chordDetectorName(), 0.0f, 0.5f, 0.0f, 0.05f, 0.05f);
 }
 
 static void drawPhrases()
@@ -1088,15 +1088,15 @@ static void drawSongInfo()
 
   {
     const i32 letters = Global::songInfo.manifest.attributes[0].songName.size();
-    const f32 scaleX = (0.7f / Const::fontCharWidth) * letters;
-    const f32 scaleY = (0.7f / Const::fontCharHeight) * Const::aspectRatio;
-    Font::draw(Global::songInfo.manifest.attributes[0].songName.c_str(), 0.95f - 0.5f * scaleX, 0.5f, 0.0f, scaleX, scaleY);
+    const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::windowWidth);
+    const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::windowHeight);
+    Font::draw(Global::songInfo.manifest.attributes[0].songName.c_str(), 0.95f - scaleX, 0.3f, 0.0f, scaleX, scaleY);
   }
   {
     const i32 letters = Global::songInfo.manifest.attributes[0].artistName.size();
-    const f32 scaleX = (0.5f / Const::fontCharWidth) * letters;
-    const f32 scaleY = (0.5f / Const::fontCharHeight) * Const::aspectRatio;
-    Font::draw(Global::songInfo.manifest.attributes[0].artistName.c_str(), 0.95f - 0.5f * scaleX, 0.4f, 0.0f, scaleX, scaleY);
+    const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::windowWidth);
+    const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::windowHeight);
+    Font::draw(Global::songInfo.manifest.attributes[0].artistName.c_str(), 0.95f - scaleX, 0.2f, 0.0f, scaleX, scaleY);
   }
 }
 
@@ -1168,10 +1168,10 @@ static void drawLyrics()
   glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
 
   {
-    const i32 letters = Global::songInfo.manifest.attributes[0].songName.size();
-    const f32 scaleX = (0.7f / Const::fontCharWidth) * letters;
-    const f32 scaleY = (0.7f / Const::fontCharHeight) * Const::aspectRatio;
-    Font::draw(line0, -0.95f + 0.5f * scaleX, 0.5f, 0.0f, scaleX, scaleY);
+    const i32 letters = line0Cur + j - 1;
+    const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::windowWidth);
+    const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::windowHeight);
+    Font::draw(line0, -0.95f + scaleX, 0.5f, 0.0f, scaleX, scaleY);
   }
 
   {
@@ -1213,10 +1213,10 @@ static void drawLyrics()
     line1[line1Cur + j] = '\0';
 
     {
-      const i32 letters = Global::songInfo.manifest.attributes[0].songName.size();
-      const f32 scaleX = (0.7f / Const::fontCharWidth) * letters;
-      const f32 scaleY = (0.7f / Const::fontCharHeight) * Const::aspectRatio;
-      Font::draw(line1, -0.95f + 0.5f * scaleX, 0.4f, 0.0f, scaleX, scaleY);
+      const i32 letters = line1Cur + j - 1;
+      const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::windowWidth);
+      const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::windowHeight);
+      Font::draw(line1, -0.95f + scaleX, 0.4f, 0.0f, scaleX, scaleY);
     }
   }
 }

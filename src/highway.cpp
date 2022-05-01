@@ -44,7 +44,7 @@ void Highway::init()
   Psarc::loadOgg(psarcInfo, false);
   Sound::playOgg();
 
-  //Global::oggStartTime = -35.0f;
+  //Global::oggStartTime = -16.0f;
 }
 
 static void drawGround()
@@ -1108,22 +1108,134 @@ static void drawLyrics()
   const f32 oggElapsed = Global::time - Global::oggStartTime;
 
   i32 line0Begin = 0;
-  i32 line0End = 0;
-  for (i32 i = 0; i < Global::songVocals.size(); ++i)
+  i32 line0Active = -1;
+  i32 line0End = Global::songVocals.size() - 1;
+  for (i32 i = line0Begin; i < line0End; ++i)
   {
     const Song::Vocal& vocal = Global::songVocals[i];
+    const Song::Vocal& vocal2 = Global::songVocals[i + 1];
+
+    if (vocal.time <= oggElapsed && oggElapsed < vocal2.time)
+      line0Active = i;
 
     if (vocal.lyric[vocal.lyric.size() - 1] == '+')
     {
-      if (vocal.time + vocal.length > oggElapsed)
+      if (oggElapsed < vocal2.time)
       {
         line0End = i;
         break;
       }
-      else
+      line0Begin = i + 1;
+    }
+  }
+
+  GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
+
+  i32 line0Cur = 0;
+
+  bool skipUnusedText = false;
+
+  if (line0Active != -1)
+  {
+    if (line0Begin < line0Active)
+    { // draw used text
+      char line0[4096];
+
+      for (i32 i = line0Begin; i < line0Active; ++i)
       {
-        line0Begin = i + 1;
+        const Song::Vocal& vocal = Global::songVocals[i];
+
+        i32 j = 0;
+        while (vocal.lyric[j] != '\0')
+        {
+          line0[line0Cur + j] = vocal.lyric[j];
+          ++j;
+        }
+        line0[line0Cur + j] = ' ';
+        line0Cur += j + 1;
       }
+
+      line0[line0Cur - 1] = '\0';
+
+      glUniform4f(glGetUniformLocation(shader, "color"), 0.2f, 0.2f, 0.2f, 1.0f);
+
+      {
+        const i32 letters = line0Cur - 1;
+        const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::windowWidth);
+        const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::windowHeight);
+        Font::draw(line0, -0.95f + scaleX, 0.5f, 0.0f, scaleX, scaleY);
+      }
+    }
+
+    { // draw active text
+      char line0[4096];
+
+      i32 letters = 0;
+      {
+        const Song::Vocal& vocal = Global::songVocals[line0Active];
+
+        while (vocal.lyric[letters] != '\0')
+        {
+          line0[letters] = vocal.lyric[letters];
+          ++letters;
+        }
+        if (vocal.lyric[letters - 1] == '+')
+        {
+          skipUnusedText = true;
+          --letters;
+        }
+
+        line0[letters] = '\0';
+      }
+
+      glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 0.0f, 0.0f, 1.0f);
+
+      {
+        const f32 offsetX = 4.0f * f32(Const::fontCharWidth * line0Cur) / f32(Global::windowWidth);
+        const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::windowWidth);
+        const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::windowHeight);
+        Font::draw(line0, -0.95f + scaleX + offsetX, 0.5f, 0.0f, scaleX, scaleY);
+      }
+
+      line0Cur += letters + 1;
+    }
+  }
+  if (!skipUnusedText)
+  { // draw unused text
+    char line0[4096];
+
+    i32 offset = 0;
+    for (i32 i = line0Active != -1 ? line0Active + 1: line0Begin; i < line0End; ++i)
+    {
+      const Song::Vocal& vocal = Global::songVocals[i];
+
+      i32 j = 0;
+      while (vocal.lyric[j] != '\0')
+      {
+        line0[offset + j] = vocal.lyric[j];
+        ++j;
+      }
+      line0[offset + j] = ' ';
+      offset += j + 1;
+    }
+    const Song::Vocal& vocal = Global::songVocals[line0End];
+    i32 j = 0;
+    while (vocal.lyric[j] != '+')
+    {
+      line0[offset + j] = vocal.lyric[j];
+      ++j;
+    }
+    line0[offset + j] = '\0';
+    offset += j;
+
+    glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
+
+    {
+      const f32 offsetX = 4.0f * f32(Const::fontCharWidth * line0Cur) / f32(Global::windowWidth);
+      const i32 letters = offset;
+      const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::windowWidth);
+      const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::windowHeight);
+      Font::draw(line0, -0.95f + scaleX + offsetX, 0.5f, 0.0f, scaleX, scaleY);
     }
   }
 
@@ -1137,41 +1249,6 @@ static void drawLyrics()
       line1End = i;
       break;
     }
-  }
-
-  char line0[4096];
-  i32 line0Cur = 0;
-
-  for (i32 i = line0Begin; i < line0End; ++i)
-  {
-    const Song::Vocal& vocal = Global::songVocals[i];
-
-    i32 j = 0;
-    while (vocal.lyric[j] != '\0')
-    {
-      line0[line0Cur + j] = vocal.lyric[j];
-      ++j;
-    }
-    line0[line0Cur + j] = ' ';
-    line0Cur += j + 1;
-  }
-  const Song::Vocal& vocal = Global::songVocals[line0End];
-  i32 j = 0;
-  while (vocal.lyric[j] != '+')
-  {
-    line0[line0Cur + j] = vocal.lyric[j];
-    ++j;
-  }
-  line0[line0Cur + j] = '\0';
-
-  GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
-  glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
-
-  {
-    const i32 letters = line0Cur + j - 1;
-    const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::windowWidth);
-    const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::windowHeight);
-    Font::draw(line0, -0.95f + scaleX, 0.5f, 0.0f, scaleX, scaleY);
   }
 
   {
@@ -1212,6 +1289,7 @@ static void drawLyrics()
     }
     line1[line1Cur + j] = '\0';
 
+    glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
     {
       const i32 letters = line1Cur + j - 1;
       const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::windowWidth);

@@ -1205,7 +1205,7 @@ static void drawLyrics()
     char line0[4096];
 
     i32 offset = 0;
-    for (i32 i = line0Active != -1 ? line0Active + 1: line0Begin; i < line0End; ++i)
+    for (i32 i = line0Active != -1 ? line0Active + 1 : line0Begin; i < line0End; ++i)
     {
       const Song::Vocal& vocal = Global::songVocals[i];
 
@@ -1306,19 +1306,19 @@ static void drawEbeat(f32 noteTimeBegin, f32 noteTimeEnd, i32 measure, i32 chord
   const f32 front = noteTimeBegin * Global::settingsHighwaySpeedMultiplier;
   const f32 back = noteTimeEnd * Global::settingsHighwaySpeedMultiplier;
 
+  const GLuint shader = Shader::useShader(Shader::Stem::ebeat);
+
+  if (measure >= 0)
+    glUniform4f(glGetUniformLocation(shader, "color"), 0.6313f, 0.6862f, 0.9411f, 0.8f);
+  else
+    glUniform4f(glGetUniformLocation(shader, "color"), 0.5313f, 0.5862f, 0.9000f, 0.6f);
+
   const GLfloat v[] = {
     left, -0.355f, front, 0.0f, 1.0f,
     right, -0.355f, front, 1.0f, 1.0f,
     left, -0.355f, back, 0.0f, 0.0f,
     right, -0.355f, back, 1.0f, 0.0f
   };
-
-  const GLuint shader = Shader::useShader(Shader::Stem::ebeat);
-
-  if (measure >= 0)
-    glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 0.0f, 0.0f, 1.0f);
-  else
-    glUniform4f(glGetUniformLocation(shader, "color"), 0.0f, 1.0f, 0.0f, 1.0f);
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

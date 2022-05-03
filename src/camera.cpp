@@ -5,13 +5,8 @@
 #include "shader.h"
 #include "helper.h"
 
-static vec3 cameraTarget;
-static vec3 cameraPosition =
-{
-  .v0 = -6.3f,
-  .v1 = -7.0f,
-  .v2 = -9.16f
-};
+static vec3 cameraTarget = Const::cameraInitialPosition;
+static vec3 cameraPosition = Const::cameraInitialPosition;
 
 void Camera::init() {
 }
@@ -150,17 +145,17 @@ void Camera::tick() {
     static vec3 debugCameraPosition = cameraTarget;
 
     if (Global::inputD.pressed)
-      debugCameraPosition.v0 -= 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
+      debugCameraPosition.v0 -= 0.001f * Global::settings.highwaySpeedMultiplier * Global::frameDelta;
     else if (Global::inputA.pressed)
-      debugCameraPosition.v0 += 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
+      debugCameraPosition.v0 += 0.001f * Global::settings.highwaySpeedMultiplier * Global::frameDelta;
     if (Global::inputW.pressed)
-      debugCameraPosition.v2 += 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
+      debugCameraPosition.v2 += 0.001f * Global::settings.highwaySpeedMultiplier * Global::frameDelta;
     else if (Global::inputS.pressed)
-      debugCameraPosition.v2 -= 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
+      debugCameraPosition.v2 -= 0.001f * Global::settings.highwaySpeedMultiplier * Global::frameDelta;
     if (Global::inputE.pressed)
-      debugCameraPosition.v1 -= 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
+      debugCameraPosition.v1 -= 0.001f * Global::settings.highwaySpeedMultiplier * Global::frameDelta;
     else if (Global::inputC.pressed)
-      debugCameraPosition.v1 += 0.001f * Global::settingsHighwaySpeedMultiplier * Global::frameDelta;
+      debugCameraPosition.v1 += 0.001f * Global::settings.highwaySpeedMultiplier * Global::frameDelta;
 
     mat4 translation;
     translation.m30 = debugCameraPosition.v0;

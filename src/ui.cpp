@@ -1771,44 +1771,44 @@ static void mixerWindow() {
                  NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
         {
             nk_layout_row_dynamic(ctx, 22, 1);
-            i32 musicVolume = Global::settingsMixerMusicVolume;
+            i32 musicVolume = Global::settings.mixerMusicVolume;
             nk_property_int(ctx, "Music Volume:", 0, &musicVolume, 100, 10, 1);
-            Settings::set("Mixer", "MusicVolume", std::to_string(musicVolume));
+            Global::settings.mixerMusicVolume = musicVolume;
         }
 
         {
             nk_layout_row_dynamic(ctx, 22, 1);
-            i32 guitar1Volume = Global::settingsMixerGuitar1Volume;
+            i32 guitar1Volume = Global::settings.mixerGuitar1Volume;
             nk_property_int(ctx, "Player 1 Guitar Volume:", 0, &guitar1Volume, 100, 10, 1);
-            Settings::set("Mixer", "Guitar1Volume", std::to_string(guitar1Volume));
+            Global::settings.mixerGuitar1Volume = guitar1Volume;
         }
 
         {
             nk_layout_row_dynamic(ctx, 22, 1);
-            i32 bass1Volume = Global::settingsMixerBass1Volume;
+            i32 bass1Volume = Global::settings.mixerBass1Volume;
             nk_property_int(ctx, "Player 1 Bass Volume:", 0, &bass1Volume, 100, 10, 1);
-            Settings::set("Mixer", "Bass1Volume", std::to_string(bass1Volume));
+            Global::settings.mixerBass1Volume = bass1Volume;
         }
 
         {
             nk_layout_row_dynamic(ctx, 22, 1);
-            i32 guitar2Volume = Global::settingsMixerGuitar2Volume;
+            i32 guitar2Volume = Global::settings.mixerGuitar2Volume;
             nk_property_int(ctx, "Player 2 Guitar Volume:", 0, &guitar2Volume, 100, 10, 1);
-            Settings::set("Mixer", "Guitar2Volume", std::to_string(guitar2Volume));
+            Global::settings.mixerGuitar2Volume = guitar2Volume;
         }
 
         {
             nk_layout_row_dynamic(ctx, 22, 1);
-            i32 bass2Volume = Global::settingsMixerBass2Volume;
+            i32 bass2Volume = Global::settings.mixerBass2Volume;
             nk_property_int(ctx, "Player 2 Bass Volume:", 0, &bass2Volume, 100, 10, 1);
-            Settings::set("Mixer", "Bass2Volume", std::to_string(bass2Volume));
+            Global::settings.mixerBass2Volume = bass2Volume;
         }
 
         {
             nk_layout_row_dynamic(ctx, 22, 1);
-            i32 microphoneVolume = Global::settingsMixerMicrophoneVolume;
+            i32 microphoneVolume = Global::settings.mixerMicrophoneVolume;
             nk_property_int(ctx, "Microphone Volume:", 0, &microphoneVolume, 100, 10, 1);
-            Settings::set("Mixer", "MicrophoneVolume", std::to_string(microphoneVolume));
+            Global::settings.mixerMicrophoneVolume = microphoneVolume;
         }
     }
     nk_end(ctx);

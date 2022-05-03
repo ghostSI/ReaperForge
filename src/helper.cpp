@@ -48,6 +48,36 @@ vec4 colorVec4(const Color& color) {
   return vec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 }
 
+vec4 colorVec4(const std::string& hexColor) {
+  return colorVec4(makeColor((hexColor.substr(1) + n2hexStr(255)).c_str()));
+}
+
+std::string hexColor(vec4 color)
+{
+  std::string hexString = "#";
+
+  const u8 r = color.v0 * 255.0f;
+  const u8 g = color.v1 * 255.0f;
+  const u8 b = color.v2 * 255.0f;
+  const u8 a = color.v3 * 255.0f;
+
+  char hex[3];
+  sprintf(hex, "%02X", r);
+  hexString += hex;
+  sprintf(hex, "%02X", g);
+  hexString += hex;
+  sprintf(hex, "%02X", b);
+  hexString += hex;
+
+  if (a != 0xFF)
+  {
+    sprintf(hex, "%02X", a);
+    hexString += hex;
+  }
+
+  return hexString;
+}
+
 Color getColor(const u8 *rgbaData, i32 index) {
     return reinterpret_cast<const Color *>(rgbaData)[index];
 }
@@ -66,12 +96,12 @@ std::string n2hexStr(i32 value) {
 
 f32 x2GlScreen(f32 x)
 {
-  return 2.0f * x / f32(Global::settingsGraphicsResolutionWidth) - 1.0_f32;
+  return 2.0f * x / f32(Global::settings.graphicsResolutionWidth) - 1.0_f32;
 }
 
 f32 y2GlScreen(f32 y)
 {
-  return -(2.0f * y / f32(Global::settingsGraphicsResolutionHeight) - 1.0_f32);
+  return -(2.0f * y / f32(Global::settings.graphicsResolutionHeight) - 1.0_f32);
 }
 
 f32 deg2rad(f32 deg) {
@@ -124,6 +154,10 @@ void VecMath::norm(f32 &x, f32 &y) {
 
 vec3 VecMath::norm(const vec3& x) {
   const f32 len = VecMath::length(x);
+
+  if (len == 0.0f)
+    return {};
+
   vec3 normX
   {
     .v0 = x.v0 / len,

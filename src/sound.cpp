@@ -23,7 +23,7 @@ static SDL_AudioDeviceID devid_in = 0;
 static SDL_AudioSpec want_in;
 static u8 buffer_in[Const::audioMaximumPossibleBufferSize * sizeof(f32) * 2];
 static u8 buffer_mixer[Const::audioMaximumPossibleBufferSize * sizeof(f32) * 2];
-std::vector<double> frame(Global::settingsAudioBufferSize);
+std::vector<double> frame(Global::settings.audioBufferSize);
 
 static SDL_AudioDeviceID devid_out;
 static SDL_AudioSpec want_out;
@@ -32,7 +32,7 @@ static std::condition_variable cv;
 static std::mutex mutex;
 bool recordingFirst = true;
 
-static Chromagram chromagram(Global::settingsAudioBufferSize, Global::settingsAudioSampleRate);
+static Chromagram chromagram(Global::settings.audioBufferSize, Global::settings.audioSampleRate);
 static ChordDetector chordDetector;
 
 enum struct SoundType : i32
@@ -205,6 +205,8 @@ static void freeAudio(Audio* audio)
 }
 static void audioRecordingCallback(void* userdata, u8* stream, int len)
 {
+  ASSERT(len <= sizeof(buffer_in));
+
   ++Global::debugAudioCallbackRecording;
 
   //std::unique_lock<std::mutex> lock(mutex);
@@ -257,6 +259,8 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
 //param len           Length of sound to play
 static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
 {
+  ASSERT(len <= sizeof(buffer_in));
+
   ++Global::debugAudioCallbackPlayback;
 
   //std::unique_lock<std::mutex> lock(mutex);
@@ -264,7 +268,7 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
 
   SDL_memset(stream, 0, len);
 
-  SDL_MixAudioFormat(stream, buffer_in, AUDIO_F32LSB, len, Global::settingsMixerGuitar1Volume);
+  SDL_MixAudioFormat(stream, buffer_in, AUDIO_F32LSB, len, Global::settings.mixerGuitar1Volume);
 
   Audio* audio = reinterpret_cast<Audio*>(userdata);
   Audio* previous = audio;
@@ -320,7 +324,7 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
     else if (getSoundType(audio) == SoundType::Ogg)
     {
       stb_vorbis_get_samples_float_interleaved(audio->vorbis, 2, (f32*)buffer_mixer, len / sizeof(f32));
-      SDL_MixAudio(stream, buffer_mixer, len, Global::settingsMixerMusicVolume);
+      SDL_MixAudio(stream, buffer_mixer, len, Global::settings.mixerMusicVolume);
 
       previous = audio;
       audio = audio->next;
@@ -349,10 +353,10 @@ static void initAudio()
   { // Input
     SDL_memset(&want_in, 0, sizeof(want_in));
 
-    want_in.freq = Global::settingsAudioSampleRate;
+    want_in.freq = Global::settings.audioSampleRate;
     want_in.format = AUDIO_F32LSB;
     want_in.channels = 2;
-    want_in.samples = Global::settingsAudioBufferSize;
+    want_in.samples = Global::settings.audioBufferSize;
     want_in.callback = audioRecordingCallback;
     want_in.userdata = nullptr;
 
@@ -365,10 +369,10 @@ static void initAudio()
   { // Output
     SDL_memset(&want_out, 0, sizeof(want_out));
 
-    want_out.freq = Global::settingsAudioSampleRate;
+    want_out.freq = Global::settings.audioSampleRate;
     want_out.format = AUDIO_F32LSB;
     want_out.channels = 2;
-    want_out.samples = Global::settingsAudioBufferSize;
+    want_out.samples = Global::settings.audioBufferSize;
     want_out.callback = audioPlaybackCallback;
     want_out.userdata = &head;
 
@@ -418,7 +422,7 @@ void Sound::playOgg()
   spec.freq = info.sample_rate;
   spec.format = AUDIO_F32LSB;
   spec.channels = info.channels;
-  spec.samples = Global::settingsAudioBufferSize;
+  spec.samples = Global::settings.audioBufferSize;
   spec.callback = audioPlaybackCallback;
   spec.userdata = audio;
 

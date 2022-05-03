@@ -5,6 +5,7 @@
 #include "helper.h"
 #include "song.h"
 #include "psarc.h"
+#include "settings.h"
 
 #include <vector>
 #include <string>
@@ -37,6 +38,11 @@ namespace Const {
     inline constexpr f32 cameraMaximumForce = 1.0f;
     inline constexpr f32 cameraMaximumBreakForce = 2.0f;
     inline constexpr f32 cameraBreakRadius = 2.0f;
+    inline constexpr vec3 cameraInitialPosition = {
+      .v0 = -6.3f,
+      .v1 = -7.0f,
+      .v2 = -9.16f
+    };
     inline constexpr f32 highwayRenderMaxFutureTime = -10.0f;
     inline constexpr f32 highwayRenderTremoloFrequency = 0.04f;
     inline constexpr f32 highwayRenderLeftHandPreTime = -2.0f;
@@ -157,27 +163,13 @@ namespace Global {
     extern char searchText[256];
     extern i32 searchTextLength;
     
-    extern FullscreenMode settingsGraphicsDisplayMode;
-    extern u32 settingsGraphicsResolutionWidth;
-    extern u32 settingsGraphicsResolutionHeight;
-    extern f32 settingsGraphicsFieldOfView;
-    extern i32 settingsAudioSampleRate;
-    extern i32 settingsAudioBufferSize;
-    extern f32 settingsHighwaySpeedMultiplier;
-    extern bool settingsHighwayStringNoteNames;
-    extern bool settingsHighwayFretNoteNames;
-    extern bool settingsHighwayShowLyrics;
-    extern bool settingsHighwayShowSongInfo;
-    extern i32 settingsInstrumentBassFirstWoundString;
-    extern vec4 settingsInstrumentBassStringColor[5];
-    extern i32 settingsInstrumentGuitarFirstWoundString;
-    extern vec4 settingsInstrumentGuitarStringColor[7];
-    extern std::atomic<i32> settingsMixerMusicVolume;
-    extern std::atomic<i32> settingsMixerGuitar1Volume;
-    extern std::atomic<i32> settingsMixerBass1Volume;
-    extern std::atomic<i32> settingsMixerGuitar2Volume;
-    extern std::atomic<i32> settingsMixerBass2Volume;
-    extern std::atomic<i32> settingsMixerMicrophoneVolume;
+    extern Settings::Info settings;
+    //extern std::atomic<i32> settingsMixerMusicVolume;
+    //extern std::atomic<i32> settingsMixerGuitar1Volume;
+    //extern std::atomic<i32> settingsMixerBass1Volume;
+    //extern std::atomic<i32> settingsMixerGuitar2Volume;
+    //extern std::atomic<i32> settingsMixerBass2Volume;
+    //extern std::atomic<i32> settingsMixerMicrophoneVolume;
 
     extern std::atomic<f32> instrumentVolume;
     extern std::atomic<Chords::Note> chordDetectorRootNote;

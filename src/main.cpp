@@ -46,7 +46,6 @@ static void mainloop() {
 
   //if (Global::frameDelta >= 16.666_f32)
   { // render frame
-    Settings::tick();
     Sound::tick();
     Scene::tick();
 
@@ -86,7 +85,7 @@ int main(int argc, char* argv[]) {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
   Global::window = SDL_CreateWindow("ReaperForge", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-    Global::settingsGraphicsResolutionWidth, Global::settingsGraphicsResolutionHeight,
+    Global::settings.graphicsResolutionWidth, Global::settings.graphicsResolutionHeight,
     SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
   if (Global::window == nullptr) {
@@ -129,7 +128,7 @@ int main(int argc, char* argv[]) {
     mainloop();
 #endif // __EMSCRIPTEN__
 
-  Settings::save();
+  Settings::fini();
 
   SDL_Quit();
   return 0;

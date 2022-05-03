@@ -236,9 +236,9 @@ void Input::pollEvent(SDL_Event &event) {
         case SDL_WINDOWEVENT: {
             switch (event.window.event) {
                 case SDL_WINDOWEVENT_SIZE_CHANGED: {
-                    Global::settingsGraphicsResolutionWidth = event.window.data1;
-                    Global::settingsGraphicsResolutionHeight = event.window.data2;
-                    glViewport(0, 0, Global::settingsGraphicsResolutionWidth, Global::settingsGraphicsResolutionHeight);
+                    Global::settings.graphicsResolutionWidth = event.window.data1;
+                    Global::settings.graphicsResolutionHeight = event.window.data2;
+                    glViewport(0, 0, Global::settings.graphicsResolutionWidth, Global::settings.graphicsResolutionHeight);
                 }
                     break;
             }
@@ -273,8 +273,8 @@ void Input::postPollEvent() {
 
 void Input::proccessInputEvents() {
   if (Global::inputFullscreen.up) {
-    Global::settingsGraphicsDisplayMode = Global::inputFullscreen.toggle ? FullscreenMode::windowedFullscreen : FullscreenMode::windowed;
-    switch (Global::settingsGraphicsDisplayMode)
+    Global::settings.graphicsFullscreen = Global::inputFullscreen.toggle ? FullscreenMode::windowedFullscreen : FullscreenMode::windowed;
+    switch (Global::settings.graphicsFullscreen)
     {
     case FullscreenMode::windowed:
       SDL_SetWindowFullscreen(Global::window, 0);

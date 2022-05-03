@@ -20,6 +20,10 @@ u8 colorA(Color color);
 
 vec4 colorVec4(const Color& color);
 
+vec4 colorVec4(const std::string& hexColor);
+
+std::string hexColor(vec4 color);
+
 Color getColor(const u8 *rgbaData, i32 index);
 
 void setColor(std::vector<u8> &rgbaData, i32 index, Color color);

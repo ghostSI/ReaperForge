@@ -19,8 +19,8 @@ KeyInput Global::debugCamera;
 
 bool Global::pauseAudio = false;
 
-f32 Global::cameraMidX = f32(Global::settingsGraphicsResolutionWidth / 2);
-f32 Global::cameraMidY = f32(Global::settingsGraphicsResolutionHeight / 2);
+f32 Global::cameraMidX = f32(Global::settings.graphicsResolutionWidth / 2);
+f32 Global::cameraMidY = f32(Global::settings.graphicsResolutionHeight / 2);
 mat4 Global::cameraMat;
 
 bool Global::isInstalled = false;
@@ -36,27 +36,13 @@ f32 Global::oggStartTime = 0.0f;
 char Global::searchText[256] = "";
 i32 Global::searchTextLength = 0;
 
-FullscreenMode Global::settingsGraphicsDisplayMode = FullscreenMode::windowed;
-u32 Global::settingsGraphicsResolutionWidth = 1024;
-u32 Global::settingsGraphicsResolutionHeight = 768;
-f32 Global::settingsGraphicsFieldOfView = 75.0f;
-i32 Global::settingsAudioSampleRate = 48000;
-i32 Global::settingsAudioBufferSize = 1024;
-f32 Global::settingsHighwaySpeedMultiplier = 1.0f;
-bool Global::settingsHighwayStringNoteNames = false;
-bool Global::settingsHighwayFretNoteNames = false;
-bool Global::settingsHighwayShowLyrics = false;
-bool Global::settingsHighwayShowSongInfo = false;
-i32 Global::settingsInstrumentBassFirstWoundString;
-vec4 Global::settingsInstrumentBassStringColor[5];
-i32 Global::settingsInstrumentGuitarFirstWoundString;
-vec4 Global::settingsInstrumentGuitarStringColor[7];
-std::atomic<i32> Global::settingsMixerMusicVolume;
-std::atomic<i32> Global::settingsMixerGuitar1Volume;
-std::atomic<i32> Global::settingsMixerBass1Volume;
-std::atomic<i32> Global::settingsMixerGuitar2Volume;
-std::atomic<i32> Global::settingsMixerBass2Volume;
-std::atomic<i32> Global::settingsMixerMicrophoneVolume;
+Settings::Info Global::settings;
+//std::atomic<i32> Global::settings.mixerMusicVolume;
+//std::atomic<i32> Global::settings.mixerGuitar1Volume;
+//std::atomic<i32> Global::settings.mixerBass1Volume;
+//std::atomic<i32> Global::settings.mixerGuitar2Volume;
+//std::atomic<i32> Global::settings.mixerBass2Volume;
+//std::atomic<i32> Global::settings.mixerMicrophoneVolume;
 
 std::atomic<f32> Global::instrumentVolume;
 std::atomic<Chords::Note> Global::chordDetectorRootNote;

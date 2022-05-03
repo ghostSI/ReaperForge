@@ -7,19 +7,26 @@ namespace Settings {
 
   struct Info
   {
+    i32 audioSampleRate = 48000;
+    i32 audioBufferSize = 1024;
     f32 graphicsFieldOfView = 75.0f;
     FullscreenMode graphicsFullscreen = FullscreenMode::windowed;
     u32 graphicsResolutionWidth = 1024;
     u32 graphicsResolutionHeight = 768;
-    i32 audioSampleRate = 48000;
-    i32 audioBufferSize = 1024;
-    f32 highwaySpeedMultiplier = 20.0f;
-    bool highwayLyrics = true;
+    bool highwayEbeat = true;
+    vec4 highwayEbeatColor[2] = {
+      colorVec4("#A0AEEFCC"),
+      colorVec4("#8795E566")
+    };
     bool highwayFretNoteNames = true;
-    vec4 highwayLyricsColor0 = colorVec4("#666666");
-    vec4 highwayLyricsColor1 = colorVec4("#2381E9");
-    vec4 highwayLyricsColor2 = colorVec4("#CCCCCC");
+    bool highwayLyrics = true;
+    vec4 highwayLyricsColor[3] = {
+      colorVec4("#666666"),
+      colorVec4("#2381E9"),
+      colorVec4("#CCCCCC")
+    };
     bool highwaySongInfo = true;
+    f32 highwaySpeedMultiplier = 20.0f;
     bool highwayStringNoteNames = true;
     i32 instrumentBassFirstWoundString;
     vec4 instrumentBassStringColor[5] = {

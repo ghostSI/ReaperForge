@@ -146,6 +146,13 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
   const std::map<std::string, std::map<std::string, std::string>> serializedSettings =
   {
     {
+      "Audio",
+      {
+        { "SampleRate", std::to_string(settings.audioSampleRate) },
+        { "BufferSize", std::to_string(settings.audioBufferSize) }
+      }
+    },
+    {
       "Graphics",
       {
         { "FieldOfView",      std::to_string(settings.graphicsFieldOfView) },
@@ -155,21 +162,17 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
       }
     },
     {
-      "Audio",
-      {
-        { "SampleRate", std::to_string(settings.audioSampleRate) },
-        { "BufferSize", std::to_string(settings.audioBufferSize) }
-      }
-    },
-    {
       "Highway",
       {
+        { "Ebeat",           std::to_string(settings.highwayEbeat) },
+        { "EbeatColor0",     hexColor(settings.highwayEbeatColor[0]) },
+        { "EbeatColor1",     hexColor(settings.highwayEbeatColor[1]) },
         { "SpeedMultiplier", std::to_string(settings.highwaySpeedMultiplier) },
-        { "Lyrics",          std::to_string(settings.highwayLyrics) },
         { "FretNoteNames",   std::to_string(settings.highwayFretNoteNames) },
-        { "LyricsColor0",    hexColor(settings.highwayLyricsColor0) },
-        { "LyricsColor1",    hexColor(settings.highwayLyricsColor1) },
-        { "LyricsColor2",    hexColor(settings.highwayLyricsColor2) },
+        { "Lyrics",          std::to_string(settings.highwayLyrics) },
+        { "LyricsColor0",    hexColor(settings.highwayLyricsColor[0]) },
+        { "LyricsColor1",    hexColor(settings.highwayLyricsColor[1]) },
+        { "LyricsColor2",    hexColor(settings.highwayLyricsColor[2]) },
         { "SongInfo",        std::to_string(settings.highwaySongInfo) },
         { "StringNoteNames", std::to_string(settings.highwayStringNoteNames) }
       }
@@ -219,23 +222,29 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
 {
   Settings::Info settings =
   {
+    .audioSampleRate = atoi(serializedSettings.at("Audio").at("SampleRate").c_str()),
+    .audioBufferSize = atoi(serializedSettings.at("Audio").at("BufferSize").c_str()),
     .graphicsFieldOfView = f32(atof(serializedSettings.at("Graphics").at("FieldOfView").c_str())),
     .graphicsFullscreen = FullscreenMode(atoi(serializedSettings.at("Graphics").at("Fullscreen").c_str())),
     .graphicsResolutionWidth = u32(atoi(serializedSettings.at("Graphics").at("ResolutionWidth").c_str())),
     .graphicsResolutionHeight = u32(atoi(serializedSettings.at("Graphics").at("ResolutionHeight").c_str())),
-    .audioSampleRate = atoi(serializedSettings.at("Audio").at("SampleRate").c_str()),
-    .audioBufferSize = atoi(serializedSettings.at("Audio").at("BufferSize").c_str()),
-    .highwaySpeedMultiplier = f32(atof(serializedSettings.at("Highway").at("SpeedMultiplier").c_str())),
-    .highwayLyrics = bool(atoi(serializedSettings.at("Highway").at("Lyrics").c_str())),
+    .highwayEbeat = bool(atoi(serializedSettings.at("Highway").at("Ebeat").c_str())),
+    .highwayEbeatColor = {
+      colorVec4(serializedSettings.at("Highway").at("EbeatColor0")),
+      colorVec4(serializedSettings.at("Highway").at("EbeatColor1"))
+    },
     .highwayFretNoteNames = bool(atoi(serializedSettings.at("Highway").at("FretNoteNames").c_str())),
-    .highwayLyricsColor0 = colorVec4(serializedSettings.at("Highway").at("LyricsColor0")),
-    .highwayLyricsColor1 = colorVec4(serializedSettings.at("Highway").at("LyricsColor1")),
-    .highwayLyricsColor2 = colorVec4(serializedSettings.at("Highway").at("LyricsColor2")),
+    .highwayLyrics = bool(atoi(serializedSettings.at("Highway").at("Lyrics").c_str())),
+    .highwayLyricsColor = {
+      colorVec4(serializedSettings.at("Highway").at("LyricsColor0")),
+      colorVec4(serializedSettings.at("Highway").at("LyricsColor1")),
+      colorVec4(serializedSettings.at("Highway").at("LyricsColor2"))
+    },
     .highwaySongInfo = bool(atoi(serializedSettings.at("Highway").at("SongInfo").c_str())),
+    .highwaySpeedMultiplier = f32(atof(serializedSettings.at("Highway").at("SpeedMultiplier").c_str())),
     .highwayStringNoteNames = bool(atoi(serializedSettings.at("Highway").at("StringNoteNames").c_str())),
     .instrumentBassFirstWoundString = atoi(serializedSettings.at("Instrument").at("BassFirstWoundString").c_str()),
-    .instrumentBassStringColor =
-    {
+    .instrumentBassStringColor = {
       colorVec4(serializedSettings.at("Instrument").at("BassStringColor0")),
       colorVec4(serializedSettings.at("Instrument").at("BassStringColor1")),
       colorVec4(serializedSettings.at("Instrument").at("BassStringColor2")),
@@ -243,8 +252,7 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
       colorVec4(serializedSettings.at("Instrument").at("BassStringColor4"))
     },
     .instrumentGuitarFirstWoundString = atoi(serializedSettings.at("Instrument").at("GuitarFirstWoundString").c_str()),
-    .instrumentGuitarStringColor =
-    {
+    .instrumentGuitarStringColor = {
       colorVec4(serializedSettings.at("Instrument").at("GuitarStringColor0")),
       colorVec4(serializedSettings.at("Instrument").at("GuitarStringColor1")),
       colorVec4(serializedSettings.at("Instrument").at("GuitarStringColor2")),

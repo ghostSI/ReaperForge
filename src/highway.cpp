@@ -1155,7 +1155,7 @@ static void drawLyrics()
 
       line0[line0Cur - 1] = '\0';
 
-      glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor0.v0, Global::settings.highwayLyricsColor0.v1, Global::settings.highwayLyricsColor0.v2, Global::settings.highwayLyricsColor0.v3);
+      glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[0].v0, Global::settings.highwayLyricsColor[0].v1, Global::settings.highwayLyricsColor[0].v2, Global::settings.highwayLyricsColor[0].v3);
 
       {
         const i32 letters = line0Cur - 1;
@@ -1186,7 +1186,7 @@ static void drawLyrics()
         line0[letters] = '\0';
       }
 
-      glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor1.v0, Global::settings.highwayLyricsColor1.v1, Global::settings.highwayLyricsColor1.v2, Global::settings.highwayLyricsColor1.v3);
+      glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[1].v0, Global::settings.highwayLyricsColor[1].v1, Global::settings.highwayLyricsColor[1].v2, Global::settings.highwayLyricsColor[1].v3);
 
       {
         const f32 offsetX = 4.0f * f32(Const::fontCharWidth * line0Cur) / f32(Global::settings.graphicsResolutionWidth);
@@ -1226,7 +1226,7 @@ static void drawLyrics()
     line0[offset + j] = '\0';
     offset += j;
 
-    glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor2.v0, Global::settings.highwayLyricsColor2.v1, Global::settings.highwayLyricsColor2.v2, Global::settings.highwayLyricsColor2.v3);
+    glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[2].v0, Global::settings.highwayLyricsColor[2].v1, Global::settings.highwayLyricsColor[2].v2, Global::settings.highwayLyricsColor[2].v3);
 
     {
       const f32 offsetX = 4.0f * f32(Const::fontCharWidth * line0Cur) / f32(Global::settings.graphicsResolutionWidth);
@@ -1287,7 +1287,7 @@ static void drawLyrics()
     }
     line1[line1Cur + j] = '\0';
 
-    glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor2.v0, Global::settings.highwayLyricsColor2.v1, Global::settings.highwayLyricsColor2.v2, Global::settings.highwayLyricsColor2.v3);
+    glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[2].v0, Global::settings.highwayLyricsColor[2].v1, Global::settings.highwayLyricsColor[2].v2, Global::settings.highwayLyricsColor[2].v3);
     {
       const i32 letters = line1Cur + j - 1;
       const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
@@ -1307,9 +1307,9 @@ static void drawEbeat(f32 noteTimeBegin, f32 noteTimeEnd, i32 measure, i32 chord
   const GLuint shader = Shader::useShader(Shader::Stem::ebeat);
 
   if (measure >= 0)
-    glUniform4f(glGetUniformLocation(shader, "color"), 0.6313f, 0.6862f, 0.9411f, 0.8f);
+    glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayEbeatColor[0].v0, Global::settings.highwayEbeatColor[0].v1, Global::settings.highwayEbeatColor[0].v2, Global::settings.highwayEbeatColor[0].v3);
   else
-    glUniform4f(glGetUniformLocation(shader, "color"), 0.5313f, 0.5862f, 0.9000f, 0.6f);
+    glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayEbeatColor[1].v0, Global::settings.highwayEbeatColor[1].v1, Global::settings.highwayEbeatColor[1].v2, Global::settings.highwayEbeatColor[1].v3);
 
   const GLfloat v[] = {
     left, -0.355f, front, 0.0f, 1.0f,
@@ -1356,7 +1356,8 @@ static void drawEbeats()
 void Highway::render()
 {
   drawGround();
-  drawEbeats();
+  if (Global::settings.highwayEbeat)
+    drawEbeats();
   drawFrets();
   drawStrings();
   drawAnchors();

@@ -49,6 +49,11 @@ vec4 colorVec4(const Color& color) {
 }
 
 vec4 colorVec4(const std::string& hexColor) {
+  assert((hexColor.size() == sizeof("#BADA55") - 1) || (hexColor.size() == sizeof("#BA55BABE") - 1));
+
+  if (hexColor.size() == sizeof("#B16B00B5") - 1)
+    return colorVec4(makeColor((hexColor.substr(1)).c_str()));
+
   return colorVec4(makeColor((hexColor.substr(1) + n2hexStr(255)).c_str()));
 }
 

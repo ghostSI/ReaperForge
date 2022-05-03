@@ -17,13 +17,10 @@ KeyInput Global::inputWireframe;
 KeyInput Global::inputDebug;
 KeyInput Global::debugCamera;
 
-u32 Global::windowWidth = 1024;
-u32 Global::windowHeight = 768;
-DisplayMode Global::displayMode = DisplayMode::windowed;
 bool Global::pauseAudio = false;
 
-f32 Global::cameraMidX = f32(Global::windowWidth / 2);
-f32 Global::cameraMidY = f32(Global::windowHeight / 2);
+f32 Global::cameraMidX = f32(Global::settingsGraphicsResolutionWidth / 2);
+f32 Global::cameraMidY = f32(Global::settingsGraphicsResolutionHeight / 2);
 mat4 Global::cameraMat;
 
 bool Global::isInstalled = false;
@@ -39,7 +36,12 @@ f32 Global::oggStartTime = 0.0f;
 char Global::searchText[256] = "";
 i32 Global::searchTextLength = 0;
 
+FullscreenMode Global::settingsGraphicsDisplayMode = FullscreenMode::windowed;
+u32 Global::settingsGraphicsResolutionWidth = 1024;
+u32 Global::settingsGraphicsResolutionHeight = 768;
 f32 Global::settingsGraphicsFieldOfView = 75.0f;
+i32 Global::settingsAudioSampleRate = 48000;
+i32 Global::settingsAudioBufferSize = 1024;
 f32 Global::settingsHighwaySpeedMultiplier = 1.0f;
 bool Global::settingsHighwayStringNoteNames = false;
 bool Global::settingsHighwayFretNoteNames = false;

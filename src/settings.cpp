@@ -24,13 +24,13 @@ static const std::map<std::string, std::map<std::string, std::string>> defaultSe
 
                 }
         },
-        //{
-        //        "Audio",
-        //        {
-        //                {"SampleRate",             "44100"},
-        //                {"BufferSize",             "1024"}
-        //        }
-        //},
+        {
+                "Audio",
+                {
+                        {"SampleRate",             "44100"},
+                        {"BufferSize",             "1024"}
+                }
+        },
         {
                 "Highway",
                 {
@@ -221,6 +221,9 @@ bool Settings::init(int argc, char *argv[]) {
 
 void Settings::tick()
 {
+  Global::settingsGraphicsDisplayMode = FullscreenMode(atoi(Settings::get("Graphics", "Fullscreen").c_str()));
+  Global::settingsGraphicsResolutionWidth = atoi(Settings::get("Graphics", "ResolutionWidth").c_str());
+  Global::settingsGraphicsResolutionHeight = atoi(Settings::get("Graphics", "ResolutionHeight").c_str());
   Global::settingsGraphicsFieldOfView = atof(Settings::get("Graphics", "FieldOfView").c_str());
   Global::settingsHighwaySpeedMultiplier = atof(Settings::get("Highway", "SpeedMultiplier").c_str());
   Global::settingsHighwayStringNoteNames = bool(atoi(Settings::get("Highway", "StringNoteNames").c_str()));

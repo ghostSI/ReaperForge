@@ -9,19 +9,19 @@
 #include <vector>
 #include <string>
 
-enum struct DisplayMode : u8;
+enum struct FullscreenMode : u8;
 enum struct InputDebugMode : u16;
 enum struct RenderOptions : u32;
 struct SDL_Window;
 typedef struct _SDL_GameController SDL_GameController;
 
 namespace Const {
+
+    inline constexpr i32 audioMaximumPossibleBufferSize = 2048;
     inline constexpr i32 randomIntMax = 65535;
     inline constexpr i16 controllerAxisDeadZone = 3000;
     inline constexpr i16 controllerTriggerDeadZone = -30000;
     inline constexpr f32 chordDetectorVolumeThreshhold = 0.005f;
-    inline constexpr i32 audioSampleRate = 48000;
-    inline constexpr i32 audioBufferSize = 1024;
     inline constexpr f32 aspectRatio = (16.0f / 9.0f);
     inline constexpr i32 fontCharWidth = 12;
     inline constexpr i32 fontCharHeight = 18;
@@ -138,9 +138,6 @@ namespace Global {
     extern KeyInput inputDebug;
     extern KeyInput debugCamera;
 
-    extern u32 windowWidth;
-    extern u32 windowHeight;
-    extern DisplayMode displayMode;
     extern bool pauseAudio;
 
     extern f32 cameraMidX;
@@ -160,7 +157,12 @@ namespace Global {
     extern char searchText[256];
     extern i32 searchTextLength;
     
+    extern FullscreenMode settingsGraphicsDisplayMode;
+    extern u32 settingsGraphicsResolutionWidth;
+    extern u32 settingsGraphicsResolutionHeight;
     extern f32 settingsGraphicsFieldOfView;
+    extern i32 settingsAudioSampleRate;
+    extern i32 settingsAudioBufferSize;
     extern f32 settingsHighwaySpeedMultiplier;
     extern bool settingsHighwayStringNoteNames;
     extern bool settingsHighwayFretNoteNames;

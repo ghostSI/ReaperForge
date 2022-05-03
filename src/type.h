@@ -33,7 +33,7 @@ enum struct InputDebugMode : u16 {
     f12 = 1_u16 << 12, // unused
 }BIT_FLAGS(InputDebugMode);
 
-enum struct DisplayMode : u8 {
+enum struct FullscreenMode : u8 {
     windowed,
     fullscreen,
     windowedFullscreen

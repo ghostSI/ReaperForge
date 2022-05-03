@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
   Global::window = SDL_CreateWindow("ReaperForge", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-    Global::windowWidth, Global::windowHeight,
+    Global::settingsGraphicsResolutionWidth, Global::settingsGraphicsResolutionHeight,
     SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
   if (Global::window == nullptr) {

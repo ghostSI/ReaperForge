@@ -32,13 +32,13 @@ static void mainloop() {
 
   {
     Input::prePollEvent();
-    //Ui::handleInputBegin();
+    Ui::handleInputBegin();
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
       Input::pollEvent(event);
-      //Ui::handleInput(event);
+      Ui::handleInput(event);
     }
-    //Ui::handleInputEnd();
+    Ui::handleInputEnd();
     Input::postPollEvent();
 
     Input::proccessInputEvents();

@@ -13,18 +13,18 @@ void Scene::init() {
     Camera::init();
     Highway::init();
     Font::init();
-    //Ui::init();
+    Ui::init();
 }
 
 void Scene::tick() {
     Camera::tick();
     //Debug::tick();
-    //Ui::tick();
+    Ui::tick();
 }
 
 void Scene::render() {
     Debug::render();
     Highway::render();
     Camera::render();
-    //Ui::render();
+    Ui::render();
 }

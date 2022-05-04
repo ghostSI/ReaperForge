@@ -6,7 +6,7 @@
 namespace Json
 {
   /* The various types JSON values can be. Used to identify what a value is. */
-  enum type : u64 {
+  enum Type : u64 {
     type_string,
     type_number,
     type_object,
@@ -26,7 +26,7 @@ namespace Json
     /* must be one of type. If type is type_true, type_false, or.
      */
      /* type_null, payload will be NULL. */
-    type type;
+    Type type;
   };
 
   /* A JSON string value. */

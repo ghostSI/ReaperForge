@@ -2,6 +2,8 @@
 
 #include "xml.h"
 
+#include <string.h>
+
 static bool str_ends_with(const char* str, const char* suffix) {
   const u64 str_len = strlen(str);
   const u64 suffix_len = strlen(suffix);

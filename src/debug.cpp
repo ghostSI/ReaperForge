@@ -8,6 +8,8 @@
 #include "font.h"
 #include "type.h"
 
+#include <string.h>
+
 void Debug::render()
 {
   if (Global::inputDebug.toggle)

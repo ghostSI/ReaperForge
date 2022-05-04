@@ -3,6 +3,8 @@
 #include "json.h"
 #include "xblock.h"
 
+#include <string.h>
+
 static void readAttribute(Json::object_element* it, Manifest::Info::Attributes& attrs)
 {
   if (0 == strcmp(it->name->string, "AlbumArt"))

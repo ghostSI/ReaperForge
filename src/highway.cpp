@@ -13,6 +13,8 @@
 #include "font.h"
 #include "sound.h"
 
+#include <string.h>
+
 static i32 stringCount = 6;
 static i32 stringOffset = 0;
 static i32 songTuning[6];

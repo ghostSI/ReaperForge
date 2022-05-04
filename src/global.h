@@ -7,6 +7,7 @@
 #include "psarc.h"
 #include "settings.h"
 
+#include <atomic>
 #include <vector>
 #include <string>
 

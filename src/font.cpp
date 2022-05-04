@@ -4,6 +4,7 @@
 #include "global.h"
 #include "shader.h"
 
+#include <string.h>
 #include <vector>
 
 static std::vector<u32> fretNumberBitmap[25];

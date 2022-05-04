@@ -28,7 +28,7 @@ namespace Settings {
     bool highwaySongInfo = true;
     f32 highwaySpeedMultiplier = 20.0f;
     bool highwayStringNoteNames = true;
-    i32 instrumentBassFirstWoundString;
+    i32 instrumentBassFirstWoundString = 0;
     vec4 instrumentBassStringColor[5] = {
       colorVec4("#E05A01"),
       colorVec4("#2381E9"),
@@ -36,7 +36,7 @@ namespace Settings {
       colorVec4("#D20000"),
       colorVec4("#009B71"),
     };
-    i32 instrumentGuitarFirstWoundString;
+    i32 instrumentGuitarFirstWoundString = 3;
     vec4 instrumentGuitarStringColor[7] = {
       colorVec4("#940FB0"),
       colorVec4("#1F9601"),

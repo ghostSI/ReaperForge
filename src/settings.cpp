@@ -199,7 +199,7 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
     {
       "Library",
       {
-        {"Path",             settings.libraryPath}
+        {"Path", settings.libraryPath}
       }
     },
     {
@@ -211,6 +211,12 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
         { "Guitar2Volume",    std::to_string(settings.mixerGuitar2Volume) },
         { "Bass2Volume",      std::to_string(settings.mixerBass2Volume) },
         { "MicrophoneVolume", std::to_string(settings.mixerMicrophoneVolume) }
+      }
+    },
+    {
+      "Ui",
+      {
+        { "Scale", std::to_string(settings.uiScale) }
       }
     }
   };
@@ -267,7 +273,8 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
     .mixerBass1Volume = atoi(serializedSettings.at("Mixer").at("Bass1Volume").c_str()),
     .mixerGuitar2Volume = atoi(serializedSettings.at("Mixer").at("Guitar2Volume").c_str()),
     .mixerBass2Volume = atoi(serializedSettings.at("Mixer").at("Bass2Volume").c_str()),
-    .mixerMicrophoneVolume = atoi(serializedSettings.at("Mixer").at("MicrophoneVolume").c_str())
+    .mixerMicrophoneVolume = atoi(serializedSettings.at("Mixer").at("MicrophoneVolume").c_str()),
+    .uiScale = f32(atof(serializedSettings.at("Ui").at("Scale").c_str()))
   };
 
   return settings;

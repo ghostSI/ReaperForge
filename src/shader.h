@@ -23,6 +23,7 @@ namespace Shader {
         string,
         noteStand,
         noteStandZero,
+        ui,
     };
 
     void init();

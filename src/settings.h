@@ -11,8 +11,8 @@ namespace Settings {
     i32 audioBufferSize = 1024;
     f32 graphicsFieldOfView = 75.0f;
     FullscreenMode graphicsFullscreen = FullscreenMode::windowed;
-    u32 graphicsResolutionWidth = 1024;
-    u32 graphicsResolutionHeight = 768;
+    i32 graphicsResolutionWidth = 1024;
+    i32 graphicsResolutionHeight = 768;
     bool highwayEbeat = true;
     vec4 highwayEbeatColor[2] = {
       colorVec4("#A0AEEFCC"),
@@ -53,6 +53,7 @@ namespace Settings {
     i32 mixerGuitar2Volume = 100;
     i32 mixerBass2Volume = 100;
     i32 mixerMicrophoneVolume = 100;
+    f32 uiScale = 1.0f;
   };
 
   bool init(int argc, char* argv[]);

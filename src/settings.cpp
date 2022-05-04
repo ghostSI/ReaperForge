@@ -226,8 +226,8 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
     .audioBufferSize = atoi(serializedSettings.at("Audio").at("BufferSize").c_str()),
     .graphicsFieldOfView = f32(atof(serializedSettings.at("Graphics").at("FieldOfView").c_str())),
     .graphicsFullscreen = FullscreenMode(atoi(serializedSettings.at("Graphics").at("Fullscreen").c_str())),
-    .graphicsResolutionWidth = u32(atoi(serializedSettings.at("Graphics").at("ResolutionWidth").c_str())),
-    .graphicsResolutionHeight = u32(atoi(serializedSettings.at("Graphics").at("ResolutionHeight").c_str())),
+    .graphicsResolutionWidth = atoi(serializedSettings.at("Graphics").at("ResolutionWidth").c_str()),
+    .graphicsResolutionHeight = atoi(serializedSettings.at("Graphics").at("ResolutionHeight").c_str()),
     .highwayEbeat = bool(atoi(serializedSettings.at("Highway").at("Ebeat").c_str())),
     .highwayEbeatColor = {
       colorVec4(serializedSettings.at("Highway").at("EbeatColor0")),

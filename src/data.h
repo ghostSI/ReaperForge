@@ -24,6 +24,8 @@ namespace Data {
     extern const char* stringFrag;
     extern const char* noteStandFrag;
     extern const char* noteStandZeroFrag;
+    extern const char* uiFrag;
+    extern const char* uiVert;
   }
   namespace Texture
   {

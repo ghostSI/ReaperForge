@@ -64,6 +64,7 @@ std::atomic<u64> Global::debugAudioCallbackPlayback = 0;
 
 GLuint Global::vao = 0;
 GLuint Global::vbo = 0;
+GLuint Global::ebo = 0;
 GLuint Global::fbo = 0;
 GLuint Global::fboRtt = 0;
 GLuint Global::texture = 0;

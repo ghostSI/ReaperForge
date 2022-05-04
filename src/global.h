@@ -19,6 +19,8 @@ typedef struct _SDL_GameController SDL_GameController;
 
 namespace Const {
 
+    inline constexpr i32 glMaxVertexMemory = 512 * 1024;
+    inline constexpr i32 glMaxElementMemory = 128 * 1024;
     inline constexpr i32 audioMaximumPossibleBufferSize = 2048;
     inline constexpr i32 randomIntMax = 65535;
     inline constexpr i16 controllerAxisDeadZone = 3000;
@@ -192,6 +194,7 @@ namespace Global {
 
     extern GLuint vao; // default vao
     extern GLuint vbo; // default vbo
+    extern GLuint ebo;
     extern GLuint fbo; // default fbo is 0 if postprocessor is off
     extern GLuint fboRtt; // framebuffer for rendering to texture (make sure to set framebuffer to 0 after using it)
     extern GLuint texture;

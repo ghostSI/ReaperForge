@@ -49,7 +49,6 @@ set(HEADER_FILES
         src/opengl.h
         src/psarc.h
         src/rijndael.h
-        src/scene.h
         src/settings.h
         src/shader.h
         src/sng.h
@@ -89,7 +88,6 @@ set(SOURCE_FILES
         src/opengl.cpp
         src/psarc.cpp
         src/rijndael.cpp
-        src/scene.cpp
         src/settings.cpp
         src/shader.cpp
         src/sng.cpp

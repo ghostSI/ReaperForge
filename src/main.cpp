@@ -2,15 +2,18 @@
 
 #ifndef TEST_BUILD
 
-#include "global.h"
+#include "camera.h"
 #include "data.h"
+#include "debug.h"
+#include "font.h"
+#include "global.h"
+#include "highway.h"
 #include "input.h"
-#include "scene.h"
-#include "sound.h"
-#include "shader.h"
-#include "opengl.h"
 #include "installer.h"
+#include "opengl.h"
 #include "settings.h"
+#include "shader.h"
+#include "sound.h"
 #include "ui.h"
 
 #include "SDL2/SDL.h"
@@ -47,7 +50,8 @@ static void mainloop() {
   //if (Global::frameDelta >= 16.666_f32)
   { // render frame
     Sound::tick();
-    Scene::tick();
+    Camera::tick();
+    Ui::tick();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -58,7 +62,10 @@ static void mainloop() {
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif // __EMSCRIPTEN__
 
-    Scene::render();
+    Debug::render();
+    Highway::render();
+    Camera::render();
+    Ui::render();
 
     SDL_GL_SwapWindow(Global::window);
 
@@ -76,13 +83,13 @@ int main(int argc, char* argv[]) {
     SDL_Quit();
   }
 
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
   Global::window = SDL_CreateWindow("ReaperForge", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
     Global::settings.graphicsResolutionWidth, Global::settings.graphicsResolutionHeight,
@@ -98,17 +105,20 @@ int main(int argc, char* argv[]) {
 
   //glEnable(GL_CULL_FACE);
   //glCullFace(GL_FRONT);
-  //glFrontFace(GL_CW);
+  //glFrontFace(GL_CCW);
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_SCISSOR_TEST);
 
   OpenGl::init();
   glGenVertexArrays(1, &Global::vao);
   glGenBuffers(1, &Global::vbo);
+  glGenBuffers(1, &Global::ebo);
   glBindVertexArray(Global::vao);
   glBindBuffer(GL_ARRAY_BUFFER, Global::vbo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Global::ebo);
   glGenFramebuffers(1, &Global::fboRtt);
   Global::texture = OpenGl::loadDDSTexture(Data::Texture::texture, sizeof(Data::Texture::texture));
 
@@ -119,7 +129,10 @@ int main(int argc, char* argv[]) {
 
   Shader::init();
   Sound::init();
-  Scene::init();
+  Camera::init();
+  Highway::init();
+  Font::init();
+  Ui::init();
 
 #ifdef __EMSCRIPTEN__
   emscripten_set_main_loop(mainloop, -1, 1);

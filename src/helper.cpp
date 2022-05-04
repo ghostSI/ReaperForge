@@ -45,7 +45,12 @@ vec4 colorVec4(const Color& color) {
   const u8 b = colorB(color);
   const u8 a = colorA(color);
 
-  return vec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+  return vec4 {
+    .v0 = r / 255.0f,
+    .v1 = g / 255.0f,
+    .v2 = b / 255.0f,
+    .v3 = a / 255.0f
+  };
 }
 
 vec4 colorVec4(const std::string& hexColor) {

@@ -63,7 +63,7 @@ static void mainloop() {
 #endif // __EMSCRIPTEN__
 
     Debug::render();
-    //Highway::render();
+    Highway::render();
     Camera::render();
     Ui::render();
 
@@ -130,7 +130,7 @@ int main(int argc, char* argv[]) {
   Shader::init();
   Sound::init();
   Camera::init();
-  //Highway::init();
+  Highway::init();
   Font::init();
   Ui::init();
 

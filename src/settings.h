@@ -25,6 +25,7 @@ namespace Settings {
       colorVec4("#2381E9"),
       colorVec4("#CCCCCC")
     };
+    bool highwayReverseStrings = false;
     bool highwaySongInfo = true;
     f32 highwaySpeedMultiplier = 20.0f;
     bool highwayStringNoteNames = true;

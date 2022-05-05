@@ -173,6 +173,7 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
         { "LyricsColor0",    hexColor(settings.highwayLyricsColor[0]) },
         { "LyricsColor1",    hexColor(settings.highwayLyricsColor[1]) },
         { "LyricsColor2",    hexColor(settings.highwayLyricsColor[2]) },
+        { "ReverseStrings",  std::to_string(settings.highwayReverseStrings) },
         { "SongInfo",        std::to_string(settings.highwaySongInfo) },
         { "StringNoteNames", std::to_string(settings.highwayStringNoteNames) }
       }
@@ -246,6 +247,7 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
       colorVec4(serializedSettings.at("Highway").at("LyricsColor1")),
       colorVec4(serializedSettings.at("Highway").at("LyricsColor2"))
     },
+    .highwayReverseStrings = bool(atoi(serializedSettings.at("Highway").at("ReverseStrings").c_str())),
     .highwaySongInfo = bool(atoi(serializedSettings.at("Highway").at("SongInfo").c_str())),
     .highwaySpeedMultiplier = f32(atof(serializedSettings.at("Highway").at("SpeedMultiplier").c_str())),
     .highwayStringNoteNames = bool(atoi(serializedSettings.at("Highway").at("StringNoteNames").c_str())),

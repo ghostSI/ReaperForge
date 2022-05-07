@@ -1,4 +1,4 @@
-R"(#version 330 core
+R"(#version 300 es
 uniform mat4 ProjMtx;
 in vec2 Position;
 in vec2 TexCoord;

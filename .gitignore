@@ -14,6 +14,7 @@ Makefile
 ReaperForge
 build/
 3rdparty/emsdk/
+website/deploy.sh
 website/index.js
 website/index.wasm
 website/res/

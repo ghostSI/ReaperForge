@@ -166,7 +166,8 @@ int main(int argc, char* argv[]) {
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 //#ifdef __EMSCRIPTEN__
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 //#else
 //  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
@@ -185,6 +186,8 @@ int main(int argc, char* argv[]) {
   }
 
   SDL_GLContext con = SDL_GL_CreateContext(Global::window);
+  assert(con);
+
 #ifndef __EMSCRIPTEN__
   SDL_GL_SetSwapInterval(0); // disable vsync
 #endif // __EMSCRIPTEN__
@@ -213,10 +216,10 @@ int main(int argc, char* argv[]) {
 
   glClearColor(0.0f, 1.0031372f, 0.0721568f, 1.0f);
 
-  //Shader::init();
+  Shader::init();
   Sound::init();
   Camera::init();
-  Highway::init();
+  //Highway::init();
   Font::init();
   Ui::init();
 

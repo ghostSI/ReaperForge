@@ -86,6 +86,8 @@ namespace Const {
       23.0f,
       24.0f
     };
+    inline constexpr i32 instrumentBassStringCount = 5;
+    inline constexpr i32 instrumentGuitarStringCount = 7;
     inline constexpr const char notesFlat[][3] =
     {
       "A",

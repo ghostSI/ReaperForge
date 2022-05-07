@@ -216,7 +216,7 @@ int main(int argc, char* argv[]) {
   //Shader::init();
   Sound::init();
   Camera::init();
-  //Highway::init();
+  Highway::init();
   Font::init();
   Ui::init();
 

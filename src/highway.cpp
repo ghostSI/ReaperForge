@@ -21,30 +21,30 @@ static i32 songTuning[6];
 
 void Highway::init()
 {
-  const std::vector<u8> psarcData = Psarc::readPsarcData("songs/test.psarc");
+//  const std::vector<u8> psarcData = Psarc::readPsarcData("songs/test.psarc");
 
-  const Psarc::Info psarcInfo = Psarc::parse(psarcData);
-  Global::songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
-  Song::loadSongInfoComplete(psarcInfo, Global::songInfo);
+//  const Psarc::Info psarcInfo = Psarc::parse(psarcData);
+//  Global::songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
+//  Song::loadSongInfoComplete(psarcInfo, Global::songInfo);
 
-  if (Global::songInfo.manifest.attributes[0].tuning.string0 <= -3)
-  {
-    stringCount = 7;
-    stringOffset = 1;
-  }
-  else
-  {
-    stringCount = 6;
-    stringOffset = 0;
-  }
+//  if (Global::songInfo.manifest.attributes[0].tuning.string0 <= -3)
+//  {
+//    stringCount = 7;
+//    stringOffset = 1;
+//  }
+//  else
+//  {
+//    stringCount = 6;
+//    stringOffset = 0;
+//  }
 
-  memcpy(songTuning, &Global::songInfo.manifest.attributes[0].tuning.string0, sizeof(Tuning));
+//  memcpy(songTuning, &Global::songInfo.manifest.attributes[0].tuning.string0, sizeof(Tuning));
 
-  Global::songTrack = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
-  Global::songVocals = Song::loadVocals(psarcInfo);
+//  Global::songTrack = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
+//  Global::songVocals = Song::loadVocals(psarcInfo);
 
-  Psarc::loadOgg(psarcInfo, false);
-  Sound::playOgg();
+//  Psarc::loadOgg(psarcInfo, false);
+//  Sound::playOgg();
 
   //Global::oggStartTime = -16.0f;
 }

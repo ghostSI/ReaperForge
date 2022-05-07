@@ -35,13 +35,13 @@ static void mainloop() {
 
   {
     Input::prePollEvent();
-    //Ui::handleInputBegin();
+    Ui::handleInputBegin();
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
       Input::pollEvent(event);
-      //Ui::handleInput(event);
+      Ui::handleInput(event);
     }
-    //Ui::handleInputEnd();
+    Ui::handleInputEnd();
     Input::postPollEvent();
 
     Input::proccessInputEvents();
@@ -51,7 +51,7 @@ static void mainloop() {
   { // render frame
     Sound::tick();
     Camera::tick();
-    //Ui::tick();
+    Ui::tick();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -63,9 +63,9 @@ static void mainloop() {
 #endif // __EMSCRIPTEN__
 
     //Debug::render();
-    //Highway::render();
+    Highway::render();
     //Camera::render();
-    //Ui::render();
+    Ui::render();
 
     SDL_GL_SwapWindow(Global::window);
 
@@ -177,7 +177,7 @@ int main(int argc, char* argv[]) {
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
   Global::window = SDL_CreateWindow("ReaperForge", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-    800, 600,
+    Global::settings.graphicsResolutionWidth, Global::settings.graphicsResolutionHeight,
     SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
   if (Global::window == nullptr) {
@@ -214,12 +214,12 @@ int main(int argc, char* argv[]) {
   if (Global::gameController == nullptr && SDL_NumJoysticks() >= 1 && SDL_IsGameController(0))
     Global::gameController = SDL_GameControllerOpen(0);
 
-  glClearColor(0.0f, 1.0031372f, 0.0721568f, 1.0f);
+  glClearColor(0.0f, 0.0031372f, 0.0721568f, 1.0f);
 
   Shader::init();
   Sound::init();
   Camera::init();
-  //Highway::init();
+  Highway::init();
   Font::init();
   Ui::init();
 

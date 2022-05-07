@@ -91,4 +91,10 @@ namespace string {
     bool endsWith(const std::string &str, const std::string &ending);
 }
 
+#ifdef __EMSCRIPTEN__
+#define EMSC_PATH(x) "/"#x
+#else
+#define EMSC_PATH(x) #x
+#endif // __EMSCRIPTEN__
+
 #endif // HELPER_H

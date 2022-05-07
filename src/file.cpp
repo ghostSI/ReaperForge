@@ -13,6 +13,7 @@ bool File::exists(const char *filepath) {
 }
 
 std::vector<u8> File::load(const char *filepath, const char *mode) {
+#ifndef __EMSCRIPTEN__
 #ifdef _WIN32
 #pragma warning( disable: 4996 ) // ignore msvc unsafe warning
 #endif // _WIN32
@@ -31,6 +32,15 @@ std::vector<u8> File::load(const char *filepath, const char *mode) {
     fclose(file);
 
     return fileData;
+#else
+    std::ifstream in(filepath, std::ios::binary);
+    in.seekg(0, std::ios::end);
+    const size_t lSize = in.tellg();
+    in.seekg(0, std::ios::beg);
+    std::vector<u8> fileData(10000000);
+    in.read(reinterpret_cast<char*>(fileData.data()), lSize);
+    return fileData;
+#endif // __EMSCRIPTEN__
 }
 
 void File::load(const char *filepath, std::string &buffer) {

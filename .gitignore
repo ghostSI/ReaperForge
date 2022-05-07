@@ -14,10 +14,10 @@ Makefile
 ReaperForge
 build/
 3rdparty/emsdk/
-website/deploy.sh
-website/index.js
-website/index.wasm
-website/res/
+docs/deploy.sh
+docs/index.js
+docs/index.wasm
+docs/res/
 temp/
 songs/
 settings.ini

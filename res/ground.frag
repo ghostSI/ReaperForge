@@ -9,7 +9,7 @@ void main()
 {
   vec4 col = color;
   
-  col.a = pow(sin(Texcoord.x * 154.0), 100);
+  col.a = pow(sin(Texcoord.x * 154.0), 100.0);
   
   if (col.a <= 0.0)
     discard;

@@ -148,8 +148,10 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
     {
       "Audio",
       {
-        { "SampleRate", std::to_string(settings.audioSampleRate) },
-        { "BufferSize", std::to_string(settings.audioBufferSize) }
+        { "BufferSize",         std::to_string(settings.audioBufferSize) },
+        { "ChannelInstrument0", std::to_string(settings.audioChannelInstrument[0]) },
+        { "ChannelInstrument1", std::to_string(settings.audioChannelInstrument[1]) },
+        { "SampleRate",         std::to_string(settings.audioSampleRate) }
       }
     },
     {
@@ -235,8 +237,12 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
 {
   Settings::Info settings =
   {
-    .audioSampleRate = atoi(serializedSettings.at("Audio").at("SampleRate").c_str()),
     .audioBufferSize = atoi(serializedSettings.at("Audio").at("BufferSize").c_str()),
+    .audioChannelInstrument = {
+      atoi(serializedSettings.at("Audio").at("ChannelInstrument0").c_str()),
+      atoi(serializedSettings.at("Audio").at("ChannelInstrument1").c_str())
+    },
+    .audioSampleRate = atoi(serializedSettings.at("Audio").at("SampleRate").c_str()),
     .graphicsFieldOfView = f32(atof(serializedSettings.at("Graphics").at("FieldOfView").c_str())),
     .graphicsFullscreen = FullscreenMode(atoi(serializedSettings.at("Graphics").at("Fullscreen").c_str())),
     .graphicsResolutionWidth = atoi(serializedSettings.at("Graphics").at("ResolutionWidth").c_str()),

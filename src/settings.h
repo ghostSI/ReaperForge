@@ -7,8 +7,9 @@ namespace Settings {
 
   struct Info
   {
-    i32 audioSampleRate = 48000;
     i32 audioBufferSize = 1024;
+    i32 audioChannelInstrument[2] = { 0, 1 };
+    i32 audioSampleRate = 48000;
     f32 graphicsFieldOfView = 75.0f;
     FullscreenMode graphicsFullscreen = FullscreenMode::windowed;
     i32 graphicsResolutionWidth = 1024;

@@ -136,21 +136,22 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
   std::unique_lock<std::mutex> lock(mutex);
   cv.wait(lock, [] { return recordingFirst ? true : false; });
 
+  const i32 channelOffset = Global::settings.audioChannelInstrument[0] == 0 ? 0 : 4;
 
-  // right channel to stereo
+  // channel instrument0 to stereo
   for (i32 i = 0; i < len; i += 8)
   {
     // Left Output Channel
-    buffer_in[i] = stream[i + 4];
-    buffer_in[i + 1] = stream[i + 5];
-    buffer_in[i + 2] = stream[i + 6];
-    buffer_in[i + 3] = stream[i + 7];
+    buffer_in[i] = stream[i + channelOffset];
+    buffer_in[i + 1] = stream[i + channelOffset + 1];
+    buffer_in[i + 2] = stream[i + channelOffset + 2];
+    buffer_in[i + 3] = stream[i + channelOffset + 3];
 
     // Right Output Channel
-    buffer_in[i + 4] = stream[i + 4];
-    buffer_in[i + 5] = stream[i + 5];
-    buffer_in[i + 6] = stream[i + 6];
-    buffer_in[i + 7] = stream[i + 7];
+    buffer_in[i + 4] = stream[i + channelOffset];
+    buffer_in[i + 5] = stream[i + channelOffset + 1];
+    buffer_in[i + 6] = stream[i + channelOffset + 2];
+    buffer_in[i + 7] = stream[i + channelOffset + 3];
   }
 
   f32 instrumentVolume = 0.0f;

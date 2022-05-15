@@ -1871,6 +1871,16 @@ static void settingsWindow()
         index = nk_combo(ctx, audioSampleRateNames, NK_LEN(audioSampleRateNames), index, 25, nk_vec2(200, 200));
         Global::settings.audioSampleRate = audioSamples[index];
       }
+      {
+        static const char* channelNames[] = {
+          "Left Channel",
+          "Right Channel"
+        };
+        nk_label(ctx, "Instrument 0", NK_TEXT_LEFT);
+        Global::settings.audioChannelInstrument[0] = nk_combo(ctx, channelNames, NK_LEN(channelNames), Global::settings.audioChannelInstrument[0], 25, nk_vec2(200, 200));
+        nk_label(ctx, "Instrument 1", NK_TEXT_LEFT);
+        Global::settings.audioChannelInstrument[1] = nk_combo(ctx, channelNames, NK_LEN(channelNames), Global::settings.audioChannelInstrument[1], 25, nk_vec2(200, 200));
+      }
       nk_tree_pop(ctx);
     }
     if (nk_tree_push(ctx, NK_TREE_TAB, "Graphics", NK_MINIMIZED)) {

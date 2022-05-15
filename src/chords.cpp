@@ -6,6 +6,9 @@
 
 const char* Chords::chordDetectorName()
 {
+  if (Global::instrumentVolume < Const::chordDetectorVolumeThreshhold)
+    return "";
+
   if (Global::chordDetectorQuality == Chords::Quality::Major && Global::chordDetectorIntervals == 0)
   {
     switch (Global::chordDetectorRootNote)

@@ -1779,7 +1779,6 @@ static void songWindow() {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[0].instrumentFlags)))
             {
               Highway::playSong(Global::psarcInfos[i]);
-              Global::inputEsc.toggle = !Global::inputEsc.toggle;
             }
           }
           else
@@ -1794,7 +1793,6 @@ static void songWindow() {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[1].instrumentFlags)))
             {
               Highway::playSong(Global::psarcInfos[i]);
-              Global::inputEsc.toggle = !Global::inputEsc.toggle;
             }
           }
           else
@@ -1809,7 +1807,6 @@ static void songWindow() {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[2].instrumentFlags)))
             {
               Highway::playSong(Global::psarcInfos[i]);
-              Global::inputEsc.toggle = !Global::inputEsc.toggle;
             }
           }
           else

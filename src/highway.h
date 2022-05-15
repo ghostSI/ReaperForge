@@ -5,6 +5,7 @@ namespace Psarc { struct Info; }
 
 namespace Highway {
   void playSong(const Psarc::Info& psarcInfo);
+  void tick();
   void render();
 }
 

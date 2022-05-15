@@ -57,6 +57,7 @@ static void mainloop() {
 
   //if (Global::frameDelta >= 16.666_f32)
   { // render frame
+    Highway::tick();
     Camera::tick();
 #ifndef __EMSCRIPTEN__
     if (!Global::inputEsc.toggle)
@@ -72,15 +73,14 @@ static void mainloop() {
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif // __EMSCRIPTEN__
 
-    Debug::render();
-
-
     Highway::render();
     //Camera::render();
 #ifndef __EMSCRIPTEN__
     if (!Global::inputEsc.toggle)
       Ui::render();
 #endif // __EMSCRIPTEN__
+
+    Debug::render();
 
     SDL_GL_SwapWindow(Global::window);
 

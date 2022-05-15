@@ -19,7 +19,7 @@ namespace Settings {
       colorVec4("#A0AEEFCC"),
       colorVec4("#8795E566")
     };
-    bool highwayFretNoteNames = true;
+    bool highwayFretNoteNames = false;
     bool highwayLyrics = true;
     vec4 highwayLyricsColor[3] = {
       colorVec4("#666666"),

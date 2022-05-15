@@ -14,10 +14,12 @@
 #include "sound.h"
 
 #include <string.h>
+#include <thread>
 
 static i32 stringCount = 6;
 static i32 stringOffset = 0;
 static i32 songTuning[6];
+static bool playNextTick = false;
 
 void Highway::playSong(const Psarc::Info& psarcInfo)
 {
@@ -40,11 +42,20 @@ void Highway::playSong(const Psarc::Info& psarcInfo)
   Global::songTrack = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
   Global::songVocals = Song::loadVocals(psarcInfo);
 
-  Psarc::loadOgg(psarcInfo, false);
-  Sound::playOgg();
+  std::this_thread::sleep_for(std::chrono::seconds(5));
 
-  Global::time = 0.0f;
-  Global::oggStartTime = Global::time;
+  Psarc::loadOgg(psarcInfo, false);
+  playNextTick = true;
+}
+
+void Highway::tick()
+{
+  if (playNextTick)
+  {
+    Sound::playOgg();
+    Global::inputEsc.toggle = !Global::inputEsc.toggle;
+    playNextTick = false;
+  }
 }
 
 static void drawGround()
@@ -981,19 +992,19 @@ static void drawFretNoteNames()
   }
 }
 
-static void drawCurrentChordName()
-{
-  GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
-  glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
-
-  const Chords::Note rootNote = Global::chordDetectorRootNote;
-  Font::drawNoteNameFlat(to_underlying(rootNote), -0.2f, 0.6f, 0.0f, 0.1f, 0.1f);
-  const Chords::Quality quality = Global::chordDetectorQuality;
-  Font::drawFretNumber(to_underlying(quality), 0.0f, 0.6f, 0.0f, 0.1f, 0.1f);
-  Font::drawFretNumber(Global::chordDetectorIntervals, 0.2f, 0.6f, 0.0f, 0.1f, 0.1f);
-
-  Font::draw(Chords::chordDetectorName(), 0.0f, 0.5f, 0.0f, 0.05f, 0.05f);
-}
+//static void drawCurrentChordName()
+//{
+//  GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
+//  glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
+//
+//  const Chords::Note rootNote = Global::chordDetectorRootNote;
+//  Font::drawNoteNameFlat(to_underlying(rootNote), -0.2f, 0.6f, 0.0f, 0.1f, 0.1f);
+//  const Chords::Quality quality = Global::chordDetectorQuality;
+//  Font::drawFretNumber(to_underlying(quality), 0.0f, 0.6f, 0.0f, 0.1f, 0.1f);
+//  Font::drawFretNumber(Global::chordDetectorIntervals, 0.2f, 0.6f, 0.0f, 0.1f, 0.1f);
+//
+//  Font::draw(Chords::chordDetectorName(), 0.0f, 0.5f, 0.0f, 0.05f, 0.05f);
+//}
 
 static void drawPhrases()
 {
@@ -1376,8 +1387,8 @@ void Highway::render()
   if (Global::settings.highwayFretNoteNames)
     drawFretNoteNames();
 
-  if (Global::instrumentVolume > Const::chordDetectorVolumeThreshhold)
-    drawCurrentChordName();
+  //if (Global::instrumentVolume > Const::chordDetectorVolumeThreshhold)
+  //  drawCurrentChordName();
 
   if (Global::songInfo.loadState == Song::LoadState::complete &&Global::settings.highwaySongInfo)
     drawSongInfo();

@@ -1,6 +1,7 @@
 .cmake/
 .vs/
 .idea/
+enc_temp_folder/
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles/

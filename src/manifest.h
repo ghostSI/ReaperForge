@@ -11,8 +11,10 @@ namespace Manifest {
 
   struct Info
   {
-    struct Attributes
+    struct Entry
     {
+      InstrumentFlags instrumentFlags = InstrumentFlags::none;
+
       std::string albumArt;
       std::string albumName;
       std::string albumNameSort;
@@ -53,11 +55,13 @@ namespace Manifest {
       std::string japaneseArtist; // TODO is this in use?
       Tuning tuning;
       std::string persistentID;
+
+      std::string fileName;
+      f32 score{};
+      u64 lastPlayed{};
     };
 
-    InstrumentFlags instrumentFlags = InstrumentFlags::none;
-    std::vector<Attributes> attributes;
-    std::string insertRoot;
+    std::vector<Entry> entries;
   };
 
   Manifest::Info readHsan(const std::vector<u8>& hsanData, const XBlock::Info& xblock);

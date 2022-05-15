@@ -22,33 +22,34 @@ elseif (CMAKE_HOST_WIN32)
 endif ()
 
 set(HEADER_FILES
-        src/_kiss_fft_guts.h
-        src/arrangement.h
-        src/camera.h
-        src/chordDetector.h
-        src/chords.h
-        src/chromagram.h
-        src/collection.h
-        src/configuration.h
-        src/data.h
-        src/debug.h
-        src/file.h
-        src/font.h
-        src/getopt.h
-        src/global.h
-        src/helper.h
-        src/highway.h
-        src/inflate.h
-        src/input.h
-        src/installer.h
-        src/json.h
-        src/kiss_fft.h
-        src/manifest.h
-        src/nuklear.h
-        src/oggvorbis.h
+		src/_kiss_fft_guts.h
+		src/arrangement.h
+		src/camera.h
+		src/chordDetector.h
+		src/chords.h
+		src/chromagram.h
+		src/collection.h
+		src/configuration.h
+		src/data.h
+		src/debug.h
+		src/file.h
+		src/font.h
+		src/getopt.h
+		src/global.h
+		src/helper.h
+		src/highway.h
+		src/inflate.h
+		src/input.h
+		src/installer.h
+		src/json.h
+		src/kiss_fft.h
+		src/manifest.h
+		src/nuklear.h
+		src/oggvorbis.h
         src/opengl.h
         src/psarc.h
         src/rijndael.h
+        src/saves.h
         src/settings.h
         src/shader.h
         src/sng.h
@@ -63,21 +64,21 @@ set(HEADER_FILES
         )
 
 set(SOURCE_FILES
-        src/arrangement.cpp
-        src/camera.cpp
+		src/arrangement.cpp
+		src/camera.cpp
 		src/chordDetector.cpp
 		src/chords.cpp
-        src/chromagram.cpp
-        src/collection.cpp
-        src/data.cpp
-        src/debug.cpp
-        src/file.cpp
-        src/font.cpp
-        src/getopt.cpp
-        src/global.cpp
-        src/helper.cpp
-        src/highway.cpp
-        src/inflate.cpp
+		src/chromagram.cpp
+		src/collection.cpp
+		src/data.cpp
+		src/debug.cpp
+		src/file.cpp
+		src/font.cpp
+		src/getopt.cpp
+		src/global.cpp
+		src/helper.cpp
+		src/highway.cpp
+		src/inflate.cpp
         src/input.cpp
         src/installer.cpp
         src/json.cpp
@@ -88,6 +89,7 @@ set(SOURCE_FILES
         src/opengl.cpp
         src/psarc.cpp
         src/rijndael.cpp
+        src/saves.cpp
         src/settings.cpp
         src/shader.cpp
         src/sng.cpp

@@ -215,6 +215,12 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
       }
     },
     {
+      "Save",
+      {
+        { "Mode", std::to_string(to_underlying(settings.saveMode)) }
+      }
+    },
+    {
       "Ui",
       {
         { "Scale", std::to_string(settings.uiScale) }
@@ -276,6 +282,7 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
     .mixerGuitar2Volume = atoi(serializedSettings.at("Mixer").at("Guitar2Volume").c_str()),
     .mixerBass2Volume = atoi(serializedSettings.at("Mixer").at("Bass2Volume").c_str()),
     .mixerMicrophoneVolume = atoi(serializedSettings.at("Mixer").at("MicrophoneVolume").c_str()),
+    .saveMode = SaveMode(atoi(serializedSettings.at("Save").at("Mode").c_str())),
     .uiScale = f32(atof(serializedSettings.at("Ui").at("Scale").c_str()))
   };
 

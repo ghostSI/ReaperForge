@@ -21,30 +21,30 @@ static i32 songTuning[6];
 
 void Highway::init()
 {
-  const std::vector<u8> psarcData = Psarc::readPsarcData(EMSC_PATH(songs/test.psarc));
+  //const std::vector<u8> psarcData = Psarc::readPsarcData(EMSC_PATH(songs/test.psarc));
 
-  const Psarc::Info psarcInfo = Psarc::parse(psarcData);
-  Global::songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
-  Song::loadSongInfoComplete(psarcInfo, Global::songInfo);
+  //const Psarc::Info psarcInfo = Psarc::parse(psarcData);
+  //Global::songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
+  //Song::loadSongInfoComplete(psarcInfo, Global::songInfo);
 
-  if (Global::songInfo.manifest.attributes[0].tuning.string0 <= -3)
-  {
-    stringCount = 7;
-    stringOffset = 1;
-  }
-  else
-  {
-    stringCount = 6;
-    stringOffset = 0;
-  }
+  //if (Global::songInfo.manifest.attributes[0].tuning.string0 <= -3)
+  //{
+  //  stringCount = 7;
+  //  stringOffset = 1;
+  //}
+  //else
+  //{
+  //  stringCount = 6;
+  //  stringOffset = 0;
+  //}
 
-  memcpy(songTuning, &Global::songInfo.manifest.attributes[0].tuning.string0, sizeof(Tuning));
+  //memcpy(songTuning, &Global::songInfo.manifest.attributes[0].tuning.string0, sizeof(Tuning));
 
-  Global::songTrack = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
-  Global::songVocals = Song::loadVocals(psarcInfo);
+  //Global::songTrack = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
+  //Global::songVocals = Song::loadVocals(psarcInfo);
 
-  Psarc::loadOgg(psarcInfo, false);
-  Sound::playOgg();
+  //Psarc::loadOgg(psarcInfo, false);
+  //Sound::playOgg();
 
   //Global::oggStartTime = -16.0f;
 }
@@ -1013,8 +1013,8 @@ static void drawPhrases()
 
     const Song::Phrase& phase = Global::songTrack.phrases[phraseIteration0.phraseId];
 
-    f32 begin = phraseIteration0.time / Global::songInfo.manifest.attributes[0].songLength;
-    f32 end = phraseIteration1.time / Global::songInfo.manifest.attributes[0].songLength;
+    f32 begin = phraseIteration0.time / Global::songInfo.manifest.entries[0].songLength;
+    f32 end = phraseIteration1.time / Global::songInfo.manifest.entries[0].songLength;
     f32 difficulty = f32(phase.maxDifficulty) / f32(maxDifficulty);
 
     const f32 left = -0.7985 + begin * 1.6f;
@@ -1087,16 +1087,16 @@ static void drawSongInfo()
   glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, alpha);
 
   {
-    const i32 letters = Global::songInfo.manifest.attributes[0].songName.size();
+    const i32 letters = Global::songInfo.manifest.entries[0].songName.size();
     const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
     const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
-    Font::draw(Global::songInfo.manifest.attributes[0].songName.c_str(), 0.95f - scaleX, 0.3f, 0.0f, scaleX, scaleY);
+    Font::draw(Global::songInfo.manifest.entries[0].songName.c_str(), 0.95f - scaleX, 0.3f, 0.0f, scaleX, scaleY);
   }
   {
-    const i32 letters = Global::songInfo.manifest.attributes[0].artistName.size();
+    const i32 letters = Global::songInfo.manifest.entries[0].artistName.size();
     const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
     const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
-    Font::draw(Global::songInfo.manifest.attributes[0].artistName.c_str(), 0.95f - scaleX, 0.2f, 0.0f, scaleX, scaleY);
+    Font::draw(Global::songInfo.manifest.entries[0].artistName.c_str(), 0.95f - scaleX, 0.2f, 0.0f, scaleX, scaleY);
   }
 }
 
@@ -1357,6 +1357,9 @@ static void drawEbeats()
 
 void Highway::render()
 {
+  if (Global::songInfo.loadState != Song::LoadState::complete)
+    return;
+
   drawGround();
   if (Global::settings.highwayEbeat)
     drawEbeats();

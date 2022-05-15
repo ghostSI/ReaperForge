@@ -59,7 +59,11 @@ namespace Data {
     extern const f32 zeroLeft[135];
     extern const f32 zeroMiddle[270];
     extern const f32 zeroRight[135];
-
+  }
+  namespace Sound
+  {
+    extern const u8 menuHoverWav[56002];
+    extern const u8 menuSelectWav[63634];
   }
 }
 

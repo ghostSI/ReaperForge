@@ -3,6 +3,7 @@
 #ifndef TEST_BUILD
 
 #include "camera.h"
+#include "collection.h"
 #include "data.h"
 #include "debug.h"
 #include "font.h"
@@ -11,6 +12,7 @@
 #include "input.h"
 #include "installer.h"
 #include "opengl.h"
+#include "saves.h"
 #include "settings.h"
 #include "shader.h"
 #include "sound.h"
@@ -55,7 +57,6 @@ static void mainloop() {
 
   //if (Global::frameDelta >= 16.666_f32)
   { // render frame
-    Sound::tick();
     Camera::tick();
 #ifndef __EMSCRIPTEN__
     Ui::tick();
@@ -70,7 +71,7 @@ static void mainloop() {
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif // __EMSCRIPTEN__
 
-    //Debug::render();
+    Debug::render();
     Highway::render();
     //Camera::render();
 #ifndef __EMSCRIPTEN__
@@ -154,6 +155,8 @@ int main(int argc, char* argv[]) {
   Camera::init();
   Highway::init();
   Font::init();
+  Collection::init();
+  Saves::load();
 #ifndef __EMSCRIPTEN__
   Ui::init();
 #endif // __EMSCRIPTEN__
@@ -165,6 +168,7 @@ int main(int argc, char* argv[]) {
     mainloop();
 #endif // __EMSCRIPTEN__
 
+  Saves::save();
   Settings::fini();
 
   SDL_Quit();

@@ -11,16 +11,10 @@ namespace Sound
     menuSelect,
   };
 
-  enum struct Music
-  {
-  };
-
   void init();
-  void tick();
   void playOgg();
 
   void play(Sound::Effect type, i32 volume = 64);
-  void play(Sound::Music music, i32 volume = 64);
 
   void setPauseAudio(bool pauseAudio);
 };

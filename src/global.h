@@ -131,6 +131,7 @@ namespace Const {
       4,  // C#
     };
     inline constexpr bool isMarkedFret[]{ 0,1,0,1,0,1,0,1,0,1,0,0,1,0,0,1,0,1,0,1,0,1,0,0,1 };
+    inline constexpr i32 soundMaxCount = 8;
 }
 
 namespace Global {
@@ -157,7 +158,6 @@ namespace Global {
 
     extern bool isInstalled;
     extern InstrumentFlags filterInstrument;
-    extern bool collectionLoaded;
     extern std::vector<Psarc::Info> psarcInfos;
     extern std::vector<Song::Info> collection;
     extern Song::Info songInfo;

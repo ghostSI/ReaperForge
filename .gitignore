@@ -20,6 +20,7 @@ docs/index.wasm
 docs/res/
 temp/
 songs/
+saves.ini
 settings.ini
 *.sln
 *.vcxproj

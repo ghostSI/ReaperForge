@@ -5,7 +5,7 @@
 
 #include <string.h>
 
-static void readAttribute(Json::object_element* it, Manifest::Info::Attributes& attrs)
+static void readAttribute(Json::object_element* it, Manifest::Info::Entry& attrs)
 {
   if (0 == strcmp(it->name->string, "AlbumArt"))
   {
@@ -367,16 +367,21 @@ Manifest::Info Manifest::readHsan(const std::vector<u8>& hsanData, const XBlock:
   {
     assert(id->name->string_size == 32);
 
-    for (const XBlock::Info::Entry& entry : xblock.entries)
+    Manifest::Info::Entry entry;
+
+    for (const XBlock::Info::Entry& entry_ : xblock.entries)
     {
-      if (isSameId(id->name->string, entry.id))
+      if (isSameId(id->name->string, entry_.id))
       {
-        manifestInfo.instrumentFlags = entry.instrumentFlags;
+        entry.instrumentFlags = entry_.instrumentFlags;
         break;
       }
     }
 
-    assert(manifestInfo.instrumentFlags != InstrumentFlags::none);
+    if (entry.instrumentFlags == InstrumentFlags::Vocals)
+      continue;
+
+    assert(entry.instrumentFlags != InstrumentFlags::none);
 
     Json::value* id_value = id->value;
 
@@ -386,8 +391,6 @@ Manifest::Info Manifest::readHsan(const std::vector<u8>& hsanData, const XBlock:
     assert(attributes_o->length == 1);
 
     {
-      Manifest::Info::Attributes attrs;
-
       Json::object_element* attributes = attributes_o->start;
       assert(0 == strcmp(attributes->name->string, "Attributes"));
 
@@ -400,22 +403,13 @@ Manifest::Info Manifest::readHsan(const std::vector<u8>& hsanData, const XBlock:
         Json::object_element* it = attribute->start;
         do
         {
-          readAttribute(it, attrs);
+          readAttribute(it, entry);
         } while (it = it->next);
       }
 
-      manifestInfo.attributes.push_back(attrs);
+      manifestInfo.entries.push_back(entry);
     }
   } while (id = id->next);
-
-  {
-    Json::object_element* insertRoot = entries->next;
-    assert(0 == strcmp(insertRoot->name->string, "InsertRoot"));
-    assert(insertRoot->next == NULL);
-    assert(insertRoot->value->type == Json::type_string);
-    Json::string* string = (Json::string*)insertRoot->value->payload;
-    manifestInfo.insertRoot = string->string;
-  }
 
   delete root;
 

@@ -53,6 +53,12 @@ enum struct InstrumentFlags : u16 {
     //Third = 1 << 8
 }BIT_FLAGS(InstrumentFlags);
 
+enum struct SaveMode : u8 {
+  none,
+  statsOnly,
+  wholeManifest,
+};
+
 namespace Chords
 {
   enum struct Note : i32

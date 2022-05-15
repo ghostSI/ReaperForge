@@ -54,6 +54,7 @@ namespace Settings {
     i32 mixerGuitar2Volume = 100;
     i32 mixerBass2Volume = 100;
     i32 mixerMicrophoneVolume = 100;
+    SaveMode saveMode = SaveMode::none;
     f32 uiScale = 1.0f;
   };
 

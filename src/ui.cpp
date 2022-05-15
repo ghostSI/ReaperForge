@@ -1649,25 +1649,55 @@ static bool filterSongOut(const Song::Info& songInfo) {
   }
   searchText2[i] = '\0';
 
-  if (stristr(songInfo.manifest.attributes[0].songName.c_str(), searchText2))
+  if (stristr(songInfo.manifest.entries[0].songName.c_str(), searchText2))
     return false;
-  if (stristr(songInfo.manifest.attributes[0].artistName.c_str(), searchText2))
+  if (stristr(songInfo.manifest.entries[0].artistName.c_str(), searchText2))
     return false;
-  if (stristr(songInfo.manifest.attributes[0].albumName.c_str(), searchText2))
+  if (stristr(songInfo.manifest.entries[0].albumName.c_str(), searchText2))
     return false;
-  if (stristr(std::to_string(songInfo.manifest.attributes[0].songYear).c_str(), searchText2))
+  if (stristr(std::to_string(songInfo.manifest.entries[0].songYear).c_str(), searchText2))
     return false;
-  if (stristr(Song::tuningName(songInfo.manifest.attributes[0].tuning), searchText2))
+  if (stristr(Song::tuningName(songInfo.manifest.entries[0].tuning), searchText2))
     return false;
 
   return true;
 }
 
+static const char* instrumentName(InstrumentFlags instrumentFlags)
+{
+  static const char* names[] =
+  {
+    "None",
+    "Lead",
+    "Rhythm",
+    "None",
+    "Bass",
+    "None",
+    "None",
+    "None",
+    "None",
+    "None",
+    "None",
+    "None",
+    "None",
+    "Lead 2",
+    "Lead Alternative",
+    "Lead Alternative2",
+    "Lead Bonus",
+    "Rhythm 2",
+    "Rhythm Alternative",
+    "Rhythm Alternative 2",
+    "Rhythm Bonus",
+    "Bass 2",
+    "Bass Alternative",
+    "Bass Alternative2",
+    "Bass Bonus",
+  };
+
+  return names[to_underlying(instrumentFlags)];
+}
 
 static void songWindow() {
-
-  if (!Global::collectionLoaded)
-    Collection::init();
 
   if (nk_begin(ctx, "Songs", nk_rect(100, 100, 800, 500),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
@@ -1730,7 +1760,7 @@ static void songWindow() {
 
           nk_spacing(ctx, 1);
           nk_label(ctx, "Title:", NK_TEXT_LEFT);
-          nk_label(ctx, songInfo.manifest.attributes[0].songName.c_str(), NK_TEXT_LEFT);
+          nk_label(ctx, songInfo.manifest.entries[0].songName.c_str(), NK_TEXT_LEFT);
           if (nk_button_label(ctx, "Preview"))
           {
             Psarc::loadOgg(Global::psarcInfos[i], true);
@@ -1738,26 +1768,60 @@ static void songWindow() {
           }
           nk_spacing(ctx, 1);
           nk_label(ctx, "Artist:", NK_TEXT_LEFT);
-          nk_label(ctx, songInfo.manifest.attributes[0].artistName.c_str(), NK_TEXT_LEFT);
-          if (nk_button_label(ctx, "Lead Guitar"))
+          nk_label(ctx, songInfo.manifest.entries[0].artistName.c_str(), NK_TEXT_LEFT);
+
+
+          const u64 manifestEntryCount = songInfo.manifest.entries.size();
+
+          if (manifestEntryCount >= 1)
           {
-            Sound::play(Sound::Effect::menuHover);
+            if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[0].instrumentFlags)))
+            {
+              Psarc::loadOgg(Global::psarcInfos[i], false);
+              Sound::playOgg();
+            }
+          }
+          else
+          {
+            nk_spacing(ctx, 1);
           }
           nk_spacing(ctx, 1);
           nk_label(ctx, "Album:", NK_TEXT_LEFT);
-          nk_label(ctx, songInfo.manifest.attributes[0].albumName.c_str(), NK_TEXT_LEFT);
-          nk_button_label(ctx, "Rhythm Guitar");
+          nk_label(ctx, songInfo.manifest.entries[0].albumName.c_str(), NK_TEXT_LEFT);
+          if (manifestEntryCount >= 2)
+          {
+            if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[1].instrumentFlags)))
+            {
+              Psarc::loadOgg(Global::psarcInfos[i], false);
+              Sound::playOgg();
+            }
+          }
+          else
+          {
+            nk_spacing(ctx, 1);
+          }
           nk_spacing(ctx, 1);
           nk_label(ctx, "Year:", NK_TEXT_LEFT);
-          nk_label(ctx, std::to_string(songInfo.manifest.attributes[0].songYear).c_str(), NK_TEXT_LEFT);
-          nk_button_label(ctx, "Bass Guitar");
+          nk_label(ctx, std::to_string(songInfo.manifest.entries[0].songYear).c_str(), NK_TEXT_LEFT);
+          if (manifestEntryCount >= 3)
+          {
+            if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[2].instrumentFlags)))
+            {
+              Psarc::loadOgg(Global::psarcInfos[i], false);
+              Sound::playOgg();
+            }
+          }
+          else
+          {
+            nk_spacing(ctx, 1);
+          }
           nk_spacing(ctx, 1);
           nk_label(ctx, "Length:", NK_TEXT_LEFT);
-          nk_label(ctx, std::to_string(songInfo.manifest.attributes[0].songLength).c_str(), NK_TEXT_LEFT);
+          nk_label(ctx, std::to_string(songInfo.manifest.entries[0].songLength).c_str(), NK_TEXT_LEFT);
           nk_label(ctx, "Score:       98.4%", NK_TEXT_LEFT);
           nk_spacing(ctx, 1);
           nk_label(ctx, "Tuning:", NK_TEXT_LEFT);
-          nk_label(ctx, Song::tuningName(songInfo.manifest.attributes[0].tuning), NK_TEXT_LEFT);
+          nk_label(ctx, Song::tuningName(songInfo.manifest.entries[0].tuning), NK_TEXT_LEFT);
           nk_label(ctx, "Accuracy:    98.4%", NK_TEXT_LEFT);
 
           nk_group_end(ctx);
@@ -1936,6 +2000,19 @@ static void settingsWindow()
           }
         }
         nk_tree_pop(ctx);
+      }
+      nk_tree_pop(ctx);
+    }
+    if (nk_tree_push(ctx, NK_TREE_TAB, "Saves", NK_MINIMIZED)) {
+      nk_layout_row_dynamic(ctx, 22, 2);
+      {
+        nk_label(ctx, "Save and Cache", NK_TEXT_LEFT);
+        static const char* saveModeNames[] = {
+          "None",
+          "Stats only",
+          "Whole manifest"
+        };
+        Global::settings.saveMode = SaveMode(nk_combo(ctx, saveModeNames, NK_LEN(saveModeNames), to_underlying(Global::settings.saveMode), 25, nk_vec2(200, 200)));
       }
       nk_tree_pop(ctx);
     }

@@ -25,7 +25,6 @@ mat4 Global::cameraMat;
 
 bool Global::isInstalled = false;
 InstrumentFlags Global::filterInstrument = InstrumentFlags::none;
-bool Global::collectionLoaded = false;
 std::vector<Psarc::Info> Global::psarcInfos;
 std::vector<Song::Info> Global::collection;
 Song::Info Global::songInfo;

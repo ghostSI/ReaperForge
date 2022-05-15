@@ -6,6 +6,7 @@
 #include "opengl.h"
 #include "shader.h"
 #include "sound.h"
+#include "highway.h"
 
 
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
@@ -1558,7 +1559,7 @@ void Ui::init() {
 //}
 
 static void mixerWindow() {
-  if (nk_begin(ctx, "Mixer", nk_rect(50, 50, 300, 250),
+  if (nk_begin(ctx, "Mixer", nk_rect(30, 530, 250, 210),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
       {
         nk_layout_row_dynamic(ctx, 22, 1);
@@ -1699,7 +1700,7 @@ static const char* instrumentName(InstrumentFlags instrumentFlags)
 
 static void songWindow() {
 
-  if (nk_begin(ctx, "Songs", nk_rect(100, 100, 800, 500),
+  if (nk_begin(ctx, "Songs", nk_rect(300, 30, 695, 710),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
     NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
 
@@ -1777,8 +1778,8 @@ static void songWindow() {
           {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[0].instrumentFlags)))
             {
-              Psarc::loadOgg(Global::psarcInfos[i], false);
-              Sound::playOgg();
+              Highway::playSong(Global::psarcInfos[i]);
+              Global::inputEsc.toggle = !Global::inputEsc.toggle;
             }
           }
           else
@@ -1792,8 +1793,8 @@ static void songWindow() {
           {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[1].instrumentFlags)))
             {
-              Psarc::loadOgg(Global::psarcInfos[i], false);
-              Sound::playOgg();
+              Highway::playSong(Global::psarcInfos[i]);
+              Global::inputEsc.toggle = !Global::inputEsc.toggle;
             }
           }
           else
@@ -1807,8 +1808,8 @@ static void songWindow() {
           {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[2].instrumentFlags)))
             {
-              Psarc::loadOgg(Global::psarcInfos[i], false);
-              Sound::playOgg();
+              Highway::playSong(Global::psarcInfos[i]);
+              Global::inputEsc.toggle = !Global::inputEsc.toggle;
             }
           }
           else
@@ -1834,10 +1835,7 @@ static void songWindow() {
 
 static void settingsWindow()
 {
-  if (nk_begin(ctx, "Settings", nk_rect(50, 100, 300, 500),
-    NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
-    NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
-    nk_layout_row_dynamic(ctx, 30, 1);
+  if (nk_begin(ctx, "Settings", nk_rect(30, 30, 250, 480), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
 
     if (nk_tree_push(ctx, NK_TREE_TAB, "Audio", NK_MINIMIZED)) {
       nk_layout_row_dynamic(ctx, 22, 2);
@@ -2055,9 +2053,9 @@ void Ui::tick() {
   }
 
   //demo2Window();
+  settingsWindow();
   mixerWindow();
   songWindow();
-  settingsWindow();
 }
 
 void Ui::render() {

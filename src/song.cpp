@@ -121,6 +121,8 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
 
     assert(false);
   }
+
+  songInfo.loadState = LoadState::complete;
 }
 
 static void readPhrases(const pugi::xml_document& doc, std::vector<Song::Phrase>& phrases)

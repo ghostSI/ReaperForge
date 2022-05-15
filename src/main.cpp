@@ -59,7 +59,8 @@ static void mainloop() {
   { // render frame
     Camera::tick();
 #ifndef __EMSCRIPTEN__
-    Ui::tick();
+    if (!Global::inputEsc.toggle)
+      Ui::tick();
 #endif // __EMSCRIPTEN__
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -72,10 +73,13 @@ static void mainloop() {
 #endif // __EMSCRIPTEN__
 
     Debug::render();
+
+
     Highway::render();
     //Camera::render();
 #ifndef __EMSCRIPTEN__
-    Ui::render();
+    if (!Global::inputEsc.toggle)
+      Ui::render();
 #endif // __EMSCRIPTEN__
 
     SDL_GL_SwapWindow(Global::window);
@@ -153,7 +157,6 @@ int main(int argc, char* argv[]) {
   Shader::init();
   Sound::init();
   Camera::init();
-  Highway::init();
   Font::init();
   Collection::init();
   Saves::load();

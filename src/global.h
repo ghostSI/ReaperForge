@@ -148,6 +148,7 @@ namespace Global {
     extern KeyInput inputPause;
     extern KeyInput inputWireframe;
     extern KeyInput inputDebug;
+    extern KeyInput inputEsc;
     extern KeyInput debugCamera;
 
     extern bool pauseAudio;

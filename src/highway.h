@@ -1,8 +1,10 @@
 #ifndef HIGHWAY_H
 #define HIGHWAY_H
 
+namespace Psarc { struct Info; }
+
 namespace Highway {
-  void init();
+  void playSong(const Psarc::Info& psarcInfo);
   void render();
 }
 

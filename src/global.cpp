@@ -15,6 +15,7 @@ KeyInput Global::inputFullscreen;
 KeyInput Global::inputPause;
 KeyInput Global::inputWireframe;
 KeyInput Global::inputDebug;
+KeyInput Global::inputEsc;
 KeyInput Global::debugCamera;
 
 bool Global::pauseAudio = false;

@@ -19,34 +19,32 @@ static i32 stringCount = 6;
 static i32 stringOffset = 0;
 static i32 songTuning[6];
 
-void Highway::init()
+void Highway::playSong(const Psarc::Info& psarcInfo)
 {
-  //const std::vector<u8> psarcData = Psarc::readPsarcData(EMSC_PATH(songs/test.psarc));
+  Global::songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
+  Song::loadSongInfoComplete(psarcInfo, Global::songInfo);
 
-  //const Psarc::Info psarcInfo = Psarc::parse(psarcData);
-  //Global::songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
-  //Song::loadSongInfoComplete(psarcInfo, Global::songInfo);
+  if (Global::songInfo.manifest.entries[0].tuning.string0 <= -3)
+  {
+    stringCount = 7;
+    stringOffset = 1;
+  }
+  else
+  {
+    stringCount = 6;
+    stringOffset = 0;
+  }
 
-  //if (Global::songInfo.manifest.attributes[0].tuning.string0 <= -3)
-  //{
-  //  stringCount = 7;
-  //  stringOffset = 1;
-  //}
-  //else
-  //{
-  //  stringCount = 6;
-  //  stringOffset = 0;
-  //}
+  memcpy(songTuning, &Global::songInfo.manifest.entries[0].tuning.string0, sizeof(Tuning));
 
-  //memcpy(songTuning, &Global::songInfo.manifest.attributes[0].tuning.string0, sizeof(Tuning));
+  Global::songTrack = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
+  Global::songVocals = Song::loadVocals(psarcInfo);
 
-  //Global::songTrack = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
-  //Global::songVocals = Song::loadVocals(psarcInfo);
+  Psarc::loadOgg(psarcInfo, false);
+  Sound::playOgg();
 
-  //Psarc::loadOgg(psarcInfo, false);
-  //Sound::playOgg();
-
-  //Global::oggStartTime = -16.0f;
+  Global::time = 0.0f;
+  Global::oggStartTime = Global::time;
 }
 
 static void drawGround()
@@ -1357,9 +1355,6 @@ static void drawEbeats()
 
 void Highway::render()
 {
-  if (Global::songInfo.loadState != Song::LoadState::complete)
-    return;
-
   drawGround();
   if (Global::settings.highwayEbeat)
     drawEbeats();
@@ -1384,7 +1379,7 @@ void Highway::render()
   if (Global::instrumentVolume > Const::chordDetectorVolumeThreshhold)
     drawCurrentChordName();
 
-  if (Global::settings.highwaySongInfo)
+  if (Global::songInfo.loadState == Song::LoadState::complete &&Global::settings.highwaySongInfo)
     drawSongInfo();
 
   if (Global::settings.highwayLyrics)

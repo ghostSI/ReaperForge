@@ -12,6 +12,7 @@
 #include "input.h"
 #include "installer.h"
 #include "opengl.h"
+#include "player.h"
 #include "saves.h"
 #include "settings.h"
 #include "shader.h"
@@ -57,7 +58,7 @@ static void mainloop() {
 
   //if (Global::frameDelta >= 16.666_f32)
   { // render frame
-    Highway::tick();
+    Player::tick();
     Camera::tick();
 #ifndef __EMSCRIPTEN__
     if (!Global::inputEsc.toggle)

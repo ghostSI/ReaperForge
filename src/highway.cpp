@@ -14,49 +14,9 @@
 #include "sound.h"
 
 #include <string.h>
-#include <thread>
 
 static i32 stringCount = 6;
 static i32 stringOffset = 0;
-static i32 songTuning[6];
-static bool playNextTick = false;
-
-void Highway::playSong(const Psarc::Info& psarcInfo)
-{
-  Global::songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
-  Song::loadSongInfoComplete(psarcInfo, Global::songInfo);
-
-  if (Global::songInfo.manifest.entries[0].tuning.string0 <= -3)
-  {
-    stringCount = 7;
-    stringOffset = 1;
-  }
-  else
-  {
-    stringCount = 6;
-    stringOffset = 0;
-  }
-
-  memcpy(songTuning, &Global::songInfo.manifest.entries[0].tuning.string0, sizeof(Tuning));
-
-  Global::songTrack = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
-  Global::songVocals = Song::loadVocals(psarcInfo);
-
-  std::this_thread::sleep_for(std::chrono::seconds(5));
-
-  Psarc::loadOgg(psarcInfo, false);
-  playNextTick = true;
-}
-
-void Highway::tick()
-{
-  if (playNextTick)
-  {
-    Sound::playOgg();
-    Global::inputEsc.toggle = !Global::inputEsc.toggle;
-    playNextTick = false;
-  }
-}
 
 static void drawGround()
 {
@@ -537,7 +497,7 @@ static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime
       break;
     }
   }
-  assert(currentAnchor >= 0);
+  //assert(currentAnchor >= 0);
 
   if (currentAnchor >= 0)
   {
@@ -956,7 +916,7 @@ static i32 getStringTuning(i32 string)
   if (psarcString < 0 || psarcString >= 6)
     return Const::stringStandardTuningOffset[string];
 
-  return (12 + Const::stringStandardTuningOffset[string - stringOffset] + songTuning[psarcString]) % 12;
+  return (12 + Const::stringStandardTuningOffset[string - stringOffset] + Global::songInfo.manifest.entries[0].tuning.string[psarcString]) % 12;
 }
 
 static void drawStringNoteNames()
@@ -1366,6 +1326,20 @@ static void drawEbeats()
 
 void Highway::render()
 {
+  if (Global::songInfo.loadState == Song::LoadState::complete)
+  {
+    if (Global::songInfo.manifest.entries[0].tuning.string[0] <= -3)
+    {
+      stringCount = 7;
+      stringOffset = 1;
+    }
+    else
+    {
+      stringCount = 6;
+      stringOffset = 0;
+    }
+  }
+
   drawGround();
   if (Global::settings.highwayEbeat)
     drawEbeats();
@@ -1382,7 +1356,7 @@ void Highway::render()
   drawFretNumbers();
 
 
-  if (Global::settings.highwayStringNoteNames)
+  if (Global::songInfo.loadState == Song::LoadState::complete && Global::settings.highwayStringNoteNames)
     drawStringNoteNames();
   if (Global::settings.highwayFretNoteNames)
     drawFretNoteNames();
@@ -1390,7 +1364,7 @@ void Highway::render()
   //if (Global::instrumentVolume > Const::chordDetectorVolumeThreshhold)
   //  drawCurrentChordName();
 
-  if (Global::songInfo.loadState == Song::LoadState::complete &&Global::settings.highwaySongInfo)
+  if (Global::songInfo.loadState == Song::LoadState::complete && Global::settings.highwaySongInfo)
     drawSongInfo();
 
   if (Global::settings.highwayLyrics)

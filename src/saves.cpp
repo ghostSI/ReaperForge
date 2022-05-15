@@ -38,7 +38,7 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
         { "SongLength", std::to_string(saveInfo.songLength) },
         { "SongName", saveInfo.songName },
         { "SongYear", std::to_string(saveInfo.songYear) },
-        { "Tuning", std::to_string(saveInfo.tuning.string0) + ',' + std::to_string(saveInfo.tuning.string1) + ',' + std::to_string(saveInfo.tuning.string2) + ',' + std::to_string(saveInfo.tuning.string3) + ',' + std::to_string(saveInfo.tuning.string4) + ',' + std::to_string(saveInfo.tuning.string5)}
+        { "Tuning", std::to_string(saveInfo.tuning.string[0]) + ',' + std::to_string(saveInfo.tuning.string[1]) + ',' + std::to_string(saveInfo.tuning.string[2]) + ',' + std::to_string(saveInfo.tuning.string[3]) + ',' + std::to_string(saveInfo.tuning.string[4]) + ',' + std::to_string(saveInfo.tuning.string[5])}
       };
 
       serializedSaves.insert({ saveInfo.persistentID, serializedSave });

@@ -453,83 +453,83 @@ std::vector<Song::Vocal> Song::loadVocals(const Psarc::Info& psarcInfo) {
 }
 
 const char* Song::tuningName(const Tuning& tuning) {
-  if (tuning.string0 == 0 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == 0 && tuning.string4 == 0 && tuning.string5 == 0)
+  if (tuning.string[0] == 0 && tuning.string[1] == 0 && tuning.string[2] == 0 && tuning.string[3] == 0 && tuning.string[4] == 0 && tuning.string[5] == 0)
     return "E Standard";
-  if (tuning.string0 == -2 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == 0 && tuning.string4 == 0 && tuning.string5 == 0)
+  if (tuning.string[0] == -2 && tuning.string[1] == 0 && tuning.string[2] == 0 && tuning.string[3] == 0 && tuning.string[4] == 0 && tuning.string[5] == 0)
     return "Drop D";
-  if (tuning.string0 == 1 && tuning.string1 == 1 && tuning.string2 == 1 && tuning.string3 == 1 && tuning.string4 == 1 && tuning.string5 == 1)
+  if (tuning.string[0] == 1 && tuning.string[1] == 1 && tuning.string[2] == 1 && tuning.string[3] == 1 && tuning.string[4] == 1 && tuning.string[5] == 1)
     return "F Standard";
-  if (tuning.string0 == -2 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == -1 && tuning.string4 == -2 && tuning.string5 == -2)
+  if (tuning.string[0] == -2 && tuning.string[1] == 0 && tuning.string[2] == 0 && tuning.string[3] == -1 && tuning.string[4] == -2 && tuning.string[5] == -2)
     return "Open D";
-  if (tuning.string0 == 0 && tuning.string1 == 0 && tuning.string2 == 2 && tuning.string3 == 2 && tuning.string4 == 2 && tuning.string5 == 0)
+  if (tuning.string[0] == 0 && tuning.string[1] == 0 && tuning.string[2] == 2 && tuning.string[3] == 2 && tuning.string[4] == 2 && tuning.string[5] == 0)
     return "Open A";
-  if (tuning.string0 == -2 && tuning.string1 == -2 && tuning.string2 == 0 && tuning.string3 == 0 && tuning.string4 == 0 && tuning.string5 == -2)
+  if (tuning.string[0] == -2 && tuning.string[1] == -2 && tuning.string[2] == 0 && tuning.string[3] == 0 && tuning.string[4] == 0 && tuning.string[5] == -2)
     return "Opend G";
-  if (tuning.string0 == 0 && tuning.string1 == 2 && tuning.string2 == 2 && tuning.string3 == 1 && tuning.string4 == 0 && tuning.string5 == 0)
+  if (tuning.string[0] == 0 && tuning.string[1] == 2 && tuning.string[2] == 2 && tuning.string[3] == 1 && tuning.string[4] == 0 && tuning.string[5] == 0)
     return "Opend E";
-  if (tuning.string0 == -1 && tuning.string1 == -1 && tuning.string2 == -1 && tuning.string3 == -1 && tuning.string4 == -1 && tuning.string5 == -1)
+  if (tuning.string[0] == -1 && tuning.string[1] == -1 && tuning.string[2] == -1 && tuning.string[3] == -1 && tuning.string[4] == -1 && tuning.string[5] == -1)
     return "Eb Standard";
-  if (tuning.string0 == -3 && tuning.string1 == -1 && tuning.string2 == -1 && tuning.string3 == -1 && tuning.string4 == -1 && tuning.string5 == -1)
+  if (tuning.string[0] == -3 && tuning.string[1] == -1 && tuning.string[2] == -1 && tuning.string[3] == -1 && tuning.string[4] == -1 && tuning.string[5] == -1)
     return "Eb Drop Db";
-  if (tuning.string0 == -2 && tuning.string1 == -2 && tuning.string2 == -2 && tuning.string3 == -2 && tuning.string4 == -2 && tuning.string5 == -2)
+  if (tuning.string[0] == -2 && tuning.string[1] == -2 && tuning.string[2] == -2 && tuning.string[3] == -2 && tuning.string[4] == -2 && tuning.string[5] == -2)
     return "D Standard";
-  if (tuning.string0 == -2 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == 0 && tuning.string4 == -2 && tuning.string5 == -2)
+  if (tuning.string[0] == -2 && tuning.string[1] == 0 && tuning.string[2] == 0 && tuning.string[3] == 0 && tuning.string[4] == -2 && tuning.string[5] == -2)
     return "DADGAD";
-  if (tuning.string0 == -4 && tuning.string1 == -2 && tuning.string2 == -2 && tuning.string3 == -2 && tuning.string4 == -2 && tuning.string5 == -2)
+  if (tuning.string[0] == -4 && tuning.string[1] == -2 && tuning.string[2] == -2 && tuning.string[3] == -2 && tuning.string[4] == -2 && tuning.string[5] == -2)
     return "D Drop C";
-  if (tuning.string0 == -3 && tuning.string1 == -3 && tuning.string2 == -3 && tuning.string3 == -3 && tuning.string4 == -3 && tuning.string5 == -3)
+  if (tuning.string[0] == -3 && tuning.string[1] == -3 && tuning.string[2] == -3 && tuning.string[3] == -3 && tuning.string[4] == -3 && tuning.string[5] == -3)
     return "C# Standard";
-  if (tuning.string0 == -5 && tuning.string1 == -3 && tuning.string2 == -3 && tuning.string3 == -3 && tuning.string4 == -3 && tuning.string5 == -3)
+  if (tuning.string[0] == -5 && tuning.string[1] == -3 && tuning.string[2] == -3 && tuning.string[3] == -3 && tuning.string[4] == -3 && tuning.string[5] == -3)
     return "C# Drop B";
-  if (tuning.string0 == -4 && tuning.string1 == -4 && tuning.string2 == -4 && tuning.string3 == -4 && tuning.string4 == -4 && tuning.string5 == -4)
+  if (tuning.string[0] == -4 && tuning.string[1] == -4 && tuning.string[2] == -4 && tuning.string[3] == -4 && tuning.string[4] == -4 && tuning.string[5] == -4)
     return "C Standard";
-  if (tuning.string0 == -6 && tuning.string1 == -4 && tuning.string2 == -4 && tuning.string3 == -4 && tuning.string4 == -4 && tuning.string5 == -4)
+  if (tuning.string[0] == -6 && tuning.string[1] == -4 && tuning.string[2] == -4 && tuning.string[3] == -4 && tuning.string[4] == -4 && tuning.string[5] == -4)
     return "C Drap Ab";
-  if (tuning.string0 == -5 && tuning.string1 == -5 && tuning.string2 == -5 && tuning.string3 == -5 && tuning.string4 == -5 && tuning.string5 == -5)
+  if (tuning.string[0] == -5 && tuning.string[1] == -5 && tuning.string[2] == -5 && tuning.string[3] == -5 && tuning.string[4] == -5 && tuning.string[5] == -5)
     return "B Standard";
-  if (tuning.string0 == -7 && tuning.string1 == -5 && tuning.string2 == -5 && tuning.string3 == -5 && tuning.string4 == -5 && tuning.string5 == -5)
+  if (tuning.string[0] == -7 && tuning.string[1] == -5 && tuning.string[2] == -5 && tuning.string[3] == -5 && tuning.string[4] == -5 && tuning.string[5] == -5)
     return "B Drop A";
-  if (tuning.string0 == -6 && tuning.string1 == -6 && tuning.string2 == -6 && tuning.string3 == -6 && tuning.string4 == -6 && tuning.string5 == -6)
+  if (tuning.string[0] == -6 && tuning.string[1] == -6 && tuning.string[2] == -6 && tuning.string[3] == -6 && tuning.string[4] == -6 && tuning.string[5] == -6)
     return "Bb Standard";
-  if (tuning.string0 == -8 && tuning.string1 == -6 && tuning.string2 == -6 && tuning.string3 == -6 && tuning.string4 == -6 && tuning.string5 == -6)
+  if (tuning.string[0] == -8 && tuning.string[1] == -6 && tuning.string[2] == -6 && tuning.string[3] == -6 && tuning.string[4] == -6 && tuning.string[5] == -6)
     return "Bb Drop Ab";
-  if (tuning.string0 == -7 && tuning.string1 == -7 && tuning.string2 == -7 && tuning.string3 == -7 && tuning.string4 == -7 && tuning.string5 == -7)
+  if (tuning.string[0] == -7 && tuning.string[1] == -7 && tuning.string[2] == -7 && tuning.string[3] == -7 && tuning.string[4] == -7 && tuning.string[5] == -7)
     return "A Standard";
-  if (tuning.string0 == -9 && tuning.string1 == -7 && tuning.string2 == -7 && tuning.string3 == -7 && tuning.string4 == -7 && tuning.string5 == -7)
+  if (tuning.string[0] == -9 && tuning.string[1] == -7 && tuning.string[2] == -7 && tuning.string[3] == -7 && tuning.string[4] == -7 && tuning.string[5] == -7)
     return "A Drop G";
-  if (tuning.string0 == 0 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == 0 && tuning.string4 == 1 && tuning.string5 == 1)
+  if (tuning.string[0] == 0 && tuning.string[1] == 0 && tuning.string[2] == 0 && tuning.string[3] == 0 && tuning.string[4] == 1 && tuning.string[5] == 1)
     return "All Fourth";
-  if (tuning.string0 == -2 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == 0 && tuning.string4 == 0 && tuning.string5 == -2)
+  if (tuning.string[0] == -2 && tuning.string[1] == 0 && tuning.string[2] == 0 && tuning.string[3] == 0 && tuning.string[4] == 0 && tuning.string[5] == -2)
     return "Double Drop D";
-  if (tuning.string0 == -4 && tuning.string1 == 0 && tuning.string2 == -2 && tuning.string3 == 0 && tuning.string4 == 1 && tuning.string5 == 0)
+  if (tuning.string[0] == -4 && tuning.string[1] == 0 && tuning.string[2] == -2 && tuning.string[3] == 0 && tuning.string[4] == 1 && tuning.string[5] == 0)
     return "Open C6";
-  if (tuning.string0 == -4 && tuning.string1 == -2 && tuning.string2 == -2 && tuning.string3 == 0 && tuning.string4 == -4 && tuning.string5 == 0)
+  if (tuning.string[0] == -4 && tuning.string[1] == -2 && tuning.string[2] == -2 && tuning.string[3] == 0 && tuning.string[4] == -4 && tuning.string[5] == 0)
     return "Open C5";
-  if (tuning.string0 == -2 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == 2 && tuning.string4 == 3 && tuning.string5 == 2)
+  if (tuning.string[0] == -2 && tuning.string[1] == 0 && tuning.string[2] == 0 && tuning.string[3] == 2 && tuning.string[4] == 3 && tuning.string[5] == 2)
     return "DADADb";
-  if (tuning.string0 == -2 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == -2 && tuning.string4 == 1 && tuning.string5 == -2)
+  if (tuning.string[0] == -2 && tuning.string[1] == 0 && tuning.string[2] == 0 && tuning.string[3] == -2 && tuning.string[4] == 1 && tuning.string[5] == -2)
     return "Open Dm 7";
-  if (tuning.string0 == -2 && tuning.string1 == 2 && tuning.string2 == 0 && tuning.string3 == -1 && tuning.string4 == 0 && tuning.string5 == -2)
+  if (tuning.string[0] == -2 && tuning.string[1] == 2 && tuning.string[2] == 0 && tuning.string[3] == -1 && tuning.string[4] == 0 && tuning.string[5] == -2)
     return "Open Bm";
-  if (tuning.string0 == 0 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == 0 && tuning.string4 == 0 && tuning.string5 == -2)
+  if (tuning.string[0] == 0 && tuning.string[1] == 0 && tuning.string[2] == 0 && tuning.string[3] == 0 && tuning.string[4] == 0 && tuning.string[5] == -2)
     return "EADGBD";
-  if (tuning.string0 == -2 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == -2 && tuning.string4 == -2 && tuning.string5 == -2)
+  if (tuning.string[0] == -2 && tuning.string[1] == 0 && tuning.string[2] == 0 && tuning.string[3] == -2 && tuning.string[4] == -2 && tuning.string[5] == -2)
     return "Open Dm";
-  if (tuning.string0 == -2 && tuning.string1 == 2 && tuning.string2 == 0 && tuning.string3 == 0 && tuning.string4 == 0 && tuning.string5 == 0)
+  if (tuning.string[0] == -2 && tuning.string[1] == 2 && tuning.string[2] == 0 && tuning.string[3] == 0 && tuning.string[4] == 0 && tuning.string[5] == 0)
     return "DBDGBe";
-  if (tuning.string0 == 0 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == 0 && tuning.string4 == -2 && tuning.string5 == 0)
+  if (tuning.string[0] == 0 && tuning.string[1] == 0 && tuning.string[2] == 0 && tuning.string[3] == 0 && tuning.string[4] == -2 && tuning.string[5] == 0)
     return "EADGAe";
-  if (tuning.string0 == 0 && tuning.string1 == -2 && tuning.string2 == 0 && tuning.string3 == 0 && tuning.string4 == 0 && tuning.string5 == -2)
+  if (tuning.string[0] == 0 && tuning.string[1] == -2 && tuning.string[2] == 0 && tuning.string[3] == 0 && tuning.string[4] == 0 && tuning.string[5] == -2)
     return "EGDGBD";
-  if (tuning.string0 == 0 && tuning.string1 == 0 && tuning.string2 == -3 && tuning.string3 == 0 && tuning.string4 == 0 && tuning.string5 == -1)
+  if (tuning.string[0] == 0 && tuning.string[1] == 0 && tuning.string[2] == -3 && tuning.string[3] == 0 && tuning.string[4] == 0 && tuning.string[5] == -1)
     return "EABGBd#";
-  if (tuning.string0 == 0 && tuning.string1 == 0 && tuning.string2 == 0 && tuning.string3 == 0 && tuning.string4 == 0 && tuning.string5 == -1)
+  if (tuning.string[0] == 0 && tuning.string[1] == 0 && tuning.string[2] == 0 && tuning.string[3] == 0 && tuning.string[4] == 0 && tuning.string[5] == -1)
     return "EADGBd#";
-  if (tuning.string0 == -3 && tuning.string1 == -1 && tuning.string2 == -1 && tuning.string3 == -2 && tuning.string4 == -3 && tuning.string5 == -3)
+  if (tuning.string[0] == -3 && tuning.string[1] == -1 && tuning.string[2] == -1 && tuning.string[3] == -2 && tuning.string[4] == -3 && tuning.string[5] == -3)
     return "Open Db/C#";
-  if (tuning.string0 == -5 && tuning.string1 == -5 && tuning.string2 == -5 && tuning.string3 == -5 && tuning.string4 == -4 && tuning.string5 == -5)
+  if (tuning.string[0] == -5 && tuning.string[1] == -5 && tuning.string[2] == -5 && tuning.string[3] == -5 && tuning.string[4] == -4 && tuning.string[5] == -5)
     return "BEADG";
-  if (tuning.string0 == -7 && tuning.string1 == -5 && tuning.string2 == -5 && tuning.string3 == -5 && tuning.string4 == -4 && tuning.string5 == -5)
+  if (tuning.string[0] == -7 && tuning.string[1] == -5 && tuning.string[2] == -5 && tuning.string[3] == -5 && tuning.string[4] == -4 && tuning.string[5] == -5)
     return "AEADG";
 
   //assert(false);

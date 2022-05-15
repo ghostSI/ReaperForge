@@ -283,42 +283,42 @@ static void readAttribute(Json::object_element* it, Manifest::Info::Entry& attrs
       assert(0 == strcmp(string->name->string, "string0"));
       assert(string->value->type == Json::type_number);
       Json::number* number = (Json::number*)string->value->payload;
-      attrs.tuning.string0 = atoi(number->number);
+      attrs.tuning.string[0] = atoi(number->number);
     }
     string = string->next;
     {
       assert(0 == strcmp(string->name->string, "string1"));
       assert(string->value->type == Json::type_number);
       Json::number* number = (Json::number*)string->value->payload;
-      attrs.tuning.string1 = atoi(number->number);
+      attrs.tuning.string[1] = atoi(number->number);
     }
     string = string->next;
     {
       assert(0 == strcmp(string->name->string, "string2"));
       assert(string->value->type == Json::type_number);
       Json::number* number = (Json::number*)string->value->payload;
-      attrs.tuning.string2 = atoi(number->number);
+      attrs.tuning.string[2] = atoi(number->number);
     }
     string = string->next;
     {
       assert(0 == strcmp(string->name->string, "string3"));
       assert(string->value->type == Json::type_number);
       Json::number* number = (Json::number*)string->value->payload;
-      attrs.tuning.string3 = atoi(number->number);
+      attrs.tuning.string[3] = atoi(number->number);
     }
     string = string->next;
     {
       assert(0 == strcmp(string->name->string, "string4"));
       assert(string->value->type == Json::type_number);
       Json::number* number = (Json::number*)string->value->payload;
-      attrs.tuning.string4 = atoi(number->number);
+      attrs.tuning.string[4] = atoi(number->number);
     }
     string = string->next;
     {
       assert(0 == strcmp(string->name->string, "string5"));
       assert(string->value->type == Json::type_number);
       Json::number* number = (Json::number*)string->value->payload;
-      attrs.tuning.string5 = atoi(number->number);
+      attrs.tuning.string[5] = atoi(number->number);
     }
     return;
   }

@@ -142,13 +142,9 @@ struct Rect {
 
 struct Tuning
 {
-  i32 string0;
-  i32 string1;
-  i32 string2;
-  i32 string3;
-  i32 string4;
-  i32 string5;
+  i32 string[6];
 };
+
 
 #pragma pack(push, 1)
 struct KeyInput {

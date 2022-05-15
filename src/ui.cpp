@@ -6,7 +6,7 @@
 #include "opengl.h"
 #include "shader.h"
 #include "sound.h"
-#include "highway.h"
+#include "player.h"
 
 
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
@@ -1778,7 +1778,7 @@ static void songWindow() {
           {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[0].instrumentFlags)))
             {
-              Highway::playSong(Global::psarcInfos[i]);
+              Player::playSong(Global::psarcInfos[i]);
             }
           }
           else
@@ -1792,7 +1792,7 @@ static void songWindow() {
           {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[1].instrumentFlags)))
             {
-              Highway::playSong(Global::psarcInfos[i]);
+              Player::playSong(Global::psarcInfos[i]);
             }
           }
           else
@@ -1806,7 +1806,7 @@ static void songWindow() {
           {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[2].instrumentFlags)))
             {
-              Highway::playSong(Global::psarcInfos[i]);
+              Player::playSong(Global::psarcInfos[i]);
             }
           }
           else

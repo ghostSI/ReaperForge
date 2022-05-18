@@ -1698,6 +1698,27 @@ static const char* instrumentName(InstrumentFlags instrumentFlags)
   return names[to_underlying(instrumentFlags)];
 }
 
+
+static void toneWindow()
+{
+  if (nk_begin(ctx, "Tones", nk_rect(200, 280, 600, 160),
+    NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
+    NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
+
+    nk_layout_row_dynamic(ctx, 22, 2);
+    {
+      nk_label(ctx, "Tone", NK_TEXT_LEFT);
+      static const char* fullscreenModeNames[] = {
+        "Windowed",
+        "Fullscreen",
+        "Windowed Fullscreen"
+      };
+      Global::settings.graphicsFullscreen = FullscreenMode(nk_combo(ctx, fullscreenModeNames, NK_LEN(fullscreenModeNames), to_underlying(Global::settings.graphicsFullscreen), 25, nk_vec2(200, 200)));
+    }
+  }
+  nk_end(ctx);
+}
+
 static void songWindow() {
 
   if (nk_begin(ctx, "Songs", nk_rect(300, 30, 695, 710),
@@ -1728,8 +1749,8 @@ static void songWindow() {
     {
       nk_layout_row_dynamic(ctx, 133, 1);
 
-      for (i32 i = 0; i < Global::collection.size(); ++i) {
-        const Song::Info& songInfo = Global::collection[i];
+      for (i32 i = 0; i < Global::songInfos.size(); ++i) {
+        const Song::Info& songInfo = Global::songInfos[i];
 
         if (filterSongOut(songInfo))
           continue;
@@ -1778,6 +1799,7 @@ static void songWindow() {
           {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[0].instrumentFlags)))
             {
+              Global::songSelected = i;
               Player::playSong(Global::psarcInfos[i]);
             }
           }
@@ -1792,6 +1814,7 @@ static void songWindow() {
           {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[1].instrumentFlags)))
             {
+              Global::songSelected = i;
               Player::playSong(Global::psarcInfos[i]);
             }
           }
@@ -1806,6 +1829,7 @@ static void songWindow() {
           {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[2].instrumentFlags)))
             {
+              Global::songSelected = i;
               Player::playSong(Global::psarcInfos[i]);
             }
           }
@@ -1820,7 +1844,14 @@ static void songWindow() {
           nk_spacing(ctx, 1);
           nk_label(ctx, "Tuning:", NK_TEXT_LEFT);
           nk_label(ctx, Song::tuningName(songInfo.manifest.entries[0].tuning), NK_TEXT_LEFT);
-          nk_label(ctx, "Accuracy:    98.4%", NK_TEXT_LEFT);
+          if (nk_button_label(ctx, "Tones"))
+          {
+            Global::songSelected = i;
+            if (Global::songInfos[i].loadState != Song::LoadState::complete)
+              Song::loadSongInfoComplete(Global::psarcInfos[i], Global::songInfos[i]);
+
+            Global::toneWindow = !Global::toneWindow;
+          }
 
           nk_group_end(ctx);
         }
@@ -2053,6 +2084,8 @@ void Ui::tick() {
   settingsWindow();
   mixerWindow();
   songWindow();
+  if (Global::toneWindow)
+    toneWindow();
 }
 
 void Ui::render() {

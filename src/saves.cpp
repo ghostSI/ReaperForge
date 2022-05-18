@@ -53,7 +53,7 @@ static void saveStatsOnly()
 {
   std::map<std::string, std::map<std::string, std::string>> serializedSaves;
 
-  for (const Song::Info& songInfo : Global::collection)
+  for (const Song::Info& songInfo : Global::songInfos)
   {
     const std::map<std::string, std::map<std::string, std::string>> map = serialize(songInfo.manifest.entries);
     serializedSaves.insert(map.begin(), map.end());
@@ -66,7 +66,7 @@ static void saveWholeManifest()
 {
   std::map<std::string, std::map<std::string, std::string>> serializedSaves;
 
-  for (const Song::Info& songInfo : Global::collection)
+  for (const Song::Info& songInfo : Global::songInfos)
   {
     const std::map<std::string, std::map<std::string, std::string>> map = serialize(songInfo.manifest.entries);
     serializedSaves.insert(map.begin(), map.end());
@@ -92,7 +92,7 @@ static void loadStatsOnly()
 {
   const std::map<std::string, std::map<std::string, std::string>> serializedSaves = File::loadIni("saves.ini");
 
-  for (Song::Info& songInfo : Global::collection)
+  for (Song::Info& songInfo : Global::songInfos)
   {
     for (Manifest::Info::Entry& manifestEntry : songInfo.manifest.entries)
     {

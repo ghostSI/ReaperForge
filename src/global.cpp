@@ -27,7 +27,8 @@ mat4 Global::cameraMat;
 bool Global::isInstalled = false;
 InstrumentFlags Global::filterInstrument = InstrumentFlags::none;
 std::vector<Psarc::Info> Global::psarcInfos;
-std::vector<Song::Info> Global::collection;
+i32 Global::songSelected = 0;
+std::vector<Song::Info> Global::songInfos;
 Song::Info Global::songInfo;
 Song::Track Global::songTrack;
 std::vector<Song::Vocal> Global::songVocals;
@@ -35,6 +36,7 @@ std::vector<u8> Global::ogg;
 f32 Global::oggStartTime = 0.0f;
 char Global::searchText[256] = "";
 i32 Global::searchTextLength = 0;
+bool Global::toneWindow = false;
 
 Settings::Info Global::settings;
 //std::atomic<i32> Global::settings.mixerMusicVolume;

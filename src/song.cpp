@@ -76,8 +76,8 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
       || tocEntry.name.ends_with(".sng")
       || tocEntry.name.ends_with(".version")
       || tocEntry.name.ends_with(".appid")
-      || tocEntry.name.ends_with(".json")
-      || tocEntry.name.ends_with(".xml"))
+      || tocEntry.name.ends_with(".xml")
+      || tocEntry.name.ends_with("_vocals.json"))
     {
       continue;
     }
@@ -118,8 +118,22 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
     {
       songInfo.sng = Sng::parse(tocEntry.content);
     }
-
-    assert(false);
+    else if (tocEntry.name.ends_with("_lead.json"))
+    {
+      songInfo.tones = Manifest::readJson(tocEntry.content);
+    }
+    else if (tocEntry.name.ends_with("_rhythm.json"))
+    {
+      songInfo.tones = Manifest::readJson(tocEntry.content);
+    }
+    else if (tocEntry.name.ends_with("_bass.json"))
+    {
+      songInfo.tones = Manifest::readJson(tocEntry.content);
+    }
+    else
+    {
+      assert(false);
+    }
   }
 
   songInfo.loadState = LoadState::complete;

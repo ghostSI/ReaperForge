@@ -22,6 +22,7 @@ namespace Song {
     LoadState loadState = LoadState::none;
     XBlock::Info xblock;
     Manifest::Info manifest;
+    std::vector<Manifest::Tone> tones;
 
     i32 albumCover64_tocIndex = -1;
     mutable GLuint albumCover64_ogl = 0;

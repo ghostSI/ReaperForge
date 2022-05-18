@@ -160,7 +160,8 @@ namespace Global {
     extern bool isInstalled;
     extern InstrumentFlags filterInstrument;
     extern std::vector<Psarc::Info> psarcInfos;
-    extern std::vector<Song::Info> collection;
+    extern std::vector<Song::Info> songInfos;
+    extern i32 songSelected;
     extern Song::Info songInfo;
     extern Song::Track songTrack;
     extern std::vector<Song::Vocal> songVocals;
@@ -168,6 +169,7 @@ namespace Global {
     extern f32 oggStartTime;
     extern char searchText[256];
     extern i32 searchTextLength;
+    extern bool toneWindow;
     
     extern Settings::Info settings;
     //extern std::atomic<i32> settingsMixerMusicVolume;

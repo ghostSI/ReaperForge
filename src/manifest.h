@@ -65,6 +65,47 @@ namespace Manifest {
   };
 
   Manifest::Info readHsan(const std::vector<u8>& hsanData, const XBlock::Info& xblock);
+
+  struct Tone
+  {
+    struct GearList
+    {
+      struct Gear
+      {
+        struct KnobValue
+        {
+          std::string name;
+          f32 value{};
+        };
+
+        std::string type;
+        std::vector<KnobValue> knobValues;
+        std::string key;
+        std::string category;
+      };
+
+      Gear rack1;
+      Gear rack2;
+      Gear rack3;
+      Gear amp;
+      Gear cabinet;
+      Gear prePedal1;
+      Gear prePedal2;
+      Gear prePedal3;
+      Gear postPedal1;
+    } gearList;
+
+    bool isCustom{};
+    f32 volume{};
+    std::vector<std::string> toneDescriptors;
+    std::string key;
+    std::string nameSeparator;
+    std::string name;
+    std::string acesHigh_bass;
+    f32 sortOrder{};
+  };
+
+  std::vector<Manifest::Tone> readJson(const std::vector<u8>& jsonData);
 }
 
 #endif // MANIFEST_H

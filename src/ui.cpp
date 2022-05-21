@@ -1728,6 +1728,41 @@ static void toneWindow()
 
       static i32 selectedTone;
       selectedTone = nk_combo(ctx, &toneNamesData[0], toneNamesData.size(), selectedTone, 25, nk_vec2(300, 200));
+
+      nk_layout_row_dynamic(ctx, 22, 1);
+
+      if (nk_group_begin(ctx, "Pre Pedal", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
+      {
+        nk_layout_row_dynamic(ctx, 22, 2);
+
+        nk_group_end(ctx);
+      }
+
+      if(nk_group_begin(ctx, "Amp", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
+      {
+        nk_layout_row_dynamic(ctx, 22, 2);
+
+        nk_group_end(ctx);
+      }
+
+      if (nk_group_begin(ctx, "Loop Pedal", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
+      {
+        nk_layout_row_dynamic(ctx, 22, 2);
+        nk_group_end(ctx);
+      }
+
+      if (nk_group_begin(ctx, "Cabinet", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
+      {
+        nk_layout_row_dynamic(ctx, 22, 2);
+
+        nk_group_end(ctx);
+      }
+
+      if (nk_group_begin(ctx, "Rack", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
+      {
+        nk_layout_row_dynamic(ctx, 22, 2);
+        nk_group_end(ctx);
+      }
     }
   }
   nk_end(ctx);

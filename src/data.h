@@ -27,6 +27,13 @@ namespace Data {
     extern const char* uiFrag;
     extern const char* uiVert;
   }
+  namespace Gear
+  {
+    extern const char* pedalNames[84];
+    extern const char* ampNames[64];
+    extern const char* cabinetNames[451];
+    extern const char* rackNames[18];
+  }
   namespace Texture
   {
     extern const u8 font[82944];

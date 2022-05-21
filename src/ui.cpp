@@ -1667,36 +1667,36 @@ static bool filterSongOut(const Song::Info& songInfo) {
 
 static const char* instrumentName(InstrumentFlags instrumentFlags)
 {
-  static const char* names[] =
+  switch (instrumentFlags)
   {
-    "None",
-    "Lead",
-    "Rhythm",
-    "None",
-    "Bass",
-    "None",
-    "None",
-    "None",
-    "None",
-    "None",
-    "None",
-    "None",
-    "None",
-    "Lead 2",
-    "Lead Alternative",
-    "Lead Alternative2",
-    "Lead Bonus",
-    "Rhythm 2",
-    "Rhythm Alternative",
-    "Rhythm Alternative 2",
-    "Rhythm Bonus",
-    "Bass 2",
-    "Bass Alternative",
-    "Bass Alternative2",
-    "Bass Bonus",
-  };
-
-  return names[to_underlying(instrumentFlags)];
+  case InstrumentFlags::LeadGuitar:
+    return "Lead";
+  case InstrumentFlags::RhythmGuitar:
+    return "Rhythm";
+  case InstrumentFlags::BassGuitar:
+    return "Bass";
+  case InstrumentFlags::LeadGuitar | InstrumentFlags::Second:
+    return "Lead 2";
+  case InstrumentFlags::RhythmGuitar | InstrumentFlags::Second:
+    return "Rhythm 2";
+  case InstrumentFlags::BassGuitar | InstrumentFlags::Second:
+    return "Bass 2";
+  case InstrumentFlags::LeadGuitar | InstrumentFlags::Alternative:
+    return "Lead Alternative";
+  case InstrumentFlags::RhythmGuitar | InstrumentFlags::Alternative:
+    return "Rhythm Alternative";
+  case InstrumentFlags::BassGuitar | InstrumentFlags::Alternative:
+    return "Bass Alternative";
+  case InstrumentFlags::LeadGuitar | InstrumentFlags::Bonus:
+    return "Lead Bonus";
+  case InstrumentFlags::RhythmGuitar | InstrumentFlags::Bonus:
+    return "Rhythm Bonus";
+  case InstrumentFlags::BassGuitar | InstrumentFlags::Bonus:
+    return "Bass Bonus";
+  default:
+    assert(false);
+    return "";
+  }
 }
 
 static std::string fixToneDescriptorName(const std::string& toneDescriptor)
@@ -1707,26 +1707,35 @@ static std::string fixToneDescriptorName(const std::string& toneDescriptor)
   return name;
 }
 
+static void gearWindowRow(const char* name, f32 min, f32& value, f32 max, f32 step)
+{
+  value = nk_propertyf(ctx, name, min, value, max, step, step);
+  nk_slider_float(ctx, min, &value, max, step);
+}
+
 static void gearWindow()
 {
-  if (Global::gearWindow = nk_begin(ctx, "Gear", nk_rect(200, 280, 600, 160),
+  if (Global::gearWindow = nk_begin(ctx, "Gear", nk_rect(90, 90, 840, 590),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
     NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
-    nk_layout_row_dynamic(ctx, 22, 3);
+    nk_layout_row_dynamic(ctx, 22, 2);
 
-    nk_label(ctx, "Time", NK_TEXT_LEFT);
     static f32 time;
-    time = nk_propertyf(ctx, "Time", 0, time, 1.0f, 0.01f, 0.005f);
-    nk_label(ctx, "Feedback", NK_TEXT_LEFT);
-    nk_label(ctx, "Mix", NK_TEXT_LEFT);
-    nk_label(ctx, "Hi Filter", NK_TEXT_LEFT);
-    nk_label(ctx, "Lo Filter", NK_TEXT_LEFT);
+    gearWindowRow("Time", -100.0f, time, 100.0f, 0.5f);
+    static f32 feedback;
+    gearWindowRow("Feedback", -100.0f, feedback, 100.0f, 0.5f);
+    static f32 mix;
+    gearWindowRow("Mix", -100.0f, mix, 100.0f, 0.5f);
+    static f32 hiFilter;
+    gearWindowRow("Hi Filter", -100.0f, hiFilter, 100.0f, 0.5f);
+    static f32 loFilter;
+    gearWindowRow("Lo Filter", -100.0f, loFilter, 100.0f, 0.5f);
   }
   nk_end(ctx);
 }
 
-static void toneWindowGearRow(i32 gear[4], const char** names, u64 namesCount)
+static void toneWindowRow(i32 gear[4], const char** names, u64 namesCount)
 {
   gear[0] = nk_combo(ctx, names, namesCount, gear[0], 25, nk_vec2(300, 200));
   if (gear[0] != 0)
@@ -1769,7 +1778,7 @@ static void toneWindowGearRow(i32 gear[4], const char** names, u64 namesCount)
 
 static void toneWindow()
 {
-  if (Global::toneWindow = nk_begin(ctx, "Tones", nk_rect(100, 100, 800, 550),
+  if (Global::toneWindow = nk_begin(ctx, "Tones", nk_rect(60, 60, 900, 650),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
     NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
@@ -1794,7 +1803,7 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 4);
 
         static i32 prePedal[4];
-        toneWindowGearRow(prePedal, &Data::Gear::pedalNames[0], NUM(Data::Gear::pedalNames));
+        toneWindowRow(prePedal, &Data::Gear::pedalNames[0], NUM(Data::Gear::pedalNames));
 
         nk_tree_pop(ctx);
       }
@@ -1804,7 +1813,7 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 4);
 
         static i32 amp[4];
-        toneWindowGearRow(amp, &Data::Gear::ampNames[0], NUM(Data::Gear::ampNames));
+        toneWindowRow(amp, &Data::Gear::ampNames[0], NUM(Data::Gear::ampNames));
 
         nk_tree_pop(ctx);
       }
@@ -1814,7 +1823,7 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 4);
 
         static i32 loopPedal[4];
-        toneWindowGearRow(loopPedal, &Data::Gear::pedalNames[0], NUM(Data::Gear::pedalNames));
+        toneWindowRow(loopPedal, &Data::Gear::pedalNames[0], NUM(Data::Gear::pedalNames));
 
         nk_tree_pop(ctx);
       }
@@ -1824,7 +1833,7 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 4);
 
         static i32 cabinet[4];
-        toneWindowGearRow(cabinet, &Data::Gear::cabinetNames[0], NUM(Data::Gear::cabinetNames));
+        toneWindowRow(cabinet, &Data::Gear::cabinetNames[0], NUM(Data::Gear::cabinetNames));
 
         nk_tree_pop(ctx);
       }
@@ -1834,7 +1843,7 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 2);
 
         static i32 rack[4];
-        toneWindowGearRow(rack, &Data::Gear::rackNames[0], NUM(Data::Gear::rackNames));
+        toneWindowRow(rack, &Data::Gear::rackNames[0], NUM(Data::Gear::rackNames));
 
         nk_tree_pop(ctx);
       }

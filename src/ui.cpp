@@ -1560,7 +1560,7 @@ void Ui::init() {
 
 static void mixerWindow() {
   if (nk_begin(ctx, "Mixer", nk_rect(30, 530, 250, 210),
-    NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
+    NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE)) {
       {
         nk_layout_row_dynamic(ctx, 22, 1);
         i32 musicVolume = Global::settings.mixerMusicVolume;
@@ -1708,9 +1708,9 @@ static std::string fixToneDescriptorName(const std::string& toneDescriptor)
 
 static void toneWindow()
 {
-  if (nk_begin(ctx, "Tones", nk_rect(200, 280, 600, 160),
+  if (Global::toneWindow = nk_begin(ctx, "Tones", nk_rect(200, 280, 600, 160),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
-    NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
+    NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
     nk_layout_row_dynamic(ctx, 22, 2);
     {
@@ -1864,7 +1864,7 @@ static void songWindow() {
             if (Global::songInfos[i].loadState != Song::LoadState::complete)
               Song::loadSongInfoComplete(Global::psarcInfos[i], Global::songInfos[i]);
 
-            Global::toneWindow = !Global::toneWindow;
+            Global::toneWindow = true;
           }
 
           nk_group_end(ctx);

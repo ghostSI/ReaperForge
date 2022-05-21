@@ -128,6 +128,11 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
       const std::vector<Manifest::Tone> tones = Manifest::readJson(tocEntry.content);
       songInfo.tones.insert(songInfo.tones.begin(), tones.begin(), tones.end());
     }
+    else if (tocEntry.name.ends_with("_rhythm2.json"))
+    {
+      const std::vector<Manifest::Tone> tones = Manifest::readJson(tocEntry.content);
+      songInfo.tones.insert(songInfo.tones.begin(), tones.begin(), tones.end());
+    }
     else if (tocEntry.name.ends_with("_bass.json"))
     {
       const std::vector<Manifest::Tone> tones = Manifest::readJson(tocEntry.content);

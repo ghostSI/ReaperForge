@@ -7,6 +7,7 @@
 #include "shader.h"
 #include "sound.h"
 #include "player.h"
+#include "data.h"
 
 
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
@@ -1706,16 +1707,75 @@ static std::string fixToneDescriptorName(const std::string& toneDescriptor)
   return name;
 }
 
+static void gearWindow()
+{
+  if (Global::gearWindow = nk_begin(ctx, "Gear", nk_rect(200, 280, 600, 160),
+    NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
+    NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
+
+    nk_layout_row_dynamic(ctx, 22, 3);
+
+    nk_label(ctx, "Time", NK_TEXT_LEFT);
+    static f32 time;
+    time = nk_propertyf(ctx, "Time", 0, time, 1.0f, 0.01f, 0.005f);
+    nk_label(ctx, "Feedback", NK_TEXT_LEFT);
+    nk_label(ctx, "Mix", NK_TEXT_LEFT);
+    nk_label(ctx, "Hi Filter", NK_TEXT_LEFT);
+    nk_label(ctx, "Lo Filter", NK_TEXT_LEFT);
+  }
+  nk_end(ctx);
+}
+
+static void toneWindowGearRow(i32 gear[4], const char** names, u64 namesCount)
+{
+  gear[0] = nk_combo(ctx, names, namesCount, gear[0], 25, nk_vec2(300, 200));
+  if (gear[0] != 0)
+    gear[1] = nk_combo(ctx, names, namesCount, gear[1], 25, nk_vec2(300, 200));
+  if (gear[1] != 0)
+    gear[2] = nk_combo(ctx, names, namesCount, gear[2], 25, nk_vec2(300, 200));
+  if (gear[2] != 0)
+    gear[3] = nk_combo(ctx, names, namesCount, gear[3], 25, nk_vec2(300, 200));
+
+  for (int i = 0; i < NUM(gear) - 1; ++i)
+  {
+    if (gear[i] == 0 && gear[i + 1] != 0)
+    {
+      gear[i] = gear[i + 1];
+      gear[i + 1] = 0;
+    }
+  }
+
+  if (gear[0] != 0)
+  {
+    nk_layout_row_dynamic(ctx, 22, 4);
+    if (nk_button_label(ctx, "Edit"))
+    {
+      Global::gearWindow = true;
+    }
+    else if (gear[1] != 0 && nk_button_label(ctx, "Edit"))
+    {
+      Global::gearWindow = true;
+    }
+    else if (gear[2] != 0 && nk_button_label(ctx, "Edit"))
+    {
+      Global::gearWindow = true;
+    }
+    else if (gear[3] != 0 && nk_button_label(ctx, "Edit"))
+    {
+      Global::gearWindow = true;
+    }
+  }
+}
+
 static void toneWindow()
 {
-  if (Global::toneWindow = nk_begin(ctx, "Tones", nk_rect(200, 280, 600, 160),
+  if (Global::toneWindow = nk_begin(ctx, "Tones", nk_rect(100, 100, 800, 550),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
     NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
     nk_layout_row_dynamic(ctx, 22, 2);
     {
       nk_label(ctx, "Tone", NK_TEXT_LEFT);
-
 
       std::vector<std::string> toneNames;
       std::vector<const char*> toneNamesData;
@@ -1729,39 +1789,54 @@ static void toneWindow()
       static i32 selectedTone;
       selectedTone = nk_combo(ctx, &toneNamesData[0], toneNamesData.size(), selectedTone, 25, nk_vec2(300, 200));
 
-      nk_layout_row_dynamic(ctx, 22, 1);
-
-      if (nk_group_begin(ctx, "Pre Pedal", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
+      if (nk_tree_push(ctx, NK_TREE_TAB, "Pre Pedal", NK_MAXIMIZED))
       {
-        nk_layout_row_dynamic(ctx, 22, 2);
+        nk_layout_row_dynamic(ctx, 22, 4);
 
-        nk_group_end(ctx);
+        static i32 prePedal[4];
+        toneWindowGearRow(prePedal, &Data::Gear::pedalNames[0], NUM(Data::Gear::pedalNames));
+
+        nk_tree_pop(ctx);
       }
 
-      if(nk_group_begin(ctx, "Amp", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
+      if (nk_tree_push(ctx, NK_TREE_TAB, "Amp", NK_MAXIMIZED))
       {
-        nk_layout_row_dynamic(ctx, 22, 2);
+        nk_layout_row_dynamic(ctx, 22, 4);
 
-        nk_group_end(ctx);
+        static i32 amp[4];
+        toneWindowGearRow(amp, &Data::Gear::ampNames[0], NUM(Data::Gear::ampNames));
+
+        nk_tree_pop(ctx);
       }
 
-      if (nk_group_begin(ctx, "Loop Pedal", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
+      if (nk_tree_push(ctx, NK_TREE_TAB, "Loop Pedal", NK_MAXIMIZED))
       {
-        nk_layout_row_dynamic(ctx, 22, 2);
-        nk_group_end(ctx);
+        nk_layout_row_dynamic(ctx, 22, 4);
+
+        static i32 loopPedal[4];
+        toneWindowGearRow(loopPedal, &Data::Gear::pedalNames[0], NUM(Data::Gear::pedalNames));
+
+        nk_tree_pop(ctx);
       }
 
-      if (nk_group_begin(ctx, "Cabinet", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
+      if (nk_tree_push(ctx, NK_TREE_TAB, "Cabinet", NK_MAXIMIZED))
       {
-        nk_layout_row_dynamic(ctx, 22, 2);
+        nk_layout_row_dynamic(ctx, 22, 4);
 
-        nk_group_end(ctx);
+        static i32 cabinet[4];
+        toneWindowGearRow(cabinet, &Data::Gear::cabinetNames[0], NUM(Data::Gear::cabinetNames));
+
+        nk_tree_pop(ctx);
       }
 
-      if (nk_group_begin(ctx, "Rack", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
+      if (nk_tree_push(ctx, NK_TREE_TAB, "Rack", NK_MAXIMIZED))
       {
         nk_layout_row_dynamic(ctx, 22, 2);
-        nk_group_end(ctx);
+
+        static i32 rack[4];
+        toneWindowGearRow(rack, &Data::Gear::rackNames[0], NUM(Data::Gear::rackNames));
+
+        nk_tree_pop(ctx);
       }
     }
   }
@@ -1925,7 +2000,7 @@ static void settingsWindow()
           64, 128, 256, 512, 1024, 2048
         };
         i32 index = log2(Global::settings.audioBufferSize) - 6;
-        index = nk_combo(ctx, audioBufferSizeNames, NK_LEN(audioBufferSizeNames), index, 25, nk_vec2(200, 200));
+        index = nk_combo(ctx, audioBufferSizeNames, NUM(audioBufferSizeNames), index, 25, nk_vec2(200, 200));
         Global::settings.audioBufferSize = audioBufferSize[index];
       }
       {
@@ -1943,7 +2018,7 @@ static void settingsWindow()
           192000
         };
         i32 index = Global::settings.audioSampleRate / 48000;
-        index = nk_combo(ctx, audioSampleRateNames, NK_LEN(audioSampleRateNames), index, 25, nk_vec2(200, 200));
+        index = nk_combo(ctx, audioSampleRateNames, NUM(audioSampleRateNames), index, 25, nk_vec2(200, 200));
         Global::settings.audioSampleRate = audioSamples[index];
       }
       {
@@ -1952,9 +2027,9 @@ static void settingsWindow()
           "Right Channel"
         };
         nk_label(ctx, "Instrument 0", NK_TEXT_LEFT);
-        Global::settings.audioChannelInstrument[0] = nk_combo(ctx, channelNames, NK_LEN(channelNames), Global::settings.audioChannelInstrument[0], 25, nk_vec2(200, 200));
+        Global::settings.audioChannelInstrument[0] = nk_combo(ctx, channelNames, NUM(channelNames), Global::settings.audioChannelInstrument[0], 25, nk_vec2(200, 200));
         nk_label(ctx, "Instrument 1", NK_TEXT_LEFT);
-        Global::settings.audioChannelInstrument[1] = nk_combo(ctx, channelNames, NK_LEN(channelNames), Global::settings.audioChannelInstrument[1], 25, nk_vec2(200, 200));
+        Global::settings.audioChannelInstrument[1] = nk_combo(ctx, channelNames, NUM(channelNames), Global::settings.audioChannelInstrument[1], 25, nk_vec2(200, 200));
       }
       nk_tree_pop(ctx);
     }
@@ -1971,7 +2046,7 @@ static void settingsWindow()
           "Fullscreen",
           "Windowed Fullscreen"
         };
-        Global::settings.graphicsFullscreen = FullscreenMode(nk_combo(ctx, fullscreenModeNames, NK_LEN(fullscreenModeNames), to_underlying(Global::settings.graphicsFullscreen), 25, nk_vec2(200, 200)));
+        Global::settings.graphicsFullscreen = FullscreenMode(nk_combo(ctx, fullscreenModeNames, NUM(fullscreenModeNames), to_underlying(Global::settings.graphicsFullscreen), 25, nk_vec2(200, 200)));
       }
       nk_tree_pop(ctx);
     }
@@ -2097,7 +2172,7 @@ static void settingsWindow()
           "Stats only",
           "Whole manifest"
         };
-        Global::settings.saveMode = SaveMode(nk_combo(ctx, saveModeNames, NK_LEN(saveModeNames), to_underlying(Global::settings.saveMode), 25, nk_vec2(200, 200)));
+        Global::settings.saveMode = SaveMode(nk_combo(ctx, saveModeNames, NUM(saveModeNames), to_underlying(Global::settings.saveMode), 25, nk_vec2(200, 200)));
       }
       nk_tree_pop(ctx);
     }
@@ -2135,6 +2210,8 @@ void Ui::tick() {
   songWindow();
   if (Global::toneWindow)
     toneWindow();
+  if (Global::gearWindow)
+    gearWindow();
 }
 
 void Ui::render() {

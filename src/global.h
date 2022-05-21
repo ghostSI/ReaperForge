@@ -169,6 +169,7 @@ namespace Global {
     extern char searchText[256];
     extern i32 searchTextLength;
     extern bool toneWindow;
+    extern bool gearWindow;
     
     extern Settings::Info settings;
 

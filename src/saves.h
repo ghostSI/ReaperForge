@@ -5,8 +5,8 @@
 
 namespace Saves {
 
-  void save();
-  std::vector<Manifest::Info> load();
+  void init();
+  void fini();
 };
 
 #endif // SAVES_H

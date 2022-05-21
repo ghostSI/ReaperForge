@@ -327,6 +327,11 @@ void Sound::init()
   }
 }
 
+void Sound::fini()
+{
+  SDL_PauseAudioDevice(devid_out, 1);
+}
+
 void Sound::playOgg()
 {
   SDL_PauseAudioDevice(devid_out, 1);

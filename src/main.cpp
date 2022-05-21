@@ -160,7 +160,7 @@ int main(int argc, char* argv[]) {
   Camera::init();
   Font::init();
   Collection::init();
-  Saves::load();
+  Saves::init();
 #ifndef __EMSCRIPTEN__
   Ui::init();
 #endif // __EMSCRIPTEN__
@@ -172,8 +172,9 @@ int main(int argc, char* argv[]) {
     mainloop();
 #endif // __EMSCRIPTEN__
 
-  Saves::save();
+  Saves::fini();
   Settings::fini();
+  Sound::fini();
 
   SDL_Quit();
   return 0;

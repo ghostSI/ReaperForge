@@ -49,6 +49,37 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
   return serializedSaves;
 }
 
+static void loadStatsOnly()
+{
+  const std::map<std::string, std::map<std::string, std::string>> serializedSaves = File::loadIni("saves.ini");
+
+  for (Song::Info& songInfo : Global::songInfos)
+  {
+    for (Manifest::Info::Entry& manifestEntry : songInfo.manifest.entries)
+    {
+      const auto search = serializedSaves.find(manifestEntry.persistentID);
+      if (search != serializedSaves.end())
+      {
+        manifestEntry.lastPlayed = strtoul(search->second.at("LastPlayed").c_str(), nullptr, 0);
+        manifestEntry.score = stof(search->second.at(std::string("Score_") + Global::playerName));
+      }
+    }
+  }
+}
+
+void Saves::init()
+{
+  switch (Global::settings.saveMode)
+  {
+  case SaveMode::statsOnly:
+    loadStatsOnly();
+    break;
+  case SaveMode::wholeManifest:
+    //loadWholeManifest();
+    break;
+  }
+}
+
 static void saveStatsOnly()
 {
   std::map<std::string, std::map<std::string, std::string>> serializedSaves;
@@ -75,7 +106,7 @@ static void saveWholeManifest()
   File::saveIni("saves.ini", serializedSaves);
 }
 
-void Saves::save()
+void Saves::fini()
 {
   switch (Global::settings.saveMode)
   {
@@ -86,39 +117,4 @@ void Saves::save()
     saveWholeManifest();
     break;
   }
-}
-
-static void loadStatsOnly()
-{
-  const std::map<std::string, std::map<std::string, std::string>> serializedSaves = File::loadIni("saves.ini");
-
-  for (Song::Info& songInfo : Global::songInfos)
-  {
-    for (Manifest::Info::Entry& manifestEntry : songInfo.manifest.entries)
-    {
-      const auto search = serializedSaves.find(manifestEntry.persistentID);
-      if (search != serializedSaves.end())
-      {
-        manifestEntry.lastPlayed = strtoul(search->second.at("LastPlayed").c_str(), nullptr, 0);
-        manifestEntry.score = stof(search->second.at(std::string("Score_") + Global::playerName));
-      }
-    }
-  }
-}
-
-std::vector<Manifest::Info> Saves::load()
-{
-  std::vector<Manifest::Info> saveInfos;
-
-  switch (Global::settings.saveMode)
-  {
-  case SaveMode::statsOnly:
-    loadStatsOnly();
-    break;
-  case SaveMode::wholeManifest:
-    //loadWholeManifest();
-    break;
-  }
-
-  return saveInfos;
 }

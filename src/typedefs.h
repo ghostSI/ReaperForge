@@ -162,6 +162,8 @@ inline constexpr typename std::underlying_type<T>::type to_underlying(T value) n
 
 #define ASSERT(arg) assert(arg)
 
+#define NUM(a) (sizeof(a)/sizeof(*a))
+
 #ifdef __GNUC__
 [[noreturn]] inline __attribute__((always_inline)) void unreachable() { __builtin_unreachable(); }
 #elif defined(_MSC_VER) // MSVC

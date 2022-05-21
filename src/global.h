@@ -162,7 +162,6 @@ namespace Global {
     extern std::vector<Psarc::Info> psarcInfos;
     extern std::vector<Song::Info> songInfos;
     extern i32 songSelected;
-    extern Song::Info songInfo;
     extern Song::Track songTrack;
     extern std::vector<Song::Vocal> songVocals;
     extern std::vector<u8> ogg;
@@ -172,12 +171,6 @@ namespace Global {
     extern bool toneWindow;
     
     extern Settings::Info settings;
-    //extern std::atomic<i32> settingsMixerMusicVolume;
-    //extern std::atomic<i32> settingsMixerGuitar1Volume;
-    //extern std::atomic<i32> settingsMixerBass1Volume;
-    //extern std::atomic<i32> settingsMixerGuitar2Volume;
-    //extern std::atomic<i32> settingsMixerBass2Volume;
-    //extern std::atomic<i32> settingsMixerMicrophoneVolume;
 
     extern std::atomic<f32> instrumentVolume;
     extern std::atomic<Chords::Note> chordDetectorRootNote;

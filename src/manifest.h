@@ -84,15 +84,11 @@ namespace Manifest {
         std::string category;
       };
 
-      Gear rack1;
-      Gear rack2;
-      Gear rack3;
+      Gear prePedal[4];
       Gear amp;
+      Gear postPedal[4];
       Gear cabinet;
-      Gear prePedal1;
-      Gear prePedal2;
-      Gear prePedal3;
-      Gear postPedal1;
+      Gear rack[4];
     } gearList;
 
     bool isCustom{};
@@ -101,7 +97,6 @@ namespace Manifest {
     std::string key;
     std::string nameSeparator;
     std::string name;
-    std::string acesHigh_bass;
     f32 sortOrder{};
   };
 

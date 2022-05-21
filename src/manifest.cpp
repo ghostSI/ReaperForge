@@ -477,24 +477,34 @@ static void readGearList(Json::object_element* it, Manifest::Tone::GearList& gea
   {
     assert(it->value->type == Json::type_object);
 
-    if (0 == strcmp(it->name->string, "Rack1"))
-      readGear(it, gearList.rack1);
-    else if (0 == strcmp(it->name->string, "Rack2"))
-      readGear(it, gearList.rack2);
-    else if (0 == strcmp(it->name->string, "Rack3"))
-      readGear(it, gearList.rack3);
+    if (0 == strcmp(it->name->string, "PrePedal1"))
+      readGear(it, gearList.prePedal[0]);
+    else if (0 == strcmp(it->name->string, "PrePedal2"))
+      readGear(it, gearList.prePedal[1]);
+    else if (0 == strcmp(it->name->string, "PrePedal3"))
+      readGear(it, gearList.prePedal[2]);
+    else if (0 == strcmp(it->name->string, "PrePedal4"))
+      readGear(it, gearList.prePedal[3]);
     else if (0 == strcmp(it->name->string, "Amp"))
       readGear(it, gearList.amp);
+    else if (0 == strcmp(it->name->string, "PostPedal1"))
+      readGear(it, gearList.postPedal[0]);
+    else if (0 == strcmp(it->name->string, "PostPedal2"))
+      readGear(it, gearList.postPedal[1]);
+    else if (0 == strcmp(it->name->string, "PostPedal3"))
+      readGear(it, gearList.postPedal[2]);
+    else if (0 == strcmp(it->name->string, "PostPedal4"))
+      readGear(it, gearList.postPedal[3]);
     else if (0 == strcmp(it->name->string, "Cabinet"))
       readGear(it, gearList.cabinet);
-    else if (0 == strcmp(it->name->string, "PrePedal1"))
-      readGear(it, gearList.prePedal1);
-    else if (0 == strcmp(it->name->string, "PrePedal2"))
-      readGear(it, gearList.prePedal2);
-    else if (0 == strcmp(it->name->string, "PrePedal3"))
-      readGear(it, gearList.prePedal3);
-    else if (0 == strcmp(it->name->string, "PostPedal1"))
-      readGear(it, gearList.postPedal1);
+    else if (0 == strcmp(it->name->string, "Rack1"))
+      readGear(it, gearList.rack[0]);
+    else if (0 == strcmp(it->name->string, "Rack2"))
+      readGear(it, gearList.rack[1]);
+    else if (0 == strcmp(it->name->string, "Rack3"))
+      readGear(it, gearList.rack[2]);
+    else if (0 == strcmp(it->name->string, "Rack4"))
+      readGear(it, gearList.rack[3]);
     else
       assert(false);
   } while (it = it->next);

@@ -916,7 +916,7 @@ static i32 getStringTuning(i32 string)
   if (psarcString < 0 || psarcString >= 6)
     return Const::stringStandardTuningOffset[string];
 
-  return (12 + Const::stringStandardTuningOffset[string - stringOffset] + Global::songInfo.manifest.entries[0].tuning.string[psarcString]) % 12;
+  return (12 + Const::stringStandardTuningOffset[string - stringOffset] + Global::songInfos[Global::songSelected].manifest.entries[0].tuning.string[psarcString]) % 12;
 }
 
 static void drawStringNoteNames()
@@ -982,8 +982,8 @@ static void drawPhrases()
 
     const Song::Phrase& phase = Global::songTrack.phrases[phraseIteration0.phraseId];
 
-    f32 begin = phraseIteration0.time / Global::songInfo.manifest.entries[0].songLength;
-    f32 end = phraseIteration1.time / Global::songInfo.manifest.entries[0].songLength;
+    f32 begin = phraseIteration0.time / Global::songInfos[Global::songSelected].manifest.entries[0].songLength;
+    f32 end = phraseIteration1.time / Global::songInfos[Global::songSelected].manifest.entries[0].songLength;
     f32 difficulty = f32(phase.maxDifficulty) / f32(maxDifficulty);
 
     const f32 left = -0.7985 + begin * 1.6f;
@@ -1056,16 +1056,16 @@ static void drawSongInfo()
   glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, alpha);
 
   {
-    const i32 letters = Global::songInfo.manifest.entries[0].songName.size();
+    const i32 letters = Global::songInfos[Global::songSelected].manifest.entries[0].songName.size();
     const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
     const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
-    Font::draw(Global::songInfo.manifest.entries[0].songName.c_str(), 0.95f - scaleX, 0.3f, 0.0f, scaleX, scaleY);
+    Font::draw(Global::songInfos[Global::songSelected].manifest.entries[0].songName.c_str(), 0.95f - scaleX, 0.3f, 0.0f, scaleX, scaleY);
   }
   {
-    const i32 letters = Global::songInfo.manifest.entries[0].artistName.size();
+    const i32 letters = Global::songInfos[Global::songSelected].manifest.entries[0].artistName.size();
     const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
     const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
-    Font::draw(Global::songInfo.manifest.entries[0].artistName.c_str(), 0.95f - scaleX, 0.2f, 0.0f, scaleX, scaleY);
+    Font::draw(Global::songInfos[Global::songSelected].manifest.entries[0].artistName.c_str(), 0.95f - scaleX, 0.2f, 0.0f, scaleX, scaleY);
   }
 }
 
@@ -1326,9 +1326,9 @@ static void drawEbeats()
 
 void Highway::render()
 {
-  if (Global::songInfo.loadState == Song::LoadState::complete)
+  if (Global::songInfos[Global::songSelected].loadState == Song::LoadState::complete)
   {
-    if (Global::songInfo.manifest.entries[0].tuning.string[0] <= -3)
+    if (Global::songInfos[Global::songSelected].manifest.entries[0].tuning.string[0] <= -3)
     {
       stringCount = 7;
       stringOffset = 1;
@@ -1356,7 +1356,7 @@ void Highway::render()
   drawFretNumbers();
 
 
-  if (Global::songInfo.loadState == Song::LoadState::complete && Global::settings.highwayStringNoteNames)
+  if (Global::songInfos[Global::songSelected].loadState == Song::LoadState::complete && Global::settings.highwayStringNoteNames)
     drawStringNoteNames();
   if (Global::settings.highwayFretNoteNames)
     drawFretNoteNames();
@@ -1364,7 +1364,7 @@ void Highway::render()
   //if (Global::instrumentVolume > Const::chordDetectorVolumeThreshhold)
   //  drawCurrentChordName();
 
-  if (Global::songInfo.loadState == Song::LoadState::complete && Global::settings.highwaySongInfo)
+  if (Global::songInfos[Global::songSelected].loadState == Song::LoadState::complete && Global::settings.highwaySongInfo)
     drawSongInfo();
 
   if (Global::settings.highwayLyrics)

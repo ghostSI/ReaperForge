@@ -1698,6 +1698,13 @@ static const char* instrumentName(InstrumentFlags instrumentFlags)
   return names[to_underlying(instrumentFlags)];
 }
 
+static std::string fixToneDescriptorName(const std::string& toneDescriptor)
+{
+  std::string name = toneDescriptor.substr(8);
+  for (i32 i = 1; i < name.size(); ++i)
+    name[i] = tolower(name[i]);
+  return name;
+}
 
 static void toneWindow()
 {
@@ -1708,12 +1715,19 @@ static void toneWindow()
     nk_layout_row_dynamic(ctx, 22, 2);
     {
       nk_label(ctx, "Tone", NK_TEXT_LEFT);
-      static const char* fullscreenModeNames[] = {
-        "Windowed",
-        "Fullscreen",
-        "Windowed Fullscreen"
-      };
-      Global::settings.graphicsFullscreen = FullscreenMode(nk_combo(ctx, fullscreenModeNames, NK_LEN(fullscreenModeNames), to_underlying(Global::settings.graphicsFullscreen), 25, nk_vec2(200, 200)));
+
+
+      std::vector<std::string> toneNames;
+      std::vector<const char*> toneNamesData;
+      for (i32 i = 0; i < Global::songInfos[Global::songSelected].tones.size(); ++i)
+      {
+        const Manifest::Tone& tone = Global::songInfos[Global::songSelected].tones[i];
+        toneNames.push_back(Global::songInfos[Global::songSelected].manifest.entries[0].songName + tone.nameSeparator + fixToneDescriptorName(tone.toneDescriptors[0]));
+        toneNamesData.push_back(toneNames[i].c_str());
+      }
+
+      static i32 selectedTone;
+      selectedTone = nk_combo(ctx, &toneNamesData[0], toneNamesData.size(), selectedTone, 25, nk_vec2(300, 200));
     }
   }
   nk_end(ctx);

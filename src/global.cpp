@@ -29,7 +29,6 @@ InstrumentFlags Global::filterInstrument = InstrumentFlags::none;
 std::vector<Psarc::Info> Global::psarcInfos;
 i32 Global::songSelected = 0;
 std::vector<Song::Info> Global::songInfos;
-Song::Info Global::songInfo;
 Song::Track Global::songTrack;
 std::vector<Song::Vocal> Global::songVocals;
 std::vector<u8> Global::ogg;
@@ -39,12 +38,6 @@ i32 Global::searchTextLength = 0;
 bool Global::toneWindow = false;
 
 Settings::Info Global::settings;
-//std::atomic<i32> Global::settings.mixerMusicVolume;
-//std::atomic<i32> Global::settings.mixerGuitar1Volume;
-//std::atomic<i32> Global::settings.mixerBass1Volume;
-//std::atomic<i32> Global::settings.mixerGuitar2Volume;
-//std::atomic<i32> Global::settings.mixerBass2Volume;
-//std::atomic<i32> Global::settings.mixerMicrophoneVolume;
 
 std::atomic<f32> Global::instrumentVolume;
 std::atomic<Chords::Note> Global::chordDetectorRootNote;

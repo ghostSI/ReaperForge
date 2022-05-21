@@ -13,8 +13,8 @@ static void playSongEmscripten()
   const std::vector<u8> psarcData = Psarc::readPsarcData(EMSC_PATH(songs / test.psarc));
 
   const Psarc::Info psarcInfo = Psarc::parse(psarcData);
-  Global::songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
-  Song::loadSongInfoComplete(psarcInfo, Global::songInfo);
+  Global::songInfos.push_back(Song::loadSongInfoManifestOnly(psarcInfo));
+  Song::loadSongInfoComplete(psarcInfo, Global::songInfos[Global::songSelected]);
 
   Global::songTrack = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
   Global::songVocals = Song::loadVocals(psarcInfo);
@@ -45,8 +45,7 @@ void Player::tick()
 
 void Player::playSong(const Psarc::Info& psarcInfo)
 {
-  Global::songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
-  Song::loadSongInfoComplete(psarcInfo, Global::songInfo);
+  Song::loadSongInfoComplete(psarcInfo, Global::songInfos[Global::songSelected]);
 
   Global::songTrack = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
   Global::songVocals = Song::loadVocals(psarcInfo);
@@ -54,8 +53,6 @@ void Player::playSong(const Psarc::Info& psarcInfo)
   Psarc::loadOgg(psarcInfo, false);
   playNextTick = true;
 }
-
-
 
 void Player::stop()
 {

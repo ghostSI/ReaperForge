@@ -2,6 +2,7 @@
 #define DATA_H
 
 #include "typedefs.h"
+#include <vector>
 
 namespace Data {
   namespace Shader
@@ -33,6 +34,19 @@ namespace Data {
     extern const char* ampNames[64];
     extern const char* cabinetNames[451];
     extern const char* rackNames[18];
+
+    struct Knob
+    {
+      const char* name;
+      f32 defaultValue;
+      f32 minValue;
+      f32 maxValue;
+      f32 valueStep;
+    };
+
+    extern std::vector<Gear::Knob> pedalKnobs[83];
+    extern std::vector<Gear::Knob> ampKnobs[63];
+    extern std::vector<Gear::Knob> rackKnobs[17];
   }
   namespace Texture
   {

@@ -6,6 +6,7 @@
 #include <float.h>
 #include <iostream>
 #include <math.h>
+#include <regex>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -1931,6 +1932,7 @@ static void readKnob(Json::object_element* it, Gear::Knob& knob)
   if (0 == strcmp(it->name->string, "Name"))
   {
     assert(it->value->type == Json::type_string);
+    knob.name = ((Json::string*)it->value->payload)->string;
     return;
   }
   if (0 == strcmp(it->name->string, "UnitType"))
@@ -1941,21 +1943,25 @@ static void readKnob(Json::object_element* it, Gear::Knob& knob)
   if (0 == strcmp(it->name->string, "DefaultValue"))
   {
     assert(it->value->type == Json::type_number);
+    knob.defaultValue = ((Json::string*)it->value->payload)->string;
     return;
   }
   if (0 == strcmp(it->name->string, "MinValue"))
   {
     assert(it->value->type == Json::type_number);
+    knob.minValue = ((Json::string*)it->value->payload)->string;
     return;
   }
   if (0 == strcmp(it->name->string, "MaxValue"))
   {
     assert(it->value->type == Json::type_number);
+    knob.maxValue = ((Json::string*)it->value->payload)->string;
     return;
   }
   if (0 == strcmp(it->name->string, "ValueStep"))
   {
     assert(it->value->type == Json::type_number);
+    knob.valueStep = ((Json::string*)it->value->payload)->string;
     return;
   }
   if (0 == strcmp(it->name->string, "Ring"))
@@ -2007,7 +2013,18 @@ static void readKnobs(Json::array_element* it, std::vector<Gear::Knob>& knobs)
   {
     readKnob(it2, knob);
   } while (it2 = it2->next);
-  knobs.push_back(knob);
+  if (knob.valueStep.empty()) // a few knobs are missing the valueStep
+    knob.valueStep = "1.0";
+  if (!knob.name.empty()) // a few knobs are not valid
+  {
+    assert(!knob.minValue.empty());
+    assert(!knob.maxValue.empty());
+    assert(!knob.valueStep.empty());
+
+    knob.name = std::regex_replace(knob.name, std::regex("\\\""), "\\\""); // fix names with " in them
+
+    knobs.push_back(knob);
+  }
 
   return;
 }
@@ -2069,7 +2086,7 @@ static void readAttribute(Json::object_element* it, Gear& gear)
     do
     {
       readKnobs(it2, gear.knobs);
-    } while (it = it->next);
+    } while (it2 = it2->next);
     return;
 
     return;
@@ -2138,19 +2155,6 @@ static void readAttribute(Json::object_element* it, Gear& gear)
 
 int main(int argc, char* argv[])
 {
-  char destFilepath[512];
-
-  strcpy(destFilepath, argv[1]);
-
-  size_t len = strlen(destFilepath);
-
-  destFilepath[len++] = '.';
-  destFilepath[len++] = 'd';
-  destFilepath[len++] = 'a';
-  destFilepath[len++] = 't';
-  destFilepath[len++] = 'a';
-  destFilepath[len++] = '\0';
-
   std::vector<Gear> gearList;
 
   for (const auto& file : std::filesystem::directory_iterator{ std::filesystem::path(argv[1]) })
@@ -2245,9 +2249,20 @@ int main(int argc, char* argv[])
       assert(false);
   }
 
+  char destFilepath[512];
+
+  strcpy(destFilepath, argv[1]);
+
+  size_t len = strlen(destFilepath);
+
+  destFilepath[len++] = '.';
+  destFilepath[len++] = 'd';
+  destFilepath[len++] = 'a';
+  destFilepath[len++] = 't';
+  destFilepath[len++] = 'a';
+  destFilepath[len++] = '\0';
 
   FILE* outFile = fopen(destFilepath, "w");
-
   {
     fprintf(outFile, "namespace Gear");
     fprintf(outFile, "\n{");
@@ -2255,6 +2270,19 @@ int main(int argc, char* argv[])
     fprintf(outFile, "\n  extern const char* ampNames[%d];", ampList.size() + 1);
     fprintf(outFile, "\n  extern const char* cabinetNames[%d];", cabinetList.size() + 1);
     fprintf(outFile, "\n  extern const char* rackNames[%d];", rackList.size() + 1);
+    fprintf(outFile, "\n");
+    fprintf(outFile, "\n  struct Knob");
+    fprintf(outFile, "\n  {");
+    fprintf(outFile, "\n    const char* name;");
+    fprintf(outFile, "\n    f32 defaultValue;");
+    fprintf(outFile, "\n    f32 minValue;");
+    fprintf(outFile, "\n    f32 maxValue;");
+    fprintf(outFile, "\n    f32 valueStep;");
+    fprintf(outFile, "\n  };");
+    fprintf(outFile, "\n");
+    fprintf(outFile, "\n  extern std::vector<Gear::Knob> pedalKnobs[%d];", pedalList.size());
+    fprintf(outFile, "\n  extern std::vector<Gear::Knob> ampKnobs[%d];", ampList.size());
+    fprintf(outFile, "\n  extern std::vector<Gear::Knob> rackKnobs[%d];", rackList.size());
     fprintf(outFile, "\n}");
   }
   fprintf(outFile, "\n\n");
@@ -2262,36 +2290,118 @@ int main(int argc, char* argv[])
   {
     fprintf(outFile, "const char* Data::Gear::pedalNames[%d] = {", pedalList.size() + 1);
     fprintf(outFile, "\n  \"\",");
-    for (const Gear& gear : pedalList)
-      fprintf(outFile, "\n  \"%s\",", gear.name.c_str());
+    for (i32 i = 0; i < pedalList.size(); ++i)
+    {
+      const Gear& gear = pedalList[i];
+      fprintf(outFile, "\n  \"%s\"", gear.name.c_str());
+      if (i != pedalList.size() - 1)
+        fprintf(outFile, ",");
+    }
     fprintf(outFile, "\n};");
   }
   fprintf(outFile, "\n\n");
   {
     fprintf(outFile, "const char* Data::Gear::ampNames[%d] = {", ampList.size() + 1);
     fprintf(outFile, "\n  \"\",");
-    for (const Gear& gear : ampList)
-      fprintf(outFile, "\n  \"%s\",", gear.name.c_str());
+    for (i32 i = 0; i < ampList.size(); ++i)
+    {
+      const Gear& gear = ampList[i];
+      fprintf(outFile, "\n  \"%s\"", gear.name.c_str());
+      if (i != ampList.size() - 1)
+        fprintf(outFile, ",");
+    }
     fprintf(outFile, "\n};");
   }
   fprintf(outFile, "\n\n");
   {
     fprintf(outFile, "const char* Data::Gear::cabinetNames[%d] = {", cabinetList.size() + 1);
     fprintf(outFile, "\n  \"\",");
-    for (const Gear& gear : cabinetList)
-      fprintf(outFile, "\n  \"%s\",", gear.name.c_str());
+    for (i32 i = 0; i < cabinetList.size(); ++i)
+    {
+      const Gear& gear = cabinetList[i];
+      fprintf(outFile, "\n  \"%s\"", gear.name.c_str());
+      if (i != cabinetList.size() - 1)
+        fprintf(outFile, ",");
+    }
     fprintf(outFile, "\n};");
   }
   fprintf(outFile, "\n\n");
   {
     fprintf(outFile, "const char* Data::Gear::rackNames[%d] = {", rackList.size() + 1);
     fprintf(outFile, "\n  \"\",");
-    for (const Gear& gear : rackList)
-      fprintf(outFile, "\n  \"%s\",", gear.name.c_str());
+    for (i32 i = 0; i < rackList.size(); ++i)
+    {
+      const Gear& gear = rackList[i];
+      fprintf(outFile, "\n  \"%s\"", gear.name.c_str());
+      if (i != rackList.size() - 1)
+        fprintf(outFile, ",");
+    }
     fprintf(outFile, "\n};");
   }
   fprintf(outFile, "\n");
 
+  fprintf(outFile, "\nstd::vector<Data::Gear::Knob> Data::Gear::pedalKnobs[%d] = {", pedalList.size());
+  for (i32 i = 0; i < pedalList.size(); ++i)
+  {
+    const Gear& gear = pedalList[i];
+    fprintf(outFile, "\n  { // %s", gear.name.c_str());
+    for (i32 j = 0; j < gear.knobs.size(); ++j)
+    {
+      const Gear::Knob& knob = gear.knobs[j];
+      fprintf(outFile, "\n    { \"%s\", %sf, %sf, %sf, %sf", knob.name.c_str(), knob.defaultValue.c_str(), knob.minValue.c_str(), knob.maxValue.c_str(), knob.valueStep.c_str());
+      if (j != gear.knobs.size() - 1)
+        fprintf(outFile, ", },");
+      else
+        fprintf(outFile, " }");
+    }
+    fprintf(outFile, "\n  }");
+    if (i != pedalList.size() - 1)
+      fprintf(outFile, ",");
+  }
+  fprintf(outFile, "\n};");
+  fprintf(outFile, "\n");
+  fprintf(outFile, "\nstd::vector<Data::Gear::Knob> Data::Gear::ampKnobs[%d] = {", ampList.size());
+  for (i32 i = 0; i < ampList.size(); ++i)
+  {
+    const Gear& gear = ampList[i];
+    fprintf(outFile, "\n  { // %s", gear.name.c_str());
+    for (i32 j = 0; j < gear.knobs.size(); ++j)
+    {
+      const Gear::Knob& knob = gear.knobs[j];
+      fprintf(outFile, "\n    { \"%s\", %sf, %sf, %sf, %sf", knob.name.c_str(), knob.defaultValue.c_str(), knob.minValue.c_str(), knob.maxValue.c_str(), knob.valueStep.c_str());
+      if (j != gear.knobs.size() - 1)
+        fprintf(outFile, ", },");
+      else
+        fprintf(outFile, " }");
+    }
+    fprintf(outFile, "\n  }");
+    if (i != ampList.size() - 1)
+      fprintf(outFile, ",");
+  }
+  fprintf(outFile, "\n};");
+  fprintf(outFile, "\n");
+  fprintf(outFile, "\nstd::vector<Data::Gear::Knob> Data::Gear::rackKnobs[%d] = {", rackList.size());
+  for (i32 i = 0; i < rackList.size(); ++i)
+  {
+    const Gear& gear = rackList[i];
+    fprintf(outFile, "\n  { // %s", gear.name.c_str());
+    for (i32 j = 0; j < gear.knobs.size(); ++j)
+    {
+      const Gear::Knob& knob = gear.knobs[j];
+      fprintf(outFile, "\n    { \"%s\", %sf, %sf, %sf, %sf", knob.name.c_str(), knob.defaultValue.c_str(), knob.minValue.c_str(), knob.maxValue.c_str(), knob.valueStep.c_str());
+      if (j != gear.knobs.size() - 1)
+        fprintf(outFile, ", },");
+      else
+        fprintf(outFile, " }");
+    }
+    fprintf(outFile, "\n  }");
+    if (i != rackList.size() - 1)
+      fprintf(outFile, ",");
+  }
+  fprintf(outFile, "\n};");
+  fprintf(outFile, "\n");
+
+  fprintf(outFile, "\n");
   fclose(outFile);
 
   return 0;

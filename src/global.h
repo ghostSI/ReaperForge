@@ -132,6 +132,7 @@ namespace Const {
     };
     inline constexpr bool isMarkedFret[]{ 0,1,0,1,0,1,0,1,0,1,0,0,1,0,0,1,0,1,0,1,0,1,0,0,1 };
     inline constexpr i32 soundMaxCount = 8;
+    inline constexpr i32 gearMaxKnobs = 10;
 }
 
 namespace Global {
@@ -169,7 +170,6 @@ namespace Global {
     extern char searchText[256];
     extern i32 searchTextLength;
     extern bool toneWindow;
-    extern bool gearWindow;
     
     extern Settings::Info settings;
 

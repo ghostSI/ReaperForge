@@ -1707,36 +1707,59 @@ static std::string fixToneDescriptorName(const std::string& toneDescriptor)
   return name;
 }
 
-static void gearWindowRow(const char* name, f32 min, f32& value, f32 max, f32 step)
+static void gearWindowRow(const Data::Gear::Knob& knob, f32& value)
 {
-  value = nk_propertyf(ctx, name, min, value, max, step, step);
-  nk_slider_float(ctx, min, &value, max, step);
+  value = nk_propertyf(ctx, knob.name, knob.minValue, value, knob.maxValue, knob.valueStep, knob.valueStep);
+  nk_slider_float(ctx, knob.minValue, &value, knob.maxValue, knob.valueStep);
 }
 
-static void gearWindow()
+static i32 editGearIndex{};
+static f32 editGearResult[Const::gearMaxKnobs];
+
+static void gearWindow(bool& showGearWindow, std::vector<Data::Gear::Knob>* knobs)
 {
-  if (Global::gearWindow = nk_begin(ctx, "Gear", nk_rect(90, 90, 840, 590),
+  if (showGearWindow = nk_begin(ctx, "Gear", nk_rect(90, 90, 840, 590),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
     NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
     nk_layout_row_dynamic(ctx, 22, 2);
 
-    static f32 time;
-    gearWindowRow("Time", -100.0f, time, 100.0f, 0.5f);
-    static f32 feedback;
-    gearWindowRow("Feedback", -100.0f, feedback, 100.0f, 0.5f);
-    static f32 mix;
-    gearWindowRow("Mix", -100.0f, mix, 100.0f, 0.5f);
-    static f32 hiFilter;
-    gearWindowRow("Hi Filter", -100.0f, hiFilter, 100.0f, 0.5f);
-    static f32 loFilter;
-    gearWindowRow("Lo Filter", -100.0f, loFilter, 100.0f, 0.5f);
+    for (i32 i = 0; i < knobs->size(); ++i)
+    {
+      gearWindowRow((*knobs)[i], editGearResult[i]);
+    }
   }
   nk_end(ctx);
 }
 
-static void toneWindowRow(i32 gear[4], const char** names, u64 namesCount)
+static bool toneWindowRow(i32 gear[4], GearType gearType, std::vector<Data::Gear::Knob>* knobs)
 {
+  const char** names;
+  u64 namesCount;
+
+  switch (gearType)
+  {
+  case GearType::pedal:
+    names = &Data::Gear::pedalNames[0];
+    namesCount = NUM(Data::Gear::pedalNames);
+    break;
+  case GearType::amp:
+    names = &Data::Gear::ampNames[0];
+    namesCount = NUM(Data::Gear::ampNames);
+    break;
+  case GearType::cabinet:
+    names = &Data::Gear::cabinetNames[0];
+    namesCount = NUM(Data::Gear::cabinetNames);
+    break;
+  case GearType::rack:
+    names = &Data::Gear::rackNames[0];
+    namesCount = NUM(Data::Gear::rackNames);
+    break;
+  default:
+    assert(false);
+    break;
+  }
+
   gear[0] = nk_combo(ctx, names, namesCount, gear[0], 25, nk_vec2(300, 200));
   if (gear[0] != 0)
     gear[1] = nk_combo(ctx, names, namesCount, gear[1], 25, nk_vec2(300, 200));
@@ -1759,25 +1782,51 @@ static void toneWindowRow(i32 gear[4], const char** names, u64 namesCount)
     nk_layout_row_dynamic(ctx, 22, 4);
     if (nk_button_label(ctx, "Edit"))
     {
-      Global::gearWindow = true;
+      editGearIndex = gear[0] - 1;
+      for (i32 i = 0; i < knobs[editGearIndex].size(); ++i)
+      {
+        editGearResult[i] = knobs[editGearIndex][i].defaultValue;
+      }
+      return true;
     }
     else if (gear[1] != 0 && nk_button_label(ctx, "Edit"))
     {
-      Global::gearWindow = true;
+      editGearIndex = gear[1] - 1;
+      for (i32 i = 0; i < knobs[editGearIndex].size(); ++i)
+      {
+        editGearResult[i] = knobs[editGearIndex][i].defaultValue;
+      }
+      return true;
     }
     else if (gear[2] != 0 && nk_button_label(ctx, "Edit"))
     {
-      Global::gearWindow = true;
+      editGearIndex = gear[2] - 1;
+      for (i32 i = 0; i < knobs[editGearIndex].size(); ++i)
+      {
+        editGearResult[i] = knobs[editGearIndex][i].defaultValue;
+      }
+      return true;
     }
     else if (gear[3] != 0 && nk_button_label(ctx, "Edit"))
     {
-      Global::gearWindow = true;
+      editGearIndex = gear[3] - 1;
+      for (i32 i = 0; i < knobs[editGearIndex].size(); ++i)
+      {
+        editGearResult[i] = knobs[editGearIndex][i].defaultValue;
+      }
+      return true;
     }
   }
+
+  return false;
 }
+
 
 static void toneWindow()
 {
+  static bool showGearWindow = false;
+  static GearType editGearType = GearType::none;
+
   if (Global::toneWindow = nk_begin(ctx, "Tones", nk_rect(60, 60, 900, 650),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
     NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
@@ -1803,7 +1852,11 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 4);
 
         static i32 prePedal[4];
-        toneWindowRow(prePedal, &Data::Gear::pedalNames[0], NUM(Data::Gear::pedalNames));
+        if (toneWindowRow(prePedal, GearType::pedal, &Data::Gear::pedalKnobs[0]))
+        {
+          showGearWindow |= true;
+          editGearType = GearType::pedal;
+        }
 
         nk_tree_pop(ctx);
       }
@@ -1813,7 +1866,11 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 4);
 
         static i32 amp[4];
-        toneWindowRow(amp, &Data::Gear::ampNames[0], NUM(Data::Gear::ampNames));
+        if (toneWindowRow(amp, GearType::amp, &Data::Gear::ampKnobs[0]))
+        {
+          showGearWindow |= true;
+          editGearType = GearType::amp;
+        }
 
         nk_tree_pop(ctx);
       }
@@ -1823,7 +1880,11 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 4);
 
         static i32 loopPedal[4];
-        toneWindowRow(loopPedal, &Data::Gear::pedalNames[0], NUM(Data::Gear::pedalNames));
+        if (toneWindowRow(loopPedal, GearType::pedal, &Data::Gear::pedalKnobs[0]))
+        {
+          showGearWindow |= true;
+          editGearType = GearType::pedal;
+        }
 
         nk_tree_pop(ctx);
       }
@@ -1833,7 +1894,11 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 4);
 
         static i32 cabinet[4];
-        toneWindowRow(cabinet, &Data::Gear::cabinetNames[0], NUM(Data::Gear::cabinetNames));
+        if (toneWindowRow(cabinet, GearType::cabinet, nullptr))
+        {
+          showGearWindow |= true;
+          editGearType = GearType::cabinet;
+        }
 
         nk_tree_pop(ctx);
       }
@@ -1843,13 +1908,39 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 2);
 
         static i32 rack[4];
-        toneWindowRow(rack, &Data::Gear::rackNames[0], NUM(Data::Gear::rackNames));
+        if (toneWindowRow(rack, GearType::rack, &Data::Gear::rackKnobs[0]))
+        {
+          showGearWindow |= true;
+          editGearType = GearType::rack;
+        }
 
         nk_tree_pop(ctx);
       }
     }
   }
   nk_end(ctx);
+
+  if (showGearWindow)
+  {
+    std::vector<Data::Gear::Knob>* knobs;
+    switch (editGearType)
+    {
+    case GearType::pedal:
+      knobs = &Data::Gear::pedalKnobs[editGearIndex];
+      break;
+    case GearType::amp:
+      knobs = &Data::Gear::ampKnobs[editGearIndex];
+      break;
+    case GearType::rack:
+      knobs = &Data::Gear::rackKnobs[editGearIndex];
+      break;
+    default:
+      assert(false);
+      break;
+    }
+
+    gearWindow(showGearWindow, knobs);
+  }
 }
 
 static void songWindow() {
@@ -2219,8 +2310,6 @@ void Ui::tick() {
   songWindow();
   if (Global::toneWindow)
     toneWindow();
-  if (Global::gearWindow)
-    gearWindow();
 }
 
 void Ui::render() {

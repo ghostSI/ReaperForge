@@ -59,6 +59,15 @@ enum struct SaveMode : u8 {
   wholeManifest,
 };
 
+enum struct GearType
+{
+  none = -1,
+  pedal,
+  amp,
+  cabinet,
+  rack
+};
+
 namespace Chords
 {
   enum struct Note : i32
@@ -144,7 +153,6 @@ struct Tuning
 {
   i32 string[6];
 };
-
 
 #pragma pack(push, 1)
 struct KeyInput {

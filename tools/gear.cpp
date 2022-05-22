@@ -2249,6 +2249,11 @@ int main(int argc, char* argv[])
       assert(false);
   }
 
+  i32 maxKnobs = 0;
+  for (const Gear& gear : gearList)
+    if (maxKnobs < gear.knobs.size())
+      maxKnobs = gear.knobs.size();
+
   char destFilepath[512];
 
   strcpy(destFilepath, argv[1]);
@@ -2264,7 +2269,10 @@ int main(int argc, char* argv[])
 
   FILE* outFile = fopen(destFilepath, "w");
   {
-    fprintf(outFile, "namespace Gear");
+    fprintf(outFile, "inline constexpr i32 gearMaxKnobs = %d;", maxKnobs);
+
+    fprintf(outFile, "\n");
+    fprintf(outFile, "\nnamespace Gear");
     fprintf(outFile, "\n{");
     fprintf(outFile, "\n  extern const char* pedalNames[%d];", pedalList.size() + 1);
     fprintf(outFile, "\n  extern const char* ampNames[%d];", ampList.size() + 1);

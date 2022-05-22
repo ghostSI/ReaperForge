@@ -36,7 +36,6 @@ f32 Global::oggStartTime = 0.0f;
 char Global::searchText[256] = "";
 i32 Global::searchTextLength = 0;
 bool Global::toneWindow = false;
-bool Global::gearWindow = false;
 
 Settings::Info Global::settings;
 

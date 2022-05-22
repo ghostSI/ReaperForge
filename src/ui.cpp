@@ -1835,13 +1835,13 @@ static void toneWindow()
     {
       nk_label(ctx, "Tone", NK_TEXT_LEFT);
 
-      std::vector<std::string> toneNames;
-      std::vector<const char*> toneNamesData;
-      for (i32 i = 0; i < Global::songInfos[Global::songSelected].tones.size(); ++i)
+      std::vector<std::string> toneNames(Global::songInfos[Global::songSelected].tones.size());
+      std::vector<const char*> toneNamesData(toneNames.size());
+      for (i32 i = 0; i < toneNames.size(); ++i)
       {
         const Manifest::Tone& tone = Global::songInfos[Global::songSelected].tones[i];
-        toneNames.push_back(Global::songInfos[Global::songSelected].manifest.entries[0].songName + tone.nameSeparator + fixToneDescriptorName(tone.toneDescriptors[0]));
-        toneNamesData.push_back(toneNames[i].c_str());
+        toneNames[i] = Global::songInfos[Global::songSelected].manifest.entries[0].songName + tone.nameSeparator + fixToneDescriptorName(tone.toneDescriptors[0]);
+        toneNamesData[i] = toneNames[i].c_str();
       }
 
       static i32 selectedTone;

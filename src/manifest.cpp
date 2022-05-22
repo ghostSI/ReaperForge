@@ -520,11 +520,7 @@ static void readTone(Json::object_element* it, Manifest::Tone& tone)
     Json::object* arr = (Json::object*)attribute->payload;
 
     Json::object_element* it = arr->start;
-
-    do
-    {
-      readGearList(it, tone.gearList);
-    } while (it = it->next);
+    readGearList(it, tone.gearList);
     return;
   }
   if (0 == strcmp(it->name->string, "IsCustom"))

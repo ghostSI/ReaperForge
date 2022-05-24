@@ -24381,7 +24381,7 @@ static void psarcTOCTest2() {
   Song::Info songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
   Song::loadSongInfoComplete(psarcInfo, songInfo);
 
-  ASSERT(songInfo.manifest.attributes[0].songName == "You Suffer");
+  ASSERT(songInfo.manifest.entries[0].songName == "You Suffer");
 
   Psarc::loadOgg(psarcInfo, false);
 

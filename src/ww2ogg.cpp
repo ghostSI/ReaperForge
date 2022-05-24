@@ -7455,7 +7455,6 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   {
     char whoknowsbuf[16];
     const unsigned char whoknowsbuf_check[16] = { 1,0,0,0, 0,0,0x10,0, 0x80,0,0,0xAA, 0,0x38,0x9b,0x71 };
-    _infile.read(whoknowsbuf, 16);
     memcpy(whoknowsbuf, &_inData[offset + 18], 16);
     assert(memcmp(whoknowsbuf, whoknowsbuf_check, 16) == 0); // Parse_error_str("expected signature in extra fmt?");
   }
@@ -7486,7 +7485,6 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   case 0x2C:
   case 0x32:
   case 0x34:
-    _infile.seekg(_vorb_offset + 0x00, std::ios::beg);
     offset = _vorb_offset;
     break;
 
@@ -7495,7 +7493,6 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
     break;
   }
 
-  _sample_count = _read_32(_infile);
   _sample_count = u32LittleEndian(&_inData[offset]);
 
   switch (_vorb_size)
@@ -7505,10 +7502,8 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   {
     _no_granule = true;
 
-    _infile.seekg(_vorb_offset + 0x4, std::ios::beg);
     offset = _vorb_offset + 0x4;
-    uint32_t mod_signal = _read_32(_infile);
-    mod_signal = u32LittleEndian(&_inData[offset]);
+    uint32_t mod_signal = u32LittleEndian(&_inData[offset]);
 
     // set
     // D9     11011001
@@ -7528,13 +7523,11 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
     {
       _mod_packets = true;
     }
-    _infile.seekg(_vorb_offset + 0x10, std::ios::beg);
     offset = _vorb_offset + 0x10;
     break;
   }
 
   default:
-    _infile.seekg(_vorb_offset + 0x18, std::ios::beg);
     offset = _vorb_offset + 0x18;
     break;
   }
@@ -7548,20 +7541,22 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
     _mod_packets = true;
   }
 
-  _setup_packet_offset = _read_32(_infile);
-  _first_audio_packet_offset = _read_32(_infile);
+  _setup_packet_offset = u32LittleEndian(&_inData[offset]);
+  _first_audio_packet_offset = u32LittleEndian(&_inData[offset + 4]);
 
   switch (_vorb_size)
   {
   case -1:
   case 0x2A:
-    _infile.seekg(_vorb_offset + 0x24, std::ios::beg);
+    offset = _vorb_offset + 0x24;
     break;
 
   case 0x32:
   case 0x34:
-    _infile.seekg(_vorb_offset + 0x2C, std::ios::beg);
+    offset = _vorb_offset + 0x2C;
     break;
+  default:
+    assert(false);
   }
 
   switch (_vorb_size)
@@ -7577,10 +7572,13 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   case 0x2A:
   case 0x32:
   case 0x34:
-    _uid = _read_32(_infile);
-    _blocksize_0_pow = _infile.get();
-    _blocksize_1_pow = _infile.get();
+    //_uid = _read_32(_infile);
+    _uid = u32LittleEndian(&_inData[offset]);
+    _blocksize_0_pow = _inData[offset + 4];
+    _blocksize_1_pow = _inData[offset + 5];
     break;
+  default:
+    assert(false);
   }
 
   // check/set loops now that we know total sample count

@@ -1,7 +1,5 @@
 #include "configuration.h"
 
-#ifndef TEST_BUILD
-
 #include "camera.h"
 #include "collection.h"
 #include "data.h"
@@ -17,6 +15,7 @@
 #include "settings.h"
 #include "shader.h"
 #include "sound.h"
+#include "test.h"
 #include "ui.h"
 
 #include "SDL2/SDL.h"
@@ -90,6 +89,10 @@ static void mainloop() {
 }
 
 int main(int argc, char* argv[]) {
+#ifdef TEST_BUILD
+  Test::run();
+#endif // TEST_BUILD
+
   Installer::init();
   if (!Settings::init(argc, argv))
     return -1;
@@ -179,5 +182,3 @@ int main(int argc, char* argv[]) {
   SDL_Quit();
   return 0;
 }
-
-#endif // TEST_BUILD

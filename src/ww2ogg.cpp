@@ -8384,11 +8384,12 @@ std::vector<u8> ww2ogg::wemData2OggData(const u8* data, u64 size)
     kNoForcePacketFormat
   );
 
-  std::ofstream of(out_filename.string().c_str(), std::ios::binary);
-  if (!of) assert(false); // File_open_error(opt.get_out_filename());
+  {
+    std::ofstream of(out_filename.string().c_str(), std::ios::binary);
+    if (!of) assert(false); // File_open_error(opt.get_out_filename());
 
-  ww.generate_ogg(of);
-  of.close();
+    ww.generate_ogg(of);
+  }
 
   return File::load(out_filename.string().c_str(), "rb");
 }

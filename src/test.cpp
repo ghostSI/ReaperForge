@@ -1,4 +1,4 @@
-#include "configuration.h"
+#include "test.h"
 
 #ifdef TEST_BUILD
 
@@ -24452,14 +24452,12 @@ static void mat4Test()
   ASSERT(res.m33 == 600);
 }
 
-int main(int argc, char* argv[]) {
+void Test::run() {
   mat4Test();
   psarcTOCTest2();
   settingsTest();
   //installerTest();
   rijndaelTest();
-
-  return 0;
 }
 
 #endif // TEST_BUILD

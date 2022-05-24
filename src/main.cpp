@@ -89,9 +89,9 @@ static void mainloop() {
 }
 
 int main(int argc, char* argv[]) {
-#ifdef TEST_BUILD
+#ifdef RUN_TEST
   Test::run();
-#endif // TEST_BUILD
+#endif // RUN_TEST
 
   Installer::init();
   if (!Settings::init(argc, argv))

@@ -3,13 +3,13 @@
 
 #include "configuration.h"
 
-#ifdef TEST_BUILD
+#ifdef RUN_TEST
 
 namespace Test
 {
   void run();
 };
 
-#endif // TEST_BUILD
+#endif // RUN_TEST
 
 #endif // TEST_H

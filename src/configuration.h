@@ -1,9 +1,9 @@
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
 
-#ifndef NDEBUG
-#define TEST_BUILD // build the test instead of bulding the game
-#endif // NDEBUG
+#ifdef DEBUG
+#define RUN_TEST // build the test instead of bulding the game
+#endif // DEBUG
 
 //#define XBLOCK_FULL // read all data from xblock files
 //#define ARRANGEMENT_XML // read all data from xblock files

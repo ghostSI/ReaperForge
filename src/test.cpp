@@ -1,6 +1,6 @@
 #include "test.h"
 
-#ifdef TEST_BUILD
+#ifdef RUN_TEST
 
 #include "rijndael.h"
 #include "psarc.h"
@@ -24460,4 +24460,4 @@ void Test::run() {
   rijndaelTest();
 }
 
-#endif // TEST_BUILD
+#endif // RUN_TEST

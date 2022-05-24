@@ -1,6 +1,7 @@
-#include "ww2ogg.h"
+#include "wem.h"
 
 #include "file.h"
+#include "helper.h"
 
 #include <fstream>
 #include <iostream>
@@ -6788,21 +6789,11 @@ codebook_library::codebook_library(void)
   : codebook_data(nullptr), codebook_offsets(nullptr), codebook_count(0)
 { }
 
-static u32 u32LittleEndian(const u8* bytes)
-{
-  return *reinterpret_cast<const u32*>(bytes);
-}
-
-static u16 u16LittleEndian(const u8* bytes)
-{
-  return *reinterpret_cast<const u16*>(bytes);
-}
-
 codebook_library::codebook_library(const std::string& filename)
   : codebook_data(nullptr), codebook_offsets(nullptr), codebook_count(0)
 {
   u64 file_size = sizeof(packed_codebooks_aoTuV_603_bin);
-  u64 offset_offset = u32LittleEndian(&packed_codebooks_aoTuV_603_bin[file_size - 4]);
+  u64 offset_offset = u32_le(&packed_codebooks_aoTuV_603_bin[file_size - 4]);
 
   codebook_count = (file_size - offset_offset) / 4;
   codebook_data = new char[offset_offset];
@@ -6843,10 +6834,7 @@ void codebook_library::copy(Bit_stream& bis, Bit_oggstream& bos)
 
   bis >> id >> dimensions >> entries;
 
-  if (0x564342 != id)
-  {
-    assert(false); // Parse_error_str("invalid codebook identifier");
-  }
+  assert(0x564342 == id); // Parse_error_str("invalid codebook identifier");
 
   //cout << "Codebook with " << dimensions << " dimensions, " << entries << " entries" << endl;
 
@@ -6877,7 +6865,7 @@ void codebook_library::copy(Bit_stream& bis, Bit_oggstream& bos)
       bos << number;
       current_entry += number;
     }
-    if (current_entry > entries) assert(false); // Parse_error_str("current_entry out of range");
+    assert(current_entry <= entries); // Parse_error_str("current_entry out of range");
   }
   else
   {
@@ -7273,7 +7261,6 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   const u8* inData,
   u64 inDataSize,
   const std::string& name,
-  //const std::string& codebooks_name,
   bool inline_codebooks,
   bool full_setup,
   ForcePacketFormat force_packet_format
@@ -7282,7 +7269,6 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   _inData(inData),
   _inDataSize(inDataSize),
   _file_name(name),
-  //_codebooks_name(codebooks_name),
   _infile(name.c_str(), std::ios::binary),
   _little_endian(true),
   _riff_size(-1),
@@ -7356,7 +7342,7 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
       _read_32 = read_32_be;
     }
 
-    _riff_size = u32LittleEndian(&_inData[4]) + 8;
+    _riff_size = u32_le(&_inData[4]) + 8;
 
     if (_riff_size > _inDataSize) assert(false); // Parse_error_str("RIFF truncated");
 
@@ -7375,7 +7361,7 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
 
     uint32_t chunk_size;
 
-    chunk_size = u32LittleEndian(&_inData[chunk_offset + 4]);
+    chunk_size = u32_le(&_inData[chunk_offset + 4]);
 
     if (!memcmp(chunk_type, "fmt ", 4))
     {
@@ -7431,22 +7417,22 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
 
   u64 offset = _fmt_offset;
 
-  assert(UINT16_C(0xFFFF) == u16LittleEndian(&_inData[offset])); // Parse_error_str("bad codec id");
-  _channels = u16LittleEndian(&_inData[offset + 2]);
-  _sample_rate = u32LittleEndian(&_inData[offset + 4]);
-  _avg_bytes_per_second = u32LittleEndian(&_inData[offset + 8]);
-  assert(0U == u16LittleEndian(&_inData[offset + 12])); // Parse_error_str("bad block align");
-  assert(0U == u16LittleEndian(&_inData[offset + 14])); // Parse_error_str("expected 0 bps");
-  assert(_fmt_size - 0x12 == u16LittleEndian(&_inData[offset + 16])); // Parse_error_str("bad extra fmt length");
+  assert(UINT16_C(0xFFFF) == u16_le(&_inData[offset])); // Parse_error_str("bad codec id");
+  _channels = u16_le(&_inData[offset + 2]);
+  _sample_rate = u32_le(&_inData[offset + 4]);
+  _avg_bytes_per_second = u32_le(&_inData[offset + 8]);
+  assert(0U == u16_le(&_inData[offset + 12])); // Parse_error_str("bad block align");
+  assert(0U == u16_le(&_inData[offset + 14])); // Parse_error_str("expected 0 bps");
+  assert(_fmt_size - 0x12 == u16_le(&_inData[offset + 16])); // Parse_error_str("bad extra fmt length");
 
 
   if (_fmt_size - 0x12 >= 2) {
     // read extra fmt
 
-    _ext_unk = u16LittleEndian(&_inData[offset + 18]);
+    _ext_unk = u16_le(&_inData[offset + 18]);
     offset += 2;
     if (_fmt_size - 0x12 >= 6) {
-      _subtype = u32LittleEndian(&_inData[offset + 20]);
+      _subtype = u32_le(&_inData[offset + 20]);
       offset += 4;
     }
   }
@@ -7462,18 +7448,18 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   // read cue
   if (-1 != _cue_offset)
   {
-    _cue_count = u32LittleEndian(&_inData[_cue_offset]);
+    _cue_count = u32_le(&_inData[_cue_offset]);
   }
 
   // read smpl
   if (-1 != _smpl_offset)
   {
-    _loop_count = u32LittleEndian(&_inData[_smpl_offset + 0x1C]);
+    _loop_count = u32_le(&_inData[_smpl_offset + 0x1C]);
 
     assert(1 == _loop_count); // Parse_error_str("expected one loop");
 
-    _loop_start = u32LittleEndian(&_inData[_smpl_offset + 0x2c]);
-    _loop_end = u32LittleEndian(&_inData[_smpl_offset + 0x2c + 4]);
+    _loop_start = u32_le(&_inData[_smpl_offset + 0x2c]);
+    _loop_end = u32_le(&_inData[_smpl_offset + 0x2c + 4]);
   }
 
   // read vorb
@@ -7493,7 +7479,7 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
     break;
   }
 
-  _sample_count = u32LittleEndian(&_inData[offset]);
+  _sample_count = u32_le(&_inData[offset]);
 
   switch (_vorb_size)
   {
@@ -7503,7 +7489,7 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
     _no_granule = true;
 
     offset = _vorb_offset + 0x4;
-    uint32_t mod_signal = u32LittleEndian(&_inData[offset]);
+    uint32_t mod_signal = u32_le(&_inData[offset]);
 
     // set
     // D9     11011001
@@ -7541,8 +7527,8 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
     _mod_packets = true;
   }
 
-  _setup_packet_offset = u32LittleEndian(&_inData[offset]);
-  _first_audio_packet_offset = u32LittleEndian(&_inData[offset + 4]);
+  _setup_packet_offset = u32_le(&_inData[offset]);
+  _first_audio_packet_offset = u32_le(&_inData[offset + 4]);
 
   switch (_vorb_size)
   {
@@ -7573,7 +7559,7 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   case 0x32:
   case 0x34:
     //_uid = _read_32(_infile);
-    _uid = u32LittleEndian(&_inData[offset]);
+    _uid = u32_le(&_inData[offset]);
     _blocksize_0_pow = _inData[offset + 4];
     _blocksize_1_pow = _inData[offset + 5];
     break;
@@ -7721,7 +7707,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
     Packet setup_packet(_infile, _data_offset + _setup_packet_offset, _little_endian, _no_granule);
 
     _infile.seekg(setup_packet.offset());
-    if (setup_packet.granule() != 0) assert(false); // Parse_error_str("setup packet granule != 0");
+    assert(setup_packet.granule() == 0); // Parse_error_str("setup packet granule != 0");
     Bit_stream ss(_infile);
 
     // codebook count
@@ -7835,8 +7821,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
             ss >> masterbook;
             os << masterbook;
 
-            if (masterbook >= codebook_count)
-              assert(false); // Parse_error_str("invalid floor1 masterbook");
+            assert(masterbook < codebook_count); // Parse_error_str("invalid floor1 masterbook");
           }
 
           for (unsigned int k = 0; k < (1U << class_subclasses); k++)
@@ -7887,7 +7872,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
         ss >> residue_type;
         os << Bit_uint<16>(residue_type);
 
-        if (residue_type > 2) assert(false); // Parse_error_str("invalid residue type");
+        assert(residue_type <= 2); // Parse_error_str("invalid residue type");
 
         Bit_uint<24> residue_begin, residue_end, residue_partition_size_less1;
         Bit_uint<6> residue_classifications_less1;
@@ -7897,7 +7882,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
         unsigned int residue_classifications = residue_classifications_less1 + 1;
         os << residue_begin << residue_end << residue_partition_size_less1 << residue_classifications_less1 << residue_classbook;
 
-        if (residue_classbook >= codebook_count) assert(false); // Parse_error_str("invalid residue classbook");
+        assert(residue_classbook < codebook_count); // Parse_error_str("invalid residue classbook");
 
         unsigned int* residue_cascade = new unsigned int[residue_classifications];
 
@@ -7931,7 +7916,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
               ss >> residue_book;
               os << residue_book;
 
-              if (residue_book >= codebook_count) assert(false); // Parse_error_str("invalid residue book");
+              assert(residue_book < codebook_count); // Parse_error_str("invalid residue book");
             }
           }
         }
@@ -7992,7 +7977,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
         Bit_uint<2> mapping_reserved;
         ss >> mapping_reserved;
         os << mapping_reserved;
-        if (0 != mapping_reserved) assert(false); // Parse_error_str("mapping reserved field nonzero");
+        assert(0 == mapping_reserved); // Parse_error_str("mapping reserved field nonzero");
 
         if (submaps > 1)
         {
@@ -8002,7 +7987,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
             ss >> mapping_mux;
             os << mapping_mux;
 
-            if (mapping_mux >= submaps) assert(false); // Parse_error_str("mapping_mux >= submaps");
+            assert(mapping_mux < submaps); // Parse_error_str("mapping_mux >= submaps");
           }
         }
 
@@ -8016,12 +8001,12 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
           Bit_uint<8> floor_number;
           ss >> floor_number;
           os << floor_number;
-          if (floor_number >= floor_count) assert(false); // Parse_error_str("invalid floor mapping");
+          assert(floor_number < floor_count); // Parse_error_str("invalid floor mapping");
 
           Bit_uint<8> residue_number;
           ss >> residue_number;
           os << residue_number;
-          if (residue_number >= residue_count) assert(false); // Parse_error_str("invalid residue mapping");
+          assert(residue_number < residue_count); // Parse_error_str("invalid residue mapping");
         }
       }
 
@@ -8135,10 +8120,7 @@ void Wwise_RIFF_Vorbis::generate_ogg(std::ofstream& of)
       {
         // need to rebuild packet type and window info
 
-        if (!mode_blockflag)
-        {
-          assert(false); // Parse_error_str("didn't load mode_blockflag");
-        }
+        assert(mode_blockflag); // Parse_error_str("didn't load mode_blockflag");
 
         // OUT: 1 bit packet type (0 == audio)
         Bit_uint<1> packet_type(0);
@@ -8250,18 +8232,12 @@ void Wwise_RIFF_Vorbis::generate_ogg_header_with_triad(Bit_oggstream& os)
       Packet_8 information_packet(_infile, offset, _little_endian);
       uint32_t size = information_packet.size();
 
-      if (information_packet.granule() != 0)
-      {
-        assert(false); // Parse_error_str("information packet granule != 0");
-      }
+      assert(information_packet.granule() == 0); // Parse_error_str("information packet granule != 0");
 
       _infile.seekg(information_packet.offset());
 
       Bit_uint<8> c(_infile.get());
-      if (1 != c)
-      {
-        assert(false); // Parse_error_str("wrong type for information packet");
-      }
+      assert(1 == c); // Parse_error_str("wrong type for information packet");
 
       os << c;
 
@@ -8282,18 +8258,12 @@ void Wwise_RIFF_Vorbis::generate_ogg_header_with_triad(Bit_oggstream& os)
       Packet_8 comment_packet(_infile, offset, _little_endian);
       uint16_t size = comment_packet.size();
 
-      if (comment_packet.granule() != 0)
-      {
-        assert(false); // Parse_error_str("comment packet granule != 0");
-      }
+      assert(comment_packet.granule() == 0); // Parse_error_str("comment packet granule != 0");
 
       _infile.seekg(comment_packet.offset());
 
       Bit_uint<8> c(_infile.get());
-      if (3 != c)
-      {
-        assert(false); // Parse_error_str("wrong type for comment packet");
-      }
+      assert(3 == c); // Parse_error_str("wrong type for comment packet");
 
       os << c;
 
@@ -8314,7 +8284,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header_with_triad(Bit_oggstream& os)
       Packet_8 setup_packet(_infile, offset, _little_endian);
 
       _infile.seekg(setup_packet.offset());
-      if (setup_packet.granule() != 0) assert(false); // Parse_error_str("setup packet granule != 0");
+      assert(setup_packet.granule() == 0); // Parse_error_str("setup packet granule != 0");
       Bit_stream ss(_infile);
 
       Bit_uint<8> c;
@@ -8360,25 +8330,23 @@ void Wwise_RIFF_Vorbis::generate_ogg_header_with_triad(Bit_oggstream& os)
       offset = setup_packet.next_offset();
     }
 
-    if (offset != _data_offset + static_cast<long>(_first_audio_packet_offset)) assert(false); // Parse_error_str("first audio packet doesn't follow setup packet");
+    assert(offset == _data_offset + static_cast<long>(_first_audio_packet_offset)); // Parse_error_str("first audio packet doesn't follow setup packet");
 
   }
 
 }
 
-std::vector<u8> ww2ogg::wemData2OggData(const u8* data, u64 size)
+std::vector<u8> Wem::to_ogg(const u8* wemData, u64 wemDataSize)
 {
   const auto in_filename = std::filesystem::temp_directory_path() / std::filesystem::path("reaperForgeInput.wem");
   const auto out_filename = std::filesystem::temp_directory_path() / std::filesystem::path("reaperForgeOutput.ogg");
-  const auto codebook_filename = std::filesystem::temp_directory_path() / std::filesystem::path("reaperForgeCodebook.ogg");
 
-  File::save(in_filename.string().c_str(), reinterpret_cast<const char*>(data), size);
+  File::save(in_filename.string().c_str(), reinterpret_cast<const char*>(wemData), wemDataSize);
 
   Wwise_RIFF_Vorbis ww(
-    data,
-    size,
+    wemData,
+    wemDataSize,
     in_filename.string(),
-    //codebook_filename.string(),
     false,
     false,
     kNoForcePacketFormat

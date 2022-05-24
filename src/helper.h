@@ -85,6 +85,51 @@ bool sameSign(const T &a, const T &b) {
     return a < 0 == b < 0;
 }
 
+inline u16 u16_le(const u8* bytes)
+{
+  return *reinterpret_cast<const u16*>(bytes);
+}
+
+inline i16 i16_le(const u8* bytes)
+{
+  return *reinterpret_cast<const i16*>(bytes);
+}
+
+inline u32 u32_le(const u8* bytes)
+{
+  return *reinterpret_cast<const u32*>(bytes);
+}
+
+inline i32 i32_le(const u8* bytes)
+{
+  return *reinterpret_cast<const i32*>(bytes);
+}
+
+inline f32 f32_le(const u8* bytes)
+{
+  return *reinterpret_cast<const f32*>(bytes);
+}
+
+inline f64 f64_le(const u8* bytes)
+{
+  return *reinterpret_cast<const f64*>(bytes);
+}
+
+inline u16 u16_be(const u8* bytes)
+{
+  return bytes[0] << 8 | bytes[1];
+}
+
+inline u32 u32_be(const u8* bytes)
+{
+  return bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3];
+}
+
+inline u64 u40_be(const u8* bytes)
+{
+  return u64(bytes[0]) << 32 | bytes[1] << 24 | bytes[2] << 16 | bytes[3] << 8 | bytes[4];
+}
+
 namespace string {
     std::vector<std::string> split(std::string str, char delimeter);
 

@@ -336,8 +336,6 @@ void Sound::init()
 void Sound::fini()
 {
   SDL_PauseAudioDevice(devid_out, 1);
-  //recordingFirst = !recordingFirst;
-  //cv.notify_one();
 }
 
 void Sound::playOgg()

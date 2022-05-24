@@ -1069,6 +1069,203 @@ static void drawSongInfo()
   }
 }
 
+static void drawLyricsUsedText(GLuint shader, i32& line0Cur, i32 line0Begin, i32 line0Active)
+{
+  if (line0Begin < line0Active)
+  { // draw used text
+    char line0[4096];
+
+    i32 outLetters = 0;
+    for (i32 i = line0Begin; i < line0Active; ++i)
+    {
+      const Song::Vocal& vocal = Global::songVocals[i];
+
+      i32 inLetters = 0;
+      while (vocal.lyric[inLetters] != '\0')
+      {
+        if (vocal.lyric[inLetters] != '-')
+        {
+          line0[outLetters] = vocal.lyric[inLetters];
+          ++outLetters;
+        }
+        ++inLetters;
+      }
+      if (vocal.lyric[inLetters - 1] != '-')
+      {
+        line0[outLetters] = ' ';
+        ++outLetters;
+      }
+    }
+
+    line0Cur = outLetters;
+    line0[line0Cur] = '\0';
+
+    glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[0].v0, Global::settings.highwayLyricsColor[0].v1, Global::settings.highwayLyricsColor[0].v2, Global::settings.highwayLyricsColor[0].v3);
+
+    {
+      const i32 letters = line0Cur;
+      const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
+      const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+      Font::draw(line0, -0.95f + scaleX, 0.5f, 0.0f, scaleX, scaleY);
+    }
+  }
+}
+
+static bool drawLyricsActiveText(GLuint shader, i32& line0Cur, i32 line0Active)
+{
+  bool skipUnusedText = false;
+
+  { // draw active text
+    char line0[4096];
+
+    i32 inLetters = 0;
+    i32 outLetters = 0;
+    {
+      const Song::Vocal& vocal = Global::songVocals[line0Active];
+
+      while (vocal.lyric[inLetters] != '\0')
+      {
+        if (vocal.lyric[inLetters] != '-')
+        {
+          line0[outLetters] = vocal.lyric[inLetters];
+          ++outLetters;
+        }
+        ++inLetters;
+      }
+      if (vocal.lyric[inLetters - 1] == '+')
+      {
+        skipUnusedText = true;
+        --outLetters;
+      }
+
+      line0[outLetters] = '\0';
+    }
+
+    glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[1].v0, Global::settings.highwayLyricsColor[1].v1, Global::settings.highwayLyricsColor[1].v2, Global::settings.highwayLyricsColor[1].v3);
+
+    {
+      const f32 offsetX = 4.0f * f32(Const::fontCharWidth * line0Cur) / f32(Global::settings.graphicsResolutionWidth);
+      const f32 scaleX = 2.0f * f32(Const::fontCharWidth * outLetters) / f32(Global::settings.graphicsResolutionWidth);
+      const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+      Font::draw(line0, -0.95f + scaleX + offsetX, 0.5f, 0.0f, scaleX, scaleY);
+    }
+
+    line0Cur += outLetters;
+    if (Global::songVocals[line0Active].lyric[Global::songVocals[line0Active].lyric.size() - 1] != '-')
+      ++line0Cur;
+  }
+
+  return skipUnusedText;
+}
+
+static void drawLyricsUnusedText(GLuint shader, i32& line0Cur, i32 line0Begin, i32 line0Active, i32 line0End)
+{
+  char line0[4096];
+
+  i32 outLetters = 0;
+  for (i32 i = line0Active != -1 ? line0Active + 1 : line0Begin; i < line0End; ++i)
+  {
+    const Song::Vocal& vocal = Global::songVocals[i];
+
+    i32 inLetters = 0;
+    while (vocal.lyric[inLetters] != '\0')
+    {
+      if (vocal.lyric[inLetters] != '-')
+      {
+        line0[outLetters] = vocal.lyric[inLetters];
+        ++outLetters;
+      }
+      ++inLetters;
+    }
+    if (vocal.lyric[inLetters - 1] != '-')
+    {
+      line0[outLetters] = ' ';
+      ++outLetters;
+    }
+  }
+  const Song::Vocal& vocal = Global::songVocals[line0End];
+  i32 j = 0;
+  while (vocal.lyric[j] != '+')
+  {
+    line0[outLetters + j] = vocal.lyric[j];
+    ++j;
+  }
+  line0[outLetters + j] = '\0';
+  outLetters += j;
+
+  glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[2].v0, Global::settings.highwayLyricsColor[2].v1, Global::settings.highwayLyricsColor[2].v2, Global::settings.highwayLyricsColor[2].v3);
+
+  {
+    const f32 offsetX = 4.0f * f32(Const::fontCharWidth * line0Cur) / f32(Global::settings.graphicsResolutionWidth);
+    const i32 letters = outLetters;
+    const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
+    const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+    Font::draw(line0, -0.95f + scaleX + offsetX, 0.5f, 0.0f, scaleX, scaleY);
+  }
+}
+
+static void drawLyricsNextLine(GLuint shader, i32 line0End)
+{
+  char line1[4096];
+  i32 line1Cur = 0;
+
+  i32 line1End = 0;
+  for (i32 i = line0End + 1; i < Global::songVocals.size(); ++i)
+  {
+    const Song::Vocal& vocal = Global::songVocals[i];
+
+    if (vocal.lyric[vocal.lyric.size() - 1] == '+')
+    {
+      line1End = i;
+      break;
+    }
+  }
+
+  for (i32 i = line0End + 1; i < line1End; ++i)
+  {
+    const Song::Vocal& vocal = Global::songVocals[i];
+
+    i32 inLetters = 0;
+    i32 outLetters = 0;
+    while (vocal.lyric[inLetters] != '\0')
+    {
+      if (vocal.lyric[inLetters] != '-')
+      {
+        line1[line1Cur + outLetters] = vocal.lyric[inLetters];
+        ++outLetters;
+      }
+      ++inLetters;
+    }
+    if (vocal.lyric[inLetters - 1] != '-')
+    {
+      line1[line1Cur + outLetters] = ' ';
+      ++line1Cur;
+    }
+    line1Cur += outLetters;
+  }
+  const Song::Vocal& vocal = Global::songVocals[line1End];
+  i32 inLetters = 0;
+  i32 outLetters = 0;
+  while (vocal.lyric[inLetters] != '+')
+  {
+    if (vocal.lyric[inLetters] != '-')
+    {
+      line1[line1Cur + outLetters] = vocal.lyric[inLetters];
+      ++outLetters;
+    }
+    ++inLetters;
+  }
+  line1[line1Cur + outLetters] = '\0';
+
+  glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[2].v0, Global::settings.highwayLyricsColor[2].v1, Global::settings.highwayLyricsColor[2].v2, Global::settings.highwayLyricsColor[2].v3);
+  {
+    const i32 letters = line1Cur + outLetters;
+    const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
+    const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+    Font::draw(line1, -0.95f + scaleX, 0.4f, 0.0f, scaleX, scaleY);
+  }
+}
+
 static void drawLyrics()
 {
   if (Global::songVocals.size() == 0)
@@ -1099,173 +1296,20 @@ static void drawLyrics()
   }
 
   GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
-
   i32 line0Cur = 0;
 
   bool skipUnusedText = false;
-
   if (line0Active != -1)
   {
-    if (line0Begin < line0Active)
-    { // draw used text
-      char line0[4096];
-
-      for (i32 i = line0Begin; i < line0Active; ++i)
-      {
-        const Song::Vocal& vocal = Global::songVocals[i];
-
-        i32 j = 0;
-        while (vocal.lyric[j] != '\0')
-        {
-          line0[line0Cur + j] = vocal.lyric[j];
-          ++j;
-        }
-        line0[line0Cur + j] = ' ';
-        line0Cur += j + 1;
-      }
-
-      line0[line0Cur - 1] = '\0';
-
-      glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[0].v0, Global::settings.highwayLyricsColor[0].v1, Global::settings.highwayLyricsColor[0].v2, Global::settings.highwayLyricsColor[0].v3);
-
-      {
-        const i32 letters = line0Cur - 1;
-        const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-        const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
-        Font::draw(line0, -0.95f + scaleX, 0.5f, 0.0f, scaleX, scaleY);
-      }
-    }
-
-    { // draw active text
-      char line0[4096];
-
-      i32 letters = 0;
-      {
-        const Song::Vocal& vocal = Global::songVocals[line0Active];
-
-        while (vocal.lyric[letters] != '\0')
-        {
-          line0[letters] = vocal.lyric[letters];
-          ++letters;
-        }
-        if (vocal.lyric[letters - 1] == '+')
-        {
-          skipUnusedText = true;
-          --letters;
-        }
-
-        line0[letters] = '\0';
-      }
-
-      glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[1].v0, Global::settings.highwayLyricsColor[1].v1, Global::settings.highwayLyricsColor[1].v2, Global::settings.highwayLyricsColor[1].v3);
-
-      {
-        const f32 offsetX = 4.0f * f32(Const::fontCharWidth * line0Cur) / f32(Global::settings.graphicsResolutionWidth);
-        const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-        const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
-        Font::draw(line0, -0.95f + scaleX + offsetX, 0.5f, 0.0f, scaleX, scaleY);
-      }
-
-      line0Cur += letters + 1;
-    }
+    drawLyricsUsedText(shader, line0Cur, line0Begin, line0Active);
+    skipUnusedText = drawLyricsActiveText(shader, line0Cur, line0Active);
   }
   if (!skipUnusedText)
   { // draw unused text
-    char line0[4096];
-
-    i32 offset = 0;
-    for (i32 i = line0Active != -1 ? line0Active + 1 : line0Begin; i < line0End; ++i)
-    {
-      const Song::Vocal& vocal = Global::songVocals[i];
-
-      i32 j = 0;
-      while (vocal.lyric[j] != '\0')
-      {
-        line0[offset + j] = vocal.lyric[j];
-        ++j;
-      }
-      line0[offset + j] = ' ';
-      offset += j + 1;
-    }
-    const Song::Vocal& vocal = Global::songVocals[line0End];
-    i32 j = 0;
-    while (vocal.lyric[j] != '+')
-    {
-      line0[offset + j] = vocal.lyric[j];
-      ++j;
-    }
-    line0[offset + j] = '\0';
-    offset += j;
-
-    glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[2].v0, Global::settings.highwayLyricsColor[2].v1, Global::settings.highwayLyricsColor[2].v2, Global::settings.highwayLyricsColor[2].v3);
-
-    {
-      const f32 offsetX = 4.0f * f32(Const::fontCharWidth * line0Cur) / f32(Global::settings.graphicsResolutionWidth);
-      const i32 letters = offset;
-      const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-      const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
-      Font::draw(line0, -0.95f + scaleX + offsetX, 0.5f, 0.0f, scaleX, scaleY);
-    }
+    drawLyricsUnusedText(shader, line0Cur, line0Begin, line0Active, line0End);
   }
 
-  i32 line1End = 0;
-  for (i32 i = line0End + 1; i < Global::songVocals.size(); ++i)
-  {
-    const Song::Vocal& vocal = Global::songVocals[i];
-
-    if (vocal.lyric[vocal.lyric.size() - 1] == '+')
-    {
-      line1End = i;
-      break;
-    }
-  }
-
-  {
-    char line1[4096];
-    i32 line1Cur = 0;
-
-    i32 line1End = 0;
-    for (i32 i = line0End + 1; i < Global::songVocals.size(); ++i)
-    {
-      const Song::Vocal& vocal = Global::songVocals[i];
-
-      if (vocal.lyric[vocal.lyric.size() - 1] == '+')
-      {
-        line1End = i;
-        break;
-      }
-    }
-
-    for (i32 i = line0End + 1; i < line1End; ++i)
-    {
-      const Song::Vocal& vocal = Global::songVocals[i];
-
-      i32 j = 0;
-      while (vocal.lyric[j] != '\0')
-      {
-        line1[line1Cur + j] = vocal.lyric[j];
-        ++j;
-      }
-      line1[line1Cur + j] = ' ';
-      line1Cur += j + 1;
-    }
-    const Song::Vocal& vocal = Global::songVocals[line1End];
-    i32 j = 0;
-    while (vocal.lyric[j] != '+')
-    {
-      line1[line1Cur + j] = vocal.lyric[j];
-      ++j;
-    }
-    line1[line1Cur + j] = '\0';
-
-    glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[2].v0, Global::settings.highwayLyricsColor[2].v1, Global::settings.highwayLyricsColor[2].v2, Global::settings.highwayLyricsColor[2].v3);
-    {
-      const i32 letters = line1Cur + j - 1;
-      const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-      const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
-      Font::draw(line1, -0.95f + scaleX, 0.4f, 0.0f, scaleX, scaleY);
-    }
-  }
+  drawLyricsNextLine(shader, line0End);
 }
 
 static void drawEbeat(f32 noteTimeBegin, f32 noteTimeEnd, i32 measure, i32 chordBoxLeft, i32 chordBoxWidth)

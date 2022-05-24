@@ -6793,6 +6793,11 @@ static u32 u32LittleEndian(const u8* bytes)
   return *reinterpret_cast<const u32*>(bytes);
 }
 
+static u16 u16LittleEndian(const u8* bytes)
+{
+  return *reinterpret_cast<const u16*>(bytes);
+}
+
 codebook_library::codebook_library(const std::string& filename)
   : codebook_data(nullptr), codebook_offsets(nullptr), codebook_count(0)
 {
@@ -7115,11 +7120,11 @@ enum ForcePacketFormat {
 
 class Wwise_RIFF_Vorbis
 {
-  u8* inData;
-  u64 inDataSize;
+  const u8* _inData;
+  u64 _inDataSize;
   std::string _file_name;
   std::ifstream _infile;
-  long _file_size;
+  //long _file_size;
 
   bool _little_endian;
 
@@ -7265,8 +7270,8 @@ public:
 const char Vorbis_packet_header::vorbis_str[6] = { 'v','o','r','b','i','s' };
 
 Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
-  const u8* data,
-  u64 dataSize,
+  const u8* inData,
+  u64 inDataSize,
   const std::string& name,
   //const std::string& codebooks_name,
   bool inline_codebooks,
@@ -7274,10 +7279,11 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   ForcePacketFormat force_packet_format
 )
   :
+  _inData(inData),
+  _inDataSize(inDataSize),
   _file_name(name),
   //_codebooks_name(codebooks_name),
   _infile(name.c_str(), std::ios::binary),
-  _file_size(-1),
   _little_endian(true),
   _riff_size(-1),
   _fmt_offset(-1),
@@ -7316,17 +7322,12 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   _read_16(nullptr),
   _read_32(nullptr)
 {
-  if (!_infile) assert(false); // File_open_error(name);
-
-  _infile.seekg(0, std::ios::end);
-  _file_size = _infile.tellg();
-
+  assert(_infile); // File_open_error(name);
 
   // check RIFF header
   {
     unsigned char riff_head[4], wave_head[4];
-    _infile.seekg(0, std::ios::beg);
-    _infile.read(reinterpret_cast<char*>(riff_head), 4);
+    memcpy(riff_head, _inData, 4);
 
     if (memcmp(&riff_head[0], "RIFX", 4))
     {
@@ -7355,27 +7356,26 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
       _read_32 = read_32_be;
     }
 
-    _riff_size = _read_32(_infile) + 8;
+    _riff_size = u32LittleEndian(&_inData[4]) + 8;
 
-    if (_riff_size > _file_size) assert(false); // Parse_error_str("RIFF truncated");
+    if (_riff_size > _inDataSize) assert(false); // Parse_error_str("RIFF truncated");
 
-    _infile.read(reinterpret_cast<char*>(wave_head), 4);
-    if (memcmp(&wave_head[0], "WAVE", 4)) assert(false); // Parse_error_str("missing WAVE");
+    memcpy(wave_head, &_inData[8], 4);
+    assert(memcmp(wave_head, "WAVE", 4) == 0);
   }
 
   // read chunks
   long chunk_offset = 12;
   while (chunk_offset < _riff_size)
   {
-    _infile.seekg(chunk_offset, std::ios::beg);
-
     if (chunk_offset + 8 > _riff_size) assert(false); // Parse_error_str("chunk header truncated");
 
     char chunk_type[4];
-    _infile.read(chunk_type, 4);
+    memcpy(chunk_type, &_inData[chunk_offset], 4);
+
     uint32_t chunk_size;
 
-    chunk_size = _read_32(_infile);
+    chunk_size = u32LittleEndian(&_inData[chunk_offset + 4]);
 
     if (!memcmp(chunk_type, "fmt ", 4))
     {
@@ -7428,19 +7428,26 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   }
 
   _infile.seekg(_fmt_offset, std::ios::beg);
-  if (UINT16_C(0xFFFF) != _read_16(_infile)) assert(false); // Parse_error_str("bad codec id");
-  _channels = _read_16(_infile);
-  _sample_rate = _read_32(_infile);
-  _avg_bytes_per_second = _read_32(_infile);
-  if (0U != _read_16(_infile)) assert(false); // Parse_error_str("bad block align");
-  if (0U != _read_16(_infile)) assert(false); // Parse_error_str("expected 0 bps");
-  if (_fmt_size - 0x12 != _read_16(_infile)) assert(false); // Parse_error_str("bad extra fmt length");
+
+  u64 offset = _fmt_offset;
+
+  assert(UINT16_C(0xFFFF) == u16LittleEndian(&_inData[offset])); // Parse_error_str("bad codec id");
+  _channels = u16LittleEndian(&_inData[offset + 2]);
+  _sample_rate = u32LittleEndian(&_inData[offset + 4]);
+  _avg_bytes_per_second = u32LittleEndian(&_inData[offset + 8]);
+  assert(0U == u16LittleEndian(&_inData[offset + 12])); // Parse_error_str("bad block align");
+  assert(0U == u16LittleEndian(&_inData[offset + 14])); // Parse_error_str("expected 0 bps");
+  assert(_fmt_size - 0x12 == u16LittleEndian(&_inData[offset + 16])); // Parse_error_str("bad extra fmt length");
+
 
   if (_fmt_size - 0x12 >= 2) {
     // read extra fmt
-    _ext_unk = _read_16(_infile);
+
+    _ext_unk = u16LittleEndian(&_inData[offset + 18]);
+    offset += 2;
     if (_fmt_size - 0x12 >= 6) {
-      _subtype = _read_32(_infile);
+      _subtype = u32LittleEndian(&_inData[offset + 20]);
+      offset += 4;
     }
   }
 
@@ -7449,44 +7456,25 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
     char whoknowsbuf[16];
     const unsigned char whoknowsbuf_check[16] = { 1,0,0,0, 0,0,0x10,0, 0x80,0,0,0xAA, 0,0x38,0x9b,0x71 };
     _infile.read(whoknowsbuf, 16);
-    if (memcmp(whoknowsbuf, whoknowsbuf_check, 16)) assert(false); // Parse_error_str("expected signature in extra fmt?");
+    memcpy(whoknowsbuf, &_inData[offset + 18], 16);
+    assert(memcmp(whoknowsbuf, whoknowsbuf_check, 16) == 0); // Parse_error_str("expected signature in extra fmt?");
   }
 
   // read cue
   if (-1 != _cue_offset)
   {
-#if 0
-    if (0x1c != _cue_size) assert(false); // Parse_error_str("bad cue size");
-#endif
-    _infile.seekg(_cue_offset);
-
-    _cue_count = _read_32(_infile);
-  }
-
-  // read LIST
-  if (-1 != _LIST_offset)
-  {
-#if 0
-    if (4 != _LIST_size) assert(false); // Parse_error_str("bad LIST size");
-    char adtlbuf[4];
-    const char adtlbuf_check[4] = { 'a','d','t','l' };
-    _infile.seekg(_LIST_offset);
-    _infile.read(adtlbuf, 4);
-    if (memcmp(adtlbuf, adtlbuf_check, 4)) assert(false); // Parse_error_str("expected only adtl in LIST");
-#endif
+    _cue_count = u32LittleEndian(&_inData[_cue_offset]);
   }
 
   // read smpl
   if (-1 != _smpl_offset)
   {
-    _infile.seekg(_smpl_offset + 0x1C);
-    _loop_count = _read_32(_infile);
+    _loop_count = u32LittleEndian(&_inData[_smpl_offset + 0x1C]);
 
-    if (1 != _loop_count) assert(false); // Parse_error_str("expected one loop");
+    assert(1 == _loop_count); // Parse_error_str("expected one loop");
 
-    _infile.seekg(_smpl_offset + 0x2c);
-    _loop_start = _read_32(_infile);
-    _loop_end = _read_32(_infile);
+    _loop_start = u32LittleEndian(&_inData[_smpl_offset + 0x2c]);
+    _loop_end = u32LittleEndian(&_inData[_smpl_offset + 0x2c + 4]);
   }
 
   // read vorb
@@ -7499,6 +7487,7 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   case 0x32:
   case 0x34:
     _infile.seekg(_vorb_offset + 0x00, std::ios::beg);
+    offset = _vorb_offset;
     break;
 
   default:
@@ -7507,6 +7496,7 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   }
 
   _sample_count = _read_32(_infile);
+  _sample_count = u32LittleEndian(&_inData[offset]);
 
   switch (_vorb_size)
   {
@@ -7516,7 +7506,9 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
     _no_granule = true;
 
     _infile.seekg(_vorb_offset + 0x4, std::ios::beg);
+    offset = _vorb_offset + 0x4;
     uint32_t mod_signal = _read_32(_infile);
+    mod_signal = u32LittleEndian(&_inData[offset]);
 
     // set
     // D9     11011001
@@ -7537,11 +7529,13 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
       _mod_packets = true;
     }
     _infile.seekg(_vorb_offset + 0x10, std::ios::beg);
+    offset = _vorb_offset + 0x10;
     break;
   }
 
   default:
     _infile.seekg(_vorb_offset + 0x18, std::ios::beg);
+    offset = _vorb_offset + 0x18;
     break;
   }
 

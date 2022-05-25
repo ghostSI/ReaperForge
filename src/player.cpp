@@ -43,11 +43,11 @@ void Player::tick()
 #endif // __EMSCRIPTEN__
 }
 
-void Player::playSong(const Psarc::Info& psarcInfo)
+void Player::playSong(const Psarc::Info& psarcInfo, InstrumentFlags instrumentFlags)
 {
   Song::loadSongInfoComplete(psarcInfo, Global::songInfos[Global::songSelected]);
 
-  Global::songTrack = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
+  Global::songTrack = Song::loadTrack(psarcInfo, instrumentFlags);
   Global::songVocals = Song::loadVocals(psarcInfo);
 
   Psarc::loadOgg(psarcInfo, false);

@@ -2024,7 +2024,7 @@ static void songWindow() {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[0].instrumentFlags)))
             {
               Global::songSelected = i;
-              Player::playSong(Global::psarcInfos[i]);
+              Player::playSong(Global::psarcInfos[i], songInfo.manifest.entries[0].instrumentFlags);
             }
           }
           else
@@ -2039,7 +2039,7 @@ static void songWindow() {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[1].instrumentFlags)))
             {
               Global::songSelected = i;
-              Player::playSong(Global::psarcInfos[i]);
+              Player::playSong(Global::psarcInfos[i], songInfo.manifest.entries[1].instrumentFlags);
             }
           }
           else
@@ -2054,7 +2054,7 @@ static void songWindow() {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[2].instrumentFlags)))
             {
               Global::songSelected = i;
-              Player::playSong(Global::psarcInfos[i]);
+              Player::playSong(Global::psarcInfos[i], songInfo.manifest.entries[0].instrumentFlags);
             }
           }
           else

@@ -286,12 +286,18 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
     }
     else
     {
-      const f32 x = Const::highwayRenderFretPosition[note.fret - 1] + 0.5f * (Const::highwayRenderFretPosition[note.fret] - Const::highwayRenderFretPosition[note.fret - 1]);
 
       mat4 modelMat;
-      modelMat.m30 = x;
+      if (note.fret == 0)
+      {
+        modelMat.m00 = 8.0f;
+        modelMat.m30 = Const::highwayRenderFretPosition[chordBoxLeft] + 0.25f * (Const::highwayRenderFretPosition[chordBoxLeft + chordBoxWidth] - Const::highwayRenderFretPosition[chordBoxLeft]);
+      }
+      else
+      {
+        modelMat.m30 = Const::highwayRenderFretPosition[note.fret - 1] + 0.5f * (Const::highwayRenderFretPosition[note.fret] - Const::highwayRenderFretPosition[note.fret - 1]);
+      }
       modelMat.m31 = f32(5 - note.string + instrumentStringOffset) * Const::highwayRenderStringSpacing;
-      //modelMat.m32 = noteTime * Global::settings.highwaySpeedMultiplier;
       glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
       const f32 front = min_(noteTime * Global::settings.highwaySpeedMultiplier, 0.0f);

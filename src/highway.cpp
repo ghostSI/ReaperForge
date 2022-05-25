@@ -291,16 +291,17 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
       mat4 modelMat;
       modelMat.m30 = x;
       modelMat.m31 = f32(5 - note.string + instrumentStringOffset) * Const::highwayRenderStringSpacing;
-      modelMat.m32 = noteTime * Global::settings.highwaySpeedMultiplier;
+      //modelMat.m32 = noteTime * Global::settings.highwaySpeedMultiplier;
       glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
 
-      const f32 sustainTime = -note.sustain * Global::settings.highwaySpeedMultiplier;
+      const f32 front = min_(noteTime * Global::settings.highwaySpeedMultiplier, 0.0f);
+      const f32 back = (noteTime - note.sustain) * Global::settings.highwaySpeedMultiplier;
 
       const GLfloat v[] = {
-        -0.2_f32, 0.0f, 0.0f, 0.8418f, 1.0f,
-        0.2_f32, 0.0f, 0.0f, 0.9922f, 1.0f,
-        -0.2_f32, 0.0f, sustainTime, 0.8418f, 0.0f,
-        0.2_f32, 0.0f, sustainTime, 0.9922f, 0.0f,
+        -0.2_f32, 0.0f, front, 0.8418f, 1.0f,
+        0.2_f32, 0.0f, front, 0.9922f, 1.0f,
+        -0.2_f32, 0.0f, back, 0.8418f, 0.0f,
+        0.2_f32, 0.0f, back, 0.9922f, 0.0f,
       };
 
       glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);

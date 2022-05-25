@@ -163,6 +163,7 @@ namespace Global {
     extern std::vector<Psarc::Info> psarcInfos;
     extern std::vector<Song::Info> songInfos;
     extern i32 songSelected;
+    extern i32 manifestSelected;
     extern Song::Track songTrack;
     extern std::vector<Song::Vocal> songVocals;
     extern std::vector<u8> ogg;

@@ -4,6 +4,7 @@
 namespace Psarc { struct Info; }
 
 namespace Highway {
+  void tick();
   void render();
 }
 

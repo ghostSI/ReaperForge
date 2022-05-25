@@ -28,6 +28,7 @@ bool Global::isInstalled = false;
 InstrumentFlags Global::filterInstrument = InstrumentFlags::none;
 std::vector<Psarc::Info> Global::psarcInfos;
 i32 Global::songSelected = 0;
+i32 Global::manifestSelected = 0;
 std::vector<Song::Info> Global::songInfos;
 Song::Track Global::songTrack;
 std::vector<Song::Vocal> Global::songVocals;

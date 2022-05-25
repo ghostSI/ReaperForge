@@ -371,6 +371,19 @@ void Sound::playOgg()
   SDL_PauseAudioDevice(devid_out, 0);
 }
 
+void stopOgg()
+{
+  SDL_PauseAudioDevice(devid_out, 1);
+
+  Global::oggStartTime = 0.0f;
+
+  for (i32 i = 0; i < Const::soundMaxCount; ++i)
+    if (audios[i].vorbis != nullptr)
+      audios[i] = Audio();
+
+  SDL_PauseAudioDevice(devid_out, 0);
+}
+
 void Sound::play(Sound::Effect effect, i32 volume)
 {
   playAudio(&soundPool[to_underlying(effect)], SoundType::Effect, volume);

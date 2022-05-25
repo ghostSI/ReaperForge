@@ -60,6 +60,9 @@ Song::Info Song::loadSongInfoManifestOnly(const Psarc::Info& psarcInfo) {
 
 void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songInfo)
 {
+  if (songInfo.loadState == LoadState::complete)
+    return;
+
   assert(songInfo.loadState == LoadState::manifest);
 
   for (i32 i = 0; i < psarcInfo.tocEntries.size(); ++i) {

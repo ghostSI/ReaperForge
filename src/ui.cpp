@@ -2024,6 +2024,7 @@ static void songWindow() {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[0].instrumentFlags)))
             {
               Global::songSelected = i;
+              Global::manifestSelected = 0;
               Player::playSong(Global::psarcInfos[i], songInfo.manifest.entries[0].instrumentFlags);
             }
           }
@@ -2039,6 +2040,7 @@ static void songWindow() {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[1].instrumentFlags)))
             {
               Global::songSelected = i;
+              Global::manifestSelected = 1;
               Player::playSong(Global::psarcInfos[i], songInfo.manifest.entries[1].instrumentFlags);
             }
           }
@@ -2054,6 +2056,7 @@ static void songWindow() {
             if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[2].instrumentFlags)))
             {
               Global::songSelected = i;
+              Global::manifestSelected = 2;
               Player::playSong(Global::psarcInfos[i], songInfo.manifest.entries[0].instrumentFlags);
             }
           }
@@ -2117,7 +2120,25 @@ static void settingsWindow()
           96000,
           192000
         };
-        i32 index = Global::settings.audioSampleRate / 48000;
+        i32 index = 0;
+        switch (Global::settings.audioSampleRate)
+        {
+        case 44100:
+          index = 0;
+          break;
+        case 48000:
+          index = 1;
+          break;
+        case 96000:
+          index = 2;
+          break;
+        case 192000:
+          index = 3;
+          break;
+        default:
+          assert(false);
+          break;
+        }
         index = nk_combo(ctx, audioSampleRateNames, NUM(audioSampleRateNames), index, 25, nk_vec2(200, 200));
         Global::settings.audioSampleRate = audioSamples[index];
       }

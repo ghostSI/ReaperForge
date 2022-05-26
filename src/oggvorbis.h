@@ -5,9 +5,14 @@
 #define STB_VORBIS_NO_STDIO 1
 #endif
 
+
+#define STB_VORBIS_NO_PUSHDATA_API
+#define STB_VORBIS_NO_STDIO
+
 #ifndef STB_VORBIS_NO_STDIO
 #include <stdio.h>
 #endif
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,19 +43,8 @@ extern "C" {
     int max_frame_size;
   } stb_vorbis_info;
 
-  typedef struct
-  {
-    char* vendor;
-
-    int comment_list_length;
-    char** comment_list;
-  } stb_vorbis_comment;
-
   // get general information about the file
   extern stb_vorbis_info stb_vorbis_get_info(stb_vorbis* f);
-
-  // get ogg comments
-  extern stb_vorbis_comment stb_vorbis_get_comment(stb_vorbis* f);
 
   // get the last error detected (clears it, too)
   extern int stb_vorbis_get_error(stb_vorbis* f);
@@ -68,81 +62,6 @@ extern "C" {
   // returns the current seek point within the file, or offset from the beginning
   // of the memory buffer. In pushdata mode it returns 0.
   extern unsigned int stb_vorbis_get_file_offset(stb_vorbis* f);
-
-  ///////////   PUSHDATA API
-
-#ifndef STB_VORBIS_NO_PUSHDATA_API
-
-// this API allows you to get blocks of data from any source and hand
-// them to stb_vorbis. you have to buffer them; stb_vorbis will tell
-// you how much it used, and you have to give it the rest next time;
-// and stb_vorbis may not have enough data to work with and you will
-// need to give it the same data again PLUS more. Note that the Vorbis
-// specification does not bound the size of an individual frame.
-
-  extern stb_vorbis* stb_vorbis_open_pushdata(
-    const unsigned char* datablock, int datablock_length_in_bytes,
-    int* datablock_memory_consumed_in_bytes,
-    int* error,
-    const stb_vorbis_alloc* alloc_buffer);
-  // create a vorbis decoder by passing in the initial data block containing
-  //    the ogg&vorbis headers (you don't need to do parse them, just provide
-  //    the first N bytes of the file--you're told if it's not enough, see below)
-  // on success, returns an stb_vorbis *, does not set error, returns the amount of
-  //    data parsed/consumed on this call in *datablock_memory_consumed_in_bytes;
-  // on failure, returns NULL on error and sets *error, does not change *datablock_memory_consumed
-  // if returns NULL and *error is VORBIS_need_more_data, then the input block was
-  //       incomplete and you need to pass in a larger block from the start of the file
-
-  extern int stb_vorbis_decode_frame_pushdata(
-    stb_vorbis* f,
-    const unsigned char* datablock, int datablock_length_in_bytes,
-    int* channels,             // place to write number of float * buffers
-    float*** output,           // place to write float ** array of float * buffers
-    int* samples               // place to write number of output samples
-  );
-  // decode a frame of audio sample data if possible from the passed-in data block
-  //
-  // return value: number of bytes we used from datablock
-  //
-  // possible cases:
-  //     0 bytes used, 0 samples output (need more data)
-  //     N bytes used, 0 samples output (resynching the stream, keep going)
-  //     N bytes used, M samples output (one frame of data)
-  // note that after opening a file, you will ALWAYS get one N-bytes,0-sample
-  // frame, because Vorbis always "discards" the first frame.
-  //
-  // Note that on resynch, stb_vorbis will rarely consume all of the buffer,
-  // instead only datablock_length_in_bytes-3 or less. This is because it wants
-  // to avoid missing parts of a page header if they cross a datablock boundary,
-  // without writing state-machiney code to record a partial detection.
-  //
-  // The number of channels returned are stored in *channels (which can be
-  // NULL--it is always the same as the number of channels reported by
-  // get_info). *output will contain an array of float* buffers, one per
-  // channel. In other words, (*output)[0][0] contains the first sample from
-  // the first channel, and (*output)[1][0] contains the first sample from
-  // the second channel.
-  //
-  // *output points into stb_vorbis's internal output buffer storage; these
-  // buffers are owned by stb_vorbis and application code should not free
-  // them or modify their contents. They are transient and will be overwritten
-  // once you ask for more data to get decoded, so be sure to grab any data
-  // you need before then.
-
-  extern void stb_vorbis_flush_pushdata(stb_vorbis* f);
-  // inform stb_vorbis that your next datablock will not be contiguous with
-  // previous ones (e.g. you've seeked in the data); future attempts to decode
-  // frames will cause stb_vorbis to resynchronize (as noted above), and
-  // once it sees a valid Ogg page (typically 4-8KB, as large as 64KB), it
-  // will begin decoding the _next_ frame.
-  //
-  // if you want to seek using pushdata, you need to seek in your file, then
-  // call stb_vorbis_flush_pushdata(), then start calling decoding, then once
-  // decoding is returning you data, call stb_vorbis_get_sample_offset, and
-  // if you don't like the result, seek your file again and repeat.
-#endif
-
 
 //////////   PULLING INPUT API
 

@@ -137,10 +137,6 @@
    #define STB_VORBIS_NO_STDIO
 #endif
 
-#if defined(STB_VORBIS_NO_CRT) && !defined(STB_VORBIS_NO_STDIO)
-   #define STB_VORBIS_NO_STDIO 1
-#endif
-
 #ifndef STB_VORBIS_NO_INTEGER_CONVERSION
 #ifndef STB_VORBIS_NO_FAST_SCALED_FLOAT
 
@@ -154,11 +150,6 @@
    #endif
 
 #endif
-#endif
-
-
-#ifndef STB_VORBIS_NO_STDIO
-#include <stdio.h>
 #endif
 
 #ifndef STB_VORBIS_NO_CRT
@@ -378,13 +369,6 @@ struct stb_vorbis
    char *vendor;
    int comment_list_length;
    char **comment_list;
-
-  // input config
-#ifndef STB_VORBIS_NO_STDIO
-   FILE *f;
-   uint32 f_start;
-   int close_on_free;
-#endif
 
    uint8 *stream;
    uint8 *stream_start;
@@ -910,12 +894,7 @@ static int STBV_CDECL point_compare(const void *p, const void *q)
 //
 /////////////////////// END LEAF SETUP FUNCTIONS //////////////////////////
 
-
-#if defined(STB_VORBIS_NO_STDIO)
-   #define USE_MEMORY(z)    TRUE
-#else
-   #define USE_MEMORY(z)    ((z)->stream)
-#endif
+#define USE_MEMORY(z)    TRUE
 
 static uint8 get8(vorb *z)
 {
@@ -923,14 +902,6 @@ static uint8 get8(vorb *z)
       if (z->stream >= z->stream_end) { z->eof = TRUE; return 0; }
       return *z->stream++;
    }
-
-   #ifndef STB_VORBIS_NO_STDIO
-   {
-   int c = fgetc(z->f);
-   if (c == EOF) { z->eof = TRUE; return 0; }
-   return c;
-   }
-   #endif
 }
 
 static uint32 get32(vorb *f)
@@ -951,15 +922,6 @@ static int getn(vorb *z, uint8 *data, int n)
       z->stream += n;
       return 1;
    }
-
-   #ifndef STB_VORBIS_NO_STDIO
-   if (fread(data, n, 1, z->f) == 1)
-      return 1;
-   else {
-      z->eof = 1;
-      return 0;
-   }
-   #endif
 }
 
 static void skip(vorb *z, int n)
@@ -969,12 +931,6 @@ static void skip(vorb *z, int n)
       if (z->stream >= z->stream_end) z->eof = 1;
       return;
    }
-   #ifndef STB_VORBIS_NO_STDIO
-   {
-      long x = ftell(z->f);
-      fseek(z->f, x+n, SEEK_SET);
-   }
-   #endif
 }
 
 static int set_file_offset(stb_vorbis *f, unsigned int loc)
@@ -993,19 +949,6 @@ static int set_file_offset(stb_vorbis *f, unsigned int loc)
          return 1;
       }
    }
-   #ifndef STB_VORBIS_NO_STDIO
-   if (loc + f->f_start < loc || loc >= 0x80000000) {
-      loc = 0x7fffffff;
-      f->eof = 1;
-   } else {
-      loc += f->f_start;
-   }
-   if (!fseek(f->f, loc, SEEK_SET))
-      return 1;
-   f->eof = 1;
-   fseek(f->f, f->f_start, SEEK_END);
-   return 0;
-   #endif
 }
 
 
@@ -3098,68 +3041,6 @@ static int vorbis_pump_first_frame(stb_vorbis *f)
    return res;
 }
 
-#ifndef STB_VORBIS_NO_PUSHDATA_API
-static int is_whole_packet_present(stb_vorbis *f)
-{
-   // make sure that we have the packet available before continuing...
-   // this requires a full ogg parse, but we know we can fetch from f->stream
-
-   // instead of coding this out explicitly, we could save the current read state,
-   // read the next packet with get8() until end-of-packet, check f->eof, then
-   // reset the state? but that would be slower, esp. since we'd have over 256 bytes
-   // of state to restore (primarily the page segment table)
-
-   int s = f->next_seg, first = TRUE;
-   uint8 *p = f->stream;
-
-   if (s != -1) { // if we're not starting the packet with a 'continue on next page' flag
-      for (; s < f->segment_count; ++s) {
-         p += f->segments[s];
-         if (f->segments[s] < 255)               // stop at first short segment
-            break;
-      }
-      // either this continues, or it ends it...
-      if (s == f->segment_count)
-         s = -1; // set 'crosses page' flag
-      if (p > f->stream_end)                     return error(f, VORBIS_need_more_data);
-      first = FALSE;
-   }
-   for (; s == -1;) {
-      uint8 *q;
-      int n;
-
-      // check that we have the page header ready
-      if (p + 26 >= f->stream_end)               return error(f, VORBIS_need_more_data);
-      // validate the page
-      if (memcmp(p, ogg_page_header, 4))         return error(f, VORBIS_invalid_stream);
-      if (p[4] != 0)                             return error(f, VORBIS_invalid_stream);
-      if (first) { // the first segment must NOT have 'continued_packet', later ones MUST
-         if (f->previous_length)
-            if ((p[5] & PAGEFLAG_continued_packet))  return error(f, VORBIS_invalid_stream);
-         // if no previous length, we're resynching, so we can come in on a continued-packet,
-         // which we'll just drop
-      } else {
-         if (!(p[5] & PAGEFLAG_continued_packet)) return error(f, VORBIS_invalid_stream);
-      }
-      n = p[26]; // segment counts
-      q = p+27;  // q points to segment table
-      p = q + n; // advance past header
-      // make sure we've read the segment table
-      if (p > f->stream_end)                     return error(f, VORBIS_need_more_data);
-      for (s=0; s < n; ++s) {
-         p += q[s];
-         if (q[s] < 255)
-            break;
-      }
-      if (s == n)
-         s = -1; // set 'crosses page' flag
-      if (p > f->stream_end)                     return error(f, VORBIS_need_more_data);
-      first = FALSE;
-   }
-   return TRUE;
-}
-#endif // !STB_VORBIS_NO_PUSHDATA_API
-
 static int start_decoder(vorb *f)
 {
    uint8 header[6], x,y;
@@ -3275,17 +3156,6 @@ static int start_decoder(vorb *f)
 
    // third packet!
    if (!start_packet(f))                            return FALSE;
-
-   #ifndef STB_VORBIS_NO_PUSHDATA_API
-   if (IS_PUSH_MODE(f)) {
-      if (!is_whole_packet_present(f)) {
-         // convert error in ogg header to write type
-         if (f->error == VORBIS_invalid_stream)
-            f->error = VORBIS_invalid_setup;
-         return FALSE;
-      }
-   }
-   #endif
 
    crc32_init(); // always init it, to avoid multithread race conditions
 
@@ -3846,9 +3716,6 @@ static void vorbis_deinit(stb_vorbis *p)
       setup_free(p, p->window[i]);
       setup_free(p, p->bit_reverse[i]);
    }
-   #ifndef STB_VORBIS_NO_STDIO
-   if (p->close_on_free) fclose(p->f);
-   #endif
 }
 
 void stb_vorbis_close(stb_vorbis *p)
@@ -3871,10 +3738,6 @@ static void vorbis_init(stb_vorbis *p, const stb_vorbis_alloc *z)
    p->stream = NULL;
    p->codebooks = NULL;
    p->page_crc_tests = -1;
-   #ifndef STB_VORBIS_NO_STDIO
-   p->close_on_free = FALSE;
-   p->f = NULL;
-   #endif
 }
 
 int stb_vorbis_get_sample_offset(stb_vorbis *f)
@@ -3897,15 +3760,6 @@ stb_vorbis_info stb_vorbis_get_info(stb_vorbis *f)
    return d;
 }
 
-stb_vorbis_comment stb_vorbis_get_comment(stb_vorbis *f)
-{
-   stb_vorbis_comment d;
-   d.vendor = f->vendor;
-   d.comment_list_length = f->comment_list_length;
-   d.comment_list = f->comment_list;
-   return d;
-}
-
 int stb_vorbis_get_error(stb_vorbis *f)
 {
    int e = f->error;
@@ -3919,221 +3773,9 @@ static stb_vorbis * vorbis_alloc(stb_vorbis *f)
    return p;
 }
 
-#ifndef STB_VORBIS_NO_PUSHDATA_API
-
-void stb_vorbis_flush_pushdata(stb_vorbis *f)
-{
-   f->previous_length = 0;
-   f->page_crc_tests  = 0;
-   f->discard_samples_deferred = 0;
-   f->current_loc_valid = FALSE;
-   f->first_decode = FALSE;
-   f->samples_output = 0;
-   f->channel_buffer_start = 0;
-   f->channel_buffer_end = 0;
-}
-
-static int vorbis_search_for_page_pushdata(vorb *f, uint8 *data, int data_len)
-{
-   int i,n;
-   for (i=0; i < f->page_crc_tests; ++i)
-      f->scan[i].bytes_done = 0;
-
-   // if we have room for more scans, search for them first, because
-   // they may cause us to stop early if their header is incomplete
-   if (f->page_crc_tests < STB_VORBIS_PUSHDATA_CRC_COUNT) {
-      if (data_len < 4) return 0;
-      data_len -= 3; // need to look for 4-byte sequence, so don't miss
-                     // one that straddles a boundary
-      for (i=0; i < data_len; ++i) {
-         if (data[i] == 0x4f) {
-            if (0==memcmp(data+i, ogg_page_header, 4)) {
-               int j,len;
-               uint32 crc;
-               // make sure we have the whole page header
-               if (i+26 >= data_len || i+27+data[i+26] >= data_len) {
-                  // only read up to this page start, so hopefully we'll
-                  // have the whole page header start next time
-                  data_len = i;
-                  break;
-               }
-               // ok, we have it all; compute the length of the page
-               len = 27 + data[i+26];
-               for (j=0; j < data[i+26]; ++j)
-                  len += data[i+27+j];
-               // scan everything up to the embedded crc (which we must 0)
-               crc = 0;
-               for (j=0; j < 22; ++j)
-                  crc = crc32_update(crc, data[i+j]);
-               // now process 4 0-bytes
-               for (   ; j < 26; ++j)
-                  crc = crc32_update(crc, 0);
-               // len is the total number of bytes we need to scan
-               n = f->page_crc_tests++;
-               f->scan[n].bytes_left = len-j;
-               f->scan[n].crc_so_far = crc;
-               f->scan[n].goal_crc = data[i+22] + (data[i+23] << 8) + (data[i+24]<<16) + (data[i+25]<<24);
-               // if the last frame on a page is continued to the next, then
-               // we can't recover the sample_loc immediately
-               if (data[i+27+data[i+26]-1] == 255)
-                  f->scan[n].sample_loc = ~0;
-               else
-                  f->scan[n].sample_loc = data[i+6] + (data[i+7] << 8) + (data[i+ 8]<<16) + (data[i+ 9]<<24);
-               f->scan[n].bytes_done = i+j;
-               if (f->page_crc_tests == STB_VORBIS_PUSHDATA_CRC_COUNT)
-                  break;
-               // keep going if we still have room for more
-            }
-         }
-      }
-   }
-
-   for (i=0; i < f->page_crc_tests;) {
-      uint32 crc;
-      int j;
-      int n = f->scan[i].bytes_done;
-      int m = f->scan[i].bytes_left;
-      if (m > data_len - n) m = data_len - n;
-      // m is the bytes to scan in the current chunk
-      crc = f->scan[i].crc_so_far;
-      for (j=0; j < m; ++j)
-         crc = crc32_update(crc, data[n+j]);
-      f->scan[i].bytes_left -= m;
-      f->scan[i].crc_so_far = crc;
-      if (f->scan[i].bytes_left == 0) {
-         // does it match?
-         if (f->scan[i].crc_so_far == f->scan[i].goal_crc) {
-            // Houston, we have page
-            data_len = n+m; // consumption amount is wherever that scan ended
-            f->page_crc_tests = -1; // drop out of page scan mode
-            f->previous_length = 0; // decode-but-don't-output one frame
-            f->next_seg = -1;       // start a new page
-            f->current_loc = f->scan[i].sample_loc; // set the current sample location
-                                    // to the amount we'd have decoded had we decoded this page
-            f->current_loc_valid = f->current_loc != ~0U;
-            return data_len;
-         }
-         // delete entry
-         f->scan[i] = f->scan[--f->page_crc_tests];
-      } else {
-         ++i;
-      }
-   }
-
-   return data_len;
-}
-
-// return value: number of bytes we used
-int stb_vorbis_decode_frame_pushdata(
-         stb_vorbis *f,                   // the file we're decoding
-         const uint8 *data, int data_len, // the memory available for decoding
-         int *channels,                   // place to write number of float * buffers
-         float ***output,                 // place to write float ** array of float * buffers
-         int *samples                     // place to write number of output samples
-     )
-{
-   int i;
-   int len,right,left;
-
-   if (!IS_PUSH_MODE(f)) return error(f, VORBIS_invalid_api_mixing);
-
-   if (f->page_crc_tests >= 0) {
-      *samples = 0;
-      return vorbis_search_for_page_pushdata(f, (uint8 *) data, data_len);
-   }
-
-   f->stream     = (uint8 *) data;
-   f->stream_end = (uint8 *) data + data_len;
-   f->error      = VORBIS__no_error;
-
-   // check that we have the entire packet in memory
-   if (!is_whole_packet_present(f)) {
-      *samples = 0;
-      return 0;
-   }
-
-   if (!vorbis_decode_packet(f, &len, &left, &right)) {
-      // save the actual error we encountered
-      enum STBVorbisError error = f->error;
-      if (error == VORBIS_bad_packet_type) {
-         // flush and resynch
-         f->error = VORBIS__no_error;
-         while (get8_packet(f) != EOP)
-            if (f->eof) break;
-         *samples = 0;
-         return (int) (f->stream - data);
-      }
-      if (error == VORBIS_continued_packet_flag_invalid) {
-         if (f->previous_length == 0) {
-            // we may be resynching, in which case it's ok to hit one
-            // of these; just discard the packet
-            f->error = VORBIS__no_error;
-            while (get8_packet(f) != EOP)
-               if (f->eof) break;
-            *samples = 0;
-            return (int) (f->stream - data);
-         }
-      }
-      // if we get an error while parsing, what to do?
-      // well, it DEFINITELY won't work to continue from where we are!
-      stb_vorbis_flush_pushdata(f);
-      // restore the error that actually made us bail
-      f->error = error;
-      *samples = 0;
-      return 1;
-   }
-
-   // success!
-   len = vorbis_finish_frame(f, len, left, right);
-   for (i=0; i < f->channels; ++i)
-      f->outputs[i] = f->channel_buffers[i] + left;
-
-   if (channels) *channels = f->channels;
-   *samples = len;
-   *output = f->outputs;
-   return (int) (f->stream - data);
-}
-
-stb_vorbis *stb_vorbis_open_pushdata(
-         const unsigned char *data, int data_len, // the memory available for decoding
-         int *data_used,              // only defined if result is not NULL
-         int *error, const stb_vorbis_alloc *alloc)
-{
-   stb_vorbis *f, p;
-   vorbis_init(&p, alloc);
-   p.stream     = (uint8 *) data;
-   p.stream_end = (uint8 *) data + data_len;
-   p.push_mode  = TRUE;
-   if (!start_decoder(&p)) {
-      if (p.eof)
-         *error = VORBIS_need_more_data;
-      else
-         *error = p.error;
-      vorbis_deinit(&p);
-      return NULL;
-   }
-   f = vorbis_alloc(&p);
-   if (f) {
-      *f = p;
-      *data_used = (int) (f->stream - data);
-      *error = 0;
-      return f;
-   } else {
-      vorbis_deinit(&p);
-      return NULL;
-   }
-}
-#endif // STB_VORBIS_NO_PUSHDATA_API
-
 unsigned int stb_vorbis_get_file_offset(stb_vorbis *f)
 {
-   #ifndef STB_VORBIS_NO_PUSHDATA_API
-   if (f->push_mode) return 0;
-   #endif
    if (USE_MEMORY(f)) return (unsigned int) (f->stream - f->stream_start);
-   #ifndef STB_VORBIS_NO_STDIO
-   return (unsigned int) (ftell(f->f) - f->f_start);
-   #endif
 }
 
 #ifndef STB_VORBIS_NO_PULLDATA_API
@@ -4630,55 +4272,6 @@ int stb_vorbis_get_frame_float(stb_vorbis *f, int *channels, float ***output)
    return len;
 }
 
-#ifndef STB_VORBIS_NO_STDIO
-
-stb_vorbis * stb_vorbis_open_file_section(FILE *file, int close_on_free, int *error, const stb_vorbis_alloc *alloc, unsigned int length)
-{
-   stb_vorbis *f, p;
-   vorbis_init(&p, alloc);
-   p.f = file;
-   p.f_start = (uint32) ftell(file);
-   p.stream_len   = length;
-   p.close_on_free = close_on_free;
-   if (start_decoder(&p)) {
-      f = vorbis_alloc(&p);
-      if (f) {
-         *f = p;
-         vorbis_pump_first_frame(f);
-         return f;
-      }
-   }
-   if (error) *error = p.error;
-   vorbis_deinit(&p);
-   return NULL;
-}
-
-stb_vorbis * stb_vorbis_open_file(FILE *file, int close_on_free, int *error, const stb_vorbis_alloc *alloc)
-{
-   unsigned int len, start;
-   start = (unsigned int) ftell(file);
-   fseek(file, 0, SEEK_END);
-   len = (unsigned int) (ftell(file) - start);
-   fseek(file, start, SEEK_SET);
-   return stb_vorbis_open_file_section(file, close_on_free, error, alloc, len);
-}
-
-stb_vorbis * stb_vorbis_open_filename(const char *filename, int *error, const stb_vorbis_alloc *alloc)
-{
-   FILE *f;
-#if defined(_WIN32) && defined(__STDC_WANT_SECURE_LIB__)
-   if (0 != fopen_s(&f, filename, "rb"))
-      f = NULL;
-#else
-   f = fopen(filename, "rb");
-#endif
-   if (f)
-      return stb_vorbis_open_file(f, TRUE, error, alloc);
-   if (error) *error = VORBIS_file_open_failure;
-   return NULL;
-}
-#endif // STB_VORBIS_NO_STDIO
-
 stb_vorbis * stb_vorbis_open_memory(const unsigned char *data, int len, int *error, const stb_vorbis_alloc *alloc)
 {
    stb_vorbis *f, p;
@@ -4924,47 +4517,6 @@ int stb_vorbis_get_samples_short(stb_vorbis *f, int channels, short **buffer, in
    }
    return n;
 }
-
-#ifndef STB_VORBIS_NO_STDIO
-int stb_vorbis_decode_filename(const char *filename, int *channels, int *sample_rate, short **output)
-{
-   int data_len, offset, total, limit, error;
-   short *data;
-   stb_vorbis *v = stb_vorbis_open_filename(filename, &error, NULL);
-   if (v == NULL) return -1;
-   limit = v->channels * 4096;
-   *channels = v->channels;
-   if (sample_rate)
-      *sample_rate = v->sample_rate;
-   offset = data_len = 0;
-   total = limit;
-   data = (short *) malloc(total * sizeof(*data));
-   if (data == NULL) {
-      stb_vorbis_close(v);
-      return -2;
-   }
-   for (;;) {
-      int n = stb_vorbis_get_frame_short_interleaved(v, v->channels, data+offset, total-offset);
-      if (n == 0) break;
-      data_len += n;
-      offset += n * v->channels;
-      if (offset + limit > total) {
-         short *data2;
-         total *= 2;
-         data2 = (short *) realloc(data, total * sizeof(*data));
-         if (data2 == NULL) {
-            free(data);
-            stb_vorbis_close(v);
-            return -2;
-         }
-         data = data2;
-      }
-   }
-   *output = data;
-   stb_vorbis_close(v);
-   return data_len;
-}
-#endif // NO_STDIO
 
 int stb_vorbis_decode_memory(const uint8 *mem, int len, int *channels, int *sample_rate, short **output)
 {

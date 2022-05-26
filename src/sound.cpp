@@ -357,6 +357,14 @@ void Sound::playOgg()
 
   stb_vorbis_info info = stb_vorbis_get_info(audio->vorbis);
 
+  //if (info.sample_rate != Global::settings.audioSampleRate || info.channels != 2)
+  //{
+  //  SDL_AudioCVT cvt;
+  //  cvt.buf = audio->vorbis;
+  //  SDL_BuildAudioCVT(&cvt, AUDIO_F32, info.channels, info.sample_rate, AUDIO_F32, 2, Global::settings.audioSampleRate);
+  //  SDL_ConvertAudio(&cvt);
+  //}
+
   audio->spec = SDL_AudioSpec();
   audio->spec.freq = info.sample_rate;
   audio->spec.format = AUDIO_F32LSB;
@@ -364,7 +372,6 @@ void Sound::playOgg()
   audio->spec.samples = Global::settings.audioBufferSize;
   audio->spec.callback = audioPlaybackCallback;
   audio->spec.userdata = nullptr;
-
 
   SDL_OpenAudio(&audio->spec, NULL);
 

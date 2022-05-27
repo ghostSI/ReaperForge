@@ -33,20 +33,19 @@ static ChordDetector chordDetector;
 
 enum struct SoundType : i32
 {
-  Effect = 10000, // play once
-  Music = 20000, // play until another on should be played
-  Ogg = 30000,
+  empty,
+  Wav,
+  Ogg
 };
 
 struct Audio
 {
-  i32 soundId = 0;
+  SoundType soundType = SoundType::empty;
 
   u32 length = 0;
   u32 lengthTrue = 0;
   u8* bufferTrue = nullptr;
   u8* buffer = nullptr;
-  stb_vorbis* vorbis = nullptr;
   u8 fade = 0;
   u8 free = 0;
   u8 volume = 0;
@@ -63,19 +62,10 @@ static std::vector<Audio> musicPool;
 static Audio* newAudio()
 {
   for (i32 i = 0; i < Const::soundMaxCount; ++i)
-    if (audios[i].vorbis == nullptr && audios[i].bufferTrue == nullptr)
+    if (audios[i].bufferTrue == nullptr)
       return &audios[i];
 
   return nullptr;
-}
-
-static SoundType getSoundType(Audio* audio)
-{
-  if (audio->soundId >= to_underlying(SoundType::Ogg))
-    return SoundType::Ogg;
-  if (audio->soundId >= to_underlying(SoundType::Music))
-    return SoundType::Music;
-  return SoundType::Effect;
 }
 
 static void addMusic(Audio* new1)
@@ -84,7 +74,7 @@ static void addMusic(Audio* new1)
   Audio* headNext = newAudio();
 
   /* Phase out any current music */
-  if (getSoundType(headNext) == SoundType::Music && headNext->fade == 0)
+  if (headNext->soundType == SoundType::Ogg && headNext->fade == 0)
   {
     if (musicFound)
     {
@@ -95,7 +85,7 @@ static void addMusic(Audio* new1)
     headNext->fade = 1;
   }
   /* Set recordingFirst to remove any queued up music in favour of new music */
-  else if (getSoundType(headNext) == SoundType::Music && headNext->fade == 1)
+  else if (headNext->soundType == SoundType::Ogg && headNext->fade == 1)
   {
     musicFound = true;
   }
@@ -115,7 +105,7 @@ static void playAudio(Audio* audio, SoundType soundType, i32 volume)
   /* Lock callback function */
   SDL_LockAudioDevice(devid_out);
 
-  if (soundType == SoundType::Music)
+  if (soundType == SoundType::Ogg)
   {
     addMusic(new1);
   }
@@ -209,7 +199,7 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
     if (audio->length > 0)
     {
       bool music = false;
-      if (audio->fade == 1 && getSoundType(audio) == SoundType::Music)
+      if (audio->fade == 1 && audio->soundType == SoundType::Ogg)
       {
         music = true;
 
@@ -223,7 +213,7 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
         }
       }
 
-      if (music && getSoundType(audio) == SoundType::Music && audio->fade == 0)
+      if (music && audio->soundType == SoundType::Ogg && audio->fade == 0)
       {
         tempLength = 0;
       }
@@ -237,27 +227,21 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
       audio->buffer += tempLength;
       audio->length -= tempLength;
     }
-    else if (getSoundType(audio) == SoundType::Music && audio->fade == 0)
+    else if (audio->soundType == SoundType::Ogg && audio->fade == 0)
     {
       audio->buffer = audio->bufferTrue;
       audio->length = audio->lengthTrue;
     }
-    else if (i32 samples; getSoundType(audio) == SoundType::Ogg && (samples = stb_vorbis_get_samples_float_interleaved(audio->vorbis, 2, (f32*)buffer_mixer, len / sizeof(f32))) > 0)
-    {
-      SDL_MixAudio(stream, buffer_mixer, samples * 8, Global::settings.mixerMusicVolume);
-    }
     else
     {
-      if (audio->soundId != 0)
+      // remove audio
+      if (audio->free == 1)
       {
-        // remove audio
-        if (audio->free == 1)
-        {
-          if (audio->vorbis)
-            stb_vorbis_close(audio->vorbis);
-          if (audio->bufferTrue)
-            SDL_FreeWAV(audio->bufferTrue);
-        }
+        assert(audio->bufferTrue != nullptr);
+        if (audio->soundType == SoundType::Ogg)
+          free(audio->bufferTrue);
+        else
+          SDL_FreeWAV(audio->bufferTrue);
         *audio = Audio();
       }
     }
@@ -305,7 +289,7 @@ void Sound::init()
   // Effects
   {
     Audio audio;
-    audio.soundId = 10000;
+    audio.soundType = SoundType::Wav;
     audio.fade = 0;
     audio.free = 1;
     audio.volume = 64;
@@ -319,7 +303,7 @@ void Sound::init()
   }
   {
     Audio audio;
-    audio.soundId = 10001;
+    audio.soundType = SoundType::Wav;
     audio.fade = 0;
     audio.free = 1;
     audio.volume = 64;
@@ -349,21 +333,51 @@ void Sound::playOgg()
     return;
   }
 
-  audio->vorbis = stb_vorbis_open_memory(Global::ogg.data(), Global::ogg.size(), nullptr, nullptr);
-  audio->soundId = 30000;
+  stb_vorbis* vorbis = stb_vorbis_open_memory(Global::ogg.data(), Global::ogg.size(), nullptr, nullptr);
+  audio->soundType = SoundType::Ogg;
   audio->free = 1;
-  Global::oggStartTime = Global::time;
+
+  stb_vorbis_info info = stb_vorbis_get_info(vorbis);
+  assert(info.channels == 2);
+
+  for (;;)
+  {
+    f32 buffer[131072];
+    const i32 samples = stb_vorbis_get_samples_float_interleaved(vorbis, info.channels, buffer, NUM(buffer));
+    if (samples > 0)
+    {
+      const i64 dataSize = samples * info.channels * sizeof(f32);
+      audio->lengthTrue += dataSize;
+      audio->bufferTrue = (u8*)realloc(audio->bufferTrue, audio->lengthTrue);
+      assert(audio->bufferTrue != nullptr);
+      memcpy(&audio->bufferTrue[audio->lengthTrue - dataSize], buffer, dataSize);
+    }
+    else
+    {
+      break;
+    }
+  }
+  stb_vorbis_close(vorbis);
+
+  if (info.sample_rate != Global::settings.audioSampleRate)
+  {
+    SDL_AudioCVT cvt;
+    const i32 buildCVTResult = SDL_BuildAudioCVT(&cvt, AUDIO_F32, info.channels, info.sample_rate, AUDIO_F32, 2, Global::settings.audioSampleRate);
+    assert(buildCVTResult == 1);
+    {
+      cvt.buf = (u8*)malloc(audio->lengthTrue * cvt.len_mult);
+      cvt.len = audio->lengthTrue;
+      memcpy(cvt.buf, audio->bufferTrue, audio->lengthTrue);
 
 
-  stb_vorbis_info info = stb_vorbis_get_info(audio->vorbis);
+      i32 result = SDL_ConvertAudio(&cvt);
+      assert(0 == result);
+      audio->lengthTrue = cvt.len * cvt.len_mult;
 
-  //if (info.sample_rate != Global::settings.audioSampleRate || info.channels != 2)
-  //{
-  //  SDL_AudioCVT cvt;
-  //  cvt.buf = audio->vorbis;
-  //  SDL_BuildAudioCVT(&cvt, AUDIO_F32, info.channels, info.sample_rate, AUDIO_F32, 2, Global::settings.audioSampleRate);
-  //  SDL_ConvertAudio(&cvt);
-  //}
+      audio->bufferTrue = (u8*)realloc(audio->bufferTrue, audio->lengthTrue);
+      memcpy(audio->bufferTrue, cvt.buf, audio->lengthTrue);
+    }
+  }
 
   audio->spec = SDL_AudioSpec();
   audio->spec.freq = info.sample_rate;
@@ -372,9 +386,13 @@ void Sound::playOgg()
   audio->spec.samples = Global::settings.audioBufferSize;
   audio->spec.callback = audioPlaybackCallback;
   audio->spec.userdata = nullptr;
+  audio->length = audio->lengthTrue;
+  audio->buffer = audio->bufferTrue;
+  audio->volume = 64;
 
   SDL_OpenAudio(&audio->spec, NULL);
 
+  Global::oggStartTime = Global::time;
   SDL_PauseAudioDevice(devid_out, 0);
 }
 
@@ -385,7 +403,7 @@ void stopOgg()
   Global::oggStartTime = 0.0f;
 
   for (i32 i = 0; i < Const::soundMaxCount; ++i)
-    if (audios[i].vorbis != nullptr)
+    if (audios[i].bufferTrue != nullptr && audios[i].soundType == SoundType::Ogg)
       audios[i] = Audio();
 
   SDL_PauseAudioDevice(devid_out, 0);
@@ -393,7 +411,7 @@ void stopOgg()
 
 void Sound::play(Sound::Effect effect, i32 volume)
 {
-  playAudio(&soundPool[to_underlying(effect)], SoundType::Effect, volume);
+  playAudio(&soundPool[to_underlying(effect)], SoundType::Wav, volume);
 }
 
 void Sound::setPauseAudio(bool pauseAudio)

@@ -41,7 +41,7 @@ Song::Info Song::loadSongInfoManifestOnly(const Psarc::Info& psarcInfo) {
     const Psarc::Info::TOCEntry& tocEntry = psarcInfo.tocEntries[i];
     if (tocEntry.name.ends_with(".hsan"))
     {
-      songInfo.manifest = Manifest::readHsan(tocEntry.content, songInfo.xblock);
+      songInfo.manifestInfos = Manifest::readHsan(tocEntry.content, songInfo.xblock);
       songInfo.loadState = LoadState::manifest;
     }
     else if (tocEntry.name.ends_with("_64.dds")) {
@@ -76,7 +76,6 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
       || tocEntry.name.ends_with(".bnk")
       || tocEntry.name.ends_with(".wem")
       || tocEntry.name.ends_with(".nt")
-      || tocEntry.name.ends_with(".sng")
       || tocEntry.name.ends_with(".version")
       || tocEntry.name.ends_with(".appid")
       || tocEntry.name.ends_with(".xml")
@@ -111,15 +110,15 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
     }
     else if (tocEntry.name.ends_with("_rhythm.sng"))
     {
-      songInfo.sng = Sng::parse(tocEntry.content);
+      songInfo.sngInfos.push_back(Sng::parse(tocEntry.content));
     }
     else if (tocEntry.name.ends_with("_bass.sng"))
     {
-      songInfo.sng = Sng::parse(tocEntry.content);
+      songInfo.sngInfos.push_back(Sng::parse(tocEntry.content));
     }
     else if (tocEntry.name.ends_with("_vocals.sng"))
     {
-      songInfo.sng = Sng::parse(tocEntry.content);
+      songInfo.sngInfos.push_back(Sng::parse(tocEntry.content));
     }
     else if (tocEntry.name.ends_with("_lead.json"))
     {

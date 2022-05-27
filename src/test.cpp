@@ -344,50 +344,560 @@ static void rijndaelTest() {
     ASSERT(expectedPlainText[i] == plainText[i]);
 }
 
-static void manifestTest(const Song::Info& songInfo)
+static void manifestInfoTest(const std::vector<Manifest::Info>& manifestInfos)
 {
-  ASSERT(songInfo.manifest.entries.size() == 2);
+  ASSERT(manifestInfos.size() == 2);
 
   {
-    ASSERT(songInfo.manifest.entries[0].albumArt == "urn:image:dds:album_yousuffer");
-    ASSERT(songInfo.manifest.entries[0].albumName == "Scum");
-    ASSERT(songInfo.manifest.entries[0].albumNameSort == "Scum");
-    ASSERT(songInfo.manifest.entries[0].arrangementName == "Bass");
-    ASSERT(songInfo.manifest.entries[0].artistName == "Napalm Death");
-    ASSERT(songInfo.manifest.entries[0].artistNameSort == "Napalm Death");
-    ASSERT(songInfo.manifest.entries[0].bassPick == 0);
-    ASSERT(songInfo.manifest.entries[0].capoFret == 0.0f);
-    ASSERT(songInfo.manifest.entries[0].centOffset == 0.0f);
-    ASSERT(songInfo.manifest.entries[0].songLength == 1.30599999f);
-    ASSERT(songInfo.manifest.entries[0].songName == "You Suffer");
-    ASSERT(songInfo.manifest.entries[0].tuning.string[0] == 0);
-    ASSERT(songInfo.manifest.entries[0].tuning.string[1] == 0);
-    ASSERT(songInfo.manifest.entries[0].tuning.string[2] == 0);
-    ASSERT(songInfo.manifest.entries[0].tuning.string[3] == 0);
-    ASSERT(songInfo.manifest.entries[0].tuning.string[4] == 0);
-    ASSERT(songInfo.manifest.entries[0].tuning.string[5] == 0);
-    ASSERT(songInfo.manifest.entries[0].persistentID == "59715AB2DADD4605B6A48A210A3B0B4E");
+    ASSERT(manifestInfos[0].albumArt == "urn:image:dds:album_yousuffer");
+    ASSERT(manifestInfos[0].albumName == "Scum");
+    ASSERT(manifestInfos[0].albumNameSort == "Scum");
+    ASSERT(manifestInfos[0].arrangementName == "Bass");
+    ASSERT(manifestInfos[0].artistName == "Napalm Death");
+    ASSERT(manifestInfos[0].artistNameSort == "Napalm Death");
+    ASSERT(manifestInfos[0].bassPick == 0);
+    ASSERT(manifestInfos[0].capoFret == 0.0f);
+    ASSERT(manifestInfos[0].centOffset == 0.0f);
+    ASSERT(manifestInfos[0].songLength == 1.30599999f);
+    ASSERT(manifestInfos[0].songName == "You Suffer");
+    ASSERT(manifestInfos[0].tuning.string[0] == 0);
+    ASSERT(manifestInfos[0].tuning.string[1] == 0);
+    ASSERT(manifestInfos[0].tuning.string[2] == 0);
+    ASSERT(manifestInfos[0].tuning.string[3] == 0);
+    ASSERT(manifestInfos[0].tuning.string[4] == 0);
+    ASSERT(manifestInfos[0].tuning.string[5] == 0);
+    ASSERT(manifestInfos[0].persistentID == "59715AB2DADD4605B6A48A210A3B0B4E");
   }
 
   {
-    ASSERT(songInfo.manifest.entries[1].albumArt == "urn:image:dds:album_yousuffer");
-    ASSERT(songInfo.manifest.entries[1].albumName == "Scum");
-    ASSERT(songInfo.manifest.entries[1].albumNameSort == "Scum");
-    ASSERT(songInfo.manifest.entries[1].arrangementName == "Lead");
-    ASSERT(songInfo.manifest.entries[1].artistName == "Napalm Death");
-    ASSERT(songInfo.manifest.entries[1].artistNameSort == "Napalm Death");
-    ASSERT(songInfo.manifest.entries[1].bassPick == 0);
-    ASSERT(songInfo.manifest.entries[1].capoFret == 0.0f);
-    ASSERT(songInfo.manifest.entries[1].centOffset == 0.0f);
-    ASSERT(songInfo.manifest.entries[1].songLength == 1.30599999f);
-    ASSERT(songInfo.manifest.entries[1].songName == "You Suffer");
-    ASSERT(songInfo.manifest.entries[1].tuning.string[0] == 0);
-    ASSERT(songInfo.manifest.entries[1].tuning.string[1] == 0);
-    ASSERT(songInfo.manifest.entries[1].tuning.string[2] == 0);
-    ASSERT(songInfo.manifest.entries[1].tuning.string[3] == 0);
-    ASSERT(songInfo.manifest.entries[1].tuning.string[4] == 0);
-    ASSERT(songInfo.manifest.entries[1].tuning.string[5] == 0);
-    ASSERT(songInfo.manifest.entries[1].persistentID == "133A99827B054A9FA624056A8FCA20F3");
+    ASSERT(manifestInfos[1].albumArt == "urn:image:dds:album_yousuffer");
+    ASSERT(manifestInfos[1].albumName == "Scum");
+    ASSERT(manifestInfos[1].albumNameSort == "Scum");
+    ASSERT(manifestInfos[1].arrangementName == "Lead");
+    ASSERT(manifestInfos[1].artistName == "Napalm Death");
+    ASSERT(manifestInfos[1].artistNameSort == "Napalm Death");
+    ASSERT(manifestInfos[1].bassPick == 0);
+    ASSERT(manifestInfos[1].capoFret == 0.0f);
+    ASSERT(manifestInfos[1].centOffset == 0.0f);
+    ASSERT(manifestInfos[1].songLength == 1.30599999f);
+    ASSERT(manifestInfos[1].songName == "You Suffer");
+    ASSERT(manifestInfos[1].tuning.string[0] == 0);
+    ASSERT(manifestInfos[1].tuning.string[1] == 0);
+    ASSERT(manifestInfos[1].tuning.string[2] == 0);
+    ASSERT(manifestInfos[1].tuning.string[3] == 0);
+    ASSERT(manifestInfos[1].tuning.string[4] == 0);
+    ASSERT(manifestInfos[1].tuning.string[5] == 0);
+    ASSERT(manifestInfos[1].persistentID == "133A99827B054A9FA624056A8FCA20F3");
+  }
+}
+
+static void sngTest(const std::vector<Sng::Info>& sngInfos)
+{
+  ASSERT(sngInfos.size() == 2);
+  {
+    ASSERT(sngInfos[0].bpm.size() == 5);
+    {
+      ASSERT(sngInfos[0].bpm[0].time == 0.0f);
+      ASSERT(sngInfos[0].bpm[0].measure == 1);
+      ASSERT(sngInfos[0].bpm[0].beat == 0);
+      ASSERT(sngInfos[0].bpm[0].phraseIteration == 0);
+      ASSERT(sngInfos[0].bpm[0].mask == 1);
+    }
+    {
+      ASSERT(sngInfos[0].bpm[1].time == 0.600000024f);
+      ASSERT(sngInfos[0].bpm[1].measure == 1);
+      ASSERT(sngInfos[0].bpm[1].beat == 1);
+      ASSERT(sngInfos[0].bpm[1].phraseIteration == 0);
+      ASSERT(sngInfos[0].bpm[1].mask == 0);
+    }
+    {
+      ASSERT(sngInfos[0].bpm[2].time == 1.20000005f);
+      ASSERT(sngInfos[0].bpm[2].measure == 1);
+      ASSERT(sngInfos[0].bpm[2].beat == 2);
+      ASSERT(sngInfos[0].bpm[2].phraseIteration == 1);
+      ASSERT(sngInfos[0].bpm[2].mask == 0);
+    }
+    {
+      ASSERT(sngInfos[0].bpm[3].time == 1.79999995f);
+      ASSERT(sngInfos[0].bpm[3].measure == 1);
+      ASSERT(sngInfos[0].bpm[3].beat == 3);
+      ASSERT(sngInfos[0].bpm[3].phraseIteration == 1);
+      ASSERT(sngInfos[0].bpm[3].mask == 0);
+    }
+    {
+      ASSERT(sngInfos[0].bpm[4].time == 2.40000010f);
+      ASSERT(sngInfos[0].bpm[4].measure == 2);
+      ASSERT(sngInfos[0].bpm[4].beat == 0);
+      ASSERT(sngInfos[0].bpm[4].phraseIteration == 1);
+      ASSERT(sngInfos[0].bpm[4].mask == 3);
+    }
+  }
+  {
+    ASSERT(sngInfos[0].phrase.size() == 2);
+    {
+      ASSERT(sngInfos[0].phrase[0].solo == 0);
+      ASSERT(sngInfos[0].phrase[0].disparity == 0);
+      ASSERT(sngInfos[0].phrase[0].ignore == 0);
+      ASSERT(sngInfos[0].phrase[0].paddin == 0);
+      ASSERT(sngInfos[0].phrase[0].maxDifficulty == 0);
+      ASSERT(sngInfos[0].phrase[0].phraseIterationLinks == 1);
+      ASSERT(strcmp(sngInfos[0].phrase[0].name, "You suffer! But why??") == 0);
+    }
+    {
+      ASSERT(sngInfos[0].phrase[1].solo == 0);
+      ASSERT(sngInfos[0].phrase[1].disparity == 0);
+      ASSERT(sngInfos[0].phrase[1].ignore == 0);
+      ASSERT(sngInfos[0].phrase[1].paddin == 0);
+      ASSERT(sngInfos[0].phrase[1].maxDifficulty == 0);
+      ASSERT(sngInfos[0].phrase[1].phraseIterationLinks == 1);
+      ASSERT(strcmp(sngInfos[0].phrase[1].name, "END") == 0);
+    }
+    ASSERT(sngInfos[0].chord.size() == 0);
+    ASSERT(sngInfos[0].chordNotes.size() == 2455);
+    {
+      ASSERT(sngInfos[0].chordNotes[0].noteMask[0] == 0);
+      ASSERT(sngInfos[0].chordNotes[0].noteMask[1] == 4);
+      ASSERT(sngInfos[0].chordNotes[0].noteMask[2] == 0);
+      ASSERT(sngInfos[0].chordNotes[0].noteMask[3] == 0);
+      ASSERT(sngInfos[0].chordNotes[0].noteMask[4] == 0);
+      ASSERT(sngInfos[0].chordNotes[0].noteMask[5] == 0);
+      ASSERT(sngInfos[0].chordNotes[0].bendData[0].UsedCount == 0);
+      ASSERT(sngInfos[0].chordNotes[0].bendData[1].UsedCount == 0);
+      ASSERT(sngInfos[0].chordNotes[0].bendData[2].UsedCount == 0);
+      ASSERT(sngInfos[0].chordNotes[0].bendData[3].UsedCount == 0);
+      ASSERT(sngInfos[0].chordNotes[0].bendData[4].UsedCount == 0);
+      ASSERT(sngInfos[0].chordNotes[0].bendData[5].UsedCount == 0);
+      ASSERT(sngInfos[0].chordNotes[0].slideTo[0] == 255);
+      ASSERT(sngInfos[0].chordNotes[0].slideTo[1] == 255);
+      ASSERT(sngInfos[0].chordNotes[0].slideTo[2] == 255);
+      ASSERT(sngInfos[0].chordNotes[0].slideTo[3] == 255);
+      ASSERT(sngInfos[0].chordNotes[0].slideTo[4] == 255);
+      ASSERT(sngInfos[0].chordNotes[0].slideTo[5] == 255);
+      ASSERT(sngInfos[0].chordNotes[0].slideUnpitchTo[0] == 255);
+      ASSERT(sngInfos[0].chordNotes[0].slideUnpitchTo[1] == 255);
+      ASSERT(sngInfos[0].chordNotes[0].slideUnpitchTo[2] == 255);
+      ASSERT(sngInfos[0].chordNotes[0].slideUnpitchTo[3] == 255);
+      ASSERT(sngInfos[0].chordNotes[0].slideUnpitchTo[4] == 255);
+      ASSERT(sngInfos[0].chordNotes[0].slideUnpitchTo[5] == 255);
+      ASSERT(sngInfos[0].chordNotes[0].vibrato[0] == 0);
+      ASSERT(sngInfos[0].chordNotes[0].vibrato[1] == 0);
+      ASSERT(sngInfos[0].chordNotes[0].vibrato[2] == 0);
+      ASSERT(sngInfos[0].chordNotes[0].vibrato[3] == 0);
+      ASSERT(sngInfos[0].chordNotes[0].vibrato[4] == 0);
+      ASSERT(sngInfos[0].chordNotes[0].vibrato[5] == 0);
+    }
+    {
+      ASSERT(sngInfos[0].chordNotes[1].noteMask[0] == 64);
+      ASSERT(sngInfos[0].chordNotes[1].noteMask[1] == 64);
+      ASSERT(sngInfos[0].chordNotes[1].noteMask[2] == 0);
+      ASSERT(sngInfos[0].chordNotes[1].noteMask[3] == 0);
+      ASSERT(sngInfos[0].chordNotes[1].noteMask[4] == 0);
+      ASSERT(sngInfos[0].chordNotes[1].noteMask[5] == 0);
+      ASSERT(sngInfos[0].chordNotes[1].bendData[0].UsedCount == 0);
+      ASSERT(sngInfos[0].chordNotes[1].bendData[1].UsedCount == 0);
+      ASSERT(sngInfos[0].chordNotes[1].bendData[2].UsedCount == 0);
+      ASSERT(sngInfos[0].chordNotes[1].bendData[3].UsedCount == 0);
+      ASSERT(sngInfos[0].chordNotes[1].bendData[4].UsedCount == 0);
+      ASSERT(sngInfos[0].chordNotes[1].bendData[5].UsedCount == 0);
+      ASSERT(sngInfos[0].chordNotes[1].slideTo[0] == 255);
+      ASSERT(sngInfos[0].chordNotes[1].slideTo[1] == 255);
+      ASSERT(sngInfos[0].chordNotes[1].slideTo[2] == 255);
+      ASSERT(sngInfos[0].chordNotes[1].slideTo[3] == 255);
+      ASSERT(sngInfos[0].chordNotes[1].slideTo[4] == 255);
+      ASSERT(sngInfos[0].chordNotes[1].slideTo[5] == 255);
+      ASSERT(sngInfos[0].chordNotes[1].slideUnpitchTo[0] == 255);
+      ASSERT(sngInfos[0].chordNotes[1].slideUnpitchTo[1] == 255);
+      ASSERT(sngInfos[0].chordNotes[1].slideUnpitchTo[2] == 255);
+      ASSERT(sngInfos[0].chordNotes[1].slideUnpitchTo[3] == 255);
+      ASSERT(sngInfos[0].chordNotes[1].slideUnpitchTo[4] == 255);
+      ASSERT(sngInfos[0].chordNotes[1].slideUnpitchTo[5] == 255);
+      ASSERT(sngInfos[0].chordNotes[1].vibrato[0] == 0);
+      ASSERT(sngInfos[0].chordNotes[1].vibrato[1] == 0);
+      ASSERT(sngInfos[0].chordNotes[1].vibrato[2] == 0);
+      ASSERT(sngInfos[0].chordNotes[1].vibrato[3] == 0);
+      ASSERT(sngInfos[0].chordNotes[1].vibrato[4] == 0);
+      ASSERT(sngInfos[0].chordNotes[1].vibrato[5] == 0);
+    }
+    ASSERT(sngInfos[0].symbolsHeader.size() == 0);
+    ASSERT(sngInfos[0].symbolsTexture.size() == 0);
+    ASSERT(sngInfos[0].symbolDefinition.size() == 0);
+    ASSERT(sngInfos[0].phraseIteration.size() == 2);
+    {
+      ASSERT(sngInfos[0].phraseIteration[0].phraseId == 0);
+      ASSERT(sngInfos[0].phraseIteration[0].startTime == 0.0f);
+      ASSERT(sngInfos[0].phraseIteration[0].nextPhraseTime == 0.600000024f);
+      ASSERT(sngInfos[0].phraseIteration[0].difficulty[0] == 0);
+      ASSERT(sngInfos[0].phraseIteration[0].difficulty[1] == 0);
+      ASSERT(sngInfos[0].phraseIteration[0].difficulty[2] == 0);
+    }
+    {
+      ASSERT(sngInfos[0].phraseIteration[1].phraseId == 1);
+      ASSERT(sngInfos[0].phraseIteration[1].startTime == 0.600000024f);
+      ASSERT(sngInfos[0].phraseIteration[1].nextPhraseTime == 1.30599999f);
+      ASSERT(sngInfos[0].phraseIteration[1].difficulty[0] == 0);
+      ASSERT(sngInfos[0].phraseIteration[1].difficulty[1] == 0);
+      ASSERT(sngInfos[0].phraseIteration[1].difficulty[2] == 0);
+    }
+    ASSERT(sngInfos[0].phraseExtraInfoByLevel.size() == 0);
+    ASSERT(sngInfos[0].nLinkedDifficulty.size() == 0);
+    ASSERT(sngInfos[0].action.size() == 0);
+    ASSERT(sngInfos[0].event.size() == 0);
+    ASSERT(sngInfos[0].tone.size() == 0);
+    ASSERT(sngInfos[0].dna.size() == 0);
+    ASSERT(sngInfos[0].section.size() == 2);
+    {
+      ASSERT(strcmp(sngInfos[0].section[0].name, "intro") == 0);
+      ASSERT(sngInfos[0].section[0].number == 1);
+      ASSERT(sngInfos[0].section[0].startTime == 0.0f);
+      ASSERT(sngInfos[0].section[0].endTime == 0.600000024f);
+      ASSERT(sngInfos[0].section[0].startPhraseIterationId == 0);
+      ASSERT(sngInfos[0].section[0].endPhraseIterationId == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[0] == 2);
+      ASSERT(sngInfos[0].section[0].stringMask[1] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[2] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[3] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[4] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[5] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[6] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[7] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[8] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[9] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[10] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[11] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[12] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[13] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[14] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[15] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[16] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[17] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[18] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[19] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[20] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[30] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[31] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[32] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[33] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[34] == 0);
+      ASSERT(sngInfos[0].section[0].stringMask[35] == 0);
+    }
+    {
+      ASSERT(strcmp(sngInfos[0].section[1].name, "noguitar") == 0);
+      ASSERT(sngInfos[0].section[1].number == 1);
+      ASSERT(sngInfos[0].section[1].startTime == 0.600000024f);
+      ASSERT(sngInfos[0].section[1].endTime == 1.30599999f);
+      ASSERT(sngInfos[0].section[1].startPhraseIterationId == 1);
+      ASSERT(sngInfos[0].section[1].endPhraseIterationId == 1);
+      ASSERT(sngInfos[0].section[1].stringMask[0] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[1] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[2] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[3] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[4] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[5] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[6] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[7] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[8] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[9] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[10] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[11] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[12] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[13] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[14] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[15] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[16] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[17] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[18] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[19] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[20] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[30] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[31] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[32] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[33] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[34] == 0);
+      ASSERT(sngInfos[0].section[1].stringMask[35] == 0);
+    }
+
+    ASSERT(sngInfos[0].dna.size() == 0);
+
+    ASSERT(sngInfos[0].arrangement.size() == 1);
+    {
+      ASSERT(sngInfos[0].arrangement[0].difficulty == 0);
+      ASSERT(sngInfos[0].arrangement[0].anchors.size() == 1);
+      ASSERT(sngInfos[0].arrangement[0].anchors[0].startBeatTime == 0.0f);
+      ASSERT(sngInfos[0].arrangement[0].anchors[0].endBeatTime == 0.600000024f);
+      ASSERT(sngInfos[0].arrangement[0].anchors[0].unk3_FirstNoteTime == 0.125000000f);
+      ASSERT(sngInfos[0].arrangement[0].anchors[0].unk4_LastNoteTime == 0.377000004f);
+      ASSERT(sngInfos[0].arrangement[0].anchors[0].fretId == 4);
+      ASSERT(sngInfos[0].arrangement[0].anchors[0].padding[0] == 0);
+      ASSERT(sngInfos[0].arrangement[0].anchors[0].padding[1] == 0);
+      ASSERT(sngInfos[0].arrangement[0].anchors[0].padding[2] == 0);
+      ASSERT(sngInfos[0].arrangement[0].anchors[0].width == 4);
+      ASSERT(sngInfos[0].arrangement[0].anchors[0].phraseIterationId == 0);
+      ASSERT(sngInfos[0].arrangement[0].anchorExtensions.size() == 0);
+      ASSERT(sngInfos[0].arrangement[0].fingerprints1.size() == 0);
+      ASSERT(sngInfos[0].arrangement[0].fingerprints2.size() == 0);
+      ASSERT(sngInfos[0].arrangement[0].notes.size() == 4);
+      {
+        ASSERT(sngInfos[0].arrangement[0].notes[0].noteMask == 8396800);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].noteFlags == 1);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].hash == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].time == 0.0f);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].stringIndex == 1);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].fretId == 5);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].anchorFretId == 4);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].anchorWidth == 4);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].chordId == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].chordNotesId == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].phraseId == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].phraseIterationId == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].fingerPrintId[0] == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].fingerPrintId[1] == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].nextIterNote == 1);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].prevIterNote == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].parentPrevNote == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].slideTo == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].slideUnpitchTo == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].leftHand == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].tap == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].pickDirection == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].slap == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].pluck == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].vibrato == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].sustain == 0.00200000009f);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].maxBend == 0.0f);
+        ASSERT(sngInfos[0].arrangement[0].notes[0].bendData.size() == 0);
+      }
+      {
+        ASSERT(sngInfos[0].arrangement[0].notes[1].noteMask == 8388608);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].noteFlags == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].hash == 1);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].time == 0.125000000f);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].stringIndex == 1);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].fretId == 5);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].anchorFretId == 4);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].anchorWidth == 4);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].chordId == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].chordNotesId == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].phraseId == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].phraseIterationId == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].fingerPrintId[0] == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].fingerPrintId[1] == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].nextIterNote == 2);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].prevIterNote == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].parentPrevNote == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].slideTo == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].slideUnpitchTo == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].leftHand == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].tap == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].pickDirection == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].slap == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].pluck == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].vibrato == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].sustain == 0.f);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].maxBend == 0.0f);
+        ASSERT(sngInfos[0].arrangement[0].notes[1].bendData.size() == 0);
+      }
+      {
+        ASSERT(sngInfos[0].arrangement[0].notes[2].noteMask == 8388608);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].noteFlags == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].hash == 2);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].time == 0.250999987f);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].stringIndex == 1);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].fretId == 5);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].anchorFretId == 4);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].anchorWidth == 4);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].chordId == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].chordNotesId == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].phraseId == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].phraseIterationId == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].fingerPrintId[0] == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].fingerPrintId[1] == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].nextIterNote == 3);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].prevIterNote == 1);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].parentPrevNote == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].slideTo == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].slideUnpitchTo == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].leftHand == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].tap == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].pickDirection == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].slap == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].pluck == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].vibrato == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].sustain == 0.0f);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].maxBend == 0.0f);
+        ASSERT(sngInfos[0].arrangement[0].notes[2].bendData.size() == 0);
+      }
+      {
+        ASSERT(sngInfos[0].arrangement[0].notes[3].noteMask == 8396800);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].noteFlags == 1);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].hash == 3);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].time == 0.375000000f);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].stringIndex == 1);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].fretId == 4);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].anchorFretId == 4);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].anchorWidth == 4);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].chordId == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].chordNotesId == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].phraseId == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].phraseIterationId == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].fingerPrintId[0] == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].fingerPrintId[1] == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].nextIterNote == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].prevIterNote == 2);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].parentPrevNote == -1);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].slideTo == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].slideUnpitchTo == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].leftHand == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].tap == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].pickDirection == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].slap == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].pluck == 255);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].vibrato == 0);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].sustain == 0.00200000009f);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].maxBend == 0.0f);
+        ASSERT(sngInfos[0].arrangement[0].notes[3].bendData.size() == 0);
+      }
+      ASSERT(sngInfos[0].arrangement[0].phraseCount == 2);
+      ASSERT(sngInfos[0].arrangement[0].averageNotesPerIteration.size() == 2);
+      ASSERT(sngInfos[0].arrangement[0].averageNotesPerIteration[0] == 4.0f);
+      ASSERT(sngInfos[0].arrangement[0].averageNotesPerIteration[1] == 0.0f);
+      ASSERT(sngInfos[0].arrangement[0].phraseIterationCount1 == 2);
+      ASSERT(sngInfos[0].arrangement[0].notesInIteration1.size() == 2);
+      ASSERT(sngInfos[0].arrangement[0].notesInIteration1[0] == 4.0f);
+      ASSERT(sngInfos[0].arrangement[0].notesInIteration1[1] == 0.0f);
+      ASSERT(sngInfos[0].arrangement[0].phraseIterationCount2 == 2);
+      ASSERT(sngInfos[0].arrangement[0].notesInIteration2.size() == 2);
+      ASSERT(sngInfos[0].arrangement[0].notesInIteration2[0] == 4.0f);
+      ASSERT(sngInfos[0].arrangement[0].notesInIteration2[1] == 0.0f);
+    }
+    ASSERT(sngInfos[0].metadata.maxScore == 100000.0f);
+    ASSERT(sngInfos[0].metadata.maxNotesAndChords == 4.0f);
+    ASSERT(sngInfos[0].metadata.maxNotesAndChordsReal == 4.0f);
+    ASSERT(sngInfos[0].metadata.pointsPerNote == 25000.0f);
+    ASSERT(sngInfos[0].metadata.firstBeatLength == 0.600000024f);
+    ASSERT(sngInfos[0].metadata.startTime == 0);
+    ASSERT(sngInfos[0].metadata.capoFretId == 255);
+    ASSERT(strcmp(sngInfos[0].metadata.lastConversionDateTime, "12-16-13 3:16") == 0);
+    ASSERT(sngInfos[0].metadata.part == 1);
+    ASSERT(sngInfos[0].metadata.songLength == 1.30599999f);
+    ASSERT(sngInfos[0].metadata.stringCount == 6);
+    ASSERT(sngInfos[0].metadata.tuning.size() == 6);
+    ASSERT(sngInfos[0].metadata.tuning[0] == 0);
+    ASSERT(sngInfos[0].metadata.tuning[1] == 0);
+    ASSERT(sngInfos[0].metadata.tuning[2] == 0);
+    ASSERT(sngInfos[0].metadata.tuning[3] == 0);
+    ASSERT(sngInfos[0].metadata.tuning[4] == 0);
+    ASSERT(sngInfos[0].metadata.tuning[5] == 0);
+    ASSERT(sngInfos[0].metadata.unk11FirstNoteTime == 0.0f);
+    ASSERT(sngInfos[0].metadata.unk12FirstNoteTime == 0.0f);
+    ASSERT(sngInfos[0].metadata.maxDifficulty == 0.0f);
+  }
+  {
+    ASSERT(sngInfos[1].bpm.size() == 0);
+    ASSERT(sngInfos[1].phrase.size() == 0);
+    ASSERT(sngInfos[1].chord.size() == 0);
+    ASSERT(sngInfos[1].chordNotes.size() == 0);
+    ASSERT(sngInfos[1].vocal.size() == 4);
+    {
+      ASSERT(sngInfos[1].vocal[0].time == 0.103000000f);
+      ASSERT(sngInfos[1].vocal[0].note == 254);
+      ASSERT(sngInfos[1].vocal[0].length == 0.0379999988f);
+      ASSERT(strcmp(sngInfos[1].vocal[0].lyric, "You") == 0);
+    }
+    {
+      ASSERT(sngInfos[1].vocal[1].time == 0.252999991f);
+      ASSERT(sngInfos[1].vocal[1].note == 254);
+      ASSERT(sngInfos[1].vocal[1].length == 0.0379999988f);
+      ASSERT(strcmp(sngInfos[1].vocal[1].lyric, "Suffer") == 0);
+    }
+    {
+      ASSERT(sngInfos[1].vocal[2].time == 0.365999997f);
+      ASSERT(sngInfos[1].vocal[2].note == 254);
+      ASSERT(sngInfos[1].vocal[2].length == 0.0379999988f);
+      ASSERT(strcmp(sngInfos[1].vocal[2].lyric, "But") == 0);
+    }
+    {
+      ASSERT(sngInfos[1].vocal[3].time == 0.477999985f);
+      ASSERT(sngInfos[1].vocal[3].note == 254);
+      ASSERT(sngInfos[1].vocal[3].length == 0.0379999988f);
+      ASSERT(strcmp(sngInfos[1].vocal[3].lyric, "Why+") == 0);
+    }
+    ASSERT(sngInfos[1].symbolsHeader.size() == 2);
+    {
+      ASSERT(sngInfos[1].symbolsHeader[0].unk1 == 0);
+      ASSERT(sngInfos[1].symbolsHeader[0].unk2 == 0);
+      ASSERT(sngInfos[1].symbolsHeader[0].unk3 == 0);
+      ASSERT(sngInfos[1].symbolsHeader[0].unk4 == 0);
+      ASSERT(sngInfos[1].symbolsHeader[0].unk5 == 0);
+      ASSERT(sngInfos[1].symbolsHeader[0].unk6 == 0);
+      ASSERT(sngInfos[1].symbolsHeader[0].unk7 == 0);
+      ASSERT(sngInfos[1].symbolsHeader[0].unk8 == 2);
+    }
+    {
+      ASSERT(sngInfos[1].symbolsHeader[1].unk1 == 1);
+      ASSERT(sngInfos[1].symbolsHeader[1].unk2 == 0);
+      ASSERT(sngInfos[1].symbolsHeader[1].unk3 == 0);
+      ASSERT(sngInfos[1].symbolsHeader[1].unk4 == 0);
+      ASSERT(sngInfos[1].symbolsHeader[1].unk5 == 0);
+      ASSERT(sngInfos[1].symbolsHeader[1].unk6 == 0);
+      ASSERT(sngInfos[1].symbolsHeader[1].unk7 == 0);
+      ASSERT(sngInfos[1].symbolsHeader[1].unk8 == 2);
+    }
+    ASSERT(sngInfos[1].symbolsTexture.size() == 1);
+    {
+      ASSERT(strcmp(sngInfos[1].symbolsTexture[0].font, "assets\\ui\\lyrics\\lyrics.dds") == 0);
+      ASSERT(sngInfos[1].symbolsTexture[0].fontpathLength == 27);
+      ASSERT(sngInfos[1].symbolsTexture[0].unk10 == 0);
+      ASSERT(sngInfos[1].symbolsTexture[0].width == 1024);
+      ASSERT(sngInfos[1].symbolsTexture[0].height == 512);
+    }
+    ASSERT(sngInfos[1].symbolDefinition.size() == 192);
+    {
+      ASSERT(strcmp(sngInfos[1].symbolDefinition[0].text, "￿") == 0);
+      ASSERT(sngInfos[1].symbolDefinition[0].rectOutter.yMin == 0.0f);
+      ASSERT(sngInfos[1].symbolDefinition[0].rectOutter.xMin == 0.0f);
+      ASSERT(sngInfos[1].symbolDefinition[0].rectOutter.yMax == 0.101562500f);
+      ASSERT(sngInfos[1].symbolDefinition[0].rectOutter.xMax == 0.0166015625f);
+      ASSERT(sngInfos[1].symbolDefinition[0].rectInner.yMin == 0.0117187500f);
+      ASSERT(sngInfos[1].symbolDefinition[0].rectInner.xMin == 0.00390625000f);
+      ASSERT(sngInfos[1].symbolDefinition[0].rectInner.yMax == 0.0898437500f);
+      ASSERT(sngInfos[1].symbolDefinition[0].rectInner.xMax == 0.0126953125f);
+    }
+    {
+      ASSERT(strcmp(sngInfos[1].symbolDefinition[1].text, " ") == 0);
+      ASSERT(sngInfos[1].symbolDefinition[1].rectOutter.yMin == 0.0f);
+      ASSERT(sngInfos[1].symbolDefinition[1].rectOutter.xMin == 0.0468750000f);
+      ASSERT(sngInfos[1].symbolDefinition[1].rectOutter.yMax == 0.101562500f);
+      ASSERT(sngInfos[1].symbolDefinition[1].rectOutter.xMax == 0.0556640625f);
+      ASSERT(sngInfos[1].symbolDefinition[1].rectInner.yMin == 0.0117187500f);
+      ASSERT(sngInfos[1].symbolDefinition[1].rectInner.xMin == 0.0507812500f);
+      ASSERT(sngInfos[1].symbolDefinition[1].rectInner.yMax == 0.0898437500f);
+      ASSERT(sngInfos[1].symbolDefinition[1].rectInner.xMax == 0.0517578125f);
+    }
+    ASSERT(sngInfos[1].phraseIteration.size() == 0);
+    ASSERT(sngInfos[1].phraseExtraInfoByLevel.size() == 0);
+    ASSERT(sngInfos[1].nLinkedDifficulty.size() == 0);
+    ASSERT(sngInfos[1].action.size() == 0);
+    ASSERT(sngInfos[1].event.size() == 0);
+    ASSERT(sngInfos[1].tone.size() == 0);
+    ASSERT(sngInfos[1].dna.size() == 0);
+    ASSERT(sngInfos[1].section.size() == 0);
+    ASSERT(sngInfos[1].arrangement.size() == 0);
+
+    ASSERT(sngInfos[1].metadata.maxScore == 0.0f);
+    ASSERT(sngInfos[1].metadata.maxNotesAndChords == 0.0f);
+    ASSERT(sngInfos[1].metadata.maxNotesAndChordsReal == 0.0f);
+    ASSERT(sngInfos[1].metadata.pointsPerNote == 0.0f);
+    ASSERT(sngInfos[1].metadata.firstBeatLength == 0.0f);
+    ASSERT(sngInfos[1].metadata.startTime == 0);
+    ASSERT(sngInfos[1].metadata.capoFretId == 255);
+    ASSERT(strcmp(sngInfos[1].metadata.lastConversionDateTime, "") == 0);
+    ASSERT(sngInfos[1].metadata.part == 0);
+    ASSERT(sngInfos[1].metadata.songLength == 0.f);
+    ASSERT(sngInfos[1].metadata.stringCount == 0);
+    ASSERT(sngInfos[1].metadata.tuning.size() == 0);
+    ASSERT(sngInfos[1].metadata.unk11FirstNoteTime == 0.0f);
+    ASSERT(sngInfos[1].metadata.unk12FirstNoteTime == 0.0f);
+    ASSERT(sngInfos[1].metadata.maxDifficulty == 0.0f);
   }
 }
 
@@ -396,7 +906,8 @@ static void songInfoTest(const Psarc::Info& psarcInfo)
   Song::Info songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
   Song::loadSongInfoComplete(psarcInfo, songInfo);
 
-  manifestTest(songInfo);
+  manifestInfoTest(songInfo.manifestInfos);
+  sngTest(songInfo.sngInfos);
 }
 
 static void oggTest(const Psarc::Info& psarcInfo)

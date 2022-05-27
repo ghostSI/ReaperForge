@@ -944,7 +944,7 @@ static i32 getStringTuning(i32 string)
   if (psarcString < 0 || psarcString >= 6)
     return Const::stringStandardTuningOffset[string];
 
-  return (12 + Const::stringStandardTuningOffset[string - instrumentStringOffset] + Global::songInfos[Global::songSelected].manifest.entries[0].tuning.string[psarcString]) % 12;
+  return (12 + Const::stringStandardTuningOffset[string - instrumentStringOffset] + Global::songInfos[Global::songSelected].manifestInfos[0].tuning.string[psarcString]) % 12;
 }
 
 static void drawStringNoteNames()
@@ -1010,8 +1010,8 @@ static void drawPhrases()
 
     const Song::Phrase& phase = Global::songTrack.phrases[phraseIteration0.phraseId];
 
-    f32 begin = phraseIteration0.time / Global::songInfos[Global::songSelected].manifest.entries[Global::manifestSelected].songLength;
-    f32 end = phraseIteration1.time / Global::songInfos[Global::songSelected].manifest.entries[Global::manifestSelected].songLength;
+    f32 begin = phraseIteration0.time / Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].songLength;
+    f32 end = phraseIteration1.time / Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].songLength;
     f32 difficulty = f32(phase.maxDifficulty) / f32(maxDifficulty);
 
     const f32 left = -0.7985 + begin * 1.6f;
@@ -1084,16 +1084,16 @@ static void drawSongInfo()
   glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, alpha);
 
   {
-    const i32 letters = Global::songInfos[Global::songSelected].manifest.entries[Global::manifestSelected].songName.size();
+    const i32 letters = Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].songName.size();
     const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
     const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
-    Font::draw(Global::songInfos[Global::songSelected].manifest.entries[Global::manifestSelected].songName.c_str(), 0.95f - scaleX, 0.3f, 0.0f, scaleX, scaleY);
+    Font::draw(Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].songName.c_str(), 0.95f - scaleX, 0.3f, 0.0f, scaleX, scaleY);
   }
   {
-    const i32 letters = Global::songInfos[Global::songSelected].manifest.entries[Global::manifestSelected].artistName.size();
+    const i32 letters = Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].artistName.size();
     const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
     const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
-    Font::draw(Global::songInfos[Global::songSelected].manifest.entries[Global::manifestSelected].artistName.c_str(), 0.95f - scaleX, 0.2f, 0.0f, scaleX, scaleY);
+    Font::draw(Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].artistName.c_str(), 0.95f - scaleX, 0.2f, 0.0f, scaleX, scaleY);
   }
 }
 
@@ -1400,9 +1400,9 @@ void Highway::tick()
 {
   if (Global::songInfos[Global::songSelected].loadState == Song::LoadState::complete)
   {
-    if (to_underlying(Global::songInfos[Global::songSelected].manifest.entries[Global::manifestSelected].instrumentFlags & InstrumentFlags::BassGuitar))
+    if (to_underlying(Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].instrumentFlags & InstrumentFlags::BassGuitar))
     {
-      if (Global::songInfos[Global::songSelected].manifest.entries[Global::manifestSelected].tuning.string[0] <= -3)
+      if (Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].tuning.string[0] <= -3)
       {
         instrumentStringCount = 5;
         instrumentStringOffset = -1;
@@ -1417,7 +1417,7 @@ void Highway::tick()
     }
     else
     {
-      if (Global::songInfos[Global::songSelected].manifest.entries[Global::manifestSelected].tuning.string[0] <= -3)
+      if (Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].tuning.string[0] <= -3)
       {
         instrumentStringCount = 7;
         instrumentStringOffset = 1;

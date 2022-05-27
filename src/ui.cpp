@@ -1651,15 +1651,15 @@ static bool filterSongOut(const Song::Info& songInfo) {
   }
   searchText2[i] = '\0';
 
-  if (stristr(songInfo.manifest.entries[0].songName.c_str(), searchText2))
+  if (stristr(songInfo.manifestInfos[0].songName.c_str(), searchText2))
     return false;
-  if (stristr(songInfo.manifest.entries[0].artistName.c_str(), searchText2))
+  if (stristr(songInfo.manifestInfos[0].artistName.c_str(), searchText2))
     return false;
-  if (stristr(songInfo.manifest.entries[0].albumName.c_str(), searchText2))
+  if (stristr(songInfo.manifestInfos[0].albumName.c_str(), searchText2))
     return false;
-  if (stristr(std::to_string(songInfo.manifest.entries[0].songYear).c_str(), searchText2))
+  if (stristr(std::to_string(songInfo.manifestInfos[0].songYear).c_str(), searchText2))
     return false;
-  if (stristr(Song::tuningName(songInfo.manifest.entries[0].tuning), searchText2))
+  if (stristr(Song::tuningName(songInfo.manifestInfos[0].tuning), searchText2))
     return false;
 
   return true;
@@ -1840,7 +1840,7 @@ static void toneWindow()
       for (i32 i = 0; i < toneNames.size(); ++i)
       {
         const Manifest::Tone& tone = Global::songInfos[Global::songSelected].tones[i];
-        toneNames[i] = Global::songInfos[Global::songSelected].manifest.entries[0].songName + tone.nameSeparator + fixToneDescriptorName(tone.toneDescriptors[0]);
+        toneNames[i] = Global::songInfos[Global::songSelected].manifestInfos[0].songName + tone.nameSeparator + fixToneDescriptorName(tone.toneDescriptors[0]);
         toneNamesData[i] = toneNames[i].c_str();
       }
 
@@ -2006,7 +2006,7 @@ static void songWindow() {
 
           nk_spacing(ctx, 1);
           nk_label(ctx, "Title:", NK_TEXT_LEFT);
-          nk_label(ctx, songInfo.manifest.entries[0].songName.c_str(), NK_TEXT_LEFT);
+          nk_label(ctx, songInfo.manifestInfos[0].songName.c_str(), NK_TEXT_LEFT);
           if (nk_button_label(ctx, "Preview"))
           {
             Psarc::loadOgg(Global::psarcInfos[i], true);
@@ -2014,18 +2014,18 @@ static void songWindow() {
           }
           nk_spacing(ctx, 1);
           nk_label(ctx, "Artist:", NK_TEXT_LEFT);
-          nk_label(ctx, songInfo.manifest.entries[0].artistName.c_str(), NK_TEXT_LEFT);
+          nk_label(ctx, songInfo.manifestInfos[0].artistName.c_str(), NK_TEXT_LEFT);
 
 
-          const u64 manifestEntryCount = songInfo.manifest.entries.size();
+          const u64 manifestEntryCount = songInfo.manifestInfos.size();
 
           if (manifestEntryCount >= 1)
           {
-            if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[0].instrumentFlags)))
+            if (nk_button_label(ctx, instrumentName(songInfo.manifestInfos[0].instrumentFlags)))
             {
               Global::songSelected = i;
               Global::manifestSelected = 0;
-              Player::playSong(Global::psarcInfos[i], songInfo.manifest.entries[0].instrumentFlags);
+              Player::playSong(Global::psarcInfos[i], songInfo.manifestInfos[0].instrumentFlags);
             }
           }
           else
@@ -2034,14 +2034,14 @@ static void songWindow() {
           }
           nk_spacing(ctx, 1);
           nk_label(ctx, "Album:", NK_TEXT_LEFT);
-          nk_label(ctx, songInfo.manifest.entries[0].albumName.c_str(), NK_TEXT_LEFT);
+          nk_label(ctx, songInfo.manifestInfos[0].albumName.c_str(), NK_TEXT_LEFT);
           if (manifestEntryCount >= 2)
           {
-            if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[1].instrumentFlags)))
+            if (nk_button_label(ctx, instrumentName(songInfo.manifestInfos[1].instrumentFlags)))
             {
               Global::songSelected = i;
               Global::manifestSelected = 1;
-              Player::playSong(Global::psarcInfos[i], songInfo.manifest.entries[1].instrumentFlags);
+              Player::playSong(Global::psarcInfos[i], songInfo.manifestInfos[1].instrumentFlags);
             }
           }
           else
@@ -2050,14 +2050,14 @@ static void songWindow() {
           }
           nk_spacing(ctx, 1);
           nk_label(ctx, "Year:", NK_TEXT_LEFT);
-          nk_label(ctx, std::to_string(songInfo.manifest.entries[0].songYear).c_str(), NK_TEXT_LEFT);
+          nk_label(ctx, std::to_string(songInfo.manifestInfos[0].songYear).c_str(), NK_TEXT_LEFT);
           if (manifestEntryCount >= 3)
           {
-            if (nk_button_label(ctx, instrumentName(songInfo.manifest.entries[2].instrumentFlags)))
+            if (nk_button_label(ctx, instrumentName(songInfo.manifestInfos[2].instrumentFlags)))
             {
               Global::songSelected = i;
               Global::manifestSelected = 2;
-              Player::playSong(Global::psarcInfos[i], songInfo.manifest.entries[0].instrumentFlags);
+              Player::playSong(Global::psarcInfos[i], songInfo.manifestInfos[0].instrumentFlags);
             }
           }
           else
@@ -2066,11 +2066,11 @@ static void songWindow() {
           }
           nk_spacing(ctx, 1);
           nk_label(ctx, "Length:", NK_TEXT_LEFT);
-          nk_label(ctx, std::to_string(songInfo.manifest.entries[0].songLength).c_str(), NK_TEXT_LEFT);
+          nk_label(ctx, std::to_string(songInfo.manifestInfos[0].songLength).c_str(), NK_TEXT_LEFT);
           nk_label(ctx, "Score:       98.4%", NK_TEXT_LEFT);
           nk_spacing(ctx, 1);
           nk_label(ctx, "Tuning:", NK_TEXT_LEFT);
-          nk_label(ctx, Song::tuningName(songInfo.manifest.entries[0].tuning), NK_TEXT_LEFT);
+          nk_label(ctx, Song::tuningName(songInfo.manifestInfos[0].tuning), NK_TEXT_LEFT);
           if (nk_button_label(ctx, "Tones"))
           {
             Global::songSelected = i;

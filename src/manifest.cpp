@@ -5,270 +5,270 @@
 
 #include <string.h>
 
-static void readAttribute(Json::object_element* it, Manifest::Info::Entry& attrs)
+static void readAttribute(Json::object_element* it, Manifest::Info& manifestInfo)
 {
   if (0 == strcmp(it->name->string, "AlbumArt"))
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    attrs.albumArt = string->string;
+    manifestInfo.albumArt = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "AlbumName"))
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    attrs.albumName = string->string;
+    manifestInfo.albumName = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "AlbumNameSort"))
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    attrs.albumNameSort = string->string;
+    manifestInfo.albumNameSort = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "ArrangementName"))
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    attrs.arrangementName = string->string;
+    manifestInfo.arrangementName = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "ArtistName"))
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    attrs.artistName = string->string;
+    manifestInfo.artistName = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "ArtistNameSort"))
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    attrs.artistNameSort = string->string;
+    manifestInfo.artistNameSort = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "BassPick"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.bassPick = atoi(number->number);
+    manifestInfo.bassPick = atoi(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "CapoFret"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.capoFret = atof(number->number);
+    manifestInfo.capoFret = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "CentOffset"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.capoFret = atof(number->number);
+    manifestInfo.capoFret = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "DLC"))
   {
     assert(it->value->type == Json::type_true || it->value->type == Json::type_false);
-    attrs.dLC = it->value->type == Json::type_true;
+    manifestInfo.dLC = it->value->type == Json::type_true;
     return;
   }
   if (0 == strcmp(it->name->string, "DLCKey"))
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    attrs.dLCKey = string->string;
+    manifestInfo.dLCKey = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "DNA_Chords"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.dNA_Chords = atof(number->number);
+    manifestInfo.dNA_Chords = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "DNA_Riffs"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.dNA_Riffs = atof(number->number);
+    manifestInfo.dNA_Riffs = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "DNA_Solo"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.dNA_Solo = atof(number->number);
+    manifestInfo.dNA_Solo = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "EasyMastery"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.easyMastery = atof(number->number);
+    manifestInfo.easyMastery = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "LeaderboardChallengeRating"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.leaderboardChallengeRating = atoi(number->number);
+    manifestInfo.leaderboardChallengeRating = atoi(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "ManifestUrn"))
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    attrs.manifestUrn = string->string;
+    manifestInfo.manifestUrn = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "MasterID_RDV"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.masterID_RDV = atoi(number->number);
+    manifestInfo.masterID_RDV = atoi(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "Metronome"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.metronome = atoi(number->number);
+    manifestInfo.metronome = atoi(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "MediumMastery"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.mediumMastery = atof(number->number);
+    manifestInfo.mediumMastery = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "NotesEasy"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.notesEasy = atof(number->number);
+    manifestInfo.notesEasy = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "NotesHard"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.notesHard = atof(number->number);
+    manifestInfo.notesHard = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "NotesMedium"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.notesMedium = atof(number->number);
+    manifestInfo.notesMedium = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "Representative"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.representative = atoi(number->number);
+    manifestInfo.representative = atoi(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "RouteMask"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.routeMask = atoi(number->number);
+    manifestInfo.routeMask = atoi(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "Shipping"))
   {
     assert(it->value->type == Json::type_true || it->value->type == Json::type_false);
-    attrs.dLC = it->value->type == Json::type_true;
+    manifestInfo.dLC = it->value->type == Json::type_true;
     return;
   }
   if (0 == strcmp(it->name->string, "SKU"))
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    attrs.sKU = string->string;
+    manifestInfo.sKU = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "SongDiffEasy"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.notesMedium = atof(number->number);
+    manifestInfo.notesMedium = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "SongDiffHard"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.notesMedium = atof(number->number);
+    manifestInfo.notesMedium = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "SongDiffMed"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.notesMedium = atof(number->number);
+    manifestInfo.notesMedium = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "SongDifficulty"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.notesMedium = atof(number->number);
+    manifestInfo.notesMedium = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "SongKey"))
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    attrs.sKU = string->string;
+    manifestInfo.sKU = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "SongLength"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.songLength = atof(number->number);
+    manifestInfo.songLength = atof(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "SongName"))
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    attrs.songName = string->string;
+    manifestInfo.songName = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "SongNameSort"))
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    attrs.songNameSort = string->string;
+    manifestInfo.songNameSort = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "SongYear"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    attrs.songYear = atoi(number->number);
+    manifestInfo.songYear = atoi(number->number);
     return;
   }
   if (0 == strcmp(it->name->string, "JapaneseSongName"))
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    attrs.japaneseSongName = string->string;
+    manifestInfo.japaneseSongName = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "JapaneseArtist"))
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    attrs.japaneseArtist = string->string;
+    manifestInfo.japaneseArtist = string->string;
     return;
   }
   if (0 == strcmp(it->name->string, "Tuning"))
@@ -283,42 +283,42 @@ static void readAttribute(Json::object_element* it, Manifest::Info::Entry& attrs
       assert(0 == strcmp(string->name->string, "string0"));
       assert(string->value->type == Json::type_number);
       Json::number* number = (Json::number*)string->value->payload;
-      attrs.tuning.string[0] = atoi(number->number);
+      manifestInfo.tuning.string[0] = atoi(number->number);
     }
     string = string->next;
     {
       assert(0 == strcmp(string->name->string, "string1"));
       assert(string->value->type == Json::type_number);
       Json::number* number = (Json::number*)string->value->payload;
-      attrs.tuning.string[1] = atoi(number->number);
+      manifestInfo.tuning.string[1] = atoi(number->number);
     }
     string = string->next;
     {
       assert(0 == strcmp(string->name->string, "string2"));
       assert(string->value->type == Json::type_number);
       Json::number* number = (Json::number*)string->value->payload;
-      attrs.tuning.string[2] = atoi(number->number);
+      manifestInfo.tuning.string[2] = atoi(number->number);
     }
     string = string->next;
     {
       assert(0 == strcmp(string->name->string, "string3"));
       assert(string->value->type == Json::type_number);
       Json::number* number = (Json::number*)string->value->payload;
-      attrs.tuning.string[3] = atoi(number->number);
+      manifestInfo.tuning.string[3] = atoi(number->number);
     }
     string = string->next;
     {
       assert(0 == strcmp(string->name->string, "string4"));
       assert(string->value->type == Json::type_number);
       Json::number* number = (Json::number*)string->value->payload;
-      attrs.tuning.string[4] = atoi(number->number);
+      manifestInfo.tuning.string[4] = atoi(number->number);
     }
     string = string->next;
     {
       assert(0 == strcmp(string->name->string, "string5"));
       assert(string->value->type == Json::type_number);
       Json::number* number = (Json::number*)string->value->payload;
-      attrs.tuning.string[5] = atoi(number->number);
+      manifestInfo.tuning.string[5] = atoi(number->number);
     }
     return;
   }
@@ -327,7 +327,7 @@ static void readAttribute(Json::object_element* it, Manifest::Info::Entry& attrs
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
     assert(string->string_size == 32);
-    attrs.persistentID = string->string;
+    manifestInfo.persistentID = string->string;
     return;
   }
 
@@ -343,9 +343,9 @@ static bool isSameId(const char* id0, const char* id1)
   return true;
 }
 
-Manifest::Info Manifest::readHsan(const std::vector<u8>& hsanData, const XBlock::Info& xblock)
+std::vector<Manifest::Info> Manifest::readHsan(const std::vector<u8>& hsanData, const XBlock::Info& xblock)
 {
-  Manifest::Info manifestInfo;
+  std::vector<Manifest::Info> manifestInfos;
 
   Json::value* root = Json::parse(hsanData.data(), hsanData.size());
   assert(root->type == Json::type_object);
@@ -367,7 +367,7 @@ Manifest::Info Manifest::readHsan(const std::vector<u8>& hsanData, const XBlock:
   {
     assert(id->name->string_size == 32);
 
-    Manifest::Info::Entry entry;
+    Manifest::Info entry;
 
     for (const XBlock::Info::Entry& entry_ : xblock.entries)
     {
@@ -407,13 +407,13 @@ Manifest::Info Manifest::readHsan(const std::vector<u8>& hsanData, const XBlock:
         } while (it = it->next);
       }
 
-      manifestInfo.entries.push_back(entry);
+      manifestInfos.push_back(entry);
     }
   } while (id = id->next);
 
   delete root;
 
-  return manifestInfo;
+  return manifestInfos;
 }
 
 static void readGear(Json::object_element* it, Manifest::Tone::GearList::Gear& gear)

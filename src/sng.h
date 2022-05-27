@@ -24,7 +24,7 @@ namespace Sng {
       u8 paddin;
       i32 maxDifficulty;
       i32 phraseIterationLinks;
-      u8 name[32];
+      char name[32];
     };
     std::vector<Phrase> phrase;
 
@@ -68,7 +68,7 @@ namespace Sng {
       f32 time;
       i32 note;
       f32 length;
-      u8 lyric[48];
+      char lyric[48];
     };
     std::vector<Vocal> vocal;
     struct SymbolsHeader
@@ -86,7 +86,7 @@ namespace Sng {
 
     struct SymbolsTexture
     {
-      u8 font[128];
+      char font[128];
       i32 fontpathLength;
       i32 unk10;
       i32 width;
@@ -104,7 +104,7 @@ namespace Sng {
         f32 xMax;
       };
 
-      u8 text[12];
+      char text[12];
       Rect rectOutter;
       Rect rectInner;
     };
@@ -168,7 +168,7 @@ namespace Sng {
 
     struct Section
     {
-      u8 name[32];
+      char name[32];
       i32 number;
       f32 startTime;
       f32 endTime;
@@ -265,7 +265,7 @@ namespace Sng {
       f32 firstBeatLength;
       f32 startTime;
       u8 capoFretId;
-      u8 lastConversionDateTime[32];
+      char lastConversionDateTime[32];
       i16 part;
       f32 songLength;
       i32 stringCount;

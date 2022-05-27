@@ -21,7 +21,7 @@ namespace Song {
   {
     LoadState loadState = LoadState::none;
     XBlock::Info xblock;
-    Manifest::Info manifest;
+    std::vector<Manifest::Info> manifestInfos;
     std::vector<Manifest::Tone> tones;
 
     i32 albumCover64_tocIndex = -1;
@@ -31,7 +31,7 @@ namespace Song {
     i32 albumCover256_tocIndex = -1;
     mutable GLuint albumCover256_ogl = 0;
 
-    Sng::Info sng;
+    std::vector<Sng::Info> sngInfos;
 #ifdef ARRANGEMENT_XML
     std::vector<Arrangement::Info> arrangements;
 #endif // ARRANGEMENT_XML

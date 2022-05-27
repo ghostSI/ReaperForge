@@ -2009,8 +2009,7 @@ static void songWindow() {
           nk_label(ctx, songInfo.manifestInfos[0].songName.c_str(), NK_TEXT_LEFT);
           if (nk_button_label(ctx, "Preview"))
           {
-            Psarc::loadOgg(Global::psarcInfos[i], true);
-            Sound::playOgg();
+            //Player::playSong(Global::psarcInfos[i], true);
           }
           nk_spacing(ctx, 1);
           nk_label(ctx, "Artist:", NK_TEXT_LEFT);

@@ -5,20 +5,10 @@
 
 namespace Sound
 {
-  enum struct Effect
-  {
-    menuHover,
-    menuSelect,
-  };
-
   void init();
   void fini();
-  void playOgg();
-  void stopOgg();
 
-  void play(Sound::Effect type, i32 volume = 64);
-
-  void setPauseAudio(bool pauseAudio);
+  void pauseAudioDevice(bool pauseAudio);
 };
 
 #endif // SOUND_H

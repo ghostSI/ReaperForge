@@ -4,7 +4,7 @@
 
 #include <SDL2/SDL.h>
 
-i32 Pcm::decodeOgg(u8* oggData, u32 oggDataSize, u8** pcmData, u32& pcmDataSize)
+i32 Pcm::decodeOgg(const u8* oggData, u32 oggDataSize, u8** pcmData, u32& pcmDataSize)
 {
   pcmDataSize = 0;
   *pcmData = nullptr;
@@ -54,6 +54,7 @@ i32 Pcm::decodeOgg(u8* oggData, u32 oggDataSize, u8** pcmData, u32& pcmDataSize)
   return sampleRate;
 }
 
+// TODO: replace with: https://wiki.libsdl.org/Tutorials-AudioStream
 void Pcm::resample(u8** pcmData, u32& pcmDataSize, i32 inSampleRate, i32 outSampleRate)
 {
   SDL_AudioCVT cvt;
@@ -62,7 +63,6 @@ void Pcm::resample(u8** pcmData, u32& pcmDataSize, i32 inSampleRate, i32 outSamp
     cvt.buf = (u8*)malloc(pcmDataSize * cvt.len_mult);
     cvt.len = pcmDataSize;
     memcpy(cvt.buf, *pcmData, pcmDataSize);
-
 
     i32 result = SDL_ConvertAudio(&cvt);
     assert(0 == result);

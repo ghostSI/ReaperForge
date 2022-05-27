@@ -2,14 +2,15 @@
 
 #ifdef RUN_TEST
 
-#include "rijndael.h"
-#include "psarc.h"
-#include "installer.h"
 #include "getopt.h"
+#include "global.h"
+#include "installer.h"
+#include "pcm.h"
+#include "psarc.h"
+#include "rijndael.h"
 #include "settings.h"
 #include "song.h"
-#include "global.h"
-#include "oggvorbis.h"
+#include "wem.h"
 
 #include "SDL2/SDL.h"
 
@@ -344,7 +345,7 @@ static void rijndaelTest() {
     ASSERT(expectedPlainText[i] == plainText[i]);
 }
 
-static void manifestInfoTest(const std::vector<Manifest::Info>& manifestInfos)
+static void manifestInfosTest(const std::vector<Manifest::Info>& manifestInfos)
 {
   ASSERT(manifestInfos.size() == 2);
 
@@ -391,7 +392,7 @@ static void manifestInfoTest(const std::vector<Manifest::Info>& manifestInfos)
   }
 }
 
-static void sngTest(const std::vector<Sng::Info>& sngInfos)
+static void sngInfosTest(const std::vector<Sng::Info>& sngInfos)
 {
   ASSERT(sngInfos.size() == 2);
   {
@@ -906,8 +907,28 @@ static void songInfoTest(const Psarc::Info& psarcInfo)
   Song::Info songInfo = Song::loadSongInfoManifestOnly(psarcInfo);
   Song::loadSongInfoComplete(psarcInfo, songInfo);
 
-  manifestInfoTest(songInfo.manifestInfos);
-  sngTest(songInfo.sngInfos);
+  manifestInfosTest(songInfo.manifestInfos);
+  //sngInfosTest(songInfo.sngInfos);
+}
+
+static void pcmTest(const std::vector<u8>& ogg)
+{
+  u8* pcmData = nullptr;
+  u32 pcmDataSize;
+  const i32 sampleRate = Pcm::decodeOgg(ogg.data(), ogg.size(), &pcmData, pcmDataSize);
+  assert(pcmDataSize == 3568128);
+  assert(sampleRate == 48000);
+
+  Pcm::resample(&pcmData, pcmDataSize, 48000, 48000);
+  assert(pcmDataSize == 3568128);
+
+  Pcm::resample(&pcmData, pcmDataSize, 48000, 44100);
+  assert(pcmDataSize == 3278217);
+
+  Pcm::resample(&pcmData, pcmDataSize, 44100, 96000);
+  assert(pcmDataSize == 7136254);
+
+  free(pcmData);
 }
 
 static void oggTest(const Psarc::Info& psarcInfo)
@@ -4301,11 +4322,13 @@ static void oggTest(const Psarc::Info& psarcInfo)
       0x02, 0x06, 0x00
   };
 
-  Psarc::loadOgg(psarcInfo, false);
+  const std::vector<u8> ogg = Wem::to_ogg(psarcInfo.tocEntries[9].content.data(), psarcInfo.tocEntries[9].content.size());
 
-  ASSERT(Global::ogg.size() == sizeof(expected_ogg));
+  ASSERT(ogg.size() == sizeof(expected_ogg));
   for (u64 i = 0; i < sizeof(expected_ogg); ++i)
-    ASSERT(Global::ogg[i] == expected_ogg[i]);
+    ASSERT(ogg[i] == expected_ogg[i]);
+
+  pcmTest(ogg);
 }
 
 static void psarcTest() {

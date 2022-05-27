@@ -298,6 +298,6 @@ void Input::proccessInputEvents() {
 
   if (Global::inputPause.up) {
     Global::pauseAudio = Global::inputPause.toggle;
-    Sound::setPauseAudio(Global::pauseAudio);
+    Sound::pauseAudioDevice(Global::pauseAudio);
   }
 }

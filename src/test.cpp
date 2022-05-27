@@ -24388,6 +24388,8 @@ static void psarcTOCTest2() {
   ASSERT(Global::ogg.size() == sizeof(expected_ogg));
   for (u64 i = 0; i < sizeof(expected_ogg); ++i)
     ASSERT(Global::ogg[i] == expected_ogg[i]);
+
+
 }
 
 static void mat4Test()

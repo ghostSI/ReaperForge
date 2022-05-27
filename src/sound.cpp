@@ -340,6 +340,23 @@ void Sound::playOgg()
   stb_vorbis_info info = stb_vorbis_get_info(vorbis);
   assert(info.channels == 2);
 
+
+  //const u64 chunkAllocSize = 65536;
+  //for (;;)
+  //{
+  //  audio->lengthTrue += chunkAllocSize;
+  //  audio->bufferTrue = (u8*)realloc(audio->bufferTrue, audio->lengthTrue * sizeof(f32));
+  //  const i32 samples = stb_vorbis_get_samples_float_interleaved(vorbis, info.channels, (f32*)&audio->bufferTrue[(audio->lengthTrue - chunkAllocSize) * sizeof(f32)], chunkAllocSize);
+  //  if (samples == 0)
+  //    break;
+  //  if (samples * info.channels != chunkAllocSize)
+  //  {
+  //    audio->lengthTrue = audio->lengthTrue - chunkAllocSize + samples * info.channels;
+  //    audio->bufferTrue = (u8*)realloc(audio->bufferTrue, audio->lengthTrue * sizeof(f32));
+  //    break;
+  //  }
+  //}
+
   for (;;)
   {
     f32 buffer[131072];

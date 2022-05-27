@@ -8,9 +8,6 @@
 
 #include <string.h>
 
-static constexpr const char *psarcExtension = "_p.psarc";
-static constexpr const char *magicText = "PSAR";
-
 static const u8 psarcKey[32] = {
         0xC5, 0x3D, 0xB2, 0x38, 0x70, 0xA1, 0xA2, 0xF7,
         0x1C, 0xAE, 0x64, 0x06, 0x1F, 0xDD, 0x0E, 0x11,
@@ -21,12 +18,12 @@ static const u8 psarcKey[32] = {
 std::vector<u8> Psarc::readPsarcData(const char *filepath) {
     const size_t filepathLen = strlen(filepath);
 
-    ASSERT(filepathLen > sizeof(psarcExtension) && "Psarc filename invalid");
-    ASSERT(strncmp(filepath, psarcExtension, filepathLen - sizeof(psarcExtension)));
+    ASSERT(filepathLen > sizeof("_p.psarc") && "Psarc filename invalid");
+    ASSERT(strncmp(filepath, "_p.psarc", filepathLen - sizeof("_p.psarc")));
 
     std::vector<u8> psarcData = File::load(filepath, "rb");
 
-    ASSERT(strncmp(reinterpret_cast<char *>(psarcData.data()), magicText, sizeof(magicText)) == 0 &&
+    ASSERT(strncmp(reinterpret_cast<char *>(psarcData.data()), "PSAR", sizeof("PSAR")) == 0 &&
            "Invalid Psarc content");
 
     return psarcData;

@@ -1,6 +1,6 @@
 #include "pcm.h"
 
-#include "oggvorbis.h"
+#include "ogg.h"
 
 #include <SDL2/SDL.h>
 
@@ -9,18 +9,18 @@ i32 Pcm::decodeOgg(const u8* oggData, u32 oggDataSize, u8** pcmData, u32& pcmDat
   pcmDataSize = 0;
   *pcmData = nullptr;
 
-  stb_vorbis* vorbis = stb_vorbis_open_memory(oggData, oggDataSize, nullptr, nullptr);
+  Ogg::vorbis* vorbis = Ogg::open(oggData, oggDataSize);
 
-  stb_vorbis_info info = stb_vorbis_get_info(vorbis);
-  assert(info.channels == 2);
-  const i32 sampleRate = info.sample_rate;
+  Ogg::Info oggInfo = Ogg::getInfo(vorbis);
+  assert(oggInfo.channels == 2);
+  const i32 sampleRate = oggInfo.sample_rate;
 
   //const u64 chunkAllocSize = 65536;
   //for (;;)
   //{
   //  audio->lengthTrue += chunkAllocSize;
   //  audio->bufferTrue = (u8*)realloc(audio->bufferTrue, audio->lengthTrue * sizeof(f32));
-  //  const i32 samples = stb_vorbis_get_samples_float_interleaved(vorbis, info.channels, (f32*)&audio->bufferTrue[(audio->lengthTrue - chunkAllocSize) * sizeof(f32)], chunkAllocSize);
+  //  const i32 samples = Ogg::getSamplesInterleaved(vorbis, info.channels, (f32*)&audio->bufferTrue[(audio->lengthTrue - chunkAllocSize) * sizeof(f32)], chunkAllocSize);
   //  if (samples == 0)
   //    break;
   //  if (samples * info.channels != chunkAllocSize)
@@ -34,10 +34,10 @@ i32 Pcm::decodeOgg(const u8* oggData, u32 oggDataSize, u8** pcmData, u32& pcmDat
   for (;;)
   {
     f32 buffer[131072];
-    const i32 samples = stb_vorbis_get_samples_float_interleaved(vorbis, info.channels, buffer, NUM(buffer));
+    const i32 samples = Ogg::getSamplesInterleaved(vorbis, oggInfo.channels, buffer, NUM(buffer));
     if (samples > 0)
     {
-      const i64 dataSize = samples * info.channels * sizeof(f32);
+      const i64 dataSize = samples * oggInfo.channels * sizeof(f32);
       pcmDataSize += dataSize;
       *pcmData = (u8*)realloc(*pcmData, pcmDataSize);
       assert(pcmData != nullptr);
@@ -49,7 +49,7 @@ i32 Pcm::decodeOgg(const u8* oggData, u32 oggDataSize, u8** pcmData, u32& pcmDat
     }
   }
 
-  stb_vorbis_close(vorbis);
+  Ogg::close(vorbis);
 
   return sampleRate;
 }

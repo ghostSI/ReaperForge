@@ -45,7 +45,7 @@ set(HEADER_FILES
 		src/kiss_fft.h
 		src/manifest.h
 		src/nuklear.h
-		src/oggvorbis.h
+		src/ogg.h
         src/opengl.h
         src/pcm.h
         src/player.h
@@ -87,7 +87,7 @@ set(SOURCE_FILES
         src/kiss_fft.cpp
         src/main.cpp
         src/manifest.cpp
-        src/oggvorbis.cpp
+        src/ogg.cpp
         src/opengl.cpp
         src/pcm.cpp
         src/player.cpp

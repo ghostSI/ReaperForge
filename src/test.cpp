@@ -908,7 +908,7 @@ static void songInfoTest(const Psarc::Info& psarcInfo)
   Song::loadSongInfoComplete(psarcInfo, songInfo);
 
   manifestInfosTest(songInfo.manifestInfos);
-  //sngInfosTest(songInfo.sngInfos);
+  sngInfosTest(songInfo.sngInfos);
 }
 
 static void pcmTest(const std::vector<u8>& ogg)

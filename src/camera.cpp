@@ -90,15 +90,13 @@ static void tickCameraMovement()
 
 void Camera::tick() {
   { // calc the camera Target
-    const f32 oggElapsed = Global::time - Global::oggStartTime;
-
     for (i32 i = 0; i < i32(Global::songTrack.transcriptionTrack.anchors.size()) - 3; ++i)
     {
       const Song::TranscriptionTrack::Anchor& anchor0 = Global::songTrack.transcriptionTrack.anchors[i];
       const Song::TranscriptionTrack::Anchor& anchor1 = Global::songTrack.transcriptionTrack.anchors[i + 1];
 
-      const f32 noteTime0 = -anchor0.time + oggElapsed;
-      const f32 noteTime1 = -anchor1.time + oggElapsed;
+      const f32 noteTime0 = -anchor0.time + Global::musicTimeElapsed;
+      const f32 noteTime1 = -anchor1.time + Global::musicTimeElapsed;
 
       if (noteTime0 < 0.0f)
         continue;

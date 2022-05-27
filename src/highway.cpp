@@ -35,8 +35,6 @@ static void drawFrets()
 {
   GLuint shader = Shader::useShader(Shader::Stem::defaultWorld);
 
-  const f32 oggElapsed = Global::time - Global::oggStartTime;
-
   i32 chordBoxLeft = 24;
   i32 chordBoxRight = 0;
   i32 chordBoxLeftNext = 24;
@@ -47,7 +45,7 @@ static void drawFrets()
     const Song::TranscriptionTrack::Anchor& anchor0 = Global::songTrack.transcriptionTrack.anchors[i];
     const Song::TranscriptionTrack::Anchor& anchor1 = Global::songTrack.transcriptionTrack.anchors[i + 1];
 
-    if (oggElapsed >= anchor0.time && oggElapsed < anchor1.time)
+    if (Global::musicTimeElapsed >= anchor0.time && Global::musicTimeElapsed < anchor1.time)
     {
       chordBoxLeft = anchor0.fret;
       chordBoxRight = chordBoxLeft + anchor0.width;
@@ -361,13 +359,11 @@ static void drawNotes(f32 fretboardNoteDistance[7][24])
 {
   const GLuint shader = Shader::useShader(Shader::Stem::defaultWorld);
 
-  const f32 oggElapsed = Global::time - Global::oggStartTime;
-
   for (i32 i = Global::songTrack.transcriptionTrack.notes.size() - 1; i >= 0; --i)
   {
     const Song::TranscriptionTrack::Note& note = Global::songTrack.transcriptionTrack.notes[i];
 
-    const f32 noteTime = -note.time + oggElapsed;
+    const f32 noteTime = -note.time + Global::musicTimeElapsed;
 
     if (noteTime - note.sustain > 0.0f)
       continue;
@@ -444,15 +440,13 @@ static void drawAnchor(const Song::TranscriptionTrack::Anchor& anchor, f32 noteT
 
 static void drawAnchors()
 {
-  const f32 oggElapsed = Global::time - Global::oggStartTime;
-
   for (i32 i = 0; i < i32(Global::songTrack.transcriptionTrack.anchors.size()) - 2; ++i)
   {
     const Song::TranscriptionTrack::Anchor& anchor0 = Global::songTrack.transcriptionTrack.anchors[i];
     const Song::TranscriptionTrack::Anchor& anchor1 = Global::songTrack.transcriptionTrack.anchors[i + 1];
 
-    const f32 noteTimeBegin = -anchor0.time + oggElapsed;
-    const f32 noteTimeEnd = -anchor1.time + oggElapsed;
+    const f32 noteTimeBegin = -anchor0.time + Global::musicTimeElapsed;
+    const f32 noteTimeEnd = -anchor1.time + Global::musicTimeElapsed;
 
     if (noteTimeEnd > 0.0f)
       continue;
@@ -628,8 +622,6 @@ static void drawChordLeftHand(const Song::TranscriptionTrack::Chord& chord)
 
 static void drawChords(f32 fretboardNoteDistance[7][24])
 {
-  const f32 oggElapsed = Global::time - Global::oggStartTime;
-
   i32 leftHandNextChord = -1;
   f32 leftHandNoteTimeBegin = Const::highwayRenderLeftHandPreTime;
   //f32 leftHandNoteTimeEnd;
@@ -638,7 +630,7 @@ static void drawChords(f32 fretboardNoteDistance[7][24])
   {
     const Song::TranscriptionTrack::Chord& chord = Global::songTrack.transcriptionTrack.chords[i];
 
-    const f32 noteTime = -chord.time + oggElapsed;
+    const f32 noteTime = -chord.time + Global::musicTimeElapsed;
 
     f32 chordSustain = 0.0f;
     for (const Song::TranscriptionTrack::Note& note : chord.chordNotes)
@@ -867,14 +859,12 @@ static void drawHandShape(const Song::TranscriptionTrack::HandShape& handShape, 
 
 static void drawHandShapes()
 {
-  const f32 oggElapsed = Global::time - Global::oggStartTime;
-
   for (i32 i = 0; i < Global::songTrack.transcriptionTrack.handShape.size(); ++i)
   {
     const Song::TranscriptionTrack::HandShape& handShape = Global::songTrack.transcriptionTrack.handShape[i];
 
-    const f32 noteTimeBegin = -handShape.startTime + oggElapsed;
-    const f32 noteTimeEnd = -handShape.endTime + oggElapsed;
+    const f32 noteTimeBegin = -handShape.startTime + Global::musicTimeElapsed;
+    const f32 noteTimeEnd = -handShape.endTime + Global::musicTimeElapsed;
 
     if (noteTimeEnd > 0.0f)
       continue;
@@ -905,8 +895,6 @@ static void drawNoteFretboard(i32 fret, i32 string, f32 size)
 
 static void drawNoteFreadboard(f32 fretboardNoteDistance[7][24])
 {
-  const f32 oggElapsed = Global::time - Global::oggStartTime;
-
   for (i32 i = 0; i < instrumentStringCount; ++i)
   {
     for (i32 j = 1; j < 24; ++j)
@@ -1066,19 +1054,17 @@ static f32 rightAlign(f32 x, f32 scaleX)
 
 static void drawSongInfo()
 {
-  const f32 oggElapsed = Global::time - Global::oggStartTime;
-
-  if (Const::highwayRenderDrawSongInfoEndTime < oggElapsed)
+  if (Const::highwayRenderDrawSongInfoEndTime < Global::musicTimeElapsed)
     return;
 
-  if (Const::highwayRenderDrawSongInfoStartTime > oggElapsed)
+  if (Const::highwayRenderDrawSongInfoStartTime > Global::musicTimeElapsed)
     return;
 
   f32 alpha = 1.0f;
-  if (Const::highwayRenderDrawSongInfoFadeInTime > oggElapsed)
-    alpha = (oggElapsed - Const::highwayRenderDrawSongInfoStartTime) / (Const::highwayRenderDrawSongInfoFadeInTime - Const::highwayRenderDrawSongInfoStartTime);
-  else if (Const::highwayRenderDrawSongInfoFadeOutTime < oggElapsed)
-    alpha = (oggElapsed - Const::highwayRenderDrawSongInfoEndTime) / (Const::highwayRenderDrawSongInfoFadeOutTime - Const::highwayRenderDrawSongInfoEndTime);
+  if (Const::highwayRenderDrawSongInfoFadeInTime > Global::musicTimeElapsed)
+    alpha = (Global::musicTimeElapsed - Const::highwayRenderDrawSongInfoStartTime) / (Const::highwayRenderDrawSongInfoFadeInTime - Const::highwayRenderDrawSongInfoStartTime);
+  else if (Const::highwayRenderDrawSongInfoFadeOutTime < Global::musicTimeElapsed)
+    alpha = (Global::musicTimeElapsed - Const::highwayRenderDrawSongInfoEndTime) / (Const::highwayRenderDrawSongInfoFadeOutTime - Const::highwayRenderDrawSongInfoEndTime);
 
   GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
   glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, alpha);
@@ -1299,8 +1285,6 @@ static void drawLyrics()
   if (Global::songVocals.size() == 0)
     return;
 
-  const f32 oggElapsed = Global::time - Global::oggStartTime;
-
   i32 line0Begin = 0;
   i32 line0Active = -1;
   i32 line0End = Global::songVocals.size() - 1;
@@ -1309,12 +1293,12 @@ static void drawLyrics()
     const Song::Vocal& vocal = Global::songVocals[i];
     const Song::Vocal& vocal2 = Global::songVocals[i + 1];
 
-    if (vocal.time <= oggElapsed && oggElapsed < vocal2.time)
+    if (vocal.time <= Global::musicTimeElapsed && Global::musicTimeElapsed < vocal2.time)
       line0Active = i;
 
     if (vocal.lyric[vocal.lyric.size() - 1] == '+')
     {
-      if (oggElapsed < vocal2.time)
+      if (Global::musicTimeElapsed < vocal2.time)
       {
         line0End = i;
         break;
@@ -1367,13 +1351,11 @@ static void drawEbeat(f32 noteTimeBegin, f32 noteTimeEnd, i32 measure, i32 chord
 
 static void drawEbeats()
 {
-  const f32 oggElapsed = Global::time - Global::oggStartTime;
-
   for (i32 i = Global::songTrack.ebeats.size() - 1; i >= 0; --i)
   {
     Song::Ebeat& ebeat = Global::songTrack.ebeats[i];
 
-    const f32 noteTimeBegin = -ebeat.time + oggElapsed;
+    const f32 noteTimeBegin = -ebeat.time + Global::musicTimeElapsed;
     const f32 noteTimeEnd = noteTimeBegin - 0.01f;
 
     if (noteTimeEnd > 0.0f)

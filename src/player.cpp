@@ -47,8 +47,8 @@ static void loadAudio(const Psarc::Info& psarcInfo, bool preview)
         continue;
      
       const std::vector<u8> ogg = Wem::to_ogg(tocEntry.content.data(), tocEntry.length);
-      i32 sampleRate = Pcm::decodeOgg(ogg.data(), ogg.size(), &Global::audioMusicBuffer, Global::audioMusicLength);
-      Pcm::resample(&Global::audioMusicBuffer, Global::audioMusicLength, sampleRate, Global::settings.audioSampleRate);
+      i32 sampleRate = Pcm::decodeOgg(ogg.data(), ogg.size(), &Global::musicBuffer, Global::musicBufferLength);
+      Pcm::resample(&Global::musicBuffer, Global::musicBufferLength, sampleRate, Global::settings.audioSampleRate);
 
       playNextTick = true;
       return;
@@ -77,15 +77,21 @@ static void playSongEmscripten()
 
 void Player::tick()
 {
+  Global::musicTimeElapsed += (Global::frameDelta / 1000.0f) * Global::musicSpeedMultiplier;
+
   if (playNextTick)
   {
-    Global::audioMusicBufferPosition = Global::audioMusicBuffer;
-    Global::audioMusicRemainingLength = Global::audioMusicLength;
+    Global::musicBufferPosition = Global::musicBuffer;
+    Global::musicBufferRemainingLength = Global::musicBufferLength;
     Sound::pauseAudioDevice(false);
+
+    Global::musicTimeElapsed = 0.0f;
 
     Global::inputEsc.toggle = !Global::inputEsc.toggle;
     playNextTick = false;
   }
+
+  //musicTimeElapsed = f32(Global::musicBufferLength - Global::musicBufferRemainingLength) / f32(Global::settings.audioSampleRate * 4 * 2);
 
 #ifdef __EMSCRIPTEN__
   if (static bool firstRun; !firstRun)

@@ -102,13 +102,13 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
   SDL_memset(stream, 0, len);
   SDL_MixAudioFormat(stream, buffer_in, AUDIO_F32LSB, len, Global::settings.mixerGuitar1Volume);
 
-  if (Global::audioMusicRemainingLength > 0)
+  if (Global::musicBufferRemainingLength > 0)
   {
-    len = (len > Global::audioMusicRemainingLength ? Global::audioMusicRemainingLength : len);
-    SDL_MixAudioFormat(stream, Global::audioMusicBufferPosition, AUDIO_F32LSB, len, Global::settings.mixerMusicVolume);
+    len = (len > Global::musicBufferRemainingLength ? Global::musicBufferRemainingLength : len);
+    SDL_MixAudioFormat(stream, Global::musicBufferPosition, AUDIO_F32LSB, len, Global::settings.mixerMusicVolume);
 
-    Global::audioMusicBufferPosition += len;
-    Global::audioMusicRemainingLength -= len;
+    Global::musicBufferPosition += len;
+    Global::musicBufferRemainingLength -= len;
   }
 
   recordingFirst = !recordingFirst;

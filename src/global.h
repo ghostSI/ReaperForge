@@ -166,11 +166,12 @@ namespace Global {
     extern i32 manifestSelected;
     extern Song::Track songTrack;
     extern std::vector<Song::Vocal> songVocals;
-    extern f32 oggStartTime;
-    extern u8* audioMusicBuffer;
-    extern u32 audioMusicLength;
-    extern u8* audioMusicBufferPosition;
-    extern u32 audioMusicRemainingLength;
+    extern u8* musicBuffer;
+    extern u32 musicBufferLength;
+    extern u8* musicBufferPosition;
+    extern u32 musicBufferRemainingLength;
+    extern f32 musicTimeElapsed;
+    extern f32 musicSpeedMultiplier;
     extern char searchText[256];
     extern i32 searchTextLength;
     extern bool toneWindow;

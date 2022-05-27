@@ -265,11 +265,9 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
       j += 4;
       sngInfo.nLinkedDifficulty[i].phraseCount = i32_le(&plainText[j]);
       j += 4;
-      const i32 nLDPhraseCount = u32_le(&plainText[j]);
-      j += 4;
       {
-        sngInfo.nLinkedDifficulty[i].nLDPhrase.resize(nLDPhraseCount);
-        for (i32 ii = 0; ii < nLDPhraseCount; ++ii)
+        sngInfo.nLinkedDifficulty[i].nLDPhrase.resize(sngInfo.nLinkedDifficulty[i].phraseCount);
+        for (i32 ii = 0; ii < sngInfo.nLinkedDifficulty[i].phraseCount; ++ii)
         {
           sngInfo.nLinkedDifficulty[i].nLDPhrase[ii] = i32_le(&plainText[j]);
           j += 4;

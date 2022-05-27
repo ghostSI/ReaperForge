@@ -26,6 +26,7 @@ void Input::prePollEvent() {
     prePollEventKeyInput(Global::inputDebug);
     prePollEventKeyInput(Global::inputEsc);
     prePollEventKeyInput(Global::debugCamera);
+    prePollEventKeyInput(Global::quickRepeater);
 }
 
 void Input::pollEvent(SDL_Event &event) {
@@ -77,6 +78,9 @@ void Input::pollEvent(SDL_Event &event) {
                     break;
                 case SDLK_F4:
                     Global::debugCamera.pressed = true;
+                    break;
+                case SDLK_F5:
+                    Global::quickRepeater.pressed = true;
                     break;
                 case SDLK_ESCAPE:
                     Global::inputEsc.pressed = true;
@@ -132,6 +136,9 @@ void Input::pollEvent(SDL_Event &event) {
                     break;
                 case SDLK_F4:
                     Global::debugCamera.pressed = false;
+                    break;
+                case SDLK_F5:
+                    Global::quickRepeater.pressed = false;
                     break;
                 case SDLK_ESCAPE:
                     Global::inputEsc.pressed = false;
@@ -277,6 +284,7 @@ void Input::postPollEvent() {
   postPollEventKeyInput(Global::inputDebug);
   postPollEventKeyInput(Global::inputEsc);
   postPollEventKeyInput(Global::debugCamera);
+  postPollEventKeyInput(Global::quickRepeater);
 }
 
 void Input::proccessInputEvents() {

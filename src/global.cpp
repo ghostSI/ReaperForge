@@ -17,6 +17,7 @@ KeyInput Global::inputWireframe;
 KeyInput Global::inputDebug;
 KeyInput Global::inputEsc;
 KeyInput Global::debugCamera;
+KeyInput Global::quickRepeater;
 
 bool Global::pauseAudio = false;
 

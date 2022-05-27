@@ -75,6 +75,42 @@ static void playSongEmscripten()
   playNextTick = true;
 }
 
+static f32 quickRepeaterBeginTime = 0.0f;
+static f32 quickRepeaterEndTime = 0.0f;
+static u8* quickRepeaterMusicBufferPosition = nullptr;
+static u32 quickRepeaterMusicRemainingLength = 0;
+
+static void quickRepeater()
+{
+  if (Global::quickRepeater.pressed && !Global::quickRepeater.pressedLastFrame)
+  {
+    if (quickRepeaterBeginTime == 0.0f)
+    {
+      quickRepeaterBeginTime = Global::musicTimeElapsed;
+      quickRepeaterMusicBufferPosition = Global::musicBufferPosition;
+      quickRepeaterMusicRemainingLength = Global::musicBufferRemainingLength;
+    }
+    else
+    {
+      quickRepeaterEndTime = Global::musicTimeElapsed;
+    }
+
+    f32 diff = quickRepeaterEndTime - quickRepeaterBeginTime;
+    if (diff >= 0 && diff < 1.0f) // reset quick repeat
+    {
+      quickRepeaterBeginTime = 0.0f;
+      quickRepeaterEndTime = 0.0f;
+    }
+  }
+  else if (quickRepeaterEndTime > 0.0f && quickRepeaterEndTime < Global::musicTimeElapsed)
+  {
+    Global::musicTimeElapsed = quickRepeaterBeginTime;
+
+    Global::musicBufferPosition = quickRepeaterMusicBufferPosition;
+    Global::musicBufferRemainingLength = quickRepeaterMusicRemainingLength;
+  }
+}
+
 void Player::tick()
 {
   Global::musicTimeElapsed += (Global::frameDelta / 1000.0f) * Global::musicSpeedMultiplier;
@@ -91,7 +127,8 @@ void Player::tick()
     playNextTick = false;
   }
 
-  //musicTimeElapsed = f32(Global::musicBufferLength - Global::musicBufferRemainingLength) / f32(Global::settings.audioSampleRate * 4 * 2);
+  quickRepeater();
+
 
 #ifdef __EMSCRIPTEN__
   if (static bool firstRun; !firstRun)

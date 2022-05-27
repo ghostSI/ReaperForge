@@ -101,6 +101,44 @@ static void endianesTest()
   assert(16909060_u64 == u40_be(data));
 }
 
+static void installerTest() {
+  if (Global::isInstalled) {
+    std::filesystem::remove("settings.ini");
+    std::filesystem::remove("songs");
+  }
+
+  ASSERT(!Global::isInstalled);
+  Installer::install();
+  ASSERT(Global::isInstalled);
+
+  // uninstall
+  std::filesystem::remove("settings.ini");
+  std::filesystem::remove("songs");
+
+  ASSERT(!Global::isInstalled);
+};
+
+static void settingsTest() {
+  //    if (Installer::isInstalled(".")) {
+  //        std::filesystem::remove("settings.ini");
+  //        std::filesystem::remove("songs");
+  //    }
+  //
+  //    Installer::install(".");
+  //
+  //    char *args[] = {
+  //            "C:/temp/temp.exe", "-w", "1024", "-h", "768", "-l", "0", nullptr
+  //    };
+  //    int argc = sizeof(args) / sizeof(char *);
+  //    char **argv = args;
+  //
+  //    Settings::init(argc, argv);
+  //    Settings::save();
+  //
+  //    std::filesystem::remove("settings.ini");
+  //    std::filesystem::remove("songs");
+}
+
 static void rijndaelTest() {
   static const u8 psarcKey[] = {
           0xC5, 0x3D, 0xB2, 0x38, 0x70, 0xA1, 0xA2, 0xF7,
@@ -306,46 +344,10 @@ static void rijndaelTest() {
     ASSERT(expectedPlainText[i] == plainText[i]);
 }
 
-static void installerTest() {
-  if (Global::isInstalled) {
-    std::filesystem::remove("settings.ini");
-    std::filesystem::remove("songs");
-  }
-
-  ASSERT(!Global::isInstalled);
-  Installer::install();
-  ASSERT(Global::isInstalled);
-
-  // uninstall
-  std::filesystem::remove("settings.ini");
-  std::filesystem::remove("songs");
-
-  ASSERT(!Global::isInstalled);
-};
-
-static void settingsTest() {
-  //    if (Installer::isInstalled(".")) {
-  //        std::filesystem::remove("settings.ini");
-  //        std::filesystem::remove("songs");
-  //    }
-  //
-  //    Installer::install(".");
-  //
-  //    char *args[] = {
-  //            "C:/temp/temp.exe", "-w", "1024", "-h", "768", "-l", "0", nullptr
-  //    };
-  //    int argc = sizeof(args) / sizeof(char *);
-  //    char **argv = args;
-  //
-  //    Settings::init(argc, argv);
-  //    Settings::save();
-  //
-  //    std::filesystem::remove("settings.ini");
-  //    std::filesystem::remove("songs");
-}
-
 static void manifestTest(const Song::Info& songInfo)
 {
+  ASSERT(songInfo.manifest.entries.size() == 2);
+
   {
     ASSERT(songInfo.manifest.entries[0].albumArt == "urn:image:dds:album_yousuffer");
     ASSERT(songInfo.manifest.entries[0].albumName == "Scum");

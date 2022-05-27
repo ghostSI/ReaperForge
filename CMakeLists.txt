@@ -47,6 +47,7 @@ set(HEADER_FILES
 		src/nuklear.h
 		src/oggvorbis.h
         src/opengl.h
+        src/pcm.h
         src/player.h
         src/psarc.h
         src/rijndael.h
@@ -88,6 +89,7 @@ set(SOURCE_FILES
         src/manifest.cpp
         src/oggvorbis.cpp
         src/opengl.cpp
+        src/pcm.cpp
         src/player.cpp
         src/psarc.cpp
         src/rijndael.cpp

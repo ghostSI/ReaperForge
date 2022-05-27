@@ -1,7 +1,8 @@
 #include "sound.h"
+
 #include "data.h"
 #include "global.h"
-#include "oggvorbis.h"
+#include "pcm.h"
 #include "settings.h"
 
 #include "chromagram.h"
@@ -333,73 +334,16 @@ void Sound::playOgg()
     return;
   }
 
-  stb_vorbis* vorbis = stb_vorbis_open_memory(Global::ogg.data(), Global::ogg.size(), nullptr, nullptr);
+  // TODO: decoding and resampling takes a lot of time and memory. A good approch would be to decode and resample only small chunks of data.
+  const i32 sampleRate = Pcm::decodeOgg(Global::ogg.data(), Global::ogg.size(), &audio->bufferTrue, audio->lengthTrue);
+  Pcm::resample(&audio->bufferTrue, audio->lengthTrue, sampleRate, Global::settings.audioSampleRate);
+
   audio->soundType = SoundType::Ogg;
   audio->free = 1;
-
-  stb_vorbis_info info = stb_vorbis_get_info(vorbis);
-  assert(info.channels == 2);
-
-
-  //const u64 chunkAllocSize = 65536;
-  //for (;;)
-  //{
-  //  audio->lengthTrue += chunkAllocSize;
-  //  audio->bufferTrue = (u8*)realloc(audio->bufferTrue, audio->lengthTrue * sizeof(f32));
-  //  const i32 samples = stb_vorbis_get_samples_float_interleaved(vorbis, info.channels, (f32*)&audio->bufferTrue[(audio->lengthTrue - chunkAllocSize) * sizeof(f32)], chunkAllocSize);
-  //  if (samples == 0)
-  //    break;
-  //  if (samples * info.channels != chunkAllocSize)
-  //  {
-  //    audio->lengthTrue = audio->lengthTrue - chunkAllocSize + samples * info.channels;
-  //    audio->bufferTrue = (u8*)realloc(audio->bufferTrue, audio->lengthTrue * sizeof(f32));
-  //    break;
-  //  }
-  //}
-
-  for (;;)
-  {
-    f32 buffer[131072];
-    const i32 samples = stb_vorbis_get_samples_float_interleaved(vorbis, info.channels, buffer, NUM(buffer));
-    if (samples > 0)
-    {
-      const i64 dataSize = samples * info.channels * sizeof(f32);
-      audio->lengthTrue += dataSize;
-      audio->bufferTrue = (u8*)realloc(audio->bufferTrue, audio->lengthTrue);
-      assert(audio->bufferTrue != nullptr);
-      memcpy(&audio->bufferTrue[audio->lengthTrue - dataSize], buffer, dataSize);
-    }
-    else
-    {
-      break;
-    }
-  }
-  stb_vorbis_close(vorbis);
-
-  if (info.sample_rate != Global::settings.audioSampleRate)
-  {
-    SDL_AudioCVT cvt;
-    const i32 buildCVTResult = SDL_BuildAudioCVT(&cvt, AUDIO_F32, info.channels, info.sample_rate, AUDIO_F32, 2, Global::settings.audioSampleRate);
-    assert(buildCVTResult == 1);
-    {
-      cvt.buf = (u8*)malloc(audio->lengthTrue * cvt.len_mult);
-      cvt.len = audio->lengthTrue;
-      memcpy(cvt.buf, audio->bufferTrue, audio->lengthTrue);
-
-
-      i32 result = SDL_ConvertAudio(&cvt);
-      assert(0 == result);
-      audio->lengthTrue = cvt.len * cvt.len_mult;
-
-      audio->bufferTrue = (u8*)realloc(audio->bufferTrue, audio->lengthTrue);
-      memcpy(audio->bufferTrue, cvt.buf, audio->lengthTrue);
-    }
-  }
-
   audio->spec = SDL_AudioSpec();
-  audio->spec.freq = info.sample_rate;
+  audio->spec.freq = Global::settings.audioSampleRate;
   audio->spec.format = AUDIO_F32LSB;
-  audio->spec.channels = info.channels;
+  audio->spec.channels = 2;
   audio->spec.samples = Global::settings.audioBufferSize;
   audio->spec.callback = audioPlaybackCallback;
   audio->spec.userdata = nullptr;

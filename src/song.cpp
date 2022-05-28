@@ -75,6 +75,7 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
       || tocEntry.name.ends_with(".dds")
       || tocEntry.name.ends_with(".bnk")
       || tocEntry.name.ends_with(".wem")
+      || tocEntry.name.ends_with(".sng")
       || tocEntry.name.ends_with(".nt")
       || tocEntry.name.ends_with(".version")
       || tocEntry.name.ends_with(".appid")

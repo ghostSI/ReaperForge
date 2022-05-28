@@ -1380,6 +1380,9 @@ static void drawEbeats()
 
 void Highway::tick()
 {
+  if (Global::songSelected == -1)
+    return;
+
   if (Global::songInfos[Global::songSelected].loadState == Song::LoadState::complete)
   {
     if (to_underlying(Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].instrumentFlags & InstrumentFlags::BassGuitar))
@@ -1417,6 +1420,9 @@ void Highway::tick()
 
 void Highway::render()
 {
+  if (Global::songSelected == -1)
+    return;
+
   drawGround();
   if (Global::settings.highwayEbeat)
     drawEbeats();
@@ -1431,7 +1437,6 @@ void Highway::render()
   drawNoteFreadboard(fretboardNoteDistance);
   drawPhrases();
   drawFretNumbers();
-
 
   if (Global::songInfos[Global::songSelected].loadState == Song::LoadState::complete && Global::settings.highwayStringNoteNames)
     drawStringNoteNames();

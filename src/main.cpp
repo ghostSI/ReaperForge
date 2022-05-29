@@ -17,6 +17,7 @@
 #include "sound.h"
 #include "test.h"
 #include "ui.h"
+#include "vst.h"
 
 #include "SDL2/SDL.h"
 
@@ -168,6 +169,9 @@ int main(int argc, char* argv[]) {
 #ifndef __EMSCRIPTEN__
   Ui::init();
 #endif // __EMSCRIPTEN__
+#ifdef SUPPORT_VST
+  Vst::init();
+#endif // SUPPORT_VST
 
 #ifdef __EMSCRIPTEN__
   emscripten_set_main_loop(mainloop, -1, 1);

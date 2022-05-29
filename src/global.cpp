@@ -1,7 +1,5 @@
 #include "global.h"
 
-#include "type.h"
-
 SDL_Window *Global::window = nullptr;
 SDL_GameController *Global::gameController = nullptr;
 bool Global::appQuit = false;
@@ -42,6 +40,9 @@ f32 Global::musicSpeedMultiplier = 1.0f;
 char Global::searchText[256] = "";
 i32 Global::searchTextLength = 0;
 bool Global::toneWindow = false;
+#ifdef SUPPORT_VST
+void* Global::vstWindow = nullptr;
+#endif // SUPPORT_VST
 
 Settings::Info Global::settings;
 

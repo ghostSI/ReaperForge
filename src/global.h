@@ -176,6 +176,9 @@ namespace Global {
     extern char searchText[256];
     extern i32 searchTextLength;
     extern bool toneWindow;
+#ifdef SUPPORT_VST
+    extern void* vstWindow;
+#endif // SUPPORT_VST
     
     extern Settings::Info settings;
 

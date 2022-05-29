@@ -12,6 +12,8 @@
 
 #define XML_IGNORE_ERROR
 
+#ifdef _WIN32
 #define SUPPORT_VST
+#endif // _WIN32
 
 #endif // CONFIGURATION_H

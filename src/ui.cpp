@@ -1,13 +1,14 @@
 #include "ui.h"
 
 #include "collection.h"
+#include "data.h"
 #include "global.h"
 #include "installer.h"
 #include "opengl.h"
+#include "player.h"
 #include "shader.h"
 #include "sound.h"
-#include "player.h"
-#include "data.h"
+#include "vst.h"
 
 
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
@@ -1943,6 +1944,26 @@ static void toneWindow()
   }
 }
 
+#ifdef SUPPORT_VST
+static void vstWindow()
+{
+  if (bool show = nk_begin(ctx, "VST", nk_rect(100, 100, 892 + 2, 210 + 30),
+    NK_WINDOW_BORDER | NK_WINDOW_MOVABLE |
+    NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
+    
+    const auto pos = nk_window_get_position(ctx);
+
+    Vst::moveWindow(Global::vstWindow, pos.x + 1, pos.y + 29);
+  }
+  else
+  {
+    Vst::closeWindow(Global::vstWindow);
+    Global::vstWindow = nullptr;
+  }
+  nk_end(ctx);
+}
+#endif SUPPORT_VST
+
 static void songWindow() {
 
   if (nk_begin(ctx, "Songs", nk_rect(300, 30, 695, 710),
@@ -2077,6 +2098,9 @@ static void songWindow() {
               Song::loadSongInfoComplete(Global::psarcInfos[i], Global::songInfos[i]);
 
             Global::toneWindow = true;
+#ifdef SUPPORT_VST
+            Global::vstWindow = Vst::openWindow(0);
+#endif // SUPPORT_VST
           }
 
           nk_group_end(ctx);
@@ -2330,6 +2354,10 @@ void Ui::tick() {
   songWindow();
   if (Global::toneWindow)
     toneWindow();
+#ifdef SUPPORT_VST
+  if (Global::vstWindow != nullptr)
+    vstWindow();
+#endif // SUPPORT_VST
 }
 
 void Ui::render() {

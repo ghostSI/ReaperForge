@@ -75,7 +75,7 @@ static void mainloop() {
 #endif // __EMSCRIPTEN__
 
     Highway::render();
-    //Camera::render();
+    Camera::render();
 #ifndef __EMSCRIPTEN__
     if (!Global::inputEsc.toggle)
       Ui::render();

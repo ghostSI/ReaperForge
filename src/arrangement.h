@@ -1,6 +1,8 @@
 #ifndef ARRANGEMENT_H
 #define ARRANGEMENT_H
 
+#include "configuration.h"
+
 #ifdef ARRANGEMENT_XML
 
 #include "type.h"

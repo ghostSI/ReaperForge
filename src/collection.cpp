@@ -11,7 +11,7 @@ void Collection::init() {
   if (!Global::isInstalled)
     return;
 
-  for (const auto& file : std::filesystem::directory_iterator(std::filesystem::path("songs"))) {
+  for (const auto& file : std::filesystem::directory_iterator(std::filesystem::path("psarc"))) {
     if (file.path().extension() != std::filesystem::path(".psarc"))
       continue;
     Global::psarcInfos.push_back(Psarc::parse(Psarc::readPsarcData(file.path().string().c_str())));

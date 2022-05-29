@@ -60,6 +60,7 @@ set(HEADER_FILES
         src/type.h
         src/typedefs.h
         src/ui.h
+        src/vst.h
         src/wem.h
         src/xblock.h
         src/xml.h
@@ -101,6 +102,7 @@ set(SOURCE_FILES
         src/sound.cpp
         src/test.cpp
         src/ui.cpp
+        src/vst.cpp
         src/wem.cpp
         src/xblock.cpp
         src/xml.cpp

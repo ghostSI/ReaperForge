@@ -105,7 +105,7 @@ static void endianesTest()
 static void installerTest() {
   if (Global::isInstalled) {
     std::filesystem::remove("settings.ini");
-    std::filesystem::remove("songs");
+    std::filesystem::remove("psarc");
   }
 
   ASSERT(!Global::isInstalled);
@@ -114,7 +114,7 @@ static void installerTest() {
 
   // uninstall
   std::filesystem::remove("settings.ini");
-  std::filesystem::remove("songs");
+  std::filesystem::remove("psarc");
 
   ASSERT(!Global::isInstalled);
 };
@@ -122,7 +122,7 @@ static void installerTest() {
 static void settingsTest() {
   //    if (Installer::isInstalled(".")) {
   //        std::filesystem::remove("settings.ini");
-  //        std::filesystem::remove("songs");
+  //        std::filesystem::remove("psarc");
   //    }
   //
   //    Installer::install(".");
@@ -137,7 +137,7 @@ static void settingsTest() {
   //    Settings::save();
   //
   //    std::filesystem::remove("settings.ini");
-  //    std::filesystem::remove("songs");
+  //    std::filesystem::remove("psarc");
 }
 
 static void rijndaelTest() {

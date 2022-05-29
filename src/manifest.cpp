@@ -351,7 +351,7 @@ std::vector<Manifest::Info> Manifest::readHsan(const std::vector<u8>& hsanData, 
   assert(root->type == Json::type_object);
 
   Json::object* object = (Json::object*)root->payload;
-  assert(object->length == 2);
+  assert(object->length >= 2);
 
   Json::object_element* entries = object->start;
 

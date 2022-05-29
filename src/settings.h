@@ -48,7 +48,7 @@ namespace Settings {
       colorVec4("#D20000"),
       colorVec4("#009B71"),
     };
-    std::string libraryPath = "songs";
+    std::string libraryPath = "psarc";
     i32 mixerMusicVolume = 100;
     i32 mixerGuitar1Volume = 100;
     i32 mixerBass1Volume = 100;

@@ -12,7 +12,7 @@ void Installer::init() {
         return;
 
 
-    if (!(std::filesystem::exists(path / "songs") && std::filesystem::is_directory(path / "songs")))
+    if (!(std::filesystem::exists(path / "psarc") && std::filesystem::is_directory(path / "psarc")))
         return;
 
     Global::isInstalled = true;
@@ -21,8 +21,8 @@ void Installer::init() {
 void Installer::install() {
     auto path = std::filesystem::path(".");
 
-    if (!(std::filesystem::exists(path / "songs") && std::filesystem::is_directory(path / "songs")))
-        std::filesystem::create_directory((path / "songs").string().c_str());
+    if (!(std::filesystem::exists(path / "psarc") && std::filesystem::is_directory(path / "psarc")))
+        std::filesystem::create_directory((path / "psarc").string().c_str());
 
     Global::isInstalled = true;
 }

@@ -1,6 +1,6 @@
-#ifdef ARRANGEMENT_XML
-
 #include "arrangement.h"
+
+#ifdef ARRANGEMENT_XML
 
 #include "xml.h"
 
@@ -17,12 +17,12 @@ Arrangement::Info Arrangement::readArrangement(const std::vector<u8>& arrangemen
   arrangementInfo.title = root.child("title").text().as_string();
 
   pugi::xml_node tuning = root.child("tuning");
-  arrangementInfo.tuning.string0 = tuning.attribute("string0").as_int();
-  arrangementInfo.tuning.string1 = tuning.attribute("string1").as_int();
-  arrangementInfo.tuning.string2 = tuning.attribute("string2").as_int();
-  arrangementInfo.tuning.string3 = tuning.attribute("string3").as_int();
-  arrangementInfo.tuning.string4 = tuning.attribute("string4").as_int();
-  arrangementInfo.tuning.string5 = tuning.attribute("string5").as_int();
+  arrangementInfo.tuning.string[0] = tuning.attribute("string0").as_int();
+  arrangementInfo.tuning.string[1] = tuning.attribute("string1").as_int();
+  arrangementInfo.tuning.string[2] = tuning.attribute("string2").as_int();
+  arrangementInfo.tuning.string[3] = tuning.attribute("string3").as_int();
+  arrangementInfo.tuning.string[4] = tuning.attribute("string4").as_int();
+  arrangementInfo.tuning.string[5] = tuning.attribute("string5").as_int();
 
   arrangementInfo.capo = root.child("capo").text().as_bool();
   arrangementInfo.artist = root.child("artistName").text().as_string();

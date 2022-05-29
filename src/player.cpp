@@ -60,7 +60,7 @@ static void loadAudio(const Psarc::Info& psarcInfo, bool preview)
 
 static void playSongEmscripten()
 {
-  const std::vector<u8> psarcData = Psarc::readPsarcData(EMSC_PATH(songs/test.psarc));
+  const std::vector<u8> psarcData = Psarc::readPsarcData(EMSC_PATH(psarc/test.psarc));
 
   const Psarc::Info psarcInfo = Psarc::parse(psarcData);
   Global::songInfos.push_back(Song::loadSongInfoManifestOnly(psarcInfo));

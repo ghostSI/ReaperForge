@@ -20,7 +20,8 @@ docs/index.js
 docs/index.wasm
 docs/res/
 temp/
-songs/
+psarc/
+vst/
 saves.ini
 settings.ini
 *.sln

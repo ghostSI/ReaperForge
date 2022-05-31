@@ -177,7 +177,10 @@ namespace Global {
     extern i32 searchTextLength;
     extern bool toneWindow;
 #ifdef SUPPORT_VST
-    extern void* vstWindow;
+    extern bool effectsWindow;
+    extern i32 vstWindow;
+    extern std::vector<std::string> vstPluginNames;
+    extern i32 effectChain[16];
 #endif // SUPPORT_VST
     
     extern Settings::Info settings;
@@ -196,7 +199,6 @@ namespace Global {
     extern i32 inputCursorPosX;
     extern i32 inputCursorPosY;
 
-    extern RenderOptions renderOptions;
     extern std::atomic<u64> debugAudioCallbackRecording;
     extern std::atomic<u64> debugAudioCallbackPlayback;
 

@@ -30,8 +30,8 @@ struct AEffect
   f32 unkown_float;
   void* ptr3;
   void* user;
-  int32_t uniqueID;
-  int32_t version;
+  i32 uniqueID;
+  i32 version;
   void (*processReplacing)(AEffect*, f32**, f32**, i32);
 };
 
@@ -48,9 +48,13 @@ struct VstPlugin
   i32 midiIns;
   i32 midiOuts;
   bool automatable;
+
+  HWND hwnd;
+  Rect* windowRect;
 };
 
 static std::vector<VstPlugin> vstPlugins;
+std::vector<std::string> vstPluginNames;
 
 typedef intptr_t(*audioMasterCallback)(AEffect*, int32_t, int32_t, intptr_t, void*, f32);
 typedef AEffect* (*vstPluginMain)(audioMasterCallback audioMaster);
@@ -189,6 +193,8 @@ const i32 kVstTransportChanged = 1;
 
 static intptr_t AudioMaster(AEffect* effect, int32_t opcode, int32_t index, intptr_t value, void* ptr, f32 opt)
 {
+  VstPlugin* vst = (effect ? (VstPlugin*)effect->ptr2 : nullptr);
+
   switch (opcode)
   {
   case AudioMaster::version:
@@ -198,11 +204,11 @@ static intptr_t AudioMaster(AEffect* effect, int32_t opcode, int32_t index, intp
     return 0;
 
   case AudioMaster::getVendorString:
-    strcpy((char*)ptr, "Audacity Team");    // Do not translate, max 64 + 1 for null terminator
+    strcpy((char*)ptr, "ReaperForge");
     return 1;
 
   case AudioMaster::getProductString:
-    strcpy((char*)ptr, "Audacity");         // Do not translate, max 64 + 1 for null terminator
+    strcpy((char*)ptr, "ReaperForge");
     return 1;
 
   case AudioMaster::getVendorVersion:
@@ -267,9 +273,10 @@ static intptr_t AudioMaster(AEffect* effect, int32_t opcode, int32_t index, intp
   case AudioMaster::wantMidi:
   case AudioMaster::processEvents:
     return 0;
-  default:
-    assert(false);
   }
+
+  assert(false);
+  return 0;
 }
 
 static intptr_t callDispatcher(AEffect* aEffect, i32 opcode, i32 index, intptr_t value, void* ptr, f32 opt)
@@ -372,47 +379,81 @@ void Vst::init()
         }
       }
     }
+
+    callDispatcher(vstPlugin.aEffect, Eff::BeginSetProgram, 0, 0, NULL, 0.0);
+    callDispatcher(vstPlugin.aEffect, Eff::SetProgram, 0, 0, NULL, 0.0);
+    callDispatcher(vstPlugin.aEffect, Eff::EndSetProgram, 0, 0, NULL, 0.0);
+
+    callDispatcher(vstPlugin.aEffect, Eff::MainsChanged, 0, 1, NULL, 0.0);
+
+    if (vstPlugin.vstVersion >= 2)
+    {
+      callDispatcher(vstPlugin.aEffect, Eff::StartProcess, 0, 0, NULL, 0.0);
+    }
+
+    callDispatcher(vstPlugin.aEffect, Eff::SetSampleRate, 0, 0, NULL, Global::settings.audioSampleRate);
+    callDispatcher(vstPlugin.aEffect, Eff::SetBlockSize, 0, Global::settings.audioBufferSize, NULL, 0.0);
+
+    Global::vstPluginNames.push_back(vstPlugin.name);
   }
 }
 
-struct VstRect
-{
-  i16 top;
-  i16 left;
-  i16 bottom;
-  i16 right;
-};
-
-void* Vst::openWindow(i32 index)
+void Vst::openWindow(i32 index)
 {
   assert(index >= 0);
   assert(index < vstPlugins.size());
 
   VstPlugin& vstPlugin = vstPlugins[index];
 
-  VstRect rect;
-  callDispatcher(vstPlugin.aEffect, Eff::EditGetRect, 0, 0, &rect, 0.0);
+  callDispatcher(vstPlugin.aEffect, Eff::EditGetRect, 0, 0, &vstPlugin.windowRect, 0.0);
+  assert(vstPlugin.windowRect->top == 0);
+  assert(vstPlugin.windowRect->left == 0);
+  assert(vstPlugin.windowRect->bottom >= 1);
+  assert(vstPlugin.windowRect->right >= 1);
 
   SDL_SysWMinfo wmInfo;
   SDL_VERSION(&wmInfo.version);
   SDL_GetWindowWMInfo(Global::window, &wmInfo);
-  HWND hwnd = wmInfo.info.win.window;
 
-  callDispatcher(vstPlugin.aEffect, Eff::EditOpen, 0, 0, hwnd, 0.0);
+  callDispatcher(vstPlugin.aEffect, Eff::EditOpen, 0, 0, wmInfo.info.win.window, 0.0);
 
-  HWND vstHwnd = GetWindow(hwnd, GW_CHILD);
-
-  return vstHwnd;
+  vstPlugin.hwnd = GetWindow(wmInfo.info.win.window, GW_CHILD);
 }
 
-void Vst::moveWindow(void* hwnd, i32 x, i32 y)
+Rect Vst::getWindowRect(i32 index)
 {
-  MoveWindow((HWND)hwnd, x, y, 892, 210, TRUE);
+  assert(index >= 0);
+  assert(index < vstPlugins.size());
+
+  return *vstPlugins[index].windowRect;
 }
 
-void Vst::closeWindow(void* hwnd)
+void Vst::moveWindow(i32 index, i32 x, i32 y)
 {
-  DestroyWindow((HWND)hwnd);
+  assert(index >= 0);
+  assert(index < vstPlugins.size());
+
+  MoveWindow(vstPlugins[index].hwnd, x, y, vstPlugins[index].windowRect->right, vstPlugins[index].windowRect->bottom, TRUE);
+}
+
+void Vst::closeWindow(i32 index)
+{
+  assert(index >= 0);
+  assert(index < vstPlugins.size());
+
+  DestroyWindow(vstPlugins[index].hwnd);
+}
+
+
+u64 Vst::processBlock(i32 index, f32** inBlock, f32** outBlock, size_t blockLen)
+{
+  assert(index >= 0);
+  assert(index < vstPlugins.size());
+
+  if (blockLen >= 0)
+    vstPlugins[index].aEffect->processReplacing(vstPlugins[index].aEffect, inBlock, outBlock, blockLen);
+
+  return blockLen;
 }
 
 #endif // SUPPORT_VST

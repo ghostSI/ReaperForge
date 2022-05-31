@@ -5,7 +5,7 @@
 
 #ifdef SUPPORT_VST
 
-#include "typedefs.h"
+#include "type.h"
 
 #include <string>
 #include <vector>
@@ -13,9 +13,13 @@
 namespace Vst
 {
   void init();
-  void* openWindow(i32 index);
-  void moveWindow(void* hwnd, i32 x, i32 y);
-  void closeWindow(void* hwnd);
+
+  void openWindow(i32 index);
+  Rect getWindowRect(i32 index);
+  void moveWindow(i32 index, i32 x, i32 y);
+  void closeWindow(i32 index);
+
+  u64 processBlock(i32 index, f32** inBlock, f32** outBlock, size_t blockLen);
 }
 
 #endif // SUPPORT_VST

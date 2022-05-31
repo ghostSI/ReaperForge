@@ -15,7 +15,7 @@
 #define NK_INCLUDE_DEFAULT_FONT
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_STANDARD_BOOL
+//#define NK_INCLUDE_STANDARD_BOOL
 #define NK_INCLUDE_STANDARD_IO
 #define NK_INCLUDE_STANDARD_VARARGS
 #define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
@@ -1733,26 +1733,26 @@ static void gearWindow(bool& showGearWindow, std::vector<Data::Gear::Knob>* knob
   nk_end(ctx);
 }
 
-static bool toneWindowRow(i32 gear[4], GearType gearType, std::vector<Data::Gear::Knob>* knobs)
+static bool toneWindowRow(i32 gear[4], PsarcGear psarcGear, std::vector<Data::Gear::Knob>* knobs)
 {
   const char** names;
   u64 namesCount;
 
-  switch (gearType)
+  switch (psarcGear)
   {
-  case GearType::pedal:
+  case PsarcGear::pedal:
     names = &Data::Gear::pedalNames[0];
     namesCount = NUM(Data::Gear::pedalNames);
     break;
-  case GearType::amp:
+  case PsarcGear::amp:
     names = &Data::Gear::ampNames[0];
     namesCount = NUM(Data::Gear::ampNames);
     break;
-  case GearType::cabinet:
+  case PsarcGear::cabinet:
     names = &Data::Gear::cabinetNames[0];
     namesCount = NUM(Data::Gear::cabinetNames);
     break;
-  case GearType::rack:
+  case PsarcGear::rack:
     names = &Data::Gear::rackNames[0];
     namesCount = NUM(Data::Gear::rackNames);
     break;
@@ -1826,7 +1826,7 @@ static bool toneWindowRow(i32 gear[4], GearType gearType, std::vector<Data::Gear
 static void toneWindow()
 {
   static bool showGearWindow = false;
-  static GearType editGearType = GearType::none;
+  static PsarcGear editGearType = PsarcGear::none;
 
   if (Global::toneWindow = nk_begin(ctx, "Tones", nk_rect(60, 60, 900, 650),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
@@ -1853,10 +1853,10 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 4);
 
         static i32 prePedal[4];
-        if (toneWindowRow(prePedal, GearType::pedal, &Data::Gear::pedalKnobs[0]))
+        if (toneWindowRow(prePedal, PsarcGear::pedal, &Data::Gear::pedalKnobs[0]))
         {
           showGearWindow |= true;
-          editGearType = GearType::pedal;
+          editGearType = PsarcGear::pedal;
         }
 
         nk_tree_pop(ctx);
@@ -1867,10 +1867,10 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 4);
 
         static i32 amp[4];
-        if (toneWindowRow(amp, GearType::amp, &Data::Gear::ampKnobs[0]))
+        if (toneWindowRow(amp, PsarcGear::amp, &Data::Gear::ampKnobs[0]))
         {
           showGearWindow |= true;
-          editGearType = GearType::amp;
+          editGearType = PsarcGear::amp;
         }
 
         nk_tree_pop(ctx);
@@ -1881,10 +1881,10 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 4);
 
         static i32 loopPedal[4];
-        if (toneWindowRow(loopPedal, GearType::pedal, &Data::Gear::pedalKnobs[0]))
+        if (toneWindowRow(loopPedal, PsarcGear::pedal, &Data::Gear::pedalKnobs[0]))
         {
           showGearWindow |= true;
-          editGearType = GearType::pedal;
+          editGearType = PsarcGear::pedal;
         }
 
         nk_tree_pop(ctx);
@@ -1895,10 +1895,10 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 4);
 
         static i32 cabinet[4];
-        if (toneWindowRow(cabinet, GearType::cabinet, nullptr))
+        if (toneWindowRow(cabinet, PsarcGear::cabinet, nullptr))
         {
           showGearWindow |= true;
-          editGearType = GearType::cabinet;
+          editGearType = PsarcGear::cabinet;
         }
 
         nk_tree_pop(ctx);
@@ -1909,10 +1909,10 @@ static void toneWindow()
         nk_layout_row_dynamic(ctx, 22, 2);
 
         static i32 rack[4];
-        if (toneWindowRow(rack, GearType::rack, &Data::Gear::rackKnobs[0]))
+        if (toneWindowRow(rack, PsarcGear::rack, &Data::Gear::rackKnobs[0]))
         {
           showGearWindow |= true;
-          editGearType = GearType::rack;
+          editGearType = PsarcGear::rack;
         }
 
         nk_tree_pop(ctx);
@@ -1926,13 +1926,13 @@ static void toneWindow()
     std::vector<Data::Gear::Knob>* knobs;
     switch (editGearType)
     {
-    case GearType::pedal:
+    case PsarcGear::pedal:
       knobs = &Data::Gear::pedalKnobs[editGearIndex];
       break;
-    case GearType::amp:
+    case PsarcGear::amp:
       knobs = &Data::Gear::ampKnobs[editGearIndex];
       break;
-    case GearType::rack:
+    case PsarcGear::rack:
       knobs = &Data::Gear::rackKnobs[editGearIndex];
       break;
     default:
@@ -1947,10 +1947,11 @@ static void toneWindow()
 #ifdef SUPPORT_VST
 static void vstWindow()
 {
-  if (bool show = nk_begin(ctx, "VST", nk_rect(100, 100, 892 + 2, 210 + 30),
+  const Rect rect = Vst::getWindowRect(Global::vstWindow);
+  if (bool show = nk_begin(ctx, "VST", nk_rect(100, 100, rect.right + 2, rect.bottom + 30),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE |
     NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
-    
+
     const auto pos = nk_window_get_position(ctx);
 
     Vst::moveWindow(Global::vstWindow, pos.x + 1, pos.y + 29);
@@ -1958,9 +1959,80 @@ static void vstWindow()
   else
   {
     Vst::closeWindow(Global::vstWindow);
-    Global::vstWindow = nullptr;
+    Global::vstWindow = -1;
   }
   nk_end(ctx);
+}
+
+static i32 selectEffectWindow()
+{
+  i32 selectedEffect = -1;
+
+  if (nk_begin(ctx, "Select Effect", nk_rect(600, 100, 500, 500),
+    NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE | NK_WINDOW_SCALABLE)) {
+
+    //nk_layout_row_static(ctx, 400.0f, 400.0f, 1);
+    nk_layout_row_static(ctx, 18, 400, 1);
+    for (int i = 0; i < Global::vstPluginNames.size(); ++i)
+    {
+      if (nk_button_label(ctx, Global::vstPluginNames[i].c_str()))
+      {
+        selectedEffect = i;
+      }
+    }
+  }
+  nk_end(ctx);
+
+  return selectedEffect;
+}
+
+static void effectsWindow()
+{
+  static i32 slotSelectEffectWindow = -1;
+  static i32 selectedEffect = -1;
+  i32 unusedVar = 1;
+
+  if (Global::effectsWindow = nk_begin(ctx, "Effects", nk_rect(100, 100, 500, 500),
+    NK_WINDOW_BORDER | NK_WINDOW_MOVABLE |
+    NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
+
+    nk_layout_row_static(ctx, 400.0f, 400.0f, 2);
+    if (nk_group_begin(ctx, "Group", NK_WINDOW_BORDER | NK_WINDOW_NO_SCROLLBAR)) {
+      nk_layout_row_static(ctx, 18, 300, 1);
+      for (int i = 0; i < NUM(Global::effectChain); ++i)
+      {
+        if (nk_selectable_label(ctx, (Global::effectChain[i] != -1) ? Global::vstPluginNames[Global::effectChain[i]].c_str() : "...", (Global::effectChain[i] != -1) ? NK_TEXT_LEFT : NK_TEXT_CENTERED, &unusedVar))
+        {
+          if (Global::effectChain[i] != -1)
+          {
+            if (Global::vstWindow != -1)
+            {
+              Vst::closeWindow(Global::vstWindow);
+              Global::vstWindow = -1;
+            }
+            else
+            {
+              Global::vstWindow = Global::effectChain[i];
+              Vst::openWindow(Global::vstWindow);
+            }
+          }
+          else
+          {
+            slotSelectEffectWindow = i;
+          }
+        }
+      }
+      nk_group_end(ctx);
+    }
+  }
+  nk_end(ctx);
+
+  if (slotSelectEffectWindow >= 0)
+  {
+    Global::effectChain[slotSelectEffectWindow] = selectEffectWindow();
+    if (Global::effectChain[slotSelectEffectWindow] != -1)
+      slotSelectEffectWindow = -1;
+  }
 }
 #endif SUPPORT_VST
 
@@ -1984,7 +2056,12 @@ static void songWindow() {
     nk_edit_string(ctx, NK_EDIT_SIMPLE, Global::searchText, &Global::searchTextLength, sizeof(Global::searchText),
       nk_filter_default);
 
-    if (nk_button_label(ctx, "A"));
+#ifdef SUPPORT_VST
+    if (nk_button_label(ctx, "VST"))
+    {
+      Global::effectsWindow = !Global::effectsWindow;
+    }
+#endif // SUPPORT_VST
     if (nk_button_label(ctx, "L"));
     if (nk_button_label(ctx, "R"));
     if (nk_button_label(ctx, "B"));
@@ -2098,9 +2175,6 @@ static void songWindow() {
               Song::loadSongInfoComplete(Global::psarcInfos[i], Global::songInfos[i]);
 
             Global::toneWindow = true;
-#ifdef SUPPORT_VST
-            Global::vstWindow = Vst::openWindow(0);
-#endif // SUPPORT_VST
           }
 
           nk_group_end(ctx);
@@ -2355,8 +2429,10 @@ void Ui::tick() {
   if (Global::toneWindow)
     toneWindow();
 #ifdef SUPPORT_VST
-  if (Global::vstWindow != nullptr)
+  if (Global::vstWindow >= 0)
     vstWindow();
+  if (Global::effectsWindow)
+    effectsWindow();
 #endif // SUPPORT_VST
 }
 

@@ -4,6 +4,7 @@
 #include "global.h"
 #include "pcm.h"
 #include "settings.h"
+#include "vst.h"
 
 #include "chromagram.h"
 #include "chordDetector.h"
@@ -18,7 +19,23 @@
 
 static SDL_AudioDeviceID devid_in = 0;
 static SDL_AudioSpec want_in;
-static u8 buffer_in[Const::audioMaximumPossibleBufferSize * sizeof(f32) * 2];
+union Buffer
+{
+  u8 sdl[Const::audioMaximumPossibleBufferSize * sizeof(f32) * 2]; // SDL format: L0, R0, L1, R1, ...
+#ifdef SUPPORT_VST
+  struct
+  {
+    u8 left[Const::audioMaximumPossibleBufferSize * sizeof(f32)]; // VST format: L0, L1, ...
+    u8 right[Const::audioMaximumPossibleBufferSize * sizeof(f32)];  // VST format: R0, R1, ...
+  } vst;
+#endif // SUPPORT_VST
+};
+static Buffer buffer0;
+#ifdef SUPPORT_VST
+static f32* buffer0Vst[2] = { (f32*)buffer0.vst.left, (f32*)buffer0.vst.right };
+static Buffer buffer1;
+static f32* buffer1Vst[2] = { (f32*)buffer1.vst.left, (f32*)buffer1.vst.right };
+#endif // SUPPORT_VST
 static u8 buffer_mixer[Const::audioMaximumPossibleBufferSize * sizeof(f32) * 2];
 std::vector<double> frame(Global::settings.audioBufferSize);
 
@@ -34,7 +51,7 @@ static ChordDetector chordDetector;
 
 static void audioRecordingCallback(void* userdata, u8* stream, int len)
 {
-  ASSERT(len <= sizeof(buffer_in));
+  ASSERT(len <= sizeof(buffer0.sdl));
 
   if (Global::appQuit)
     return;
@@ -45,21 +62,31 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
   cv.wait(lock, [] { return recordingFirst ? true : false; });
 
   const i32 channelOffset = Global::settings.audioChannelInstrument[0] == 0 ? 0 : 4;
-
-  // channel instrument0 to stereo
   for (i32 i = 0; i < len; i += 8)
   {
+#ifdef SUPPORT_VST
+    buffer0.vst.left[i / 2] = stream[i + channelOffset];
+    buffer0.vst.left[i / 2 + 1] = stream[i + channelOffset + 1];
+    buffer0.vst.left[i / 2 + 2] = stream[i + channelOffset + 2];
+    buffer0.vst.left[i / 2 + 3] = stream[i + channelOffset + 3];
+
+    buffer0.vst.right[i / 2] = stream[i + channelOffset];
+    buffer0.vst.right[i / 2 + 1] = stream[i + channelOffset + 1];
+    buffer0.vst.right[i / 2 + 2] = stream[i + channelOffset + 2];
+    buffer0.vst.right[i / 2 + 3] = stream[i + channelOffset + 3];
+#else // SUPPORT_VST
     // Left Output Channel
-    buffer_in[i] = stream[i + channelOffset];
-    buffer_in[i + 1] = stream[i + channelOffset + 1];
-    buffer_in[i + 2] = stream[i + channelOffset + 2];
-    buffer_in[i + 3] = stream[i + channelOffset + 3];
+    buffer0.sdl[i] = stream[i + channelOffset];
+    buffer0.sdl[i + 1] = stream[i + channelOffset + 1];
+    buffer0.sdl[i + 2] = stream[i + channelOffset + 2];
+    buffer0.sdl[i + 3] = stream[i + channelOffset + 3];
 
     // Right Output Channel
-    buffer_in[i + 4] = stream[i + channelOffset];
-    buffer_in[i + 5] = stream[i + channelOffset + 1];
-    buffer_in[i + 6] = stream[i + channelOffset + 2];
-    buffer_in[i + 7] = stream[i + channelOffset + 3];
+    buffer0.sdl[i + 4] = stream[i + channelOffset];
+    buffer0.sdl[i + 5] = stream[i + channelOffset + 1];
+    buffer0.sdl[i + 6] = stream[i + channelOffset + 2];
+    buffer0.sdl[i + 7] = stream[i + channelOffset + 3];
+#endif // SUPPORT_VST
   }
 
   f32 instrumentVolume = 0.0f;
@@ -89,7 +116,7 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
 
 static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
 {
-  ASSERT(len <= sizeof(buffer_in));
+  ASSERT(len <= sizeof(buffer0.sdl));
 
   if (Global::appQuit)
     return;
@@ -100,7 +127,65 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
   cv.wait(lock, [] { return !recordingFirst ? true : false; });
 
   SDL_memset(stream, 0, len);
-  SDL_MixAudioFormat(stream, buffer_in, AUDIO_F32LSB, len, Global::settings.mixerGuitar1Volume);
+#ifdef SUPPORT_VST
+  u8 srcBuffer = 0;
+  for (i32 i = 0; i < NUM(Global::effectChain); ++i)
+  {
+    if (Global::effectChain[i] < 0)
+      continue;
+
+    switch (srcBuffer)
+    {
+    case 0:
+      Vst::processBlock(Global::effectChain[i], buffer0Vst, buffer1Vst, (len / sizeof(f32)) / 2);
+      break;
+    case 1:
+      Vst::processBlock(Global::effectChain[i], buffer1Vst, buffer0Vst, (len / sizeof(f32)) / 2);
+      break;
+    default:
+      assert(false);
+    }
+    srcBuffer = (srcBuffer + 1) % 2;
+  }
+
+  switch (srcBuffer) // convert to sdl format and mix
+  {
+  case 0:
+    for (i32 i = 0; i < len; i += 8)
+    {
+      buffer1.sdl[i] = buffer0.vst.left[i / 2];
+      buffer1.sdl[i + 1] = buffer0.vst.left[i / 2 + 1];
+      buffer1.sdl[i + 2] = buffer0.vst.left[i / 2 + 2];
+      buffer1.sdl[i + 3] = buffer0.vst.left[i / 2 + 3];
+
+      buffer1.sdl[i + 4] = buffer0.vst.right[i / 2];
+      buffer1.sdl[i + 5] = buffer0.vst.right[i / 2 + 1];
+      buffer1.sdl[i + 6] = buffer0.vst.right[i / 2 + 2];
+      buffer1.sdl[i + 7] = buffer0.vst.right[i / 2 + 3];
+    }
+    SDL_MixAudioFormat(stream, buffer1.sdl, AUDIO_F32LSB, len, Global::settings.mixerGuitar1Volume);
+    break;
+  case 1:
+    for (i32 i = 0; i < len; i += 8)
+    {
+      buffer0.sdl[i] = buffer1.vst.left[i / 2];
+      buffer0.sdl[i + 1] = buffer1.vst.left[i / 2 + 1];
+      buffer0.sdl[i + 2] = buffer1.vst.left[i / 2 + 2];
+      buffer0.sdl[i + 3] = buffer1.vst.left[i / 2 + 3];
+
+      buffer0.sdl[i + 4] = buffer1.vst.right[i / 2];
+      buffer0.sdl[i + 5] = buffer1.vst.right[i / 2 + 1];
+      buffer0.sdl[i + 6] = buffer1.vst.right[i / 2 + 2];
+      buffer0.sdl[i + 7] = buffer1.vst.right[i / 2 + 3];
+    }
+    SDL_MixAudioFormat(stream, buffer0.sdl, AUDIO_F32LSB, len, Global::settings.mixerGuitar1Volume);
+    break;
+  default:
+    assert(false);
+  }
+#else // SUPPORT_VST
+  SDL_MixAudioFormat(stream, buffer0.sdl, AUDIO_F32LSB, len, Global::settings.mixerGuitar1Volume);
+#endif // SUPPORT_VST
 
   if (Global::musicBufferRemainingLength > 0)
   {

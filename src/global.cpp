@@ -1,7 +1,7 @@
 #include "global.h"
 
-SDL_Window *Global::window = nullptr;
-SDL_GameController *Global::gameController = nullptr;
+SDL_Window* Global::window = nullptr;
+SDL_GameController* Global::gameController = nullptr;
 bool Global::appQuit = false;
 KeyInput Global::inputA;
 KeyInput Global::inputD;
@@ -41,7 +41,10 @@ char Global::searchText[256] = "";
 i32 Global::searchTextLength = 0;
 bool Global::toneWindow = false;
 #ifdef SUPPORT_VST
-void* Global::vstWindow = nullptr;
+bool Global::effectsWindow = false;
+i32 Global::vstWindow = -1;
+std::vector<std::string> Global::vstPluginNames;
+i32 Global::effectChain[16] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 #endif // SUPPORT_VST
 
 Settings::Info Global::settings;
@@ -60,7 +63,6 @@ bool Global::inputUseController;
 i32 Global::inputCursorPosX = 0;
 i32 Global::inputCursorPosY = 0;
 
-RenderOptions Global::renderOptions = RenderOptions::lit;
 std::atomic<u64> Global::debugAudioCallbackRecording = 0;
 std::atomic<u64> Global::debugAudioCallbackPlayback = 0;
 

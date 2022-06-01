@@ -8,7 +8,6 @@
 #include "type.h"
 
 #include <string>
-#include <vector>
 
 namespace Vst
 {
@@ -20,6 +19,8 @@ namespace Vst
   void closeWindow(i32 index);
 
   u64 processBlock(i32 index, f32** inBlock, f32** outBlock, size_t blockLen);
+
+  std::string saveParameters(i32 index);
 }
 
 #endif // SUPPORT_VST

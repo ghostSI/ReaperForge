@@ -11,7 +11,7 @@
 #include "installer.h"
 #include "opengl.h"
 #include "player.h"
-#include "saves.h"
+#include "profile.h"
 #include "settings.h"
 #include "shader.h"
 #include "sound.h"
@@ -165,7 +165,7 @@ int main(int argc, char* argv[]) {
   Camera::init();
   Font::init();
   Collection::init();
-  Saves::init();
+  Profile::init();
 #ifndef __EMSCRIPTEN__
   Ui::init();
 #endif // __EMSCRIPTEN__
@@ -180,7 +180,7 @@ int main(int argc, char* argv[]) {
     mainloop();
 #endif // __EMSCRIPTEN__
 
-  Saves::fini();
+  Profile::fini();
   Settings::fini();
   Sound::fini();
 

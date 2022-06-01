@@ -2,6 +2,7 @@
 
 #ifdef RUN_TEST
 
+#include "base64.h"
 #include "getopt.h"
 #include "global.h"
 #include "installer.h"
@@ -15,6 +16,21 @@
 #include "SDL2/SDL.h"
 
 #include <filesystem>
+
+static void base64Test()
+{
+  const char text[] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+
+  const std::string base64 = Base64::encode((u8*)text, sizeof(text) - 1);
+
+  assert(base64 == "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVpbXF1eX2BhYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ent8fX4=");
+
+  char newText[sizeof(text)];
+  const u64 newLen = Base64::decode(base64, (u8*)newText);
+
+  assert(sizeof(text) - 1 ==  newLen);
+  assert(strncmp(text, newText, newLen) == 0);
+}
 
 static void mat4Test()
 {
@@ -25066,6 +25082,7 @@ static void psarcTest() {
 }
 
 void Test::run() {
+  base64Test();
   mat4Test();
   endianesTest();
   //installerTest();

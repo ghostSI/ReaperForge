@@ -2,6 +2,7 @@
 
 #ifdef SUPPORT_VST
 
+#include "base64.h"
 #include "global.h"
 
 #include "SDL2/SDL_syswm.h"
@@ -10,56 +11,7 @@
 
 #include <filesystem>
 
-struct AEffect
-{
-  i32 magic;
-  intptr_t(*dispatcher)(AEffect*, i32, i32, intptr_t, void*, f32);
-  void (*process)(AEffect*, f32**, f32**, i32);
-  void (*setParameter)(AEffect*, i32, f32);
-  f32(*getParameter)(AEffect*, i32);
-  i32 numPrograms;
-  i32 numParams;
-  i32 numInputs;
-  i32 numOutputs;
-  i32 flags;
-  void* ptr1;
-  void* ptr2;
-  i32 initialDelay;
-  i32 empty3a;
-  i32 empty3b;
-  f32 unkown_float;
-  void* ptr3;
-  void* user;
-  i32 uniqueID;
-  i32 version;
-  void (*processReplacing)(AEffect*, f32**, f32**, i32);
-};
-
-struct VstPlugin
-{
-  AEffect* aEffect;
-  i32 vstVersion;
-  std::string name;
-  std::string vendor;
-  i32 version;
-  bool interactive;
-  u32 audioIns;
-  u32 audioOuts;
-  i32 midiIns;
-  i32 midiOuts;
-  bool automatable;
-
-  HWND hwnd;
-  Rect* windowRect;
-};
-
-static std::vector<VstPlugin> vstPlugins;
-std::vector<std::string> vstPluginNames;
-
-typedef intptr_t(*audioMasterCallback)(AEffect*, int32_t, int32_t, intptr_t, void*, f32);
-typedef AEffect* (*vstPluginMain)(audioMasterCallback audioMaster);
-
-enum AudioMaster : i32
+enum struct AudioMasterOpcode : i32
 {
   automate = 0,
   version = 1,
@@ -112,15 +64,22 @@ enum AudioMaster : i32
   getInputSpeakerArrangement = 49,
 };
 
-enum EffFlags : i32
+enum struct EffFlags
 {
   HasEditor = 1,
+  HasClip = 2,
+  HasVu = 4,
+  CanMono = 8,
   CanReplacing = 1 << 4,
   ProgramChunks = 1 << 5,
-  IsSynth = 1 << 8
-};
+  IsSynth = 1 << 8,
+  NoSoundInStop = 1 << 11,
+  ExtIsAsync = 1 << 10,
+  ExtHasBuffer = 1 << 11,
+  CanDoubleReplacing = 1 << 12
+} BIT_FLAGS(EffFlags);
 
-enum Eff : i32
+enum struct EffOpcode : i32
 {
   Open = 0,
   Close = 1,
@@ -131,37 +90,128 @@ enum Eff : i32
   GetParamLabel = 6,
   GetParamDisplay = 7,
   GetParamName = 8,
+  GetVu = 9,
   SetSampleRate = 10,
   SetBlockSize = 11,
   MainsChanged = 12,
   EditGetRect = 13,
   EditOpen = 14,
   EditClose = 15,
+  EditDraw = 16,
+  EditMouse = 17,
+  EditKey = 18,
   EditIdle = 19,
   EditTop = 20,
+  EditSleep = 21,
   Identify = 22,
   GetChunk = 23,
   SetChunk = 24,
   ProcessEvents = 25,
   CanBeAutomated = 26,
+  String2Parameter = 27,
+  GetNumProgramCategories = 28,
   GetProgramNameIndexed = 29,
+  CopyProgram = 30,
+  ConnectInput = 31,
+  ConnectOutput = 32,
+  GetInputProperties = 33,
+  GetOutputProperties = 34,
   GetPlugCategory = 35,
+  GetCurrentPosition = 36,
+  GetDestinationBuffer = 37,
+  OfflineNotify = 38,
+  OfflinePrepare = 39,
+  OfflineRun = 40,
+  ProcessVarIo = 41,
+  SetSpeakerArrangement = 42,
+  SetBlockSizeAndSampleRate = 43,
+  SetBypass = 44,
   GetEffectName = 45,
-  GetParameterProperties = 56,
+  GetErrorText = 46,
   GetVendorString = 47,
   GetProductString = 48,
   GetVendorVersion = 49,
+  VendorSpecific = 50,
   CanDo = 51,
+  GetTailSize = 52,
   Idle = 53,
+  GetIcon = 54,
+  SetViewPosition = 55,
+  GetParameterProperties = 56,
+  KeysRequired = 57,
   GetVstVersion = 58,
+  EditKeyDown = 59,
+  EditKeyUp = 60,
+  SetEditKnobMode = 61,
+  GetMidiProgramName = 62,
+  GetCurrentMidiProgram = 63,
+  GetMidiProgramCategory = 64,
+  HasMidiProgramsChanged = 65,
+  GetMidiKeyName = 66,
   BeginSetProgram = 67,
   EndSetProgram = 68,
+  GetSpeakerArrangement = 69,
   ShellGetNextPlugin = 70,
   StartProcess = 71,
   StopProcess = 72,
+  SetTotalSampleToProcess = 73,
+  SetPanLaw = 74,
   BeginLoadBank = 75,
-  BeginLoadProgram = 76
+  BeginLoadProgram = 76,
+  SetProcessPrecision = 77,
+  GetNumMidiInputChannels = 78,
+  GetNumMidiOutputChannels = 79,
+  NumOpcodes = 80
 };
+
+struct AEffect
+{
+  i32 magic;
+  intptr_t(*dispatcher)(AEffect*, EffOpcode, i32, intptr_t, void*, f32);
+  void (*process)(AEffect*, f32**, f32**, i32);
+  void (*setParameter)(AEffect*, i32, f32);
+  f32(*getParameter)(AEffect*, i32);
+  i32 numPrograms;
+  i32 numParams;
+  i32 numInputs;
+  i32 numOutputs;
+  EffFlags flags;
+  void* ptr1;
+  void* ptr2;
+  i32 initialDelay;
+  i32 empty3a;
+  i32 empty3b;
+  f32 unkown_float;
+  void* ptr3;
+  void* user;
+  i32 uniqueID;
+  i32 version;
+  void (*processReplacing)(AEffect*, f32**, f32**, i32);
+};
+
+struct VstPlugin
+{
+  AEffect* aEffect;
+  i32 vstVersion;
+  std::string name;
+  std::string vendor;
+  i32 version;
+  bool interactive;
+  u32 audioIns;
+  u32 audioOuts;
+  i32 midiIns;
+  i32 midiOuts;
+  bool automatable;
+
+  HWND hwnd;
+  Rect* windowRect;
+};
+
+static std::vector<VstPlugin> vstPlugins;
+std::vector<std::string> vstPluginNames;
+
+typedef intptr_t(*audioMasterCallback)(AEffect*, AudioMasterOpcode, int32_t, intptr_t, void*, f32);
+typedef AEffect* (*vstPluginMain)(audioMasterCallback audioMaster);
 
 #define CCONST(a, b, c, d)( ( ( (i32) a ) << 24 ) |      \
             ( ( (i32) b ) << 16 ) |    \
@@ -191,63 +241,63 @@ const i32 kVstTransportChanged = 1;
 #define REAPERFORGE_REVISION 0
 #define REAPERFORGE_MODLEVEL 0
 
-static intptr_t AudioMaster(AEffect* effect, int32_t opcode, int32_t index, intptr_t value, void* ptr, f32 opt)
+static intptr_t AudioMaster(AEffect* effect, AudioMasterOpcode opcode, int32_t index, intptr_t value, void* ptr, f32 opt)
 {
   VstPlugin* vst = (effect ? (VstPlugin*)effect->ptr2 : nullptr);
 
   switch (opcode)
   {
-  case AudioMaster::version:
+  case AudioMasterOpcode::version:
     return (intptr_t)2400;
 
-  case AudioMaster::currentId:
+  case AudioMasterOpcode::currentId:
     return 0;
 
-  case AudioMaster::getVendorString:
+  case AudioMasterOpcode::getVendorString:
     strcpy((char*)ptr, "ReaperForge");
     return 1;
 
-  case AudioMaster::getProductString:
+  case AudioMasterOpcode::getProductString:
     strcpy((char*)ptr, "ReaperForge");
     return 1;
 
-  case AudioMaster::getVendorVersion:
+  case AudioMasterOpcode::getVendorVersion:
     return (intptr_t)(REAPERFORGE_VERSION << 24 |
       REAPERFORGE_RELEASE << 16 |
       REAPERFORGE_REVISION << 8 |
       REAPERFORGE_MODLEVEL);
 
-  case AudioMaster::needIdle:
+  case AudioMasterOpcode::needIdle:
     return 0;
 
-  case AudioMaster::updateDisplay:
+  case AudioMasterOpcode::updateDisplay:
     return 0;
 
-  case AudioMaster::getTime:
+  case AudioMasterOpcode::getTime:
     return 0;
 
-  case AudioMaster::ioChanged:
+  case AudioMasterOpcode::ioChanged:
     return 0;
 
-  case AudioMaster::getSampleRate:
+  case AudioMasterOpcode::getSampleRate:
     return (intptr_t)Global::settings.audioSampleRate;
 
-  case AudioMaster::idle:
+  case AudioMasterOpcode::idle:
     return 1;
 
-  case AudioMaster::getCurrentProcessLevel:
+  case AudioMasterOpcode::getCurrentProcessLevel:
     return 0;
 
-  case AudioMaster::getLanguage:
+  case AudioMasterOpcode::getLanguage:
     return kVstLangEnglish;
 
-  case AudioMaster::willReplaceOrAccumulate:
+  case AudioMasterOpcode::willReplaceOrAccumulate:
     return 1;
 
-  case AudioMaster::sizeWindow:
+  case AudioMasterOpcode::sizeWindow:
     return 1;
 
-  case AudioMaster::canDo:
+  case AudioMasterOpcode::canDo:
   {
     char* s = (char*)ptr;
     if (strcmp(s, "acceptIOChanges") == 0 ||
@@ -261,30 +311,30 @@ static intptr_t AudioMaster(AEffect* effect, int32_t opcode, int32_t index, intp
     return 0;
   }
 
-  case AudioMaster::beginEdit:
-  case AudioMaster::endEdit:
+  case AudioMasterOpcode::beginEdit:
+  case AudioMasterOpcode::endEdit:
     return 0;
 
-  case AudioMaster::automate:
+  case AudioMasterOpcode::automate:
     return 0;
 
-  case AudioMaster::pinConnected:
+  case AudioMasterOpcode::pinConnected:
 
-  case AudioMaster::wantMidi:
-  case AudioMaster::processEvents:
+  case AudioMasterOpcode::wantMidi:
+  case AudioMasterOpcode::processEvents:
     return 0;
   }
 
-  assert(false);
+  //assert(false);
   return 0;
 }
 
-static intptr_t callDispatcher(AEffect* aEffect, i32 opcode, i32 index, intptr_t value, void* ptr, f32 opt)
+static intptr_t callDispatcher(AEffect* aEffect, EffOpcode opcode, i32 index, intptr_t value, void* ptr, f32 opt)
 {
   return aEffect->dispatcher(aEffect, opcode, index, value, ptr, opt);
 }
 
-static std::string getString(AEffect* aEffect, i32 opcode, i32 index = 0)
+static std::string getString(AEffect* aEffect, EffOpcode opcode, i32 index = 0)
 {
   char buf[256]{};
 
@@ -320,27 +370,27 @@ void Vst::init()
     vstPlugin.aEffect = pluginMain(AudioMaster);
     vstPlugin.aEffect->ptr2 = &vstPlugin;
 
-    callDispatcher(vstPlugin.aEffect, Eff::SetSampleRate, 0, 0, NULL, f32(Global::settings.audioSampleRate));
-    callDispatcher(vstPlugin.aEffect, Eff::SetBlockSize, 0, Global::settings.audioBufferSize, NULL, 0);
-    callDispatcher(vstPlugin.aEffect, Eff::Identify, 0, 0, NULL, 0);
+    callDispatcher(vstPlugin.aEffect, EffOpcode::SetSampleRate, 0, 0, NULL, f32(Global::settings.audioSampleRate));
+    callDispatcher(vstPlugin.aEffect, EffOpcode::SetBlockSize, 0, Global::settings.audioBufferSize, NULL, 0);
+    callDispatcher(vstPlugin.aEffect, EffOpcode::Identify, 0, 0, NULL, 0);
 
-    callDispatcher(vstPlugin.aEffect, Eff::Open, 0, 0, NULL, 0.0);
+    callDispatcher(vstPlugin.aEffect, EffOpcode::Open, 0, 0, NULL, 0.0);
 
-    vstPlugin.vstVersion = callDispatcher(vstPlugin.aEffect, Eff::GetVstVersion, 0, 0, NULL, 0);
+    vstPlugin.vstVersion = callDispatcher(vstPlugin.aEffect, EffOpcode::GetVstVersion, 0, 0, NULL, 0);
 
-    callDispatcher(vstPlugin.aEffect, Eff::SetSampleRate, 0, 0, NULL, 48000.0);
-    callDispatcher(vstPlugin.aEffect, Eff::SetBlockSize, 0, 512, NULL, 0);
+    callDispatcher(vstPlugin.aEffect, EffOpcode::SetSampleRate, 0, 0, NULL, 48000.0);
+    callDispatcher(vstPlugin.aEffect, EffOpcode::SetBlockSize, 0, 512, NULL, 0);
 
     if (vstPlugin.aEffect->magic == kEffectMagic &&
-      !(vstPlugin.aEffect->flags & EffFlags::IsSynth) &&
-      vstPlugin.aEffect->flags & EffFlags::CanReplacing)
+      !(to_underlying(vstPlugin.aEffect->flags & EffFlags::IsSynth)) &&
+      to_underlying(vstPlugin.aEffect->flags & EffFlags::CanReplacing))
     {
       if (vstPlugin.vstVersion >= 2)
       {
-        vstPlugin.name = getString(vstPlugin.aEffect, Eff::GetEffectName);
+        vstPlugin.name = getString(vstPlugin.aEffect, EffOpcode::GetEffectName);
         if (vstPlugin.name.length() == 0)
         {
-          vstPlugin.name = getString(vstPlugin.aEffect, Eff::GetProductString);
+          vstPlugin.name = getString(vstPlugin.aEffect, EffOpcode::GetProductString);
         }
       }
       if (vstPlugin.name.length() == 0)
@@ -350,15 +400,15 @@ void Vst::init()
 
       if (vstPlugin.vstVersion >= 2)
       {
-        vstPlugin.vendor = getString(vstPlugin.aEffect, Eff::GetVendorString);
-        vstPlugin.version = INT32_SWAP(callDispatcher(vstPlugin.aEffect, Eff::GetVendorVersion, 0, 0, NULL, 0));
+        vstPlugin.vendor = getString(vstPlugin.aEffect, EffOpcode::GetVendorString);
+        vstPlugin.version = INT32_SWAP(callDispatcher(vstPlugin.aEffect, EffOpcode::GetVendorVersion, 0, 0, NULL, 0));
       }
       if (vstPlugin.version == 0)
       {
         vstPlugin.version = INT32_SWAP(vstPlugin.aEffect->version);
       }
 
-      if (vstPlugin.aEffect->flags & EffFlags::HasEditor || vstPlugin.aEffect->numParams != 0)
+      if (to_underlying(vstPlugin.aEffect->flags & EffFlags::HasEditor) || vstPlugin.aEffect->numParams != 0)
       {
         vstPlugin.interactive = true;
       }
@@ -372,7 +422,7 @@ void Vst::init()
       vstPlugin.automatable = false;
       for (i32 i = 0; i < vstPlugin.aEffect->numParams; i++)
       {
-        if (callDispatcher(vstPlugin.aEffect, Eff::CanBeAutomated, 0, i, NULL, 0.0))
+        if (callDispatcher(vstPlugin.aEffect, EffOpcode::CanBeAutomated, 0, i, NULL, 0.0))
         {
           vstPlugin.automatable = true;
           break;
@@ -380,19 +430,19 @@ void Vst::init()
       }
     }
 
-    callDispatcher(vstPlugin.aEffect, Eff::BeginSetProgram, 0, 0, NULL, 0.0);
-    callDispatcher(vstPlugin.aEffect, Eff::SetProgram, 0, 0, NULL, 0.0);
-    callDispatcher(vstPlugin.aEffect, Eff::EndSetProgram, 0, 0, NULL, 0.0);
+    callDispatcher(vstPlugin.aEffect, EffOpcode::BeginSetProgram, 0, 0, NULL, 0.0);
+    callDispatcher(vstPlugin.aEffect, EffOpcode::SetProgram, 0, 0, NULL, 0.0);
+    callDispatcher(vstPlugin.aEffect, EffOpcode::EndSetProgram, 0, 0, NULL, 0.0);
 
-    callDispatcher(vstPlugin.aEffect, Eff::MainsChanged, 0, 1, NULL, 0.0);
+    callDispatcher(vstPlugin.aEffect, EffOpcode::MainsChanged, 0, 1, NULL, 0.0);
 
     if (vstPlugin.vstVersion >= 2)
     {
-      callDispatcher(vstPlugin.aEffect, Eff::StartProcess, 0, 0, NULL, 0.0);
+      callDispatcher(vstPlugin.aEffect, EffOpcode::StartProcess, 0, 0, NULL, 0.0);
     }
 
-    callDispatcher(vstPlugin.aEffect, Eff::SetSampleRate, 0, 0, NULL, Global::settings.audioSampleRate);
-    callDispatcher(vstPlugin.aEffect, Eff::SetBlockSize, 0, Global::settings.audioBufferSize, NULL, 0.0);
+    callDispatcher(vstPlugin.aEffect, EffOpcode::SetSampleRate, 0, 0, NULL, Global::settings.audioSampleRate);
+    callDispatcher(vstPlugin.aEffect, EffOpcode::SetBlockSize, 0, Global::settings.audioBufferSize, NULL, 0.0);
 
     Global::vstPluginNames.push_back(vstPlugin.name);
   }
@@ -405,7 +455,7 @@ void Vst::openWindow(i32 index)
 
   VstPlugin& vstPlugin = vstPlugins[index];
 
-  callDispatcher(vstPlugin.aEffect, Eff::EditGetRect, 0, 0, &vstPlugin.windowRect, 0.0);
+  callDispatcher(vstPlugin.aEffect, EffOpcode::EditGetRect, 0, 0, &vstPlugin.windowRect, 0.0);
   assert(vstPlugin.windowRect->top == 0);
   assert(vstPlugin.windowRect->left == 0);
   assert(vstPlugin.windowRect->bottom >= 1);
@@ -415,7 +465,7 @@ void Vst::openWindow(i32 index)
   SDL_VERSION(&wmInfo.version);
   SDL_GetWindowWMInfo(Global::window, &wmInfo);
 
-  callDispatcher(vstPlugin.aEffect, Eff::EditOpen, 0, 0, wmInfo.info.win.window, 0.0);
+  callDispatcher(vstPlugin.aEffect, EffOpcode::EditOpen, 0, 0, wmInfo.info.win.window, 0.0);
 
   vstPlugin.hwnd = GetWindow(wmInfo.info.win.window, GW_CHILD);
 }
@@ -454,6 +504,22 @@ u64 Vst::processBlock(i32 index, f32** inBlock, f32** outBlock, size_t blockLen)
     vstPlugins[index].aEffect->processReplacing(vstPlugins[index].aEffect, inBlock, outBlock, blockLen);
 
   return blockLen;
+}
+
+std::string Vst::saveParameters(i32 index)
+{
+  assert(index >= 0);
+  assert(index < vstPlugins.size());
+
+  u8* chunk = nullptr;
+  if (to_underlying(vstPlugins[index].aEffect->flags & EffFlags::ProgramChunks))
+  {
+    const i64 len = callDispatcher(vstPlugins[index].aEffect, EffOpcode::GetChunk, 1, 0, &chunk, 0.0);
+    assert(len > 0);
+
+    return Base64::encode(chunk, len);
+  }
+  return {};
 }
 
 #endif // SUPPORT_VST

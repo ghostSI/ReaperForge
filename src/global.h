@@ -193,7 +193,7 @@ namespace Global {
     extern f32 frameDelta;
     extern f32 time;
 
-    extern char playerName[256];
+    extern char profileName[256];
 
     extern bool inputUseController;
     extern i32 inputCursorPosX;

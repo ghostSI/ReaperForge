@@ -38,7 +38,7 @@ void Debug::render()
     }
 
     {
-      sprintf(text, "PlayerName %s", Global::playerName);
+      sprintf(text, "ProfileName %s", Global::profileName);
       const i32 letters = strlen(text);
       const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
       const f32 offsetY = 4.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);

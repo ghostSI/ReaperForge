@@ -57,7 +57,7 @@ std::atomic<i32> Global::chordDetectorIntervals;
 f32 Global::frameDelta = 0.016_f32;
 f32 Global::time = 0.0_f32;
 
-char Global::playerName[256] = "Anon";
+char Global::profileName[256] = "Anon";
 
 bool Global::inputUseController;
 i32 Global::inputCursorPosX = 0;

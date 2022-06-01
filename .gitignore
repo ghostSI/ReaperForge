@@ -22,7 +22,7 @@ docs/res/
 temp/
 psarc/
 vst/
-saves.ini
+profile_Anon.ini
 settings.ini
 *.sln
 *.vcxproj

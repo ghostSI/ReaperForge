@@ -49,9 +49,9 @@ set(HEADER_FILES
         src/opengl.h
         src/pcm.h
         src/player.h
+        src/profile.h
         src/psarc.h
         src/rijndael.h
-        src/saves.h
         src/settings.h
         src/shader.h
         src/sng.h
@@ -92,9 +92,9 @@ set(SOURCE_FILES
         src/opengl.cpp
         src/pcm.cpp
         src/player.cpp
+        src/profile.cpp
         src/psarc.cpp
         src/rijndael.cpp
-        src/saves.cpp
         src/settings.cpp
         src/shader.cpp
         src/sng.cpp

@@ -183,12 +183,22 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
     {
       "Instrument",
       {
+        { "Bass5StringTuning0",     std::to_string(settings.instrumentBass5StringTuning[0]) },
+        { "Bass5StringTuning1",     std::to_string(settings.instrumentBass5StringTuning[1]) },
+        { "Bass5StringTuning2",     std::to_string(settings.instrumentBass5StringTuning[2]) },
+        { "Bass5StringTuning3",     std::to_string(settings.instrumentBass5StringTuning[3]) },
         { "BassFirstWoundString",   std::to_string(settings.instrumentBassFirstWoundString) },
         { "BassStringColor0",       hexColor(settings.instrumentBassStringColor[0]) },
         { "BassStringColor1",       hexColor(settings.instrumentBassStringColor[1]) },
         { "BassStringColor2",       hexColor(settings.instrumentBassStringColor[2]) },
         { "BassStringColor3",       hexColor(settings.instrumentBassStringColor[3]) },
         { "BassStringColor4",       hexColor(settings.instrumentBassStringColor[4]) },
+        { "Guitar7StringTuning0",   std::to_string(settings.instrumentGuitar7StringTuning[0]) },
+        { "Guitar7StringTuning1",   std::to_string(settings.instrumentGuitar7StringTuning[1]) },
+        { "Guitar7StringTuning2",   std::to_string(settings.instrumentGuitar7StringTuning[2]) },
+        { "Guitar7StringTuning3",   std::to_string(settings.instrumentGuitar7StringTuning[3]) },
+        { "Guitar7StringTuning4",   std::to_string(settings.instrumentGuitar7StringTuning[4]) },
+        { "Guitar7StringTuning5",   std::to_string(settings.instrumentGuitar7StringTuning[5]) },
         { "GuitarFirstWoundString", std::to_string(settings.instrumentGuitarFirstWoundString) },
         { "GuitarStringColor0",     hexColor(settings.instrumentGuitarStringColor[0]) },
         { "GuitarStringColor1",     hexColor(settings.instrumentGuitarStringColor[1]) },
@@ -200,9 +210,10 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
       }
     },
     {
-      "Library",
+      "Paths",
       {
-        {"Path", settings.libraryPath}
+        { "Psarc", settings.psarcPath },
+        { "Vst", settings.vstPath }
       }
     },
     {
@@ -263,6 +274,12 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
     .highwaySongInfo = bool(atoi(serializedSettings.at("Highway").at("SongInfo").c_str())),
     .highwaySpeedMultiplier = f32(atof(serializedSettings.at("Highway").at("SpeedMultiplier").c_str())),
     .highwayStringNoteNames = bool(atoi(serializedSettings.at("Highway").at("StringNoteNames").c_str())),
+    .instrumentBass5StringTuning = {
+      atoi(serializedSettings.at("Instrument").at("Bass5StringTuning0").c_str()),
+      atoi(serializedSettings.at("Instrument").at("Bass5StringTuning1").c_str()),
+      atoi(serializedSettings.at("Instrument").at("Bass5StringTuning2").c_str()),
+      atoi(serializedSettings.at("Instrument").at("Bass5StringTuning3").c_str()),
+    },
     .instrumentBassFirstWoundString = atoi(serializedSettings.at("Instrument").at("BassFirstWoundString").c_str()),
     .instrumentBassStringColor = {
       colorVec4(serializedSettings.at("Instrument").at("BassStringColor0")),
@@ -270,6 +287,14 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
       colorVec4(serializedSettings.at("Instrument").at("BassStringColor2")),
       colorVec4(serializedSettings.at("Instrument").at("BassStringColor3")),
       colorVec4(serializedSettings.at("Instrument").at("BassStringColor4"))
+    },
+    .instrumentGuitar7StringTuning = {
+      atoi(serializedSettings.at("Instrument").at("Guitar7StringTuning0").c_str()),
+      atoi(serializedSettings.at("Instrument").at("Guitar7StringTuning1").c_str()),
+      atoi(serializedSettings.at("Instrument").at("Guitar7StringTuning2").c_str()),
+      atoi(serializedSettings.at("Instrument").at("Guitar7StringTuning3").c_str()),
+      atoi(serializedSettings.at("Instrument").at("Guitar7StringTuning4").c_str()),
+      atoi(serializedSettings.at("Instrument").at("Guitar7StringTuning5").c_str()),
     },
     .instrumentGuitarFirstWoundString = atoi(serializedSettings.at("Instrument").at("GuitarFirstWoundString").c_str()),
     .instrumentGuitarStringColor = {
@@ -281,7 +306,8 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
       colorVec4(serializedSettings.at("Instrument").at("GuitarStringColor5")),
       colorVec4(serializedSettings.at("Instrument").at("GuitarStringColor6"))
     },
-    .libraryPath = serializedSettings.at("Library").at("Path"),
+    .psarcPath = serializedSettings.at("Paths").at("Psarc"),
+    .vstPath = serializedSettings.at("Paths").at("Vst"),
     .mixerMusicVolume = atoi(serializedSettings.at("Mixer").at("MusicVolume").c_str()),
     .mixerGuitar1Volume = atoi(serializedSettings.at("Mixer").at("Guitar1Volume").c_str()),
     .mixerBass1Volume = atoi(serializedSettings.at("Mixer").at("Bass1Volume").c_str()),

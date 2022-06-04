@@ -133,6 +133,7 @@ namespace Const {
     inline constexpr bool isMarkedFret[]{ 0,1,0,1,0,1,0,1,0,1,0,0,1,0,0,1,0,1,0,1,0,1,0,0,1 };
     inline constexpr i32 soundMaxCount = 8;
     inline constexpr i32 gearMaxKnobs = 10;
+    inline constexpr i32 profileToneAssignmentCount = 10;
 }
 
 namespace Global {
@@ -145,6 +146,16 @@ namespace Global {
     extern KeyInput inputS;
     extern KeyInput inputE;
     extern KeyInput inputC;
+    extern KeyInput inputKP0;
+    extern KeyInput inputKP1;
+    extern KeyInput inputKP2;
+    extern KeyInput inputKP3;
+    extern KeyInput inputKP4;
+    extern KeyInput inputKP5;
+    extern KeyInput inputKP6;
+    extern KeyInput inputKP7;
+    extern KeyInput inputKP8;
+    extern KeyInput inputKP9;
     extern KeyInput inputFullscreen;
     extern KeyInput inputPause;
     extern KeyInput inputWireframe;
@@ -161,6 +172,8 @@ namespace Global {
 
     extern bool isInstalled;
     extern InstrumentFlags filterInstrument;
+    extern i32 bassTuning[5];
+    extern i32 guitarTuning[7];
     extern std::vector<Psarc::Info> psarcInfos;
     extern std::vector<Song::Info> songInfos;
     extern i32 songSelected;
@@ -176,11 +189,13 @@ namespace Global {
     extern char searchText[256];
     extern i32 searchTextLength;
     extern bool toneWindow;
+    extern bool helpWindow;
 #ifdef SUPPORT_VST
     extern bool effectsWindow;
     extern i32 vstWindow;
     extern std::vector<std::string> vstPluginNames;
     extern i32 effectChain[16];
+    extern i32 vstToneAssignment;
 #endif // SUPPORT_VST
     
     extern Settings::Info settings;

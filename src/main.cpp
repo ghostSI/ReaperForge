@@ -165,13 +165,14 @@ int main(int argc, char* argv[]) {
   Camera::init();
   Font::init();
   Collection::init();
+#ifdef SUPPORT_VST
+  Vst::init();
+#endif // SUPPORT_VST
   Profile::init();
 #ifndef __EMSCRIPTEN__
   Ui::init();
 #endif // __EMSCRIPTEN__
-#ifdef SUPPORT_VST
-  Vst::init();
-#endif // SUPPORT_VST
+
 
 #ifdef __EMSCRIPTEN__
   emscripten_set_main_loop(mainloop, -1, 1);

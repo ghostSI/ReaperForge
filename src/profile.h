@@ -1,7 +1,8 @@
 #ifndef PROFILE_H
 #define PROFILE_H
 
-#include "manifest.h"
+#include "configuration.h"
+#include "global.h"
 
 namespace Profile {
 

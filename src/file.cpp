@@ -84,9 +84,9 @@ std::map<std::string, std::map<std::string, std::string>> File::loadIni(const ch
 
     std::map<std::string, std::map<std::string, std::string>> iniContent;
 
-    char buf[1024];
+    char buf[4096];
     std::string name;
-    while (fgets(buf, 1024, file) != nullptr) {
+    while (fgets(buf, 4096, file) != nullptr) {
         std::string line = buf;
 
         if (line[0] == ';' || line[0] == '\n' || line[0] == '\r')

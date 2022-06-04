@@ -50,6 +50,25 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
   return serializedSaves;
 }
 
+#ifdef SUPPORT_VST
+struct VstTone
+{
+  struct Tone
+  {
+    std::string name;
+    struct Assignemnt
+    {
+      i32 index = -1;
+      std::vector<u8> vstData;
+    } assignment;
+  };
+
+  Tone bass[NUM(Global::effectChain)];
+  Tone guitar[NUM(Global::effectChain)];
+};
+static VstTone vstTones[Const::profileToneAssignmentCount];
+#endif // SUPPORT_VST
+
 static void loadStatsOnly()
 {
   char profileIni[sizeof("profile_") + NUM(Global::profileName) + sizeof(".ini")] = "profile_";
@@ -60,6 +79,39 @@ static void loadStatsOnly()
     return;
 
   const std::map<std::string, std::map<std::string, std::string>> serializedSaves = File::loadIni(profileIni);
+
+  {
+    const auto search = serializedSaves.find("!ToneAssignment");
+    if (search != serializedSaves.end())
+    {
+      const std::map<std::string, std::string>& toneAssignment = search->second;
+
+      for (i32 i = 0; i < Const::profileToneAssignmentCount; ++i)
+      {
+        for (i32 j = 0; j < NUM(Global::effectChain); ++j)
+        {
+          const auto search2 = toneAssignment.find(std::to_string(i) + "G" + std::to_string(j));
+          if (search2 != toneAssignment.end())
+          {
+            const u64 seperator = search2->second.find_last_of(';');
+            assert(seperator != std::string::npos);
+            const std::string pluginName = search2->second.substr(0, seperator);
+            const std::string base64 = search2->second.substr(seperator + 1);
+
+            for (i32 k = 0; k < Global::vstPluginNames.size(); ++k)
+            {
+              if (pluginName == Global::vstPluginNames[k])
+              {
+                Global::effectChain[j] = k;
+                Vst::loadParameter(j, base64);
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
   for (Song::Info& songInfo : Global::songInfos)
   {
@@ -88,54 +140,34 @@ void Profile::init()
   }
 }
 
-static std::map<i32, std::string> tone(InstrumentFlags instrumentFlags)
-{
-  std::map<i32, std::string> toneAssignment;
 
-  for (i32 i = 0; i < NUM(Global::effectChain); ++i)
-  {
-    if (Global::effectChain[i] < 0)
-      continue;
-
-    toneAssignment.insert({ i, Vst::saveParameters(i) });
-  }
-
-  return toneAssignment;
-}
 
 static void saveStatsOnly()
 {
   std::map<std::string, std::map<std::string, std::string>> serializedSaves;
 
   std::map<std::string, std::string> toneAssignment;
-  toneAssignment.insert({ "0B", "Parameter" });
-  for (const auto&[ index, paramters ] : tone(InstrumentFlags::LeadGuitar))
-  {
-    toneAssignment.insert({ std::string("0G") + std::to_string(index), paramters });
-  }
-  toneAssignment.insert({ "1B", "Parameter" });
-  toneAssignment.insert({ "1G", "Parameter" });
-  toneAssignment.insert({ "2B", "Parameter" });
-  toneAssignment.insert({ "2G", "Parameter" });
-  toneAssignment.insert({ "3B", "Parameter" });
-  toneAssignment.insert({ "3G", "Parameter" });
-  toneAssignment.insert({ "4B", "Parameter" });
-  toneAssignment.insert({ "4G", "Parameter" });
-  toneAssignment.insert({ "5B", "Parameter" });
-  toneAssignment.insert({ "5G", "Parameter" });
-  toneAssignment.insert({ "6B", "Parameter" });
-  toneAssignment.insert({ "6G", "Parameter" });
-  toneAssignment.insert({ "7B", "Parameter" });
-  toneAssignment.insert({ "7G", "Parameter" });
-  toneAssignment.insert({ "8B", "Parameter" });
-  toneAssignment.insert({ "8G", "Parameter" });
-  toneAssignment.insert({ "9B", "Parameter" });
-  toneAssignment.insert({ "9G", "Parameter" });
-  serializedSaves.insert({ "!ToneAssignment", toneAssignment });
-  for (i32 i = 0; i < NUM(Global::effectChain); ++i)
-  {
 
+  for (i32 h = 0; h < 2; ++h)
+  {
+    const char instrument = (h == 0 ? 'G' : 'B');
+
+    for (i32 i = 0; i < Const::profileToneAssignmentCount; ++i)
+    {
+      toneAssignment.insert({ std::to_string(i) + instrument, "Default" });
+
+      for (i32 j = 0; j < NUM(Global::effectChain); ++j)
+      {
+        if (Global::effectChain[j] < 0)
+          continue;
+
+        const std::string parameter = Vst::saveParameters(Global::effectChain[j]);
+        toneAssignment.insert({ std::to_string(i) + instrument + std::to_string(j), Global::vstPluginNames[Global::effectChain[j]] + ';' + parameter });
+      }
+    }
+    serializedSaves.insert({ "!ToneAssignment", toneAssignment });
   }
+
   for (const Song::Info& songInfo : Global::songInfos)
   {
     const std::map<std::string, std::map<std::string, std::string>> map = serialize(songInfo.manifestInfos);

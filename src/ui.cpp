@@ -1566,42 +1566,42 @@ static void mixerWindow() {
       {
         nk_layout_row_dynamic(ctx, 22, 1);
         i32 musicVolume = Global::settings.mixerMusicVolume;
-        nk_property_int(ctx, "Music Volume:", 0, &musicVolume, 100, 10, 1);
+        nk_property_int(ctx, "Music Volume:", 0, &musicVolume, SDL_MIX_MAXVOLUME, 10, 1);
         Global::settings.mixerMusicVolume = musicVolume;
       }
 
       {
         nk_layout_row_dynamic(ctx, 22, 1);
         i32 guitar1Volume = Global::settings.mixerGuitar1Volume;
-        nk_property_int(ctx, "Player 1 Guitar Volume:", 0, &guitar1Volume, 100, 10, 1);
+        nk_property_int(ctx, "Player 1 Guitar Volume:", 0, &guitar1Volume, SDL_MIX_MAXVOLUME, 10, 1);
         Global::settings.mixerGuitar1Volume = guitar1Volume;
       }
 
       {
         nk_layout_row_dynamic(ctx, 22, 1);
         i32 bass1Volume = Global::settings.mixerBass1Volume;
-        nk_property_int(ctx, "Player 1 Bass Volume:", 0, &bass1Volume, 100, 10, 1);
+        nk_property_int(ctx, "Player 1 Bass Volume:", 0, &bass1Volume, SDL_MIX_MAXVOLUME, 10, 1);
         Global::settings.mixerBass1Volume = bass1Volume;
       }
 
       {
         nk_layout_row_dynamic(ctx, 22, 1);
         i32 guitar2Volume = Global::settings.mixerGuitar2Volume;
-        nk_property_int(ctx, "Player 2 Guitar Volume:", 0, &guitar2Volume, 100, 10, 1);
+        nk_property_int(ctx, "Player 2 Guitar Volume:", 0, &guitar2Volume, SDL_MIX_MAXVOLUME, 10, 1);
         Global::settings.mixerGuitar2Volume = guitar2Volume;
       }
 
       {
         nk_layout_row_dynamic(ctx, 22, 1);
         i32 bass2Volume = Global::settings.mixerBass2Volume;
-        nk_property_int(ctx, "Player 2 Bass Volume:", 0, &bass2Volume, 100, 10, 1);
+        nk_property_int(ctx, "Player 2 Bass Volume:", 0, &bass2Volume, SDL_MIX_MAXVOLUME, 10, 1);
         Global::settings.mixerBass2Volume = bass2Volume;
       }
 
       {
         nk_layout_row_dynamic(ctx, 22, 1);
         i32 microphoneVolume = Global::settings.mixerMicrophoneVolume;
-        nk_property_int(ctx, "Microphone Volume:", 0, &microphoneVolume, 100, 10, 1);
+        nk_property_int(ctx, "Microphone Volume:", 0, &microphoneVolume, SDL_MIX_MAXVOLUME, 10, 1);
         Global::settings.mixerMicrophoneVolume = microphoneVolume;
       }
   }
@@ -1968,11 +1968,11 @@ static i32 selectEffectWindow()
 {
   i32 selectedEffect = -1;
 
-  if (nk_begin(ctx, "Select Effect", nk_rect(600, 100, 500, 500),
-    NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE | NK_WINDOW_SCALABLE)) {
+  if (nk_begin(ctx, "Select Effect", nk_rect(600, 100, 260, 500),
+    NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
     //nk_layout_row_static(ctx, 400.0f, 400.0f, 1);
-    nk_layout_row_static(ctx, 18, 400, 1);
+    nk_layout_row_static(ctx, 18, 230, 1);
     for (int i = 0; i < Global::vstPluginNames.size(); ++i)
     {
       if (nk_button_label(ctx, Global::vstPluginNames[i].c_str()))
@@ -1992,13 +1992,30 @@ static void effectsWindow()
   static i32 selectedEffect = -1;
   i32 unusedVar = 1;
 
-  if (Global::effectsWindow = nk_begin(ctx, "Effects", nk_rect(100, 100, 500, 500),
+  if (Global::effectsWindow = nk_begin(ctx, "Effects", nk_rect(100, 100, 500, 600),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE |
     NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
-    nk_layout_row_static(ctx, 400.0f, 400.0f, 2);
+    nk_layout_row_dynamic(ctx, 22, 2);
+    nk_label(ctx, "Name:", NK_TEXT_LEFT);
+
+    {
+      char text[64];
+      int textlen;
+      nk_edit_string(ctx, NK_EDIT_SIMPLE, &text[0], &textlen, sizeof(text), nk_filter_default);
+    }
+
+
+    nk_layout_row_template_begin(ctx, 421);
+    nk_layout_row_template_push_dynamic(ctx);
+    nk_layout_row_template_end(ctx);
     if (nk_group_begin(ctx, "Group", NK_WINDOW_BORDER | NK_WINDOW_NO_SCROLLBAR)) {
-      nk_layout_row_static(ctx, 18, 300, 1);
+      nk_layout_row_template_begin(ctx, 22);
+      nk_layout_row_template_push_dynamic(ctx);
+      nk_layout_row_template_push_static(ctx, 25);
+      nk_layout_row_template_push_static(ctx, 30);
+      nk_layout_row_template_push_static(ctx, 40);
+      nk_layout_row_template_end(ctx);
       for (int i = 0; i < NUM(Global::effectChain); ++i)
       {
         if (nk_selectable_label(ctx, (Global::effectChain[i] != -1) ? Global::vstPluginNames[Global::effectChain[i]].c_str() : "...", (Global::effectChain[i] != -1) ? NK_TEXT_LEFT : NK_TEXT_CENTERED, &unusedVar))
@@ -2020,6 +2037,28 @@ static void effectsWindow()
           {
             slotSelectEffectWindow = i;
           }
+        }
+        if (nk_button_label(ctx, "X"))
+        {
+          Global::effectChain[i] = -1;
+        }
+        if (i >= 1)
+        {
+          if (nk_button_label(ctx, "up"))
+            Global::effectChain[i] = -1;
+        }
+        else
+        {
+          nk_spacing(ctx, 1);
+        }
+        if (i < NUM(Global::effectChain))
+        {
+          if (nk_button_label(ctx, "down"))
+            Global::effectChain[i] = -1;
+        }
+        else
+        {
+          nk_spacing(ctx, 1);
         }
       }
       nk_group_end(ctx);
@@ -2062,9 +2101,24 @@ static void songWindow() {
       Global::effectsWindow = !Global::effectsWindow;
     }
 #endif // SUPPORT_VST
-    if (nk_button_label(ctx, "L"));
-    if (nk_button_label(ctx, "R"));
-    if (nk_button_label(ctx, "B"));
+    if (nk_button_label(ctx, "L"))
+    {
+      Global::filterInstrument = InstrumentFlags::LeadGuitar;
+    }
+    if (nk_button_label(ctx, "R"))
+    {
+      Global::filterInstrument = InstrumentFlags::RhythmGuitar;
+    }
+    if (nk_button_label(ctx, "B"))
+    {
+      Global::filterInstrument = InstrumentFlags::BassGuitar;
+    }
+
+
+    if (nk_button_label(ctx, "?"))
+    {
+      Global::helpWindow = !Global::helpWindow;
+    }
 
     //nk_layout_row_dynamic(ctx, 200, 1);
     //if (nk_group_begin(ctx, "1", NK_WINDOW_BORDER))
@@ -2391,6 +2445,12 @@ static void settingsWindow()
           "Whole manifest"
         };
         Global::settings.saveMode = SaveMode(nk_combo(ctx, saveModeNames, NUM(saveModeNames), to_underlying(Global::settings.saveMode), 25, nk_vec2(200, 200)));
+        nk_label(ctx, "Profile Name", NK_TEXT_LEFT);
+        {
+          i32 textlen = strlen(Global::profileName);
+          nk_edit_string(ctx, NK_EDIT_SIMPLE, &Global::profileName[0], &textlen, sizeof(Global::profileName), nk_filter_default);
+          Global::profileName[textlen] = '\0';
+        }
       }
       nk_tree_pop(ctx);
     }
@@ -2407,6 +2467,25 @@ static void installWindow() {
     nk_label(ctx, "Reaperforge is not installed.", NK_TEXT_LEFT);
     nk_label(ctx, "Installing ReaperForge will create a songs directory for the .psarc files.", NK_TEXT_LEFT);
     nk_label(ctx, "It will also create a settings.ini file.", NK_TEXT_LEFT);
+
+    nk_layout_row_dynamic(ctx, 29, 1);
+    if (nk_button_label(ctx, "Install"))
+      Installer::install();
+  }
+  nk_end(ctx);
+}
+
+static void helpWindow()
+{
+  if (nk_begin(ctx, "Help", nk_rect(200, 280, 600, 160),
+    NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
+
+
+    nk_layout_row_dynamic(ctx, 22, 1);
+    nk_label(ctx, "Keybindings.", NK_TEXT_LEFT);
+    nk_label(ctx, "F1: open Tuner", NK_TEXT_LEFT);
+    nk_label(ctx, "F3: toggle Debug Info", NK_TEXT_LEFT);
+    nk_label(ctx, "Num0-9: Use Custom Tone", NK_TEXT_LEFT);
 
     nk_layout_row_dynamic(ctx, 29, 1);
     if (nk_button_label(ctx, "Install"))
@@ -2434,6 +2513,8 @@ void Ui::tick() {
   if (Global::effectsWindow)
     effectsWindow();
 #endif // SUPPORT_VST
+  if (Global::helpWindow)
+    helpWindow();
 }
 
 void Ui::render() {

@@ -514,7 +514,7 @@ const char* Song::tuningName(const Tuning& tuning) {
   if (tuning.string[0] == -4 && tuning.string[1] == -4 && tuning.string[2] == -4 && tuning.string[3] == -4 && tuning.string[4] == -4 && tuning.string[5] == -4)
     return "C Standard";
   if (tuning.string[0] == -6 && tuning.string[1] == -4 && tuning.string[2] == -4 && tuning.string[3] == -4 && tuning.string[4] == -4 && tuning.string[5] == -4)
-    return "C Drap Ab";
+    return "C Drop Ab";
   if (tuning.string[0] == -5 && tuning.string[1] == -5 && tuning.string[2] == -5 && tuning.string[3] == -5 && tuning.string[4] == -5 && tuning.string[5] == -5)
     return "B Standard";
   if (tuning.string[0] == -7 && tuning.string[1] == -5 && tuning.string[2] == -5 && tuning.string[3] == -5 && tuning.string[4] == -5 && tuning.string[5] == -5)

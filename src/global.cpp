@@ -9,6 +9,16 @@ KeyInput Global::inputW;
 KeyInput Global::inputS;
 KeyInput Global::inputE;
 KeyInput Global::inputC;
+KeyInput Global::inputKP0;
+KeyInput Global::inputKP1;
+KeyInput Global::inputKP2;
+KeyInput Global::inputKP3;
+KeyInput Global::inputKP4;
+KeyInput Global::inputKP5;
+KeyInput Global::inputKP6;
+KeyInput Global::inputKP7;
+KeyInput Global::inputKP8;
+KeyInput Global::inputKP9;
 KeyInput Global::inputFullscreen;
 KeyInput Global::inputPause;
 KeyInput Global::inputWireframe;
@@ -25,6 +35,8 @@ mat4 Global::cameraMat;
 
 bool Global::isInstalled = false;
 InstrumentFlags Global::filterInstrument = InstrumentFlags::none;
+i32 Global::bassTuning[5] = { 0, 0, 0, 0, 0 };
+i32 Global::guitarTuning[7] = { 0, 0, 0, 0, 0, 0, 0 };
 std::vector<Psarc::Info> Global::psarcInfos;
 i32 Global::songSelected = -1;
 i32 Global::manifestSelected = 0;
@@ -40,11 +52,13 @@ f32 Global::musicSpeedMultiplier = 1.0f;
 char Global::searchText[256] = "";
 i32 Global::searchTextLength = 0;
 bool Global::toneWindow = false;
+bool Global::helpWindow = false;
 #ifdef SUPPORT_VST
 bool Global::effectsWindow = false;
 i32 Global::vstWindow = -1;
 std::vector<std::string> Global::vstPluginNames;
 i32 Global::effectChain[16] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+i32 Global::vstToneAssignment = 0;
 #endif // SUPPORT_VST
 
 Settings::Info Global::settings;

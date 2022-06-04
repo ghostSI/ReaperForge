@@ -522,4 +522,15 @@ std::string Vst::saveParameters(i32 index)
   return {};
 }
 
+void Vst::loadParameter(i32 index, const std::string& base64)
+{
+  u8 data[4096];
+  const i64 len = Base64::decode(base64, data);
+  assert(len > 0);
+
+  callDispatcher(vstPlugins[index].aEffect, EffOpcode::BeginSetProgram, 0, 0, NULL, 0.0);
+  callDispatcher(vstPlugins[index].aEffect, EffOpcode::SetChunk, 1, len, data, 0.0);
+  callDispatcher(vstPlugins[index].aEffect, EffOpcode::EndSetProgram, 0, 0, NULL, 0.0);
+}
+
 #endif // SUPPORT_VST

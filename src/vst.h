@@ -21,6 +21,7 @@ namespace Vst
   u64 processBlock(i32 index, f32** inBlock, f32** outBlock, size_t blockLen);
 
   std::string saveParameters(i32 index);
+  void loadParameter(i32 index, const std::string& base64);
 }
 
 #endif // SUPPORT_VST

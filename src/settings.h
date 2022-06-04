@@ -30,6 +30,7 @@ namespace Settings {
     bool highwaySongInfo = true;
     f32 highwaySpeedMultiplier = 20.0f;
     bool highwayStringNoteNames = true;
+    i32 instrumentBass5StringTuning[4] = { -2, -2, -2, -2 };
     i32 instrumentBassFirstWoundString = 0;
     vec4 instrumentBassStringColor[5] = {
       colorVec4("#E05A01"),
@@ -38,6 +39,7 @@ namespace Settings {
       colorVec4("#D20000"),
       colorVec4("#009B71"),
     };
+    i32 instrumentGuitar7StringTuning[6] = { -2, -2, -2, -2, -2, -2 };;
     i32 instrumentGuitarFirstWoundString = 3;
     vec4 instrumentGuitarStringColor[7] = {
       colorVec4("#940FB0"),
@@ -48,7 +50,8 @@ namespace Settings {
       colorVec4("#D20000"),
       colorVec4("#009B71"),
     };
-    std::string libraryPath = "psarc";
+    std::string psarcPath = "psarc";
+    std::string vstPath = "vst";
     i32 mixerMusicVolume = 100;
     i32 mixerGuitar1Volume = 100;
     i32 mixerBass1Volume = 100;

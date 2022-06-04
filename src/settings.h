@@ -30,6 +30,7 @@ namespace Settings {
     bool highwaySongInfo = true;
     f32 highwaySpeedMultiplier = 20.0f;
     bool highwayStringNoteNames = true;
+    bool highwayToneAssignment = true;
     i32 instrumentBass5StringTuning[4] = { -2, -2, -2, -2 };
     i32 instrumentBassFirstWoundString = 0;
     vec4 instrumentBassStringColor[5] = {

@@ -177,7 +177,8 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
         { "LyricsColor2",    hexColor(settings.highwayLyricsColor[2]) },
         { "ReverseStrings",  std::to_string(settings.highwayReverseStrings) },
         { "SongInfo",        std::to_string(settings.highwaySongInfo) },
-        { "StringNoteNames", std::to_string(settings.highwayStringNoteNames) }
+        { "StringNoteNames", std::to_string(settings.highwayStringNoteNames) },
+        { "ToneAssignment",  std::to_string(settings.highwayToneAssignment) }
       }
     },
     {
@@ -274,6 +275,7 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
     .highwaySongInfo = bool(atoi(serializedSettings.at("Highway").at("SongInfo").c_str())),
     .highwaySpeedMultiplier = f32(atof(serializedSettings.at("Highway").at("SpeedMultiplier").c_str())),
     .highwayStringNoteNames = bool(atoi(serializedSettings.at("Highway").at("StringNoteNames").c_str())),
+    .highwayToneAssignment = bool(atoi(serializedSettings.at("Highway").at("ToneAssignment").c_str())),
     .instrumentBass5StringTuning = {
       atoi(serializedSettings.at("Instrument").at("Bass5StringTuning0").c_str()),
       atoi(serializedSettings.at("Instrument").at("Bass5StringTuning1").c_str()),

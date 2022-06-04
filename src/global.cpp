@@ -53,6 +53,7 @@ char Global::searchText[256] = "";
 i32 Global::searchTextLength = 0;
 bool Global::toneWindow = false;
 bool Global::helpWindow = false;
+f32 Global::toneAssignment = 0.0f;
 #ifdef SUPPORT_VST
 bool Global::effectsWindow = false;
 i32 Global::vstWindow = -1;

@@ -1083,6 +1083,36 @@ static void drawSongInfo()
   }
 }
 
+static void drawToneAssignment()
+{
+  const f32 timeElapsed = Global::time - Global::toneAssignment;
+
+  if (Const::highwayRenderDrawToneAssignmentEndTime < timeElapsed)
+    return;
+
+  f32 alpha = 1.0f;
+  if (Const::highwayRenderDrawToneAssignmentFadeInTime > timeElapsed)
+    alpha = timeElapsed / (Const::highwayRenderDrawToneAssignmentFadeInTime);
+  else if (Const::highwayRenderDrawToneAssignmentFadeOutTime < timeElapsed)
+    alpha = (timeElapsed - Const::highwayRenderDrawToneAssignmentEndTime) / (Const::highwayRenderDrawToneAssignmentFadeOutTime - Const::highwayRenderDrawToneAssignmentEndTime);
+
+  GLuint shader = Shader::useShader(Shader::Stem::fontScreen);
+  glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, alpha);
+
+  {
+    const i32 letters = sizeof("Tone Switch") - 1;
+    const f32 scaleX = 1.5f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
+    const f32 scaleY = 1.5f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+    Font::draw("Tone Switch", 0.95f - scaleX, 0.6f, 0.0f, scaleX, scaleY);
+  }
+  {
+    const i32 letters = sizeof("Default") - 1;
+    const f32 scaleX = 3.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
+    const f32 scaleY = 3.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+    Font::draw("Default", 0.95f - scaleX, 0.5f, 0.0f, scaleX, scaleY);
+  }
+}
+
 static void drawLyricsUsedText(GLuint shader, i32& line0Cur, i32 line0Begin, i32 line0Active)
 {
   if (line0Begin < line0Active)
@@ -1420,6 +1450,9 @@ void Highway::tick()
 
 void Highway::render()
 {
+  if (Global::settings.highwayToneAssignment)
+    drawToneAssignment();
+
   if (Global::songSelected == -1)
     return;
 

@@ -53,6 +53,9 @@ namespace Const {
     inline constexpr f32 highwayRenderDrawSongInfoFadeInTime = 1.5f;
     inline constexpr f32 highwayRenderDrawSongInfoFadeOutTime = 3.5f;
     inline constexpr f32 highwayRenderDrawSongInfoEndTime = 4.0f;
+    inline constexpr f32 highwayRenderDrawToneAssignmentFadeInTime = 0.5f;
+    inline constexpr f32 highwayRenderDrawToneAssignmentFadeOutTime = 2.5f;
+    inline constexpr f32 highwayRenderDrawToneAssignmentEndTime = 3.0f;
     inline constexpr f32 highwayRenderDrawChordNameWaitTime = 0.2f;
     inline constexpr f32 highwayRenderDrawChordNameFadeOutTime = 0.2f;
     inline constexpr f32 highwayRenderDrawChordNameEndTime = 0.3f;
@@ -190,6 +193,7 @@ namespace Global {
     extern i32 searchTextLength;
     extern bool toneWindow;
     extern bool helpWindow;
+    extern f32 toneAssignment;
 #ifdef SUPPORT_VST
     extern bool effectsWindow;
     extern i32 vstWindow;

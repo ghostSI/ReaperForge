@@ -14,7 +14,6 @@ enum struct InstrumentFlags : u16 {
   LeadGuitar = 1 << 0,
   RhythmGuitar = 1 << 1,
   BassGuitar = 1 << 2,
-  AllGuitars = LeadGuitar | RhythmGuitar | BassGuitar,
   Vocals = 1 << 3,
   Keyboard = 1 << 4,
   Second = 1 << 5,

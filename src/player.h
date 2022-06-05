@@ -10,6 +10,7 @@ namespace Player {
   void tick();
 
   void playSong(const Psarc::Info& psarcInfo, InstrumentFlags instrumentFlags);
+  void playPreview(const Psarc::Info& psarcInfo);
   void stop();
 }
 

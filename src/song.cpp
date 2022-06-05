@@ -79,12 +79,20 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
       || tocEntry.name.ends_with(".nt")
       || tocEntry.name.ends_with(".version")
       || tocEntry.name.ends_with(".appid")
-      || tocEntry.name.ends_with(".xml")
+      || tocEntry.name.ends_with("_vocals.xml")
+      || tocEntry.name.ends_with("_showlights.xml")
       || tocEntry.name.ends_with("_vocals.json"))
     {
       continue;
     }
     else if (tocEntry.name.ends_with("_lead.xml")) {
+#ifdef ARRANGEMENT_XML
+      Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
+      arrangement.instrumentFlags |= InstrumentFlags::LeadGuitar;
+      songInfo.arrangements.push_back(arrangement);
+#endif // ARRANGEMENT_XML
+    }
+    else if (tocEntry.name.ends_with("_lead2.xml")) {
 #ifdef ARRANGEMENT_XML
       Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
       arrangement.instrumentFlags |= InstrumentFlags::LeadGuitar;
@@ -98,7 +106,21 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
       songInfo.arrangements.push_back(arrangement);
 #endif // ARRANGEMENT_XML
     }
+    else if (tocEntry.name.ends_with("_rhythm2.xml")) {
+#ifdef ARRANGEMENT_XML
+      Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
+      arrangement.instrumentFlags |= InstrumentFlags::RhythmGuitar;
+      songInfo.arrangements.push_back(arrangement);
+#endif // ARRANGEMENT_XML
+    }
     else if (tocEntry.name.ends_with("_bass.xml")) {
+#ifdef ARRANGEMENT_XML
+      Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
+      arrangement.instrumentFlags |= InstrumentFlags::BassGuitar;
+      songInfo.arrangements.push_back(arrangement);
+#endif // ARRANGEMENT_XML
+    }
+    else if (tocEntry.name.ends_with("_bass2.xml")) {
 #ifdef ARRANGEMENT_XML
       Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
       arrangement.instrumentFlags |= InstrumentFlags::BassGuitar;

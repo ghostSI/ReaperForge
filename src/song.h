@@ -17,13 +17,14 @@ namespace Song {
     complete,
   };
 
+
+
   struct Info
   {
     LoadState loadState = LoadState::none;
     XBlock::Info xblock;
     std::vector<Manifest::Info> manifestInfos;
     std::vector<Manifest::Tone> tones;
-
     i32 albumCover64_tocIndex = -1;
     mutable GLuint albumCover64_ogl = 0;
     i32 albumCover128_tocIndex = -1;

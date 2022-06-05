@@ -34,7 +34,7 @@ f32 Global::cameraMidY = f32(Global::settings.graphicsResolutionHeight / 2);
 mat4 Global::cameraMat;
 
 bool Global::isInstalled = false;
-InstrumentFlags Global::filterInstrument = InstrumentFlags::none;
+InstrumentFlags Global::currentInstrument = InstrumentFlags::LeadGuitar;
 i32 Global::bassTuning[5] = { 0, 0, 0, 0, 0 };
 i32 Global::guitarTuning[7] = { 0, 0, 0, 0, 0, 0, 0 };
 std::vector<Psarc::Info> Global::psarcInfos;

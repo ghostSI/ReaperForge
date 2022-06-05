@@ -1992,11 +1992,15 @@ static void effectsWindow()
   static i32 selectedEffect = -1;
   i32 unusedVar = 1;
 
-  if (Global::effectsWindow = nk_begin(ctx, "Effects", nk_rect(100, 100, 500, 600),
+  if (Global::effectsWindow = nk_begin(ctx, "Effects", nk_rect(100, 100, 400, 500),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE |
     NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
-    nk_layout_row_dynamic(ctx, 22, 2);
+    nk_layout_row_template_begin(ctx, 22);
+    nk_layout_row_template_push_static(ctx, 40);
+    nk_layout_row_template_push_dynamic(ctx);
+    nk_layout_row_template_end(ctx);
+
     nk_label(ctx, "Name:", NK_TEXT_LEFT);
 
     {
@@ -2005,7 +2009,6 @@ static void effectsWindow()
       nk_edit_string(ctx, NK_EDIT_SIMPLE, &text[0], &textlen, sizeof(text), nk_filter_default);
     }
 
-
     nk_layout_row_template_begin(ctx, 421);
     nk_layout_row_template_push_dynamic(ctx);
     nk_layout_row_template_end(ctx);
@@ -2013,8 +2016,8 @@ static void effectsWindow()
       nk_layout_row_template_begin(ctx, 22);
       nk_layout_row_template_push_dynamic(ctx);
       nk_layout_row_template_push_static(ctx, 25);
-      nk_layout_row_template_push_static(ctx, 30);
-      nk_layout_row_template_push_static(ctx, 40);
+      nk_layout_row_template_push_static(ctx, 25);
+      nk_layout_row_template_push_static(ctx, 25);
       nk_layout_row_template_end(ctx);
       for (int i = 0; i < NUM(Global::effectChain); ++i)
       {
@@ -2038,27 +2041,42 @@ static void effectsWindow()
             slotSelectEffectWindow = i;
           }
         }
-        if (nk_button_label(ctx, "X"))
+        if (Global::effectChain[i] >= 0)
         {
-          Global::effectChain[i] = -1;
-        }
-        if (i >= 1)
-        {
-          if (nk_button_label(ctx, "up"))
+          if (nk_button_label(ctx, "X"))
+          {
             Global::effectChain[i] = -1;
+          }
+          if (i >= 1)
+          {
+            if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_UP))
+            {
+              const i32 tmp = Global::effectChain[i];
+              Global::effectChain[i] = Global::effectChain[i - 1];
+              Global::effectChain[i - 1] = tmp;
+            }
+          }
+          else
+          {
+            nk_spacing(ctx, 1);
+          }
+          if (i < NUM(Global::effectChain) - 1)
+          {
+            if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_DOWN))
+            {
+              const i32 tmp = Global::effectChain[i];
+              Global::effectChain[i] = Global::effectChain[i + 1];
+              Global::effectChain[i + 1] = tmp;
+            }
+          }
+          else
+          {
+            nk_spacing(ctx, 1);
+          }
         }
         else
         {
-          nk_spacing(ctx, 1);
-        }
-        if (i < NUM(Global::effectChain))
-        {
-          if (nk_button_label(ctx, "down"))
-            Global::effectChain[i] = -1;
-        }
-        else
-        {
-          nk_spacing(ctx, 1);
+          nk_spacing(ctx, 3);
         }
       }
       nk_group_end(ctx);
@@ -2075,21 +2093,184 @@ static void effectsWindow()
 }
 #endif SUPPORT_VST
 
+static i32 findBestManifestIndexForInstrument(const std::vector<Manifest::Info>& manifestInfos, const InstrumentFlags instrumentFlags)
+{
+  { // find best manifest index for current instrument
+    for (i32 i = 0; i < manifestInfos.size(); ++i)
+    {
+      if (manifestInfos[i].instrumentFlags == instrumentFlags)
+        return i;
+    }
+    for (i32 i = 0; i < manifestInfos.size(); ++i)
+    {
+      if (to_underlying(manifestInfos[i].instrumentFlags & instrumentFlags))
+        return i;
+    }
+    for (i32 i = 0; i < manifestInfos.size(); ++i)
+    {
+      if (manifestInfos[i].instrumentFlags == InstrumentFlags::LeadGuitar)
+        return i;
+    }
+    for (i32 i = 0; i < manifestInfos.size(); ++i)
+    {
+      if (to_underlying(manifestInfos[i].instrumentFlags & InstrumentFlags::LeadGuitar))
+        return i;
+    }
+    for (i32 i = 0; i < manifestInfos.size(); ++i)
+    {
+      if (manifestInfos[i].instrumentFlags == InstrumentFlags::RhythmGuitar)
+        return i;
+    }
+    for (i32 i = 0; i < manifestInfos.size(); ++i)
+    {
+      if (to_underlying(manifestInfos[i].instrumentFlags & InstrumentFlags::RhythmGuitar))
+        return i;
+    }
+    for (i32 i = 0; i < manifestInfos.size(); ++i)
+    {
+      if (manifestInfos[i].instrumentFlags == InstrumentFlags::BassGuitar)
+        return i;
+    }
+    for (i32 i = 0; i < manifestInfos.size(); ++i)
+    {
+      if (to_underlying(manifestInfos[i].instrumentFlags & InstrumentFlags::BassGuitar))
+        return i;
+    }
+  }
+
+  assert(false);
+  return 0;
+}
+
+static std::vector<i32> sortManifestIndices(const std::vector<Manifest::Info>& manifestInfos)
+{
+  std::vector<i32> sortedIndex(manifestInfos.size());
+  i32 j = 0;
+
+  for (i32 i = 0; i < manifestInfos.size(); ++i)
+    if (manifestInfos[i].instrumentFlags == InstrumentFlags::LeadGuitar)
+    {
+      sortedIndex[j++] = i;
+      break;
+    }
+
+  for (i32 i = 0; i < manifestInfos.size(); ++i)
+    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::LeadGuitar | InstrumentFlags::Second))
+    {
+      sortedIndex[j++] = i;
+      break;
+    }
+
+  for (i32 i = 0; i < manifestInfos.size(); ++i)
+    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::LeadGuitar | InstrumentFlags::Alternative))
+    {
+      sortedIndex[j++] = i;
+      break;
+    }
+
+  for (i32 i = 0; i < manifestInfos.size(); ++i)
+    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::LeadGuitar | InstrumentFlags::Bonus))
+    {
+      sortedIndex[j++] = i;
+      break;
+    }
+
+  for (i32 i = 0; i < manifestInfos.size(); ++i)
+    if (manifestInfos[i].instrumentFlags == InstrumentFlags::RhythmGuitar)
+    {
+      sortedIndex[j++] = i;
+      break;
+    }
+
+  for (i32 i = 0; i < manifestInfos.size(); ++i)
+    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::RhythmGuitar | InstrumentFlags::Second))
+    {
+      sortedIndex[j++] = i;
+      break;
+    }
+
+  for (i32 i = 0; i < manifestInfos.size(); ++i)
+    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::RhythmGuitar | InstrumentFlags::Alternative))
+    {
+      sortedIndex[j++] = i;
+      break;
+    }
+
+  for (i32 i = 0; i < manifestInfos.size(); ++i)
+    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::RhythmGuitar | InstrumentFlags::Bonus))
+    {
+      sortedIndex[j++] = i;
+      break;
+    }
+
+  for (i32 i = 0; i < manifestInfos.size(); ++i)
+    if (manifestInfos[i].instrumentFlags == InstrumentFlags::BassGuitar)
+    {
+      sortedIndex[j++] = i;
+      break;
+    }
+
+  for (i32 i = 0; i < manifestInfos.size(); ++i)
+    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::BassGuitar | InstrumentFlags::Second))
+    {
+      sortedIndex[j++] = i;
+      break;
+    }
+
+  for (i32 i = 0; i < manifestInfos.size(); ++i)
+    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::BassGuitar | InstrumentFlags::Alternative))
+    {
+      sortedIndex[j++] = i;
+      break;
+    }
+
+  for (i32 i = 0; i < manifestInfos.size(); ++i)
+    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::BassGuitar | InstrumentFlags::Bonus))
+    {
+      sortedIndex[j++] = i;
+      break;
+    }
+
+  assert(j == manifestInfos.size());
+
+  return sortedIndex;
+}
+
 static void songWindow() {
 
   if (nk_begin(ctx, "Songs", nk_rect(300, 30, 695, 710), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR))
   {
     nk_layout_row_template_begin(ctx, 22);
-    nk_layout_row_template_push_static(ctx, 130);
+    nk_layout_row_template_push_static(ctx, 47);
+    nk_layout_row_template_push_static(ctx, 58);
+    nk_layout_row_template_push_static(ctx, 47);
     nk_layout_row_template_push_dynamic(ctx);
-    nk_layout_row_template_push_static(ctx, 30);
-    nk_layout_row_template_push_static(ctx, 30);
-    nk_layout_row_template_push_static(ctx, 30);
     nk_layout_row_template_push_static(ctx, 30);
     nk_layout_row_template_push_static(ctx, 30);
     nk_layout_row_template_end(ctx);
 
-    nk_label(ctx, "Search:", NK_TEXT_LEFT);
+    { // current Instrument Selection
+      nk_style_item normal_button_color = ctx->style.button.normal;
+      if (to_underlying(Global::currentInstrument & InstrumentFlags::LeadGuitar))
+        ctx->style.button.normal = ctx->style.button.active;
+      else
+        ctx->style.button.normal = normal_button_color;
+      if (nk_button_label(ctx, "Lead"))
+        Global::currentInstrument = InstrumentFlags::LeadGuitar;
+      if (to_underlying(Global::currentInstrument & InstrumentFlags::RhythmGuitar))
+        ctx->style.button.normal = ctx->style.button.active;
+      else
+        ctx->style.button.normal = normal_button_color;
+      if (nk_button_label(ctx, "Rhythm"))
+        Global::currentInstrument = InstrumentFlags::RhythmGuitar;
+      if (to_underlying(Global::currentInstrument & InstrumentFlags::BassGuitar))
+        ctx->style.button.normal = ctx->style.button.active;
+      else
+        ctx->style.button.normal = normal_button_color;
+      if (nk_button_label(ctx, "Bass"))
+        Global::currentInstrument = InstrumentFlags::BassGuitar;
+      ctx->style.button.normal = normal_button_color;
+    }
 
     nk_edit_string(ctx, NK_EDIT_SIMPLE, Global::searchText, &Global::searchTextLength, sizeof(Global::searchText), nk_filter_default);
 
@@ -2101,19 +2282,6 @@ static void songWindow() {
 #else
     nk_spacing(ctx, 1);
 #endif // SUPPORT_VST
-    if (nk_button_label(ctx, "L"))
-    {
-      Global::filterInstrument = InstrumentFlags::LeadGuitar;
-    }
-    if (nk_button_label(ctx, "R"))
-    {
-      Global::filterInstrument = InstrumentFlags::RhythmGuitar;
-    }
-    if (nk_button_label(ctx, "B"))
-    {
-      Global::filterInstrument = InstrumentFlags::BassGuitar;
-    }
-
 
     if (nk_button_label(ctx, "?"))
     {
@@ -2136,9 +2304,15 @@ static void songWindow() {
       nk_layout_row_template_end(ctx);
       {
         {
-          nk_layout_row_dynamic(ctx, 133, 1);
+          static i32 expandedIndex = -1;
+          static i32 expandedHeight = 0;
 
-          for (i32 i = 0; i < Global::songInfos.size(); ++i) {
+          for (i32 i = 0; i < Global::songInfos.size(); ++i)
+          {
+            if (i == expandedIndex)
+              nk_layout_row_dynamic(ctx, 133 + expandedHeight, 1);
+            else
+              nk_layout_row_dynamic(ctx, 133, 1);
             const Song::Info& songInfo = Global::songInfos[i];
 
             if (filterSongOut(songInfo))
@@ -2168,28 +2342,26 @@ static void songWindow() {
               window_content_region.h = 128;
 
               nk_draw_image(canvas, window_content_region, &thumbnail, nk_rgba(255, 255, 255, 255));
+              const i32 manifestIndex = findBestManifestIndexForInstrument(songInfo.manifestInfos, Global::currentInstrument);
 
               nk_spacing(ctx, 1);
               nk_label(ctx, "Title:", NK_TEXT_LEFT);
-              nk_label(ctx, songInfo.manifestInfos[0].songName.c_str(), NK_TEXT_LEFT);
+              nk_label(ctx, songInfo.manifestInfos[manifestIndex].songName.c_str(), NK_TEXT_LEFT);
               if (nk_button_label(ctx, "Preview"))
               {
-                //Player::playSong(Global::psarcInfos[i], true);
+                Player::playPreview(Global::psarcInfos[i]);
               }
               nk_spacing(ctx, 1);
               nk_label(ctx, "Artist:", NK_TEXT_LEFT);
-              nk_label(ctx, songInfo.manifestInfos[0].artistName.c_str(), NK_TEXT_LEFT);
+              nk_label(ctx, songInfo.manifestInfos[manifestIndex].artistName.c_str(), NK_TEXT_LEFT);
 
-
-              const u64 manifestEntryCount = songInfo.manifestInfos.size();
-
-              if (manifestEntryCount >= 1)
+              if (songInfo.manifestInfos.size() >= 1)
               {
-                if (nk_button_label(ctx, instrumentName(songInfo.manifestInfos[0].instrumentFlags)))
+                if (nk_button_label(ctx, instrumentName(songInfo.manifestInfos[manifestIndex].instrumentFlags)))
                 {
                   Global::songSelected = i;
                   Global::manifestSelected = 0;
-                  Player::playSong(Global::psarcInfos[i], songInfo.manifestInfos[0].instrumentFlags);
+                  Player::playSong(Global::psarcInfos[i], songInfo.manifestInfos[manifestIndex].instrumentFlags);
                 }
               }
               else
@@ -2198,42 +2370,24 @@ static void songWindow() {
               }
               nk_spacing(ctx, 1);
               nk_label(ctx, "Album:", NK_TEXT_LEFT);
-              nk_label(ctx, songInfo.manifestInfos[0].albumName.c_str(), NK_TEXT_LEFT);
-              if (manifestEntryCount >= 2)
+              nk_label(ctx, songInfo.manifestInfos[manifestIndex].albumName.c_str(), NK_TEXT_LEFT);
+              if (nk_button_label(ctx, "Tones"))
               {
-                if (nk_button_label(ctx, instrumentName(songInfo.manifestInfos[1].instrumentFlags)))
-                {
-                  Global::songSelected = i;
-                  Global::manifestSelected = 1;
-                  Player::playSong(Global::psarcInfos[i], songInfo.manifestInfos[1].instrumentFlags);
-                }
-              }
-              else
-              {
-                nk_spacing(ctx, 1);
+                Global::songSelected = i;
+                if (Global::songInfos[i].loadState != Song::LoadState::complete)
+                  Song::loadSongInfoComplete(Global::psarcInfos[i], Global::songInfos[i]);
+
+                Global::toneWindow = true;
               }
               nk_spacing(ctx, 1);
               nk_label(ctx, "Year:", NK_TEXT_LEFT);
-              nk_label(ctx, std::to_string(songInfo.manifestInfos[0].songYear).c_str(), NK_TEXT_LEFT);
-              if (manifestEntryCount >= 3)
-              {
-                if (nk_button_label(ctx, instrumentName(songInfo.manifestInfos[2].instrumentFlags)))
-                {
-                  Global::songSelected = i;
-                  Global::manifestSelected = 2;
-                  Player::playSong(Global::psarcInfos[i], songInfo.manifestInfos[0].instrumentFlags);
-                }
-              }
-              else
-              {
-                nk_spacing(ctx, 1);
-              }
-              nk_spacing(ctx, 1);
+              nk_label(ctx, std::to_string(songInfo.manifestInfos[manifestIndex].songYear).c_str(), NK_TEXT_LEFT);
+              nk_spacing(ctx, 2);
               nk_label(ctx, "Length:", NK_TEXT_LEFT);
               {
-                const i32 h = i32(songInfo.manifestInfos[0].songLength) / 3600;
-                const i32 m = (i32(songInfo.manifestInfos[0].songLength) % 3600) / 60;
-                const i32 s = (i32(songInfo.manifestInfos[0].songLength) % 60);
+                const i32 h = i32(songInfo.manifestInfos[manifestIndex].songLength) / 3600;
+                const i32 m = (i32(songInfo.manifestInfos[manifestIndex].songLength) % 3600) / 60;
+                const i32 s = (i32(songInfo.manifestInfos[manifestIndex].songLength) % 60);
                 char songLength[16];
                 if (h > 0)
                   sprintf(songLength, "%02d:%02d:%02d", h, m, s);
@@ -2245,14 +2399,31 @@ static void songWindow() {
               nk_label(ctx, "Score:       98.4%", NK_TEXT_LEFT);
               nk_spacing(ctx, 1);
               nk_label(ctx, "Tuning:", NK_TEXT_LEFT);
-              nk_label(ctx, Song::tuningName(songInfo.manifestInfos[0].tuning), NK_TEXT_LEFT);
-              if (nk_button_label(ctx, "Tones"))
+              nk_label(ctx, Song::tuningName(songInfo.manifestInfos[manifestIndex].tuning), NK_TEXT_LEFT);
+              if (nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_DOWN, " Arrangements", NK_TEXT_RIGHT))
               {
-                Global::songSelected = i;
-                if (Global::songInfos[i].loadState != Song::LoadState::complete)
-                  Song::loadSongInfoComplete(Global::psarcInfos[i], Global::songInfos[i]);
+                expandedIndex = expandedIndex != i ? i : -1;
+                expandedHeight = 20 * (songInfo.manifestInfos.size() + 1);
+              }
 
-                Global::toneWindow = true;
+              if (expandedIndex == i)
+              {
+                nk_spacing(ctx, 4);
+
+                const std::vector<i32> sortedIndices = sortManifestIndices(songInfo.manifestInfos);
+                for (const i32 i : sortedIndices)
+                {
+                  nk_spacing(ctx, 1);
+                  nk_label(ctx, "Tuning:", NK_TEXT_LEFT);
+                  nk_label(ctx, Song::tuningName(songInfo.manifestInfos[manifestIndex].tuning), NK_TEXT_LEFT);
+
+                  if (nk_button_label(ctx, instrumentName(songInfo.manifestInfos[i].instrumentFlags)))
+                  {
+                    Global::songSelected = i;
+                    Global::manifestSelected = 1;
+                    Player::playSong(Global::psarcInfos[i], songInfo.manifestInfos[i].instrumentFlags);
+                  }
+                }
               }
 
               nk_group_end(ctx);

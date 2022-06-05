@@ -123,7 +123,6 @@ void Player::tick()
 
     Global::musicTimeElapsed = 0.0f;
 
-    Global::inputEsc.toggle = !Global::inputEsc.toggle;
     playNextTick = false;
   }
 
@@ -146,6 +145,12 @@ void Player::playSong(const Psarc::Info& psarcInfo, InstrumentFlags instrumentFl
   Global::songTrack = Song::loadTrack(psarcInfo, instrumentFlags);
   Global::songVocals = Song::loadVocals(psarcInfo);
   loadAudio(psarcInfo, false);
+  Global::inputEsc.toggle = !Global::inputEsc.toggle;
+}
+
+void Player::playPreview(const Psarc::Info& psarcInfo)
+{
+  loadAudio(psarcInfo, true);
 }
 
 void Player::stop()

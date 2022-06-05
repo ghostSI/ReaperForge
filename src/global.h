@@ -174,7 +174,7 @@ namespace Global {
     extern mat4 cameraMat;
 
     extern bool isInstalled;
-    extern InstrumentFlags filterInstrument;
+    extern InstrumentFlags currentInstrument;
     extern i32 bassTuning[5];
     extern i32 guitarTuning[7];
     extern std::vector<Psarc::Info> psarcInfos;

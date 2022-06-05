@@ -51,22 +51,43 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
 }
 
 #ifdef SUPPORT_VST
-struct VstTone
+static std::string toneAssignmentNames[2][Const::profileToneAssignmentCount] =
 {
-  struct Tone
   {
-    std::string name;
-    struct Assignemnt
-    {
-      i32 index = -1;
-      std::vector<u8> vstData;
-    } assignment;
-  };
-
-  Tone bass[NUM(Global::effectChain)];
-  Tone guitar[NUM(Global::effectChain)];
+    "Default"
+  },
+  {
+    "Default"
+  }
 };
-static VstTone vstTones[Const::profileToneAssignmentCount];
+static i32 toneAssignmentIndex[2][Const::profileToneAssignmentCount][NUM(Global::effectChain)] =
+{
+  {
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
+  },
+  {
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
+  }
+};
+static std::string toneAssignmentBase64[2][Const::profileToneAssignmentCount][NUM(Global::effectChain)];
 #endif // SUPPORT_VST
 
 static void loadStatsOnly()
@@ -86,25 +107,38 @@ static void loadStatsOnly()
     {
       const std::map<std::string, std::string>& toneAssignment = search->second;
 
-      for (i32 i = 0; i < Const::profileToneAssignmentCount; ++i)
+      for (i32 h = 0; h < 2; ++h)
       {
-        for (i32 j = 0; j < NUM(Global::effectChain); ++j)
-        {
-          const auto search2 = toneAssignment.find(std::to_string(i) + "G" + std::to_string(j));
-          if (search2 != toneAssignment.end())
-          {
-            const u64 seperator = search2->second.find_last_of(';');
-            assert(seperator != std::string::npos);
-            const std::string pluginName = search2->second.substr(0, seperator);
-            const std::string base64 = search2->second.substr(seperator + 1);
+        const char instChar = h == 0 ? 'B' : 'G';
 
-            for (i32 k = 0; k < Global::vstPluginNames.size(); ++k)
+        for (i32 i = 0; i < Const::profileToneAssignmentCount; ++i)
+        {
+          if (const auto search3 = toneAssignment.find(std::to_string(i) + instChar); search3 != toneAssignment.end())
+          {
+            toneAssignmentNames[h][i] = search3->second;
+          }
+
+          for (i32 j = 0; j < NUM(Global::effectChain); ++j)
+          {
+            toneAssignmentIndex[h][i][j] = -1;
+            const auto search2 = toneAssignment.find(std::to_string(i) + instChar + std::to_string(j));
+            if (search2 != toneAssignment.end())
             {
-              if (pluginName == Global::vstPluginNames[k])
+              const u64 seperator = search2->second.find_last_of(';');
+              assert(seperator != std::string::npos);
+              const std::string pluginName = search2->second.substr(0, seperator);
+              if (!pluginName.empty())
               {
-                Global::effectChain[j] = k;
-                Vst::loadParameter(j, base64);
-                break;
+                for (i32 k = 0; k < Global::vstPluginNames.size(); ++k)
+                {
+                  if (pluginName == Global::vstPluginNames[k])
+                  {
+                    toneAssignmentIndex[h][i][j] = k;
+                    const std::string base64 = search2->second.substr(seperator + 1);
+                    toneAssignmentBase64[h][i][j] = base64;
+                    break;
+                  }
+                }
               }
             }
           }
@@ -112,6 +146,18 @@ static void loadStatsOnly()
       }
     }
   }
+
+  {
+    strcpy(Global::vstToneName, toneAssignmentNames[1][0].c_str());
+    Global::vstToneNameLength = toneAssignmentNames[1][0].size();
+    for (i32 j = 0; j < NUM(Global::effectChain); ++j)
+    {
+      Global::effectChain[j] = toneAssignmentIndex[1][0][j];
+      if (Global::effectChain[j] >= 0)
+        Vst::loadParameter(j, toneAssignmentBase64[1][0][j]);
+    }
+  }
+
 
   for (Song::Info& songInfo : Global::songInfos)
   {
@@ -140,33 +186,58 @@ void Profile::init()
   }
 }
 
+void Profile::tick()
+{
+  static InstrumentFlags instrumentLastFrame = Global::currentInstrument;
+  static i32 vstToneAssignmentLastFrame = Global::vstToneAssignment;
 
+  if (instrumentLastFrame != Global::currentInstrument || vstToneAssignmentLastFrame != Global::vstToneAssignment)
+  {
+    const i32 h = Global::currentInstrument == InstrumentFlags::BassGuitar ? 0 : 1;
+
+    if (instrumentLastFrame == Global::currentInstrument)
+      toneAssignmentNames[h][vstToneAssignmentLastFrame] = Global::vstToneName;
+    strcpy(Global::vstToneName, toneAssignmentNames[h][Global::vstToneAssignment].c_str());
+    Global::vstToneNameLength = toneAssignmentNames[h][Global::vstToneAssignment].size();
+    Global::toneAssignment = Global::time;
+    for (i32 i = 0; i < NUM(Global::effectChain); ++i)
+    {
+      Global::effectChain[i] = toneAssignmentIndex[h][Global::vstToneAssignment][i];
+      if (Global::effectChain[i] != -1)
+        Vst::loadParameter(i, toneAssignmentBase64[h][Global::vstToneAssignment][i]);
+    }
+  }
+
+  instrumentLastFrame = Global::currentInstrument;
+  vstToneAssignmentLastFrame = Global::vstToneAssignment;
+}
 
 static void saveStatsOnly()
 {
   std::map<std::string, std::map<std::string, std::string>> serializedSaves;
 
-  std::map<std::string, std::string> toneAssignment;
 
+  std::map<std::string, std::string> toneAssignment;
   for (i32 h = 0; h < 2; ++h)
   {
-    const char instrument = (h == 0 ? 'G' : 'B');
+    const char instChar = h == 0 ? 'B' : 'G';
 
     for (i32 i = 0; i < Const::profileToneAssignmentCount; ++i)
     {
-      toneAssignment.insert({ std::to_string(i) + instrument, "Default" });
+      if (!toneAssignmentNames[h][i].empty())
+        toneAssignment.insert({ std::to_string(i) + instChar, toneAssignmentNames[h][i] });
 
       for (i32 j = 0; j < NUM(Global::effectChain); ++j)
       {
-        if (Global::effectChain[j] < 0)
+        if (toneAssignmentIndex[h][i][j] < 0)
           continue;
 
-        const std::string parameter = Vst::saveParameters(Global::effectChain[j]);
-        toneAssignment.insert({ std::to_string(i) + instrument + std::to_string(j), Global::vstPluginNames[Global::effectChain[j]] + ';' + parameter });
+        const std::string base64 = toneAssignmentBase64[h][i][j];
+        toneAssignment.insert({ std::to_string(i) + instChar + std::to_string(j), Global::vstPluginNames[toneAssignmentIndex[h][i][j]] + ';' + base64 });
       }
     }
-    serializedSaves.insert({ "!ToneAssignment", toneAssignment });
   }
+  serializedSaves.insert({ "!ToneAssignment", toneAssignment });
 
   for (const Song::Info& songInfo : Global::songInfos)
   {
@@ -208,5 +279,18 @@ void Profile::fini()
   case SaveMode::wholeManifest:
     saveWholeManifest();
     break;
+  }
+}
+
+void Profile::saveTone()
+{
+  const i32 h = Global::currentInstrument == InstrumentFlags::BassGuitar ? 0 : 1;
+
+  toneAssignmentNames[h][Global::vstToneAssignment] = std::string(Global::vstToneName);
+  for (i32 i = 0; i < NUM(Global::effectChain); ++i)
+  {
+    toneAssignmentIndex[h][Global::vstToneAssignment][i] = Global::effectChain[i];
+    if (Global::effectChain[i] >= 0)
+      toneAssignmentBase64[h][Global::vstToneAssignment][i] = Vst::saveParameters(Global::effectChain[i]);
   }
 }

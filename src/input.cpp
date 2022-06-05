@@ -392,51 +392,41 @@ void Input::proccessInputEvents() {
   if (Global::inputKP0.pressed && !Global::inputKP0.pressedLastFrame)
   {
     Global::vstToneAssignment = 0;
-    Global::toneAssignment = Global::time;
   }
   if (Global::inputKP1.pressed && !Global::inputKP1.pressedLastFrame)
   {
     Global::vstToneAssignment = 1;
-    Global::toneAssignment = Global::time;
   }
   if (Global::inputKP2.pressed && !Global::inputKP2.pressedLastFrame)
   {
     Global::vstToneAssignment = 2;
-    Global::toneAssignment = Global::time;
   }
   if (Global::inputKP3.pressed && !Global::inputKP3.pressedLastFrame)
   {
     Global::vstToneAssignment = 3;
-    Global::toneAssignment = Global::time;
   }
   if (Global::inputKP4.pressed && !Global::inputKP4.pressedLastFrame)
   {
     Global::vstToneAssignment = 4;
-    Global::toneAssignment = Global::time;
   }
   if (Global::inputKP5.pressed && !Global::inputKP5.pressedLastFrame)
   {
     Global::vstToneAssignment = 5;
-    Global::toneAssignment = Global::time;
   }
   if (Global::inputKP6.pressed && !Global::inputKP6.pressedLastFrame)
   {
     Global::vstToneAssignment = 6;
-    Global::toneAssignment = Global::time;
   }
   if (Global::inputKP7.pressed && !Global::inputKP7.pressedLastFrame)
   {
     Global::vstToneAssignment = 7;
-    Global::toneAssignment = Global::time;
   }
   if (Global::inputKP8.pressed && !Global::inputKP8.pressedLastFrame)
   {
     Global::vstToneAssignment = 8;
-    Global::toneAssignment = Global::time;
   }
   if (Global::inputKP9.pressed && !Global::inputKP9.pressedLastFrame)
   {
     Global::vstToneAssignment = 9;
-    Global::toneAssignment = Global::time;
   }
 }

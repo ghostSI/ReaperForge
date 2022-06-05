@@ -1082,7 +1082,7 @@ static void drawSongInfo()
     Font::draw(Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].artistName.c_str(), 0.95f - scaleX, 0.2f, 0.0f, scaleX, scaleY);
   }
 }
-
+#include "profile.h"
 static void drawToneAssignment()
 {
   const f32 timeElapsed = Global::time - Global::toneAssignment;
@@ -1106,10 +1106,10 @@ static void drawToneAssignment()
     Font::draw("Tone Switch", 0.95f - scaleX, 0.6f, 0.0f, scaleX, scaleY);
   }
   {
-    const i32 letters = sizeof("Default") - 1;
+    const i32 letters = Global::vstToneNameLength;
     const f32 scaleX = 3.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
     const f32 scaleY = 3.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
-    Font::draw("Default", 0.95f - scaleX, 0.5f, 0.0f, scaleX, scaleY);
+    Font::draw(Global::vstToneName, 0.95f - scaleX, 0.5f, 0.0f, scaleX, scaleY);
   }
 }
 

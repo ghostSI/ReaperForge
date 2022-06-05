@@ -58,6 +58,7 @@ static void mainloop() {
 
   //if (Global::frameDelta >= 16.666_f32)
   { // render frame
+    Profile::tick();
     Player::tick();
     Highway::tick();
     Camera::tick();

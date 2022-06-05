@@ -524,6 +524,8 @@ std::string Vst::saveParameters(i32 index)
 
 void Vst::loadParameter(i32 index, const std::string& base64)
 {
+  assert(index >= 0);
+  assert(index < vstPlugins.size());
   u8 data[4096];
   const i64 len = Base64::decode(base64, data);
   assert(len > 0);

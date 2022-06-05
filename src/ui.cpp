@@ -6,6 +6,7 @@
 #include "installer.h"
 #include "opengl.h"
 #include "player.h"
+#include "profile.h"
 #include "shader.h"
 #include "sound.h"
 #include "vst.h"
@@ -1999,14 +2000,18 @@ static void effectsWindow()
     nk_layout_row_template_begin(ctx, 22);
     nk_layout_row_template_push_static(ctx, 40);
     nk_layout_row_template_push_dynamic(ctx);
+    nk_layout_row_template_push_static(ctx, 40);
     nk_layout_row_template_end(ctx);
 
     nk_label(ctx, "Name:", NK_TEXT_LEFT);
 
     {
-      char text[64];
-      int textlen;
-      nk_edit_string(ctx, NK_EDIT_SIMPLE, &text[0], &textlen, sizeof(text), nk_filter_default);
+      nk_edit_string(ctx, NK_EDIT_SIMPLE, Global::vstToneName, &Global::vstToneNameLength, sizeof(Global::vstToneName), nk_filter_default);
+      Global::vstToneName[Global::vstToneNameLength] = '\0';
+    }
+    if (nk_button_label(ctx, "Save"))
+    {
+      Profile::saveTone();
     }
 
     nk_layout_row_template_begin(ctx, 421);

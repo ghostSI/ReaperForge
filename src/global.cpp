@@ -60,6 +60,8 @@ i32 Global::vstWindow = -1;
 std::vector<std::string> Global::vstPluginNames;
 i32 Global::effectChain[16] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 i32 Global::vstToneAssignment = 0;
+char Global::vstToneName[256] = "Default";
+i32 Global::vstToneNameLength = sizeof("Default") - 1;
 #endif // SUPPORT_VST
 
 Settings::Info Global::settings;

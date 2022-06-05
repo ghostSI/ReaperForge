@@ -200,6 +200,8 @@ namespace Global {
     extern std::vector<std::string> vstPluginNames;
     extern i32 effectChain[16];
     extern i32 vstToneAssignment;
+    extern char vstToneName[256];
+    extern i32 vstToneNameLength;
 #endif // SUPPORT_VST
     
     extern Settings::Info settings;

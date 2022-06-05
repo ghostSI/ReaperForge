@@ -7,7 +7,10 @@
 namespace Profile {
 
   void init();
+  void tick();
   void fini();
+
+  void saveTone();
 };
 
 #endif // PROFILE_H

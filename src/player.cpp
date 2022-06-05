@@ -10,6 +10,7 @@
 #include "sound.h"
 
 static bool playNextTick = false;
+static bool previewPlaying = false;
 
 static u32 readWemFileIdFromBnkFile(const u8* data, u64 size)
 {
@@ -119,15 +120,19 @@ void Player::tick()
   {
     Global::musicBufferPosition = Global::musicBuffer;
     Global::musicBufferRemainingLength = Global::musicBufferLength;
+    if (!previewPlaying)
+    {
+      Global::musicTimeElapsed = 0.0f;
+      Global::inputEsc.toggle = !Global::inputEsc.toggle;
+    }
     Sound::pauseAudioDevice(false);
-
-    Global::musicTimeElapsed = 0.0f;
-
     playNextTick = false;
   }
 
-  quickRepeater();
-
+  if (!previewPlaying)
+  {
+    quickRepeater();
+  }
 
 #ifdef __EMSCRIPTEN__
   if (static bool firstRun; !firstRun)
@@ -140,16 +145,17 @@ void Player::tick()
 
 void Player::playSong(const Psarc::Info& psarcInfo, InstrumentFlags instrumentFlags)
 {
+  previewPlaying = false;
   Song::loadSongInfoComplete(psarcInfo, Global::songInfos[Global::songSelected]);
 
   Global::songTrack = Song::loadTrack(psarcInfo, instrumentFlags);
   Global::songVocals = Song::loadVocals(psarcInfo);
   loadAudio(psarcInfo, false);
-  Global::inputEsc.toggle = !Global::inputEsc.toggle;
 }
 
 void Player::playPreview(const Psarc::Info& psarcInfo)
 {
+  previewPlaying = true;
   loadAudio(psarcInfo, true);
 }
 

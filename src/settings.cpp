@@ -141,7 +141,7 @@ static bool parseCommandLineArgs(int argc, char* argv[]) {
 //        "#5A86AD#FDAA47#C85A53", "#7D7F7B#1F6357#968A84", "#E6DAA6#CF0134#FD3C07", "#FEAD01#2479FD#CC6743"
 //};
 
-static std::map<std::string, std::map<std::string, std::string>> serialize(const Settings::Info settings)
+static std::map<std::string, std::map<std::string, std::string>> serialize(const Settings::Info& settings)
 {
   const std::map<std::string, std::map<std::string, std::string>> serializedSettings =
   {
@@ -157,32 +157,24 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
     {
       "Camera",
       {
-        { "XRotation", std::to_string(settings.cameraXRotation) },
-        { "YRotation", std::to_string(settings.cameraYRotation) },
-        { "XFactor", std::to_string(settings.cameraXFactor) },
-        { "YFactor", std::to_string(settings.cameraYFactor) },
-        { "XOffset", std::to_string(settings.cameraXOffset) },
-        { "YOffset", std::to_string(settings.cameraYOffset) },
-        { "MaximumVelocity", std::to_string(settings.cameraMaximumVelocity) },
-        { "MaximumForce", std::to_string(settings.cameraMaximumForce) },
+        { "BreakRadius",       std::to_string(settings.cameraBreakRadius) },
+        { "FieldOfView",       std::to_string(settings.cameraFieldOfView) },
         { "MaximumBreakForce", std::to_string(settings.cameraMaximumBreakForce) },
-        { "BreakRadius", std::to_string(settings.cameraBreakRadius) },
-        { "0", std::to_string(settings.camera0) },
-        { "1", std::to_string(settings.camera1) },
-        { "2", std::to_string(settings.camera2) },
-        { "3", std::to_string(settings.camera3) },
-        { "4", std::to_string(settings.camera4) },
-        { "5", std::to_string(settings.camera5) },
-        { "6", std::to_string(settings.camera6) },
-        { "7", std::to_string(settings.camera7) },
-        { "8", std::to_string(settings.camera8) },
-        { "9", std::to_string(settings.camera9) }
+        { "MaximumForce",      std::to_string(settings.cameraMaximumForce) },
+        { "MaximumVelocity",   std::to_string(settings.cameraMaximumVelocity) },
+        { "XFactor",           std::to_string(settings.cameraXFactor) },
+        { "XOffset",           std::to_string(settings.cameraXOffset) },
+        { "XRotation",         std::to_string(settings.cameraXRotation) },
+        { "YFactor",           std::to_string(settings.cameraYFactor) },
+        { "YOffset",           std::to_string(settings.cameraYOffset) },
+        { "YRotation",         std::to_string(settings.cameraYRotation) },
+        { "ZFactor",           std::to_string(settings.cameraZFactor) },
+        { "ZOffset",           std::to_string(settings.cameraZOffset) }
       }
     },
     {
       "Graphics",
       {
-        { "FieldOfView",      std::to_string(settings.graphicsFieldOfView) },
         { "Fullscreen",       std::to_string(to_underlying(settings.graphicsFullscreen)) },
         { "ResolutionWidth",  std::to_string(settings.graphicsResolutionWidth) },
         { "ResolutionHeight", std::to_string(settings.graphicsResolutionHeight) },
@@ -301,27 +293,19 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
       atoi(serializedSettings.at("Audio").at("ChannelInstrument1").c_str())
     },
     .audioSampleRate = atoi(serializedSettings.at("Audio").at("SampleRate").c_str()),
-    .cameraXRotation = f32(atof(serializedSettings.at("Camera").at("XRotation").c_str())),
-    .cameraYRotation = f32(atof(serializedSettings.at("Camera").at("YRotation").c_str())),
-    .cameraXFactor = f32(atof(serializedSettings.at("Camera").at("XFactor").c_str())),
-    .cameraYFactor = f32(atof(serializedSettings.at("Camera").at("YFactor").c_str())),
-    .cameraXOffset = f32(atof(serializedSettings.at("Camera").at("XOffset").c_str())),
-    .cameraYOffset = f32(atof(serializedSettings.at("Camera").at("YOffset").c_str())),
-    .cameraMaximumVelocity = f32(atof(serializedSettings.at("Camera").at("MaximumVelocity").c_str())),
-    .cameraMaximumForce = f32(atof(serializedSettings.at("Camera").at("MaximumForce").c_str())),
-    .cameraMaximumBreakForce = f32(atof(serializedSettings.at("Camera").at("MaximumBreakForce").c_str())),
     .cameraBreakRadius = f32(atof(serializedSettings.at("Camera").at("BreakRadius").c_str())),
-    .camera0 = f32(atof(serializedSettings.at("Camera").at("0").c_str())),
-    .camera1 = f32(atof(serializedSettings.at("Camera").at("1").c_str())),
-    .camera2 = f32(atof(serializedSettings.at("Camera").at("2").c_str())),
-    .camera3 = f32(atof(serializedSettings.at("Camera").at("3").c_str())),
-    .camera4 = f32(atof(serializedSettings.at("Camera").at("4").c_str())),
-    .camera5 = f32(atof(serializedSettings.at("Camera").at("5").c_str())),
-    .camera6 = f32(atof(serializedSettings.at("Camera").at("6").c_str())),
-    .camera7 = f32(atof(serializedSettings.at("Camera").at("7").c_str())),
-    .camera8 = f32(atof(serializedSettings.at("Camera").at("8").c_str())),
-    .camera9 = f32(atof(serializedSettings.at("Camera").at("9").c_str())),
-    .graphicsFieldOfView = f32(atof(serializedSettings.at("Graphics").at("FieldOfView").c_str())),
+    .cameraFieldOfView = f32(atof(serializedSettings.at("Camera").at("FieldOfView").c_str())),
+    .cameraMaximumBreakForce = f32(atof(serializedSettings.at("Camera").at("MaximumBreakForce").c_str())),
+    .cameraMaximumForce = f32(atof(serializedSettings.at("Camera").at("MaximumForce").c_str())),
+    .cameraMaximumVelocity = f32(atof(serializedSettings.at("Camera").at("MaximumVelocity").c_str())),
+    .cameraXFactor = f32(atof(serializedSettings.at("Camera").at("XFactor").c_str())),
+    .cameraXOffset = f32(atof(serializedSettings.at("Camera").at("XOffset").c_str())),
+    .cameraXRotation = f32(atof(serializedSettings.at("Camera").at("XRotation").c_str())),
+    .cameraYFactor = f32(atof(serializedSettings.at("Camera").at("YFactor").c_str())),
+    .cameraYOffset = f32(atof(serializedSettings.at("Camera").at("YOffset").c_str())),
+    .cameraYRotation = f32(atof(serializedSettings.at("Camera").at("YRotation").c_str())),
+    .cameraZFactor = f32(atof(serializedSettings.at("Camera").at("ZFactor").c_str())),
+    .cameraZOffset = f32(atof(serializedSettings.at("Camera").at("ZOffset").c_str())),
     .graphicsFullscreen = FullscreenMode(atoi(serializedSettings.at("Graphics").at("Fullscreen").c_str())),
     .graphicsResolutionWidth = atoi(serializedSettings.at("Graphics").at("ResolutionWidth").c_str()),
     .graphicsResolutionHeight = atoi(serializedSettings.at("Graphics").at("ResolutionHeight").c_str()),

@@ -2514,11 +2514,29 @@ static void settingsWindow()
       }
       nk_tree_pop(ctx);
     }
-    if (nk_tree_push(ctx, NK_TREE_TAB, "Graphics", NK_MINIMIZED)) {
+    if (nk_tree_push(ctx, NK_TREE_TAB, "Camera", NK_MINIMIZED))
+    {
       nk_layout_row_dynamic(ctx, 22, 1);
       {
-        nk_property_float(ctx, "Field of View:", 0.0f, &Global::settings.graphicsFieldOfView, 360.0f, 0.1f, 0.2f);
+        nk_property_float(ctx, "BreakRadius:", -1000.0f, &Global::settings.cameraBreakRadius, 1000.0f, 0.001f, 0.001f);
+        nk_property_float(ctx, "Field of View:", 0.0f, &Global::settings.cameraFieldOfView, 360.0f, 0.001f, 0.001f);
+        nk_property_float(ctx, "MaximumBreakForce:", -1000.0f, &Global::settings.cameraMaximumBreakForce, 1000.0f, 0.001f, 0.001f);
+        nk_property_float(ctx, "MaximumForce:", -1000.0f, &Global::settings.cameraMaximumForce, 1000.0f, 0.001f, 0.001f);
+        nk_property_float(ctx, "MaximumVelocity:", -1000.0f, &Global::settings.cameraMaximumVelocity, 1000.0f, 0.001f, 0.001f);
+        nk_property_float(ctx, "XFactor:", -1000.0f, &Global::settings.cameraXFactor, 1000.0f, 0.001f, 0.001f);
+        nk_property_float(ctx, "XOffset:", -1000.0f, &Global::settings.cameraXOffset, 1000.0f, 0.001f, 0.001f);
+        nk_property_float(ctx, "XRotation:", -1000.0f, &Global::settings.cameraXRotation, 1000.0f, 0.001f, 0.001f);
+        nk_property_float(ctx, "YFactor:", -1000.0f, &Global::settings.cameraYFactor, 1000.0f, 0.001f, 0.001f);
+        nk_property_float(ctx, "YOffset:", -1000.0f, &Global::settings.cameraYOffset, 1000.0f, 0.001f, 0.001f);
+        nk_property_float(ctx, "YRotation:", -1000.0f, &Global::settings.cameraYRotation, 1000.0f, 0.001f, 0.001f);
+        nk_property_float(ctx, "ZFactor:", -1000.0f, &Global::settings.cameraZFactor, 1000.0f, 0.001f, 0.001f);
+        nk_property_float(ctx, "ZOffset:", -1000.0f, &Global::settings.cameraZOffset, 1000.0f, 0.001f, 0.001f);
       }
+      nk_tree_pop(ctx);
+    }
+
+    if (nk_tree_push(ctx, NK_TREE_TAB, "Graphics", NK_MINIMIZED))
+    {
       nk_layout_row_dynamic(ctx, 22, 2);
       {
         nk_label(ctx, "Fullscreen Mode", NK_TEXT_LEFT);

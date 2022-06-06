@@ -108,9 +108,9 @@ void Camera::tick() {
       i32 left = min_(min_(anchor0.fret, anchor1.fret), anchor2.fret);
       i32 right = max_(max_(anchor0.fret + anchor0.width, anchor1.fret + anchor1.width), anchor2.fret + anchor2.width);
       i32 width = right - left;
-      cameraTarget.v0 = -f32(left - 1 + right - 1) * 0.5f;
-      cameraTarget.v1 = -Global::settings.cameraXFactor * f32(width) * 0.5f - Global::settings.cameraXOffset;
-      cameraTarget.v2 = -Global::settings.cameraYFactor * f32(width) * 0.5f - Global::settings.cameraYOffset;
+      cameraTarget.v0 = -Global::settings.cameraXFactor * f32(left - 1 + right - 1) * 0.5f - Global::settings.cameraXOffset;
+      cameraTarget.v1 = -Global::settings.cameraYFactor * f32(width) * 0.5f - Global::settings.cameraYOffset;
+      cameraTarget.v2 = -Global::settings.cameraZFactor * f32(width) * 0.5f - Global::settings.cameraZOffset;
     }
   }
 

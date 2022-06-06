@@ -2365,7 +2365,7 @@ static void songWindow() {
                 if (nk_button_label(ctx, instrumentName(songInfo.manifestInfos[manifestIndex].instrumentFlags)))
                 {
                   Global::songSelected = i;
-                  Global::manifestSelected = 0;
+                  Global::manifestSelected = manifestIndex;
                   Player::playSong(Global::psarcInfos[i], songInfo.manifestInfos[manifestIndex].instrumentFlags);
                 }
               }

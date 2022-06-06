@@ -122,9 +122,26 @@ int main(int argc, char* argv[]) {
 #endif // __EMSCRIPTEN__
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
+  i32 fullScreenFlag;
+  switch (Global::settings.graphicsFullscreen)
+  {
+  case FullscreenMode::windowed:
+    fullScreenFlag = 0;
+    break;
+  case FullscreenMode::fullscreen:
+    fullScreenFlag = SDL_WINDOW_FULLSCREEN;
+    break;
+  case FullscreenMode::windowedFullscreen:
+    fullScreenFlag = SDL_WINDOW_FULLSCREEN_DESKTOP;
+    break;
+  default:
+    assert(false);
+    break;
+  }
+
   Global::window = SDL_CreateWindow("ReaperForge", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
     Global::settings.graphicsResolutionWidth, Global::settings.graphicsResolutionHeight,
-    SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+    SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL | fullScreenFlag);
 
   if (Global::window == nullptr) {
     SDL_Log("Unable to create Window: %s", SDL_GetError());

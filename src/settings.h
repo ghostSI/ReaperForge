@@ -10,6 +10,16 @@ namespace Settings {
     i32 audioBufferSize = 1024;
     i32 audioChannelInstrument[2] = { 0, 1 };
     i32 audioSampleRate = 48000;
+    f32 cameraXRotation = 0.09f;
+    f32 cameraYRotation = 0.15f;
+    f32 cameraXFactor = 1.3f;
+    f32 cameraYFactor = 1.3f;
+    f32 cameraXOffset = 0.5f;
+    f32 cameraYOffset = 3.0f;
+    f32 cameraMaximumVelocity = 2.0f;
+    f32 cameraMaximumForce = 1.0f;
+    f32 cameraMaximumBreakForce = 2.0f;
+    f32 cameraBreakRadius = 2.0f;
     f32 camera0 = 0.0f;
     f32 camera1 = 0.0f;
     f32 camera2 = 0.0f;

@@ -31,16 +31,6 @@ namespace Const {
     inline constexpr i32 fontCharHeight = 18;
     inline constexpr i32 fontTextureWidth = 192;
     inline constexpr i32 fontTextureHeight = 108;
-    inline constexpr f32 cameraXRotation = 0.09f;
-    inline constexpr f32 cameraYRotation = 0.15f;
-    inline constexpr f32 cameraXFactor = 1.3f;
-    inline constexpr f32 cameraYFactor = 1.3f;
-    inline constexpr f32 cameraXOffset = 0.5f;
-    inline constexpr f32 cameraYOffset = 3.0f;
-    inline constexpr f32 cameraMaximumVelocity = 2.0f;
-    inline constexpr f32 cameraMaximumForce = 1.0f;
-    inline constexpr f32 cameraMaximumBreakForce = 2.0f;
-    inline constexpr f32 cameraBreakRadius = 2.0f;
     inline constexpr vec3 cameraInitialPosition = {
       .v0 = -6.3f,
       .v1 = -7.0f,

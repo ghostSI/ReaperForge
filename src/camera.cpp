@@ -24,15 +24,15 @@ static void tickCameraMovement()
   static bool arrivedLastFrame = false;
   {
     const f32 cameraDesiredDirectionLength = VecMath::length(cameraDesiredDirection);
-    if (cameraDesiredDirectionLength < Const::cameraBreakRadius)
+    if (cameraDesiredDirectionLength < Global::settings.cameraBreakRadius)
     {
-      cameraDesiredDirection = VecMath::multipicate(VecMath::norm(cameraDesiredDirection), Const::cameraMaximumVelocity * (cameraDesiredDirectionLength / Const::cameraBreakRadius));
+      cameraDesiredDirection = VecMath::multipicate(VecMath::norm(cameraDesiredDirection), Global::settings.cameraMaximumVelocity * (cameraDesiredDirectionLength / Global::settings.cameraBreakRadius));
       arrivedLastFrame = arrived;
       arrived = true;
     }
     else
     {
-      cameraDesiredDirection = VecMath::multipicate(VecMath::norm(cameraDesiredDirection), Const::cameraMaximumVelocity);
+      cameraDesiredDirection = VecMath::multipicate(VecMath::norm(cameraDesiredDirection), Global::settings.cameraMaximumVelocity);
       arrived = false;
     }
   }
@@ -109,8 +109,8 @@ void Camera::tick() {
       i32 right = max_(max_(anchor0.fret + anchor0.width, anchor1.fret + anchor1.width), anchor2.fret + anchor2.width);
       i32 width = right - left;
       cameraTarget.v0 = -f32(left - 1 + right - 1) * 0.5f;
-      cameraTarget.v1 = -Const::cameraXFactor * f32(width) * 0.5f - Const::cameraXOffset;
-      cameraTarget.v2 = -Const::cameraYFactor * f32(width) * 0.5f - Const::cameraYOffset;
+      cameraTarget.v1 = -Global::settings.cameraXFactor * f32(width) * 0.5f - Global::settings.cameraXOffset;
+      cameraTarget.v2 = -Global::settings.cameraYFactor * f32(width) * 0.5f - Global::settings.cameraYOffset;
     }
   }
 
@@ -118,16 +118,16 @@ void Camera::tick() {
 
   { // set camera Matrix
     mat4 rotMatX;
-    rotMatX.m11 = cos(Const::cameraXRotation);
-    rotMatX.m12 = sin(Const::cameraXRotation);
-    rotMatX.m21 = -sin(Const::cameraXRotation);
-    rotMatX.m22 = cos(Const::cameraXRotation);
+    rotMatX.m11 = cos(Global::settings.cameraXRotation);
+    rotMatX.m12 = sin(Global::settings.cameraXRotation);
+    rotMatX.m21 = -sin(Global::settings.cameraXRotation);
+    rotMatX.m22 = cos(Global::settings.cameraXRotation);
 
     mat4 rotMatY;
-    rotMatY.m00 = cos(Const::cameraYRotation);
-    rotMatY.m02 = sin(Const::cameraYRotation);
-    rotMatY.m20 = -sin(Const::cameraYRotation);
-    rotMatY.m22 = cos(Const::cameraYRotation);
+    rotMatY.m00 = cos(Global::settings.cameraYRotation);
+    rotMatY.m02 = sin(Global::settings.cameraYRotation);
+    rotMatY.m20 = -sin(Global::settings.cameraYRotation);
+    rotMatY.m22 = cos(Global::settings.cameraYRotation);
 
     mat4 translation;
     translation.m30 = cameraPosition.v0;

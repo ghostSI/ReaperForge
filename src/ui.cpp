@@ -2252,6 +2252,7 @@ static void songWindow() {
     nk_layout_row_template_push_dynamic(ctx);
     nk_layout_row_template_push_static(ctx, 30);
     nk_layout_row_template_push_static(ctx, 30);
+    nk_layout_row_template_push_static(ctx, 50);
     nk_layout_row_template_end(ctx);
 
     { // current Instrument Selection
@@ -2291,6 +2292,11 @@ static void songWindow() {
     if (nk_button_label(ctx, "?"))
     {
       Global::helpWindow = !Global::helpWindow;
+    }
+
+    if (nk_button_label(ctx, "Quit"))
+    {
+      Global::appQuit = true;
     }
 
 
@@ -2944,19 +2950,16 @@ static void installWindow() {
 
 static void helpWindow()
 {
-  if (nk_begin(ctx, "Help", nk_rect(200, 280, 600, 160),
+  if (nk_begin(ctx, "Help", nk_rect(200, 280, 600, 300),
     NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
-
 
     nk_layout_row_dynamic(ctx, 22, 1);
     nk_label(ctx, "Keybindings.", NK_TEXT_LEFT);
     nk_label(ctx, "F1: open Tuner", NK_TEXT_LEFT);
+    nk_label(ctx, "F2: toggle Wireframe", NK_TEXT_LEFT);
     nk_label(ctx, "F3: toggle Debug Info", NK_TEXT_LEFT);
-    nk_label(ctx, "Num0-9: Use Custom Tone", NK_TEXT_LEFT);
-
-    nk_layout_row_dynamic(ctx, 29, 1);
-    if (nk_button_label(ctx, "Install"))
-      Installer::install();
+    nk_label(ctx, "F5: Quick Repeater", NK_TEXT_LEFT);
+    nk_label(ctx, "Num0-9: Custom Tone", NK_TEXT_LEFT);
   }
   nk_end(ctx);
 }

@@ -59,7 +59,7 @@ namespace Data {
   }
   namespace Geometry
   {
-    extern const f32 fret[20820];
+    extern const f32 fret[3135];
     extern const f32 ground[30];
     extern const f32 string[180];
 

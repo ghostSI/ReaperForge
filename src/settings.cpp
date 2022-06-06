@@ -155,6 +155,21 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
       }
     },
     {
+      "Camera",
+      {
+        { "0", std::to_string(settings.camera0) },
+        { "1", std::to_string(settings.camera1) },
+        { "2", std::to_string(settings.camera2) },
+        { "3", std::to_string(settings.camera3) },
+        { "4", std::to_string(settings.camera4) },
+        { "5", std::to_string(settings.camera5) },
+        { "6", std::to_string(settings.camera6) },
+        { "7", std::to_string(settings.camera7) },
+        { "8", std::to_string(settings.camera8) },
+        { "9", std::to_string(settings.camera9) }
+      }
+    },
+    {
       "Graphics",
       {
         { "FieldOfView",      std::to_string(settings.graphicsFieldOfView) },
@@ -166,19 +181,40 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
     {
       "Highway",
       {
-        { "Ebeat",           std::to_string(settings.highwayEbeat) },
-        { "EbeatColor0",     hexColor(settings.highwayEbeatColor[0]) },
-        { "EbeatColor1",     hexColor(settings.highwayEbeatColor[1]) },
-        { "SpeedMultiplier", std::to_string(settings.highwaySpeedMultiplier) },
-        { "FretNoteNames",   std::to_string(settings.highwayFretNoteNames) },
-        { "Lyrics",          std::to_string(settings.highwayLyrics) },
-        { "LyricsColor0",    hexColor(settings.highwayLyricsColor[0]) },
-        { "LyricsColor1",    hexColor(settings.highwayLyricsColor[1]) },
-        { "LyricsColor2",    hexColor(settings.highwayLyricsColor[2]) },
-        { "ReverseStrings",  std::to_string(settings.highwayReverseStrings) },
-        { "SongInfo",        std::to_string(settings.highwaySongInfo) },
-        { "StringNoteNames", std::to_string(settings.highwayStringNoteNames) },
-        { "ToneAssignment",  std::to_string(settings.highwayToneAssignment) }
+        { "AnchorColor0",            hexColor(settings.highwayAnchorColor[0]) },
+        { "AnchorColor1",            hexColor(settings.highwayAnchorColor[1]) },
+        { "BackgroundColor",         hexColor(settings.highwayBackgroundColor) },
+        { "ChordBoxColor0",          hexColor(settings.highwayChordBoxColor[0]) },
+        { "ChordBoxColor1",          hexColor(settings.highwayChordBoxColor[1]) },
+        { "ChordNameColor",          hexColor(settings.highwayChordNameColor) },
+        { "DetectorColor",           hexColor(settings.highwayDetectorColor) },
+        { "Ebeat",                   std::to_string(settings.highwayEbeat) },
+        { "EbeatColor0",             hexColor(settings.highwayEbeatColor[0]) },
+        { "EbeatColor1",             hexColor(settings.highwayEbeatColor[1]) },
+        { "FingerNumberColor",       hexColor(settings.highwayFingerNumberColor) },
+        { "FretNoteNames",           std::to_string(settings.highwayFretNoteNames) },
+        { "FretNumberColor0",        hexColor(settings.highwayFretNumberColor[0])},
+        { "FretNumberColor1",        hexColor(settings.highwayFretNumberColor[1])},
+        { "FretNumberColor2",        hexColor(settings.highwayFretNumberColor[2])},
+        { "FretboardNoteNameColor0", hexColor(settings.highwayFretboardNoteNameColor[0]) },
+        { "FretboardNoteNameColor1", hexColor(settings.highwayFretboardNoteNameColor[1]) },
+        { "GroundFretColor0",        hexColor(settings.highwayGroundFretColor[0]) },
+        { "GroundFretColor1",        hexColor(settings.highwayGroundFretColor[1]) },
+        { "Lyrics",                  std::to_string(settings.highwayLyrics) },
+        { "LyricsColor0",            hexColor(settings.highwayLyricsColor[0]) },
+        { "LyricsColor1",            hexColor(settings.highwayLyricsColor[1]) },
+        { "LyricsColor2",            hexColor(settings.highwayLyricsColor[2]) },
+        { "PhraseColor0",            hexColor(settings.highwayPhraseColor[0]) },
+        { "PhraseColor1",            hexColor(settings.highwayPhraseColor[1]) },
+        { "PhraseColor2",            hexColor(settings.highwayPhraseColor[2]) },
+        { "PhraseColor3",            hexColor(settings.highwayPhraseColor[3]) },
+        { "ReverseStrings",          std::to_string(settings.highwayReverseStrings) },
+        { "SongInfo",                std::to_string(settings.highwaySongInfo) },
+        { "SongInfoColor",           hexColor(settings.highwaySongInfoColor) },
+        { "SpeedMultiplier",         std::to_string(settings.highwaySpeedMultiplier) },
+        { "StringNoteNames",         std::to_string(settings.highwayStringNoteNames) },
+        { "ToneAssignment",          std::to_string(settings.highwayToneAssignment) },
+        { "ToneAssignmentColor",     hexColor(settings.highwayToneAssignmentColor) }
       }
     },
     {
@@ -255,27 +291,70 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
       atoi(serializedSettings.at("Audio").at("ChannelInstrument1").c_str())
     },
     .audioSampleRate = atoi(serializedSettings.at("Audio").at("SampleRate").c_str()),
+    .camera0 = f32(atof(serializedSettings.at("Camera").at("0").c_str())),
+    .camera1 = f32(atof(serializedSettings.at("Camera").at("1").c_str())),
+    .camera2 = f32(atof(serializedSettings.at("Camera").at("2").c_str())),
+    .camera3 = f32(atof(serializedSettings.at("Camera").at("3").c_str())),
+    .camera4 = f32(atof(serializedSettings.at("Camera").at("4").c_str())),
+    .camera5 = f32(atof(serializedSettings.at("Camera").at("5").c_str())),
+    .camera6 = f32(atof(serializedSettings.at("Camera").at("6").c_str())),
+    .camera7 = f32(atof(serializedSettings.at("Camera").at("7").c_str())),
+    .camera8 = f32(atof(serializedSettings.at("Camera").at("8").c_str())),
+    .camera9 = f32(atof(serializedSettings.at("Camera").at("9").c_str())),
     .graphicsFieldOfView = f32(atof(serializedSettings.at("Graphics").at("FieldOfView").c_str())),
     .graphicsFullscreen = FullscreenMode(atoi(serializedSettings.at("Graphics").at("Fullscreen").c_str())),
     .graphicsResolutionWidth = atoi(serializedSettings.at("Graphics").at("ResolutionWidth").c_str()),
     .graphicsResolutionHeight = atoi(serializedSettings.at("Graphics").at("ResolutionHeight").c_str()),
+    .highwayAnchorColor = {
+      colorVec4(serializedSettings.at("Highway").at("AnchorColor0")),
+      colorVec4(serializedSettings.at("Highway").at("AnchorColor1"))
+    },
+    .highwayBackgroundColor = colorVec4(serializedSettings.at("Highway").at("BackgroundColor")),
+    .highwayChordBoxColor = {
+      colorVec4(serializedSettings.at("Highway").at("ChordBoxColor0")),
+      colorVec4(serializedSettings.at("Highway").at("ChordBoxColor1"))
+    },
+    .highwayChordNameColor = colorVec4(serializedSettings.at("Highway").at("ChordNameColor")),
+    .highwayDetectorColor = colorVec4(serializedSettings.at("Highway").at("LyricsColor1")),
     .highwayEbeat = bool(atoi(serializedSettings.at("Highway").at("Ebeat").c_str())),
     .highwayEbeatColor = {
       colorVec4(serializedSettings.at("Highway").at("EbeatColor0")),
       colorVec4(serializedSettings.at("Highway").at("EbeatColor1"))
     },
+    .highwayFingerNumberColor = colorVec4(serializedSettings.at("Highway").at("FingerNumberColor")),
     .highwayFretNoteNames = bool(atoi(serializedSettings.at("Highway").at("FretNoteNames").c_str())),
+    .highwayFretNumberColor = {
+      colorVec4(serializedSettings.at("Highway").at("FretNumberColor0")),
+      colorVec4(serializedSettings.at("Highway").at("FretNumberColor1")),
+      colorVec4(serializedSettings.at("Highway").at("FretNumberColor2"))
+    },
+    .highwayFretboardNoteNameColor = {
+      colorVec4(serializedSettings.at("Highway").at("FretboardNoteNameColor0")),
+      colorVec4(serializedSettings.at("Highway").at("FretboardNoteNameColor1"))
+    },
+    .highwayGroundFretColor = {
+      colorVec4(serializedSettings.at("Highway").at("GroundFretColor0")),
+      colorVec4(serializedSettings.at("Highway").at("GroundFretColor1"))
+    },
     .highwayLyrics = bool(atoi(serializedSettings.at("Highway").at("Lyrics").c_str())),
     .highwayLyricsColor = {
       colorVec4(serializedSettings.at("Highway").at("LyricsColor0")),
       colorVec4(serializedSettings.at("Highway").at("LyricsColor1")),
       colorVec4(serializedSettings.at("Highway").at("LyricsColor2"))
     },
+    .highwayPhraseColor = {
+      colorVec4(serializedSettings.at("Highway").at("PhraseColor0")),
+      colorVec4(serializedSettings.at("Highway").at("PhraseColor1")),
+      colorVec4(serializedSettings.at("Highway").at("PhraseColor2")),
+      colorVec4(serializedSettings.at("Highway").at("PhraseColor3"))
+    },
     .highwayReverseStrings = bool(atoi(serializedSettings.at("Highway").at("ReverseStrings").c_str())),
     .highwaySongInfo = bool(atoi(serializedSettings.at("Highway").at("SongInfo").c_str())),
+    .highwaySongInfoColor = colorVec4(serializedSettings.at("Highway").at("SongInfoColor")),
     .highwaySpeedMultiplier = f32(atof(serializedSettings.at("Highway").at("SpeedMultiplier").c_str())),
     .highwayStringNoteNames = bool(atoi(serializedSettings.at("Highway").at("StringNoteNames").c_str())),
     .highwayToneAssignment = bool(atoi(serializedSettings.at("Highway").at("ToneAssignment").c_str())),
+    .highwayToneAssignmentColor = colorVec4(serializedSettings.at("Highway").at("ToneAssignmentColor")),
     .instrumentBass5StringTuning = {
       atoi(serializedSettings.at("Instrument").at("Bass5StringTuning0").c_str()),
       atoi(serializedSettings.at("Instrument").at("Bass5StringTuning1").c_str()),

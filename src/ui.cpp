@@ -2528,6 +2528,270 @@ static void settingsWindow()
     if (nk_tree_push(ctx, NK_TREE_TAB, "Highway", NK_MINIMIZED)) {
       nk_checkbox_label(ctx, "Ebeat", (nk_bool*)&Global::settings.highwayEbeat);
       nk_layout_row_dynamic(ctx, 22, 2);
+      nk_label(ctx, "Anchor0:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayAnchorColor[0])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayAnchorColor[0]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayAnchorColor[0]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayAnchorColor[0].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayAnchorColor[0].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayAnchorColor[0].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayAnchorColor[0].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayAnchorColor[0].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayAnchorColor[0].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayAnchorColor[0].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayAnchorColor[0].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "Anchor1:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayAnchorColor[1])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayAnchorColor[1]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayAnchorColor[1]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayAnchorColor[1].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayAnchorColor[1].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayAnchorColor[1].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayAnchorColor[1].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayAnchorColor[1].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayAnchorColor[1].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayAnchorColor[1].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayAnchorColor[1].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "Background:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayBackgroundColor)), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayBackgroundColor) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayBackgroundColor), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayBackgroundColor.v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayBackgroundColor.v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayBackgroundColor.v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayBackgroundColor.v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayBackgroundColor.v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayBackgroundColor.v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayBackgroundColor.v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayBackgroundColor.v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "ChordBox:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayChordBoxColor[0])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayChordBoxColor[0]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayChordBoxColor[0]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayChordBoxColor[0].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayChordBoxColor[0].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayChordBoxColor[0].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayChordBoxColor[0].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayChordBoxColor[0].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayChordBoxColor[0].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayChordBoxColor[0].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayChordBoxColor[0].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "Arpeggio:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayChordBoxColor[1])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayChordBoxColor[1]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayChordBoxColor[1]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayChordBoxColor[1].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayChordBoxColor[1].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayChordBoxColor[1].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayChordBoxColor[1].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayChordBoxColor[1].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayChordBoxColor[1].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayChordBoxColor[1].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayChordBoxColor[1].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "ChordName:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayChordNameColor)), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayChordNameColor) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayChordNameColor), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayChordNameColor.v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayChordNameColor.v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayChordNameColor.v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayChordNameColor.v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayChordNameColor.v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayChordNameColor.v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayChordNameColor.v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayChordNameColor.v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "Detector:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayDetectorColor)), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayDetectorColor) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayDetectorColor), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayDetectorColor.v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayDetectorColor.v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayDetectorColor.v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayDetectorColor.v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayDetectorColor.v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayDetectorColor.v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayDetectorColor.v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayDetectorColor.v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "Finger Number:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayFingerNumberColor)), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayFingerNumberColor) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayFingerNumberColor), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayFingerNumberColor.v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayFingerNumberColor.v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFingerNumberColor.v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayFingerNumberColor.v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFingerNumberColor.v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayFingerNumberColor.v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFingerNumberColor.v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayFingerNumberColor.v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "FretNumber0:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayFretNumberColor[0])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayFretNumberColor[0]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayFretNumberColor[0]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayFretNumberColor[0].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayFretNumberColor[0].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretNumberColor[0].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayFretNumberColor[0].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretNumberColor[0].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayFretNumberColor[0].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretNumberColor[0].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayFretNumberColor[0].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "FretNumber1:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayFretNumberColor[1])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayFretNumberColor[1]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayFretNumberColor[1]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayFretNumberColor[1].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayFretNumberColor[1].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretNumberColor[1].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayFretNumberColor[1].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretNumberColor[1].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayFretNumberColor[1].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretNumberColor[1].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayFretNumberColor[1].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "FretNumber2:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayFretNumberColor[2])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayFretNumberColor[2]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayFretNumberColor[2]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayFretNumberColor[2].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayFretNumberColor[2].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretNumberColor[2].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayFretNumberColor[2].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretNumberColor[2].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayFretNumberColor[2].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretNumberColor[2].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayFretNumberColor[2].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "FretboardNoteName0:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayFretboardNoteNameColor[0])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayFretboardNoteNameColor[0]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayFretboardNoteNameColor[0]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayFretboardNoteNameColor[0].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayFretboardNoteNameColor[0].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretboardNoteNameColor[0].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayFretboardNoteNameColor[0].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretboardNoteNameColor[0].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayFretboardNoteNameColor[0].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretboardNoteNameColor[0].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayFretboardNoteNameColor[0].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "FretboardNoteName1:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayFretboardNoteNameColor[1])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayFretboardNoteNameColor[1]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayFretboardNoteNameColor[1]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayFretboardNoteNameColor[1].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayFretboardNoteNameColor[1].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretboardNoteNameColor[1].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayFretboardNoteNameColor[1].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretboardNoteNameColor[1].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayFretboardNoteNameColor[1].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayFretboardNoteNameColor[1].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayFretboardNoteNameColor[1].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "GroundFretColor0:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayGroundFretColor[0])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayGroundFretColor[0]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayGroundFretColor[0]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayGroundFretColor[0].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayGroundFretColor[0].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayGroundFretColor[0].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayGroundFretColor[0].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayGroundFretColor[0].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayGroundFretColor[0].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayGroundFretColor[0].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayGroundFretColor[0].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "GroundFretColor1:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayGroundFretColor[1])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayGroundFretColor[1]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayGroundFretColor[1]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayGroundFretColor[1].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayGroundFretColor[1].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayGroundFretColor[1].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayGroundFretColor[1].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayGroundFretColor[1].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayGroundFretColor[1].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayGroundFretColor[1].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayGroundFretColor[1].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "Lyrics Used:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayLyricsColor[0])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayLyricsColor[0]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayLyricsColor[0]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayLyricsColor[0].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayLyricsColor[0].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayLyricsColor[0].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayLyricsColor[0].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayLyricsColor[0].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayLyricsColor[0].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayLyricsColor[0].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayLyricsColor[0].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "Lyrics Active:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayLyricsColor[1])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayLyricsColor[1]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayLyricsColor[1]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayLyricsColor[1].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayLyricsColor[1].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayLyricsColor[1].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayLyricsColor[1].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayLyricsColor[1].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayLyricsColor[1].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayLyricsColor[1].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayLyricsColor[1].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "Lyrics Unused:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayLyricsColor[2])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayLyricsColor[2]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayLyricsColor[2]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayLyricsColor[2].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayLyricsColor[2].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayLyricsColor[2].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayLyricsColor[2].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayLyricsColor[2].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayLyricsColor[2].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayLyricsColor[2].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayLyricsColor[2].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "Phrase0:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayPhraseColor[0])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayPhraseColor[0]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayPhraseColor[0]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayPhraseColor[0].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayPhraseColor[0].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayPhraseColor[0].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayPhraseColor[0].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayPhraseColor[0].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayPhraseColor[0].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayPhraseColor[0].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayPhraseColor[0].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "Phrase1:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayPhraseColor[1])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayPhraseColor[1]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayPhraseColor[1]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayPhraseColor[1].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayPhraseColor[1].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayPhraseColor[1].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayPhraseColor[1].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayPhraseColor[1].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayPhraseColor[1].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayPhraseColor[1].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayPhraseColor[1].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "Phrase2:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayPhraseColor[2])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayPhraseColor[2]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayPhraseColor[2]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayPhraseColor[2].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayPhraseColor[2].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayPhraseColor[2].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayPhraseColor[2].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayPhraseColor[2].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayPhraseColor[2].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayPhraseColor[2].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayPhraseColor[2].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "Phrase3:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayPhraseColor[3])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayPhraseColor[3]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayPhraseColor[3]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayPhraseColor[3].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayPhraseColor[3].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayPhraseColor[3].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayPhraseColor[3].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayPhraseColor[3].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayPhraseColor[3].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayPhraseColor[3].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayPhraseColor[3].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "Song Info:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwaySongInfoColor)), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwaySongInfoColor) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwaySongInfoColor), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwaySongInfoColor.v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwaySongInfoColor.v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwaySongInfoColor.v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwaySongInfoColor.v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwaySongInfoColor.v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwaySongInfoColor.v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwaySongInfoColor.v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwaySongInfoColor.v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "Tone Assignment:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayToneAssignmentColor)), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayToneAssignmentColor) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayToneAssignmentColor), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayToneAssignmentColor.v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayToneAssignmentColor.v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayToneAssignmentColor.v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayToneAssignmentColor.v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayToneAssignmentColor.v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayToneAssignmentColor.v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayToneAssignmentColor.v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayToneAssignmentColor.v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
       nk_label(ctx, "Ebeat On:", NK_TEXT_LEFT);
       if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayEbeatColor[0])), nk_vec2(200, 400))) {
         nk_layout_row_dynamic(ctx, 120, 1);

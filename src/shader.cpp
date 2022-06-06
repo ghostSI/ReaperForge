@@ -43,7 +43,7 @@ static GLuint compileShader(const char* vertexSource, const char* fragSource)
   glAttachShader(programId, vertexShader);
   glAttachShader(programId, fragmentShader);
 
-//  glBindFragDataLocation(programId, 0, "outColor");
+  //  glBindFragDataLocation(programId, 0, "outColor");
 
   glLinkProgram(programId);
 
@@ -59,6 +59,9 @@ void Shader::init()
 {
   shaderPrograms.push_back(compileShader(Data::Shader::defaultScreenVert, Data::Shader::defaultFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::defaultFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::detectedChordFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::detectedFretFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::detectedNoteFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::groundFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultScreenVert, Data::Shader::fontFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::fontFrag));

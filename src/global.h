@@ -46,22 +46,23 @@ namespace Const {
       .v1 = -7.0f,
       .v2 = -9.16f
     };
-    inline constexpr f32 highwayRenderMaxFutureTime = -10.0f;
-    inline constexpr f32 highwayRenderTremoloFrequency = 0.04f;
-    inline constexpr f32 highwayRenderLeftHandPreTime = -2.0f;
-    inline constexpr f32 highwayRenderDrawSongInfoStartTime = 1.0f;
-    inline constexpr f32 highwayRenderDrawSongInfoFadeInTime = 1.5f;
-    inline constexpr f32 highwayRenderDrawSongInfoFadeOutTime = 3.5f;
-    inline constexpr f32 highwayRenderDrawSongInfoEndTime = 4.0f;
-    inline constexpr f32 highwayRenderDrawToneAssignmentFadeInTime = 0.5f;
-    inline constexpr f32 highwayRenderDrawToneAssignmentFadeOutTime = 2.5f;
-    inline constexpr f32 highwayRenderDrawToneAssignmentEndTime = 3.0f;
-    inline constexpr f32 highwayRenderDrawChordNameWaitTime = 0.2f;
-    inline constexpr f32 highwayRenderDrawChordNameFadeOutTime = 0.2f;
-    inline constexpr f32 highwayRenderDrawChordNameEndTime = 0.3f;
-    inline constexpr f32 highwayRenderStringSpacing = 0.5f;
-    inline constexpr f32 highwayRenderStringGaugeMultiplier = 0.2f;
-    inline constexpr f32 highwayRenderFretPosition[] =
+    inline constexpr f32 highwayMaxFutureTime = -10.0f;
+    inline constexpr f32 highwayNoteDetectionTimeOffset = 0.4f;
+    inline constexpr f32 highwayTremoloFrequency = 0.04f;
+    inline constexpr f32 highwayLeftHandPreTime = -2.0f;
+    inline constexpr f32 highwayDrawSongInfoStartTime = 1.0f;
+    inline constexpr f32 highwayDrawSongInfoFadeInTime = 1.5f;
+    inline constexpr f32 highwayDrawSongInfoFadeOutTime = 3.5f;
+    inline constexpr f32 highwayDrawSongInfoEndTime = 4.0f;
+    inline constexpr f32 highwayDrawToneAssignmentFadeInTime = 0.5f;
+    inline constexpr f32 highwayDrawToneAssignmentFadeOutTime = 2.5f;
+    inline constexpr f32 highwayDrawToneAssignmentEndTime = 3.0f;
+    inline constexpr f32 highwayDrawChordNameWaitTime = 0.2f;
+    inline constexpr f32 highwayDrawChordNameFadeOutTime = 0.2f;
+    inline constexpr f32 highwayDrawChordNameEndTime = 0.3f;
+    inline constexpr f32 highwayStringSpacing = 0.5f;
+    inline constexpr f32 highwayStringGaugeMultiplier = 0.2f;
+    inline constexpr f32 highwayFretPosition[] =
     {
       0.0f,
       1.0f,

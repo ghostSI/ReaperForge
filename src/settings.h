@@ -10,27 +10,70 @@ namespace Settings {
     i32 audioBufferSize = 1024;
     i32 audioChannelInstrument[2] = { 0, 1 };
     i32 audioSampleRate = 48000;
+    f32 camera0 = 0.0f;
+    f32 camera1 = 0.0f;
+    f32 camera2 = 0.0f;
+    f32 camera3 = 0.0f;
+    f32 camera4 = 0.0f;
+    f32 camera5 = 0.0f;
+    f32 camera6 = 0.0f;
+    f32 camera7 = 0.0f;
+    f32 camera8 = 0.0f;
+    f32 camera9 = 0.0f;
     f32 graphicsFieldOfView = 75.0f;
     FullscreenMode graphicsFullscreen = FullscreenMode::windowed;
     i32 graphicsResolutionWidth = 1024;
     i32 graphicsResolutionHeight = 768;
+    vec4 highwayAnchorColor[2] = {
+      colorVec4("#2E1168"),
+      colorVec4("#132693")
+    };
+    vec4 highwayBackgroundColor = colorVec4("#060A1B");
+    vec4 highwayChordBoxColor[2] = {
+      colorVec4("#5B74E9"),
+      colorVec4("#8795E5")
+    };
+    vec4 highwayChordNameColor = colorVec4("#ADACAC");
+    vec4 highwayDetectorColor = colorVec4("#A6CFFC");
     bool highwayEbeat = true;
     vec4 highwayEbeatColor[2] = {
-      colorVec4("#A0AEEFCC"),
-      colorVec4("#8795E566")
+      colorVec4("#423E6D"),
+      colorVec4("#8795E5")
     };
+    vec4 highwayFingerNumberColor = colorVec4("#FFFFFF");
     bool highwayFretNoteNames = false;
+    vec4 highwayFretNumberColor[3] = {
+      colorVec4("#FFBA17"),
+      colorVec4("#8795E5"),
+      colorVec4("#A0AEEF")
+    };
+    vec4 highwayFretboardNoteNameColor[2] = {
+      colorVec4("#BCBED4"),
+      colorVec4("#8795E5")
+    };
+    vec4 highwayGroundFretColor[2] = {
+      colorVec4("#2037A5"),
+      colorVec4("#8795E5")
+    };
     bool highwayLyrics = true;
     vec4 highwayLyricsColor[3] = {
       colorVec4("#666666"),
-      colorVec4("#2381E9"),
+      colorVec4("#1263BC"),
       colorVec4("#CCCCCC")
+    };
+    vec4 highwayPhraseColor[4] = {
+      colorVec4("#7103AF"),
+      colorVec4("#2C0337"),
+      colorVec4("#D87E34"),
+      colorVec4("#444444")
     };
     bool highwayReverseStrings = false;
     bool highwaySongInfo = true;
+    vec4 highwaySongInfoColor = colorVec4("#FFFFFF");
     f32 highwaySpeedMultiplier = 20.0f;
     bool highwayStringNoteNames = true;
     bool highwayToneAssignment = true;
+    vec4 highwayToneAssignmentColor = colorVec4("#FFFFFF");
     i32 instrumentBass5StringTuning[4] = { -2, -2, -2, -2 };
     i32 instrumentBassFirstWoundString = 0;
     vec4 instrumentBassStringColor[5] = {

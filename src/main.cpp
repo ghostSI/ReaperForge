@@ -67,6 +67,7 @@ static void mainloop() {
       Ui::tick();
 #endif // __EMSCRIPTEN__
 
+    glClearColor(Global::settings.highwayBackgroundColor.v0, Global::settings.highwayBackgroundColor.v1, Global::settings.highwayBackgroundColor.v2, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 #ifndef __EMSCRIPTEN__
@@ -158,8 +159,6 @@ int main(int argc, char* argv[]) {
 
   if (Global::gameController == nullptr && SDL_NumJoysticks() >= 1 && SDL_IsGameController(0))
     Global::gameController = SDL_GameControllerOpen(0);
-
-  glClearColor(0.0f, 0.0031372f, 0.0721568f, 1.0f);
 
   Shader::init();
   Sound::init();

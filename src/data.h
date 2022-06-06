@@ -10,6 +10,9 @@ namespace Data {
     extern const char* defaultScreenVert;
     extern const char* defaultWorldVert;
     extern const char* defaultFrag;
+    extern const char* detectedChordFrag;
+    extern const char* detectedFretFrag;
+    extern const char* detectedNoteFrag;
     extern const char* groundFrag;
     extern const char* fontFrag;
     extern const char* anchorFrag;

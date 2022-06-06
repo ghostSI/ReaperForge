@@ -7,6 +7,9 @@ namespace Shader {
     enum struct Stem {
         defaultScreen,
         defaultWorld,
+        detectedChord,
+        detectedFret,
+        detectedNote,
         ground,
         fontScreen,
         fontWorld,

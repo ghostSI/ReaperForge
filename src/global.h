@@ -28,7 +28,7 @@ namespace Const {
     inline constexpr f32 chordDetectorVolumeThreshhold = 0.005f;
     inline constexpr f32 aspectRatio = (16.0f / 9.0f);
     inline constexpr i32 fontCharWidth = 12;
-    inline constexpr i32 fontCharHeight = 18;
+    inline constexpr i32 fontCharHeight = 20;
     inline constexpr i32 fontTextureWidth = 192;
     inline constexpr i32 fontTextureHeight = 108;
     inline constexpr vec3 cameraInitialPosition = {

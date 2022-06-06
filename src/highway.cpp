@@ -1005,6 +1005,10 @@ static void drawPhrases()
     const f32 left = -0.7985 + begin * 1.6f;
     const f32 right = -0.8015 + end * 1.6f;
     const f32 posZ = 0.3f;
+
+    const f32 progress = map(Global::musicTimeElapsed, phraseIteration0.time, phraseIteration1.time, 0.0f, 1.0f);
+    glUniform1f(glGetUniformLocation(shader, "progress"), progress);
+
     {
       const f32 top = 0.75f + difficulty * 0.17f;
       const f32 bottom = 0.75f;
@@ -1018,6 +1022,7 @@ static void drawPhrases()
       };
 
       glUniform4f(glGetUniformLocation(shader, "color"), 0.29f, 0.0f, 0.5f, 1.0f);
+      glUniform4f(glGetUniformLocation(shader, "color2"), 0.19f, 0.0f, 0.2f, 1.0f);
 
       glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -1035,6 +1040,7 @@ static void drawPhrases()
       };
 
       glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 0.5f, 0.0f, 1.0f);
+      glUniform4f(glGetUniformLocation(shader, "color2"), 0.4f, 0.4f, 0.4f, 1.0f);
 
       glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

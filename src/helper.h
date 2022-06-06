@@ -65,12 +65,6 @@ namespace VecMath {
 }
 
 template<typename T>
-constexpr const T &clamp(const T &v, const T &lo, const T &hi) // emscripten somehow can't use std::clamp
-{
-    return (v < lo) ? lo : (hi < v) ? hi : v;
-}
-
-template<typename T>
 const T &min_(const T &a, const T &b) {
     return (b < a) ? b : a;
 }
@@ -78,6 +72,17 @@ const T &min_(const T &a, const T &b) {
 template<typename T>
 const T &max_(const T &a, const T &b) {
     return (a < b) ? b : a;
+}
+
+template<typename T>
+constexpr const T& clamp(const T& v, const T& lo, const T& hi) // emscripten somehow can't use std::clamp
+{
+  return (v < lo) ? lo : (hi < v) ? hi : v;
+}
+
+constexpr f32 map(f32 x, f32 in_min, f32 in_max, f32 out_min, f32 out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
 template<typename T>

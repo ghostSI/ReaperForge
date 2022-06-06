@@ -36,16 +36,6 @@ f32 y2GlScreen(f32 y);
 
 f32 deg2rad(f32 deg);
 
-namespace rnd {
-    i32 mod(i32 a);
-
-    i32 between(i32 a, i32 b);
-
-    f32 between(f32 a, f32 b);
-
-    bool percent(f32 percentage);
-}
-
 namespace VecMath {
     f32 lengthSquared(f32 x, f32 y);
     f32 lengthSquared(const vec3& x);

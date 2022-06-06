@@ -1,0 +1,25 @@
+#include "../src/version.h"
+
+#define STRINGIFY(v) #v
+#define VERSION_STR_FORMAT(major, minor, revision, build) STRINGIFY(major) "." STRINGIFY(minor) "." STRINGIFY(revision) "." STRINGIFY(build)
+#define VERSION_STR VERSION_STR_FORMAT(VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, VERSION_BUILD)
+
+1 ICON "icon.ico"
+1 VERSIONINFO
+FILEVERSION VERSION_MAJOR,VERSION_MINOR,VERSION_REVISION,VERSION_BUILD
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+    BLOCK "040904E4"
+        BEGIN
+            VALUE "FileDescription", "ReaperForge"
+            VALUE "ProductName", "ReaperForge"
+            VALUE "ProductVersion", VERSION_STR
+            VALUE "OriginalFilename", "ReaperForge.exe"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0, 1252
+    END
+END

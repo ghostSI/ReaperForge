@@ -24,6 +24,7 @@ endif ()
 set(HEADER_FILES
 		src/_kiss_fft_guts.h
 		src/arrangement.h
+		src/base64.h
 		src/camera.h
 		src/chordDetector.h
 		src/chords.h
@@ -60,6 +61,7 @@ set(HEADER_FILES
         src/type.h
         src/typedefs.h
         src/ui.h
+        src/version.h
         src/vst.h
         src/wem.h
         src/xblock.h
@@ -68,6 +70,7 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
 		src/arrangement.cpp
+		src/base64.cpp
 		src/camera.cpp
 		src/chordDetector.cpp
 		src/chords.cpp
@@ -109,14 +112,11 @@ set(SOURCE_FILES
         )
 
 set(RESOURCE_FILES
+        res/ReaperForge.rc
         )
 
-add_executable(ReaperForge WIN32 ${HEADER_FILES} ${SOURCE_FILES} ${RESOURCE_FILES} ReaperForge.rc)
+add_executable(ReaperForge WIN32 ${HEADER_FILES} ${SOURCE_FILES} ${RESOURCE_FILES} )
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/native)
-set_target_properties(${TARGETNAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/native)
-
-file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/res)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
 if (${LINUX})

@@ -5,16 +5,6 @@
 #include <math.h>
 #include <sstream>
 
-static i32 randomInt() {
-    static const i32 lookup[] = {
-#include "../res/random.txt"
-    };
-
-    static u8 index;
-
-    return lookup[index++];
-}
-
 Color makeColor(u8 r, u8 g, u8 b, u8 a) {
     return r << 24 | g << 16 | b << 8 | a;
 }
@@ -116,22 +106,6 @@ f32 y2GlScreen(f32 y)
 
 f32 deg2rad(f32 deg) {
     return 0.0174533f * deg;
-}
-
-i32 rnd::mod(i32 a) {
-    return randomInt() % a;
-}
-
-i32 rnd::between(i32 a, i32 b) {
-    return randomInt() % (b - a + 1) + a;
-}
-
-f32 rnd::between(f32 a, f32 b) {
-    return f32(randomInt()) / f32(Const::randomIntMax) * (b - a) + a;
-}
-
-bool rnd::percent(f32 p) {
-    return f32(randomInt()) < (f32(Const::randomIntMax) / 100.0_f32) * p;
 }
 
 f32 VecMath::lengthSquared(f32 x, f32 y) {

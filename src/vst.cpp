@@ -4,6 +4,7 @@
 
 #include "base64.h"
 #include "global.h"
+#include "version.h"
 
 #include "SDL2/SDL_syswm.h"
 
@@ -262,10 +263,7 @@ static intptr_t AudioMaster(AEffect* effect, AudioMasterOpcode opcode, int32_t i
     return 1;
 
   case AudioMasterOpcode::getVendorVersion:
-    return (intptr_t)(REAPERFORGE_VERSION << 24 |
-      REAPERFORGE_RELEASE << 16 |
-      REAPERFORGE_REVISION << 8 |
-      REAPERFORGE_MODLEVEL);
+    return (intptr_t)(VERSION_MAJOR << 24 | VERSION_MINOR << 16 | VERSION_REVISION << 8 | VERSION_BUILD);
 
   case AudioMasterOpcode::needIdle:
     return 0;

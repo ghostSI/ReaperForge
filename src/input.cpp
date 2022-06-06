@@ -391,42 +391,62 @@ void Input::proccessInputEvents() {
 
   if (Global::inputKP0.pressed && !Global::inputKP0.pressedLastFrame)
   {
+#ifdef SUPPORT_VST
     Global::vstToneAssignment = 0;
+#endif // SUPPORT_VST
   }
   if (Global::inputKP1.pressed && !Global::inputKP1.pressedLastFrame)
   {
+#ifdef SUPPORT_VST
     Global::vstToneAssignment = 1;
+#endif // SUPPORT_VST
   }
   if (Global::inputKP2.pressed && !Global::inputKP2.pressedLastFrame)
   {
+#ifdef SUPPORT_VST
     Global::vstToneAssignment = 2;
+#endif // SUPPORT_VST
   }
   if (Global::inputKP3.pressed && !Global::inputKP3.pressedLastFrame)
   {
+#ifdef SUPPORT_VST
     Global::vstToneAssignment = 3;
+#endif // SUPPORT_VST
   }
   if (Global::inputKP4.pressed && !Global::inputKP4.pressedLastFrame)
   {
+#ifdef SUPPORT_VST
     Global::vstToneAssignment = 4;
+#endif // SUPPORT_VST
   }
   if (Global::inputKP5.pressed && !Global::inputKP5.pressedLastFrame)
   {
+#ifdef SUPPORT_VST
     Global::vstToneAssignment = 5;
+#endif // SUPPORT_VST
   }
   if (Global::inputKP6.pressed && !Global::inputKP6.pressedLastFrame)
   {
+#ifdef SUPPORT_VST
     Global::vstToneAssignment = 6;
+#endif // SUPPORT_VST
   }
   if (Global::inputKP7.pressed && !Global::inputKP7.pressedLastFrame)
   {
+#ifdef SUPPORT_VST
     Global::vstToneAssignment = 7;
+#endif // SUPPORT_VST
   }
   if (Global::inputKP8.pressed && !Global::inputKP8.pressedLastFrame)
   {
+#ifdef SUPPORT_VST
     Global::vstToneAssignment = 8;
+#endif // SUPPORT_VST
   }
   if (Global::inputKP9.pressed && !Global::inputKP9.pressedLastFrame)
   {
+#ifdef SUPPORT_VST
     Global::vstToneAssignment = 9;
+#endif // SUPPORT_VST
   }
 }

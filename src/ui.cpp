@@ -2250,7 +2250,7 @@ static void songWindow() {
     nk_layout_row_template_push_static(ctx, 58);
     nk_layout_row_template_push_static(ctx, 47);
     nk_layout_row_template_push_dynamic(ctx);
-    nk_layout_row_template_push_static(ctx, 30);
+    nk_layout_row_template_push_static(ctx, 35);
     nk_layout_row_template_push_static(ctx, 30);
     nk_layout_row_template_push_static(ctx, 50);
     nk_layout_row_template_end(ctx);
@@ -2950,30 +2950,36 @@ static void settingsWindow()
 }
 
 static void installWindow() {
-  if (nk_begin(ctx, "Install", nk_rect(200, 280, 600, 160),
-    NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
+  if (nk_begin(ctx, "Install", nk_rect(150, 200, 700, 290), NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
 
 
     nk_layout_row_dynamic(ctx, 22, 1);
-    nk_label(ctx, "Reaperforge is not installed.", NK_TEXT_LEFT);
-    nk_label(ctx, "Installing ReaperForge will create a songs directory for the .psarc files.", NK_TEXT_LEFT);
-    nk_label(ctx, "It will also create a settings.ini file.", NK_TEXT_LEFT);
+    nk_label(ctx, "ReaperForge is not installed.", NK_TEXT_LEFT);
+    nk_label(ctx, "Installing ReaperForge will create the following files in the current location:", NK_TEXT_LEFT);
+    nk_label(ctx, " -settings.ini      <- Audio settings, Colors, etc.", NK_TEXT_LEFT);
+    nk_label(ctx, " -profile_Anon.ini  <- for Highscores, Number of Plays and Tone assignments.", NK_TEXT_LEFT);
+    nk_label(ctx, "In addition Reaperforge will create the following directories in the current location:", NK_TEXT_LEFT);
+    nk_label(ctx, " -psarc             <- copy your _p.psarc files into this directory.", NK_TEXT_LEFT);
+    nk_label(ctx, " -vst               <- copy your .dll of your vst plugins into this directory.", NK_TEXT_LEFT);
+    nk_label(ctx, "ReaperForge will exit after pressing Install.", NK_TEXT_LEFT);
 
     nk_layout_row_dynamic(ctx, 29, 1);
     if (nk_button_label(ctx, "Install"))
+    {
       Installer::install();
+      Global::appQuit = true;
+    }
   }
   nk_end(ctx);
 }
 
 static void helpWindow()
 {
-  if (nk_begin(ctx, "Help", nk_rect(200, 280, 600, 300),
-    NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
+  if (nk_begin(ctx, "Help", nk_rect(200, 280, 600, 300), NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE | NK_WINDOW_CLOSABLE)) {
 
     nk_layout_row_dynamic(ctx, 22, 1);
     nk_label(ctx, "Keybindings.", NK_TEXT_LEFT);
-    nk_label(ctx, "F1: open Tuner", NK_TEXT_LEFT);
+    //nk_label(ctx, "F1: open Tuner", NK_TEXT_LEFT);
     nk_label(ctx, "F2: toggle Wireframe", NK_TEXT_LEFT);
     nk_label(ctx, "F3: toggle Debug Info", NK_TEXT_LEFT);
     nk_label(ctx, "F5: Quick Repeater", NK_TEXT_LEFT);

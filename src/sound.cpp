@@ -214,8 +214,6 @@ void Sound::init()
 
     devid_in = SDL_OpenAudioDevice(NULL, SDL_TRUE, &want_in, nullptr, 0);
     ASSERT(devid_in != 0);
-
-    SDL_PauseAudioDevice(devid_in, 0);
   }
 
   { // Output
@@ -231,9 +229,10 @@ void Sound::init()
 
     devid_out = SDL_OpenAudioDevice(NULL, 0, &(want_out), &have, 0);
     ASSERT(devid_out != 0);
-
-    SDL_PauseAudioDevice(devid_out, 0);
   }
+
+  SDL_PauseAudioDevice(devid_in, 0);
+  SDL_PauseAudioDevice(devid_out, 0);
 }
 
 void Sound::fini()

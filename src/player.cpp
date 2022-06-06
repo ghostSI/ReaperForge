@@ -65,6 +65,7 @@ static void playSongEmscripten()
 
   const Psarc::Info psarcInfo = Psarc::parse(psarcData);
   Global::songInfos.push_back(Song::loadSongInfoManifestOnly(psarcInfo));
+  Global::songSelected = 0;
   Song::loadSongInfoComplete(psarcInfo, Global::songInfos[Global::songSelected]);
 
   Global::songTrack = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);

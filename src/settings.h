@@ -39,8 +39,8 @@ namespace Settings {
     vec4 highwayDetectorColor = colorVec4("#A6CFFC");
     bool highwayEbeat = true;
     vec4 highwayEbeatColor[2] = {
-      colorVec4("#423E6D"),
-      colorVec4("#8795E5")
+      colorVec4("#8795E5"),
+      colorVec4("#423E6D")
     };
     vec4 highwayFingerNumberColor = colorVec4("#FFFFFF");
     bool highwayFretNoteNames = false;

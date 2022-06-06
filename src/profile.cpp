@@ -1,8 +1,10 @@
 #include "profile.h"
 
-#include "vst.h"
-#include "global.h"
 #include "file.h"
+#include "global.h"
+#include "vst.h"
+
+#include <string.h>
 
 static std::map<std::string, std::map<std::string, std::string>> serialize(const std::vector<Manifest::Info>& manifestInfos)
 {

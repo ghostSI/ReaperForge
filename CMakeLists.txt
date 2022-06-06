@@ -58,6 +58,7 @@ set(HEADER_FILES
         src/sng.h
         src/song.h
         src/sound.h
+        src/test.h
         src/type.h
         src/typedefs.h
         src/ui.h
@@ -69,22 +70,22 @@ set(HEADER_FILES
         )
 
 set(SOURCE_FILES
-		src/arrangement.cpp
-		src/base64.cpp
-		src/camera.cpp
-		src/chordDetector.cpp
-		src/chords.cpp
-		src/chromagram.cpp
-		src/collection.cpp
-		src/data.cpp
-		src/debug.cpp
-		src/file.cpp
-		src/font.cpp
-		src/getopt.cpp
-		src/global.cpp
-		src/helper.cpp
-		src/highway.cpp
-		src/inflate.cpp
+        src/arrangement.cpp
+        src/base64.cpp
+        src/camera.cpp
+        src/chordDetector.cpp
+        src/chords.cpp
+        src/chromagram.cpp
+        src/collection.cpp
+        src/data.cpp
+        src/debug.cpp
+        src/file.cpp
+        src/font.cpp
+        src/getopt.cpp
+        src/global.cpp
+        src/helper.cpp
+        src/highway.cpp
+        src/inflate.cpp
         src/input.cpp
         src/installer.cpp
         src/json.cpp

@@ -1,7 +1,6 @@
 #include "wem.h"
 
 #include "file.h"
-#include "helper.h"
 
 #include <fstream>
 #include <iostream>
@@ -11,6 +10,74 @@
 #include <string>
 #include <string.h>
 #include <filesystem>
+
+using namespace std;
+
+class Argument_error {
+  string errmsg;
+public:
+  friend ostream& operator << (ostream& os, const Argument_error& ae) {
+    os << "Argument error: " << ae.errmsg;
+    return os;
+  }
+
+  explicit Argument_error(const char* str) : errmsg(str) {}
+};
+
+class File_open_error {
+  string filename;
+public:
+  friend ostream& operator << (ostream& os, const File_open_error& fe) {
+    os << "Error opening " << fe.filename;
+    return os;
+  }
+
+  explicit File_open_error(const string& name) : filename(name) {}
+};
+
+class Parse_error {
+public:
+  virtual void print_self(ostream& os) const {
+    os << "unspecified.";
+  }
+
+  friend ostream& operator << (ostream& os, const Parse_error& pe) {
+    os << "Parse error: ";
+    pe.print_self(os);
+    return os;
+  }
+  virtual ~Parse_error() {}
+};
+
+class Parse_error_str : public Parse_error {
+  string str;
+public:
+  virtual void print_self(ostream& os) const {
+    os << str;
+  }
+
+  explicit Parse_error_str(string s) : str(s) {}
+};
+
+class Size_mismatch : public Parse_error {
+  const unsigned long real_size, read_size;
+public:
+  virtual void print_self(ostream& os) const {
+    os << "expected " << real_size << " bits, read " << read_size;
+  }
+
+  Size_mismatch(unsigned long real_s, unsigned long read_s) : real_size(real_s), read_size(read_s) {}
+};
+
+class Invalid_id : public Parse_error {
+  const int id;
+public:
+  virtual void print_self(ostream& os) const {
+    os << "invalid codebook id " << id << ", try --inline-codebooks";
+  }
+
+  explicit Invalid_id(int i) : id(i) {}
+};
 
 /* from Tremor (lowmem) */
 static const uint32_t crc_lookup[256] = {
@@ -261,6 +328,25 @@ namespace {
 
     return read_16_be(reinterpret_cast<unsigned char*>(b));
   }
+
+  void write_16_be(unsigned char b[2], uint16_t v)
+  {
+    for (int i = 1; i >= 0; i--)
+    {
+      b[i] = v & 0xFF;
+      v >>= 8;
+    }
+  }
+
+  void write_16_be(std::ostream& os, uint16_t v)
+  {
+    char b[2];
+
+    write_16_be(reinterpret_cast<unsigned char*>(b), v);
+
+    os.write(b, 2);
+  }
+
 }
 
 class Bit_oggstream {
@@ -454,7 +540,7 @@ class codebook_library
   codebook_library(const codebook_library& rhs);
 
 public:
-  codebook_library(const std::string& filename);
+  codebook_library(const string& filename);
   codebook_library(void);
 
   ~codebook_library()
@@ -469,7 +555,7 @@ public:
     {
       assert(false); // Parse_error_str("codebook library not loaded");
     }
-    if (i >= codebook_count - 1 || i < 0) return nullptr;
+    if (i >= codebook_count - 1 || i < 0) return NULL;
     return &codebook_data[codebook_offsets[i]];
   }
 
@@ -583,7 +669,7 @@ public:
 };
 
 
-static u8 packed_codebooks_aoTuV_603_bin[] = {
+u8 packed_codebooks_aoTuV_603_bin[] = {
   0x91, 0x00, 0x58, 0x53, 0x55, 0x75, 0x75, 0x00, 0x91, 0x01, 0x58, 0x00,
   0x75, 0x75, 0x95, 0xb5, 0xb5, 0xb7, 0xd7, 0xd9, 0x00, 0x01, 0x04, 0x60,
   0x00, 0x00, 0x00, 0x25, 0x8d, 0x54, 0x52, 0x59, 0x65, 0x9d, 0xb6, 0xda,
@@ -6786,21 +6872,36 @@ static u8 packed_codebooks_aoTuV_603_bin[] = {
 };
 
 codebook_library::codebook_library(void)
-  : codebook_data(nullptr), codebook_offsets(nullptr), codebook_count(0)
+  : codebook_data(NULL), codebook_offsets(NULL), codebook_count(0)
 { }
 
-codebook_library::codebook_library(const std::string& filename)
-  : codebook_data(nullptr), codebook_offsets(nullptr), codebook_count(0)
+codebook_library::codebook_library(const string& filename)
+  : codebook_data(NULL), codebook_offsets(NULL), codebook_count(0)
 {
-  u64 file_size = sizeof(packed_codebooks_aoTuV_603_bin);
-  u64 offset_offset = u32_le(&packed_codebooks_aoTuV_603_bin[file_size - 4]);
+  ifstream is(filename.c_str(), ios::binary);
 
+  if (!is) assert(false); // File_open_error(filename);
+
+  is.seekg(0, ios::end);
+  long file_size = is.tellg();
+
+  is.seekg(file_size - 4, ios::beg);
+  long offset_offset = read_32_le(is);
   codebook_count = (file_size - offset_offset) / 4;
+
   codebook_data = new char[offset_offset];
   codebook_offsets = new long[codebook_count];
 
-  memcpy(codebook_data, packed_codebooks_aoTuV_603_bin, offset_offset);
-  memcpy(codebook_offsets, &packed_codebooks_aoTuV_603_bin[offset_offset], codebook_count * sizeof(long));
+  is.seekg(0, ios::beg);
+  for (long i = 0; i < offset_offset; i++)
+  {
+    codebook_data[i] = is.get();
+  }
+
+  for (long i = 0; i < codebook_count; i++)
+  {
+    codebook_offsets[i] = read_32_le(is);
+  }
 }
 
 void codebook_library::rebuild(int i, Bit_oggstream& bos)
@@ -6817,7 +6918,7 @@ void codebook_library::rebuild(int i, Bit_oggstream& bos)
   }
 
   array_streambuf asb(cb, cb_size);
-  std::istream is(&asb);
+  istream is(&asb);
   Bit_stream bis(is);
 
   rebuild(bis, cb_size, bos);
@@ -6834,7 +6935,10 @@ void codebook_library::copy(Bit_stream& bis, Bit_oggstream& bos)
 
   bis >> id >> dimensions >> entries;
 
-  assert(0x564342 == id); // Parse_error_str("invalid codebook identifier");
+  if (0x564342 != id)
+  {
+    assert(false); // Parse_error_str("invalid codebook identifier");
+  }
 
   //cout << "Codebook with " << dimensions << " dimensions, " << entries << " entries" << endl;
 
@@ -6865,7 +6969,7 @@ void codebook_library::copy(Bit_stream& bis, Bit_oggstream& bos)
       bos << number;
       current_entry += number;
     }
-    assert(current_entry <= entries); // Parse_error_str("current_entry out of range");
+    if (current_entry > entries) assert(false); // Parse_error_str("current_entry out of range");
   }
   else
   {
@@ -7108,11 +7212,10 @@ enum ForcePacketFormat {
 
 class Wwise_RIFF_Vorbis
 {
-  const u8* _inData;
-  u64 _inDataSize;
-  std::string _file_name;
-  std::ifstream _infile;
-  //long _file_size;
+  string _file_name;
+  string _codebooks_name;
+  ifstream _infile;
+  long _file_size;
 
   bool _little_endian;
 
@@ -7151,10 +7254,8 @@ class Wwise_RIFF_Vorbis
   uint32_t(*_read_32)(std::istream& is);
 public:
   Wwise_RIFF_Vorbis(
-    const u8* inData,
-    const u64 inDataSize,
-    const std::string& name,
-    //const std::string& _codebooks_name,
+    const string& name,
+    const string& _codebooks_name,
     bool inline_codebooks,
     bool full_setup,
     ForcePacketFormat force_packet_format
@@ -7162,7 +7263,7 @@ public:
 
   void print_info(void);
 
-  void generate_ogg(std::ofstream& of);
+  void generate_ogg(ofstream& of);
   void generate_ogg_header(Bit_oggstream& os, bool*& mode_blockflag, int& mode_bits);
   void generate_ogg_header_with_triad(Bit_oggstream& os);
 };
@@ -7175,7 +7276,7 @@ class Packet
   uint32_t _absolute_granule;
   bool _no_granule;
 public:
-  Packet(std::ifstream& i, long o, bool little_endian, bool no_granule = false) : _offset(o), _size(-1), _absolute_granule(0), _no_granule(no_granule) {
+  Packet(ifstream& i, long o, bool little_endian, bool no_granule = false) : _offset(o), _size(-1), _absolute_granule(0), _no_granule(no_granule) {
     i.seekg(_offset);
 
     if (little_endian)
@@ -7210,7 +7311,7 @@ class Packet_8
   uint32_t _size;
   uint32_t _absolute_granule;
 public:
-  Packet_8(std::ifstream& i, long o, bool little_endian) : _offset(o), _size(-1), _absolute_granule(0) {
+  Packet_8(ifstream& i, long o, bool little_endian) : _offset(o), _size(-1), _absolute_granule(0) {
     i.seekg(_offset);
 
     if (little_endian)
@@ -7258,18 +7359,17 @@ public:
 const char Vorbis_packet_header::vorbis_str[6] = { 'v','o','r','b','i','s' };
 
 Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
-  const u8* inData,
-  u64 inDataSize,
-  const std::string& name,
+  const string& name,
+  const string& codebooks_name,
   bool inline_codebooks,
   bool full_setup,
   ForcePacketFormat force_packet_format
 )
   :
-  _inData(inData),
-  _inDataSize(inDataSize),
   _file_name(name),
-  _infile(name.c_str(), std::ios::binary),
+  _codebooks_name(codebooks_name),
+  _infile(name.c_str(), ios::binary),
+  _file_size(-1),
   _little_endian(true),
   _riff_size(-1),
   _fmt_offset(-1),
@@ -7305,15 +7405,20 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   _old_packet_headers(false),
   _no_granule(false),
   _mod_packets(false),
-  _read_16(nullptr),
-  _read_32(nullptr)
+  _read_16(NULL),
+  _read_32(NULL)
 {
-  assert(_infile); // File_open_error(name);
+  if (!_infile) assert(false); // File_open_error(name);
+
+  _infile.seekg(0, ios::end);
+  _file_size = _infile.tellg();
+
 
   // check RIFF header
   {
     unsigned char riff_head[4], wave_head[4];
-    memcpy(riff_head, _inData, 4);
+    _infile.seekg(0, ios::beg);
+    _infile.read(reinterpret_cast<char*>(riff_head), 4);
 
     if (memcmp(&riff_head[0], "RIFX", 4))
     {
@@ -7342,26 +7447,27 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
       _read_32 = read_32_be;
     }
 
-    _riff_size = u32_le(&_inData[4]) + 8;
+    _riff_size = _read_32(_infile) + 8;
 
-    if (_riff_size > _inDataSize) assert(false); // Parse_error_str("RIFF truncated");
+    if (_riff_size > _file_size) assert(false); // Parse_error_str("RIFF truncated");
 
-    memcpy(wave_head, &_inData[8], 4);
-    assert(memcmp(wave_head, "WAVE", 4) == 0);
+    _infile.read(reinterpret_cast<char*>(wave_head), 4);
+    if (memcmp(&wave_head[0], "WAVE", 4)) assert(false); // Parse_error_str("missing WAVE");
   }
 
   // read chunks
   long chunk_offset = 12;
   while (chunk_offset < _riff_size)
   {
+    _infile.seekg(chunk_offset, ios::beg);
+
     if (chunk_offset + 8 > _riff_size) assert(false); // Parse_error_str("chunk header truncated");
 
     char chunk_type[4];
-    memcpy(chunk_type, &_inData[chunk_offset], 4);
-
+    _infile.read(chunk_type, 4);
     uint32_t chunk_size;
 
-    chunk_size = u32_le(&_inData[chunk_offset + 4]);
+    chunk_size = _read_32(_infile);
 
     if (!memcmp(chunk_type, "fmt ", 4))
     {
@@ -7413,27 +7519,20 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
     _vorb_offset = _fmt_offset + 0x18;
   }
 
-  _infile.seekg(_fmt_offset, std::ios::beg);
-
-  u64 offset = _fmt_offset;
-
-  assert(UINT16_C(0xFFFF) == u16_le(&_inData[offset])); // Parse_error_str("bad codec id");
-  _channels = u16_le(&_inData[offset + 2]);
-  _sample_rate = u32_le(&_inData[offset + 4]);
-  _avg_bytes_per_second = u32_le(&_inData[offset + 8]);
-  assert(0U == u16_le(&_inData[offset + 12])); // Parse_error_str("bad block align");
-  assert(0U == u16_le(&_inData[offset + 14])); // Parse_error_str("expected 0 bps");
-  assert(_fmt_size - 0x12 == u16_le(&_inData[offset + 16])); // Parse_error_str("bad extra fmt length");
-
+  _infile.seekg(_fmt_offset, ios::beg);
+  if (UINT16_C(0xFFFF) != _read_16(_infile)) assert(false); // Parse_error_str("bad codec id");
+  _channels = _read_16(_infile);
+  _sample_rate = _read_32(_infile);
+  _avg_bytes_per_second = _read_32(_infile);
+  if (0U != _read_16(_infile)) assert(false); // Parse_error_str("bad block align");
+  if (0U != _read_16(_infile)) assert(false); // Parse_error_str("expected 0 bps");
+  if (_fmt_size - 0x12 != _read_16(_infile)) assert(false); // Parse_error_str("bad extra fmt length");
 
   if (_fmt_size - 0x12 >= 2) {
     // read extra fmt
-
-    _ext_unk = u16_le(&_inData[offset + 18]);
-    offset += 2;
+    _ext_unk = _read_16(_infile);
     if (_fmt_size - 0x12 >= 6) {
-      _subtype = u32_le(&_inData[offset + 20]);
-      offset += 4;
+      _subtype = _read_32(_infile);
     }
   }
 
@@ -7441,25 +7540,45 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   {
     char whoknowsbuf[16];
     const unsigned char whoknowsbuf_check[16] = { 1,0,0,0, 0,0,0x10,0, 0x80,0,0,0xAA, 0,0x38,0x9b,0x71 };
-    memcpy(whoknowsbuf, &_inData[offset + 18], 16);
-    assert(memcmp(whoknowsbuf, whoknowsbuf_check, 16) == 0); // Parse_error_str("expected signature in extra fmt?");
+    _infile.read(whoknowsbuf, 16);
+    if (memcmp(whoknowsbuf, whoknowsbuf_check, 16)) assert(false); // Parse_error_str("expected signature in extra fmt?");
   }
 
   // read cue
   if (-1 != _cue_offset)
   {
-    _cue_count = u32_le(&_inData[_cue_offset]);
+#if 0
+    if (0x1c != _cue_size) assert(false); // Parse_error_str("bad cue size");
+#endif
+    _infile.seekg(_cue_offset);
+
+    _cue_count = _read_32(_infile);
+  }
+
+  // read LIST
+  if (-1 != _LIST_offset)
+  {
+#if 0
+    if (4 != _LIST_size) assert(false); // Parse_error_str("bad LIST size");
+    char adtlbuf[4];
+    const char adtlbuf_check[4] = { 'a','d','t','l' };
+    _infile.seekg(_LIST_offset);
+    _infile.read(adtlbuf, 4);
+    if (memcmp(adtlbuf, adtlbuf_check, 4)) assert(false); // Parse_error_str("expected only adtl in LIST");
+#endif
   }
 
   // read smpl
   if (-1 != _smpl_offset)
   {
-    _loop_count = u32_le(&_inData[_smpl_offset + 0x1C]);
+    _infile.seekg(_smpl_offset + 0x1C);
+    _loop_count = _read_32(_infile);
 
-    assert(1 == _loop_count); // Parse_error_str("expected one loop");
+    if (1 != _loop_count) assert(false); // Parse_error_str("expected one loop");
 
-    _loop_start = u32_le(&_inData[_smpl_offset + 0x2c]);
-    _loop_end = u32_le(&_inData[_smpl_offset + 0x2c + 4]);
+    _infile.seekg(_smpl_offset + 0x2c);
+    _loop_start = _read_32(_infile);
+    _loop_end = _read_32(_infile);
   }
 
   // read vorb
@@ -7471,7 +7590,7 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   case 0x2C:
   case 0x32:
   case 0x34:
-    offset = _vorb_offset;
+    _infile.seekg(_vorb_offset + 0x00, ios::beg);
     break;
 
   default:
@@ -7479,7 +7598,7 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
     break;
   }
 
-  _sample_count = u32_le(&_inData[offset]);
+  _sample_count = _read_32(_infile);
 
   switch (_vorb_size)
   {
@@ -7488,8 +7607,8 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   {
     _no_granule = true;
 
-    offset = _vorb_offset + 0x4;
-    uint32_t mod_signal = u32_le(&_inData[offset]);
+    _infile.seekg(_vorb_offset + 0x4, ios::beg);
+    uint32_t mod_signal = _read_32(_infile);
 
     // set
     // D9     11011001
@@ -7509,12 +7628,12 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
     {
       _mod_packets = true;
     }
-    offset = _vorb_offset + 0x10;
+    _infile.seekg(_vorb_offset + 0x10, ios::beg);
     break;
   }
 
   default:
-    offset = _vorb_offset + 0x18;
+    _infile.seekg(_vorb_offset + 0x18, ios::beg);
     break;
   }
 
@@ -7527,22 +7646,20 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
     _mod_packets = true;
   }
 
-  _setup_packet_offset = u32_le(&_inData[offset]);
-  _first_audio_packet_offset = u32_le(&_inData[offset + 4]);
+  _setup_packet_offset = _read_32(_infile);
+  _first_audio_packet_offset = _read_32(_infile);
 
   switch (_vorb_size)
   {
   case -1:
   case 0x2A:
-    offset = _vorb_offset + 0x24;
+    _infile.seekg(_vorb_offset + 0x24, ios::beg);
     break;
 
   case 0x32:
   case 0x34:
-    offset = _vorb_offset + 0x2C;
+    _infile.seekg(_vorb_offset + 0x2C, ios::beg);
     break;
-  default:
-    assert(false);
   }
 
   switch (_vorb_size)
@@ -7558,13 +7675,10 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
   case 0x2A:
   case 0x32:
   case 0x34:
-    //_uid = _read_32(_infile);
-    _uid = u32_le(&_inData[offset]);
-    _blocksize_0_pow = _inData[offset + 4];
-    _blocksize_1_pow = _inData[offset + 5];
+    _uid = _read_32(_infile);
+    _blocksize_0_pow = _infile.get();
+    _blocksize_1_pow = _infile.get();
     break;
-  default:
-    assert(false);
   }
 
   // check/set loops now that we know total sample count
@@ -7598,6 +7712,81 @@ Wwise_RIFF_Vorbis::Wwise_RIFF_Vorbis(
     //assert(false); // Parse_error_str("unknown subtype");
     break;
   }
+  }
+
+void Wwise_RIFF_Vorbis::print_info(void)
+{
+  if (_little_endian)
+  {
+    cout << "RIFF WAVE";
+  }
+  else
+  {
+    cout << "RIFX WAVE";
+  }
+  cout << " " << _channels << " channel";
+  if (_channels != 1) cout << "s";
+  cout << " " << _sample_rate << " Hz " << _avg_bytes_per_second * 8 << " bps" << endl;
+  cout << _sample_count << " samples" << endl;
+
+  if (0 != _loop_count)
+  {
+    cout << "loop from " << _loop_start << " to " << _loop_end << endl;
+  }
+
+  if (_old_packet_headers)
+  {
+    cout << "- 8 byte (old) packet headers" << endl;
+  }
+  else if (_no_granule)
+  {
+    cout << "- 2 byte packet headers, no granule" << endl;
+  }
+  else
+  {
+    cout << "- 6 byte packet headers" << endl;
+  }
+
+  if (_header_triad_present)
+  {
+    cout << "- Vorbis header triad present" << endl;
+  }
+
+  if (_full_setup || _header_triad_present)
+  {
+    cout << "- full setup header" << endl;
+  }
+  else
+  {
+    cout << "- stripped setup header" << endl;
+  }
+
+  if (_inline_codebooks || _header_triad_present)
+  {
+    cout << "- inline codebooks" << endl;
+  }
+  else
+  {
+    cout << "- external codebooks (" << _codebooks_name << ")" << endl;
+  }
+
+  if (_mod_packets)
+  {
+    cout << "- modified Vorbis packets" << endl;
+  }
+  else
+  {
+    cout << "- standard Vorbis packets" << endl;
+  }
+
+#if 0
+  if (0 != _cue_count)
+  {
+    cout << _cue_count << " cue point";
+    if (_cue_count != 1) cout << "s";
+    cout << endl;
+  }
+#endif
 }
 
 void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_blockflag, int& mode_bits)
@@ -7666,8 +7855,8 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
       Bit_uint<32> user_comment_count(2);
       os << user_comment_count;
 
-      std::stringstream loop_start_str;
-      std::stringstream loop_end_str;
+      stringstream loop_start_str;
+      stringstream loop_end_str;
 
       loop_start_str << "LoopStart=" << _loop_start;
       loop_end_str << "LoopEnd=" << _loop_end;
@@ -7707,7 +7896,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
     Packet setup_packet(_infile, _data_offset + _setup_packet_offset, _little_endian, _no_granule);
 
     _infile.seekg(setup_packet.offset());
-    assert(setup_packet.granule() == 0); // Parse_error_str("setup packet granule != 0");
+    if (setup_packet.granule() != 0) assert(false); // Parse_error_str("setup packet granule != 0");
     Bit_stream ss(_infile);
 
     // codebook count
@@ -7739,7 +7928,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
     {
       /* external codebooks */
 
-      codebook_library cbl("");
+      codebook_library cbl(_codebooks_name);
 
       for (unsigned int i = 0; i < codebook_count; i++)
       {
@@ -7821,7 +8010,8 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
             ss >> masterbook;
             os << masterbook;
 
-            assert(masterbook < codebook_count); // Parse_error_str("invalid floor1 masterbook");
+            if (masterbook >= codebook_count)
+              assert(false); // Parse_error_str("invalid floor1 masterbook");
           }
 
           for (unsigned int k = 0; k < (1U << class_subclasses); k++)
@@ -7872,7 +8062,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
         ss >> residue_type;
         os << Bit_uint<16>(residue_type);
 
-        assert(residue_type <= 2); // Parse_error_str("invalid residue type");
+        if (residue_type > 2) assert(false); // Parse_error_str("invalid residue type");
 
         Bit_uint<24> residue_begin, residue_end, residue_partition_size_less1;
         Bit_uint<6> residue_classifications_less1;
@@ -7882,7 +8072,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
         unsigned int residue_classifications = residue_classifications_less1 + 1;
         os << residue_begin << residue_end << residue_partition_size_less1 << residue_classifications_less1 << residue_classbook;
 
-        assert(residue_classbook < codebook_count); // Parse_error_str("invalid residue classbook");
+        if (residue_classbook >= codebook_count) assert(false); // Parse_error_str("invalid residue classbook");
 
         unsigned int* residue_cascade = new unsigned int[residue_classifications];
 
@@ -7916,7 +8106,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
               ss >> residue_book;
               os << residue_book;
 
-              assert(residue_book < codebook_count); // Parse_error_str("invalid residue book");
+              if (residue_book >= codebook_count) assert(false); // Parse_error_str("invalid residue book");
             }
           }
         }
@@ -7977,7 +8167,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
         Bit_uint<2> mapping_reserved;
         ss >> mapping_reserved;
         os << mapping_reserved;
-        assert(0 == mapping_reserved); // Parse_error_str("mapping reserved field nonzero");
+        if (0 != mapping_reserved) assert(false); // Parse_error_str("mapping reserved field nonzero");
 
         if (submaps > 1)
         {
@@ -7987,7 +8177,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
             ss >> mapping_mux;
             os << mapping_mux;
 
-            assert(mapping_mux < submaps); // Parse_error_str("mapping_mux >= submaps");
+            if (mapping_mux >= submaps) assert(false); // Parse_error_str("mapping_mux >= submaps");
           }
         }
 
@@ -8001,12 +8191,12 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
           Bit_uint<8> floor_number;
           ss >> floor_number;
           os << floor_number;
-          assert(floor_number < floor_count); // Parse_error_str("invalid floor mapping");
+          if (floor_number >= floor_count) assert(false); // Parse_error_str("invalid floor mapping");
 
           Bit_uint<8> residue_number;
           ss >> residue_number;
           os << residue_number;
-          assert(residue_number < residue_count); // Parse_error_str("invalid residue mapping");
+          if (residue_number >= residue_count) assert(false); // Parse_error_str("invalid residue mapping");
         }
       }
 
@@ -8053,11 +8243,11 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
   }
 }
 
-void Wwise_RIFF_Vorbis::generate_ogg(std::ofstream& of)
+void Wwise_RIFF_Vorbis::generate_ogg(ofstream& of)
 {
   Bit_oggstream os(of);
 
-  bool* mode_blockflag = nullptr;
+  bool* mode_blockflag = NULL;
   int mode_bits = 0;
   bool prev_blockflag = false;
 
@@ -8120,7 +8310,10 @@ void Wwise_RIFF_Vorbis::generate_ogg(std::ofstream& of)
       {
         // need to rebuild packet type and window info
 
-        assert(mode_blockflag); // Parse_error_str("didn't load mode_blockflag");
+        if (!mode_blockflag)
+        {
+          assert(false); // Parse_error_str("didn't load mode_blockflag");
+        }
 
         // OUT: 1 bit packet type (0 == audio)
         Bit_uint<1> packet_type(0);
@@ -8232,12 +8425,18 @@ void Wwise_RIFF_Vorbis::generate_ogg_header_with_triad(Bit_oggstream& os)
       Packet_8 information_packet(_infile, offset, _little_endian);
       uint32_t size = information_packet.size();
 
-      assert(information_packet.granule() == 0); // Parse_error_str("information packet granule != 0");
+      if (information_packet.granule() != 0)
+      {
+        assert(false); // Parse_error_str("information packet granule != 0");
+      }
 
       _infile.seekg(information_packet.offset());
 
       Bit_uint<8> c(_infile.get());
-      assert(1 == c); // Parse_error_str("wrong type for information packet");
+      if (1 != c)
+      {
+        assert(false); // Parse_error_str("wrong type for information packet");
+      }
 
       os << c;
 
@@ -8258,12 +8457,18 @@ void Wwise_RIFF_Vorbis::generate_ogg_header_with_triad(Bit_oggstream& os)
       Packet_8 comment_packet(_infile, offset, _little_endian);
       uint16_t size = comment_packet.size();
 
-      assert(comment_packet.granule() == 0); // Parse_error_str("comment packet granule != 0");
+      if (comment_packet.granule() != 0)
+      {
+        assert(false); // Parse_error_str("comment packet granule != 0");
+      }
 
       _infile.seekg(comment_packet.offset());
 
       Bit_uint<8> c(_infile.get());
-      assert(3 == c); // Parse_error_str("wrong type for comment packet");
+      if (3 != c)
+      {
+        assert(false); // Parse_error_str("wrong type for comment packet");
+      }
 
       os << c;
 
@@ -8284,7 +8489,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header_with_triad(Bit_oggstream& os)
       Packet_8 setup_packet(_infile, offset, _little_endian);
 
       _infile.seekg(setup_packet.offset());
-      assert(setup_packet.granule() == 0); // Parse_error_str("setup packet granule != 0");
+      if (setup_packet.granule() != 0) assert(false); // Parse_error_str("setup packet granule != 0");
       Bit_stream ss(_infile);
 
       Bit_uint<8> c;
@@ -8330,34 +8535,161 @@ void Wwise_RIFF_Vorbis::generate_ogg_header_with_triad(Bit_oggstream& os)
       offset = setup_packet.next_offset();
     }
 
-    assert(offset == _data_offset + static_cast<long>(_first_audio_packet_offset)); // Parse_error_str("first audio packet doesn't follow setup packet");
+    if (offset != _data_offset + static_cast<long>(_first_audio_packet_offset)) assert(false); // Parse_error_str("first audio packet doesn't follow setup packet");
 
   }
 
 }
 
-std::vector<u8> Wem::to_ogg(const u8* wemData, u64 wemDataSize)
+class ww2ogg_options
 {
-  const auto in_filename = std::filesystem::temp_directory_path() / std::filesystem::path("reaperForgeInput.wem");
-  const auto out_filename = std::filesystem::temp_directory_path() / std::filesystem::path("reaperForgeOutput.ogg");
+public:
+  string in_filename;
+  string out_filename;
+  string codebooks_filename;
+  bool inline_codebooks;
+  bool full_setup;
+  ForcePacketFormat force_packet_format;
+public:
+  ww2ogg_options(void) : in_filename(""),
+    out_filename(""),
+    codebooks_filename("packed_codebooks.bin"),
+    inline_codebooks(false),
+    full_setup(false),
+    force_packet_format(kNoForcePacketFormat)
+  {}
+  void parse_args(int argc, char** argv);
+  const string& get_in_filename(void) const { return in_filename; }
+  const string& get_out_filename(void) const { return out_filename; }
+  const string& get_codebooks_filename(void) const { return codebooks_filename; }
+  bool get_inline_codebooks(void) const { return inline_codebooks; }
+  bool get_full_setup(void) const { return full_setup; }
+  ForcePacketFormat get_force_packet_format(void) const { return force_packet_format; }
+};
 
-  File::save(in_filename.string().c_str(), reinterpret_cast<const char*>(wemData), wemDataSize);
-
-  Wwise_RIFF_Vorbis ww(
-    wemData,
-    wemDataSize,
-    in_filename.string(),
-    false,
-    false,
-    kNoForcePacketFormat
-  );
-
+void ww2ogg_options::parse_args(int argc, char** argv)
+{
+  bool set_input = false, set_output = false;
+  for (int i = 1; i < argc; i++)
   {
-    std::ofstream of(out_filename.string().c_str(), std::ios::binary);
-    if (!of) assert(false); // File_open_error(opt.get_out_filename());
+    if (!strcmp(argv[i], "-o"))
+    {
+      // switch for output file name
+      if (i + 1 >= argc)
+      {
+        assert(false); // Argument_error("-o needs an option");
+      }
 
-    ww.generate_ogg(of);
+      if (set_output)
+      {
+        assert(false); // Argument_error("only one output file at a time");
+      }
+
+      out_filename = argv[++i];
+      set_output = true;
+    }
+    else if (!strcmp(argv[i], "--inline-codebooks"))
+    {
+      // switch for inline codebooks
+      inline_codebooks = true;
+    }
+    else if (!strcmp(argv[i], "--full-setup"))
+    {
+      // early version with setup almost entirely intact
+      full_setup = true;
+      inline_codebooks = true;
+    }
+    else if (!strcmp(argv[i], "--mod-packets") || !strcmp(argv[i], "--no-mod-packets"))
+    {
+      if (force_packet_format != kNoForcePacketFormat)
+      {
+        assert(false); // Argument_error("only one of --mod-packets or --no-mod-packets is allowed");
+      }
+
+      if (!strcmp(argv[i], "--mod-packets"))
+      {
+        force_packet_format = kForceModPackets;
+      }
+      else
+      {
+        force_packet_format = kForceNoModPackets;
+      }
+    }
+    else if (!strcmp(argv[i], "--pcb"))
+    {
+      // override default packed codebooks file
+      if (i + 1 >= argc)
+      {
+        assert(false); // Argument_error("--pcb needs an option");
+      }
+
+      codebooks_filename = argv[++i];
+    }
+    else
+    {
+      // assume anything else is an input file name
+      if (set_input)
+      {
+        assert(false); // Argument_error("only one input file at a time");
+      }
+
+      in_filename = argv[i];
+      set_input = true;
+    }
   }
+
+  if (!set_input)
+  {
+    assert(false); // Argument_error("input name not specified");
+  }
+
+  if (!set_output)
+  {
+    size_t found = in_filename.find_last_of('.');
+
+    out_filename = in_filename.substr(0, found);
+    out_filename.append(".ogg");
+
+    // TODO: should be case insensitive for Windows
+    if (out_filename == in_filename)
+    {
+      out_filename.append("_conv.ogg");
+    }
+  }
+}
+
+std::vector<u8> Wem::to_ogg(const u8* data, u64 size)
+{
+  ww2ogg_options opt;
+
+  const auto in_filename = filesystem::temp_directory_path() / filesystem::u8path("reaperForgeInput.wem");
+  const auto out_filename = filesystem::temp_directory_path() / filesystem::u8path("reaperForgeOutput.ogg");
+  const auto codebook_filename = filesystem::temp_directory_path() / filesystem::u8path("reaperForgeCodebook.ogg");
+
+  opt.in_filename = in_filename.string();
+  opt.out_filename = out_filename.string();
+  opt.codebooks_filename = codebook_filename.string();
+  opt.inline_codebooks = false;
+  opt.full_setup = false;
+  opt.force_packet_format = kNoForcePacketFormat;
+
+  File::save(in_filename.string().c_str(), reinterpret_cast<const char*>(data), size);
+  File::save(codebook_filename.string().c_str(), reinterpret_cast<const char*>(packed_codebooks_aoTuV_603_bin), sizeof(packed_codebooks_aoTuV_603_bin));
+
+    Wwise_RIFF_Vorbis ww(opt.get_in_filename(),
+      opt.get_codebooks_filename(),
+      opt.get_inline_codebooks(),
+      opt.get_full_setup(),
+      opt.get_force_packet_format()
+    );
+
+    {
+      ofstream of(opt.get_out_filename().c_str(), ios::binary);
+      if (!of) assert(false); // File_open_error(opt.get_out_filename());
+
+      ww.generate_ogg(of);
+    }
+
 
   return File::load(out_filename.string().c_str(), "rb");
 }

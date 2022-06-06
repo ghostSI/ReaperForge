@@ -2422,17 +2422,17 @@ static void songWindow() {
                 nk_spacing(ctx, 4);
 
                 const std::vector<i32> sortedIndices = sortManifestIndices(songInfo.manifestInfos);
-                for (const i32 i : sortedIndices)
+                for (const i32 j : sortedIndices)
                 {
                   nk_spacing(ctx, 1);
                   nk_label(ctx, "Tuning:", NK_TEXT_LEFT);
                   nk_label(ctx, Song::tuningName(songInfo.manifestInfos[manifestIndex].tuning), NK_TEXT_LEFT);
 
-                  if (nk_button_label(ctx, instrumentName(songInfo.manifestInfos[i].instrumentFlags)))
+                  if (nk_button_label(ctx, instrumentName(songInfo.manifestInfos[j].instrumentFlags)))
                   {
                     Global::songSelected = i;
-                    Global::manifestSelected = 1;
-                    Player::playSong(Global::psarcInfos[i], songInfo.manifestInfos[i].instrumentFlags);
+                    Global::manifestSelected = j;
+                    Player::playSong(Global::psarcInfos[i], songInfo.manifestInfos[j].instrumentFlags);
                   }
                 }
               }

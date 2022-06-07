@@ -319,7 +319,7 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
       colorVec4(serializedSettings.at("Highway").at("ChordBoxColor1"))
     },
     .highwayChordNameColor = colorVec4(serializedSettings.at("Highway").at("ChordNameColor")),
-    .highwayDetectorColor = colorVec4(serializedSettings.at("Highway").at("LyricsColor1")),
+    .highwayDetectorColor = colorVec4(serializedSettings.at("Highway").at("DetectorColor")),
     .highwayEbeat = bool(atoi(serializedSettings.at("Highway").at("Ebeat").c_str())),
     .highwayEbeatColor = {
       colorVec4(serializedSettings.at("Highway").at("EbeatColor0")),

@@ -7,6 +7,9 @@ uniform vec4 color;
 
 void main()
 {
-  outColor = color;
+  float a = 2.0 * (0.5 - distance(Texcoord, vec2(0.5)));
+  a = pow(a, 0.4);
+
+  outColor = vec4(color.rgb, color.a * a);
 }
 )"

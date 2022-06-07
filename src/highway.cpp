@@ -985,60 +985,57 @@ static void drawFretNoteNames()
 
 static void drawDetector()
 {
-  i32 fret = 4;
-  if (fret == 0)
-  {
-
-  }
-  else
-  {
-    const f32 halfWidth = 0.05f;
-
-    const GLuint shader = Shader::useShader(Shader::Stem::detectedFret);
-    glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayDetectorColor.v0, Global::settings.highwayDetectorColor.v1, Global::settings.highwayDetectorColor.v2, Global::settings.highwayDetectorColor.v3);
-
-    const f32 top = f32(5 + instrumentStringOffset + 0.60f) * Const::highwayStringSpacing;
-    const f32 bottom = -0.60f * Const::highwayStringSpacing;
-    { // Left Fret
-      const f32 left = Const::highwayFretPosition[fret - 1] - halfWidth;
-      const f32 right = Const::highwayFretPosition[fret - 1] + halfWidth;
-
-      const GLfloat v[] = {
-        left , top, 0.18f, 0.0f, 1.0f,
-        right, top, 0.18f, 1.0f, 1.0f,
-        left, bottom, 0.18f, 0.0f, 0.0f,
-        right, bottom, 0.18f, 1.0f, 0.0f,
-      };
-
-      glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
-      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    }
-    { // Right Fret
-      const f32 left = Const::highwayFretPosition[fret] - halfWidth;
-      const f32 right = Const::highwayFretPosition[fret] + halfWidth;
-
-      const GLfloat v[] = {
-        left , top, 0.18f, 0.0f, 1.0f,
-        right, top, 0.18f, 1.0f, 1.0f,
-        left, bottom, 0.18f, 0.0f, 0.0f,
-        right, bottom, 0.18f, 1.0f, 0.0f,
-      };
-
-      glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
-      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    }
-  }
-
   for (i32 i = Global::songTrack.transcriptionTrack.notes.size() - 1; i >= 0; --i)
   {
     const Song::TranscriptionTrack::Note& note = Global::songTrack.transcriptionTrack.notes[i];
 
     const f32 noteTime = -note.time + Global::musicTimeElapsed;
 
-    if (noteTime - note.sustain > 0.0f)
+    if (noteTime - note.sustain - Const::highwayNoteDetectionTimeOffset > 0.0f)
       continue;
-    if (noteTime < -Const::highwayNoteDetectionTimeOffset)
+    if (noteTime + Const::highwayNoteDetectionTimeOffset < 0.0f)
       continue;
+
+    if (note.fret == 0)
+    {
+
+    }
+    else
+    {
+      const GLuint shader = Shader::useShader(Shader::Stem::detectedFret);
+      glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayDetectorColor.v0, Global::settings.highwayDetectorColor.v1, Global::settings.highwayDetectorColor.v2, Global::settings.highwayDetectorColor.v3);
+
+      const f32 top = f32(5 + instrumentStringOffset + 0.80f) * Const::highwayStringSpacing;
+      const f32 bottom = -0.80f * Const::highwayStringSpacing;
+      { // Left Fret
+        const f32 left = Const::highwayFretPosition[note.fret - 1] - 0.05f;
+        const f32 right = Const::highwayFretPosition[note.fret - 1] + 0.05f;
+
+        const GLfloat v[] = {
+          left , top, 0.18f, 0.0f, 1.0f,
+          right, top, 0.18f, 1.0f, 1.0f,
+          left, bottom, 0.18f, 0.0f, 0.0f,
+          right, bottom, 0.18f, 1.0f, 0.0f,
+        };
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+      }
+      { // Right Fret
+        const f32 left = Const::highwayFretPosition[note.fret] - 0.05f;
+        const f32 right = Const::highwayFretPosition[note.fret] + 0.05f;
+
+        const GLfloat v[] = {
+          left , top, 0.18f, 0.0f, 1.0f,
+          right, top, 0.18f, 1.0f, 1.0f,
+          left, bottom, 0.18f, 0.0f, 0.0f,
+          right, bottom, 0.18f, 1.0f, 0.0f,
+        };
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+      }
+    }
   }
 }
 
@@ -1518,13 +1515,6 @@ void Highway::tick()
 
 void Highway::render()
 {
-  { // testing
-    drawFrets();
-    drawStrings();
-    drawDetector();
-  }
-
-
   if (Global::settings.highwayToneAssignment)
     drawToneAssignment();
 
@@ -1562,4 +1552,5 @@ void Highway::render()
 
   if (Global::settings.highwayLyrics)
     drawLyrics();
+
 }

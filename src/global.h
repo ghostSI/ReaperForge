@@ -37,7 +37,7 @@ namespace Const {
       .v2 = -9.16f
     };
     inline constexpr f32 highwayMaxFutureTime = -10.0f;
-    inline constexpr f32 highwayNoteDetectionTimeOffset = 0.4f;
+    inline constexpr f32 highwayNoteDetectionTimeOffset = 0.1f;
     inline constexpr f32 highwayTremoloFrequency = 0.04f;
     inline constexpr f32 highwayLeftHandPreTime = -2.0f;
     inline constexpr f32 highwayDrawSongInfoStartTime = 1.0f;

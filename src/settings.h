@@ -36,7 +36,7 @@ namespace Settings {
       colorVec4("#8795E5")
     };
     vec4 highwayChordNameColor = colorVec4("#ADACAC");
-    vec4 highwayDetectorColor = colorVec4("#A6CFFC");
+    vec4 highwayDetectorColor = colorVec4("#D81212");
     bool highwayEbeat = true;
     vec4 highwayEbeatColor[2] = {
       colorVec4("#8795E5"),

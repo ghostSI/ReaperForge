@@ -25,32 +25,76 @@ void Midi::init()
   }
 }
 
+static void controlVolume(const u8 noteNumber, const u8 velocity)
+{
+  switch (noteNumber)
+  {
+    case 1:
+      Global::settings.mixerMusicVolume = velocity;
+      break;
+    case 2:
+      Global::settings.mixerGuitar1Volume = velocity;
+      break;
+    case 3:
+      Global::settings.mixerBass1Volume = velocity;
+      break;
+    case 4:
+      Global::settings.mixerGuitar2Volume = velocity;
+      break;
+    case 5:
+      Global::settings.highwayBackgroundColor.v0 = f32(velocity) / 127.0f; // missing mutex
+      break;
+    case 6:
+      Global::settings.highwayBackgroundColor.v1 = f32(velocity) / 127.0f;
+      break;
+    case 7:
+      Global::settings.highwayBackgroundColor.v2 = f32(velocity) / 127.0f;
+      break;
+    case 8:
+      Global::settings.highwayBackgroundColor.v3 = f32(velocity) / 127.0f;
+      break;
+  }
+}
+
 static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
 {
-  switch (wMsg) {
+  char buffer[80] = {};
+  LPMIDIHDR lpMIDIHeader;
+  u8* ptr;
+  u8 bytes;
+
+  switch (wMsg)
+  {
   case MIM_OPEN:
-    printf("wMsg=MIM_OPEN\n");
     break;
   case MIM_CLOSE:
-    printf("wMsg=MIM_CLOSE\n");
+    assert(false);
     break;
   case MIM_DATA:
-    printf("wMsg=MIM_DATA, dwInstance=%08x, dwParam1=%08x, dwParam2=%08x\n", dwInstance, dwParam1, dwParam2);
-    break;
+  {
+    DWORD type = dwParam1 & 0xFF;
+
+    u8 status = dwParam1 & 0xFF;
+    u8 data1 = (dwParam1 >> 8) & 0xFF; // noteNumber
+    u8 data2 = (dwParam1 >> 16) & 0xFF; // velocity
+
+    controlVolume(data1, data2);
+  }
+  break;
   case MIM_LONGDATA:
-    printf("wMsg=MIM_LONGDATA\n");
+    assert(false);
     break;
   case MIM_ERROR:
-    printf("wMsg=MIM_ERROR\n");
+    assert(false);
     break;
   case MIM_LONGERROR:
-    printf("wMsg=MIM_LONGERROR\n");
+    //assert(false); // there is an error because midi device is not closed on exit
     break;
   case MIM_MOREDATA:
-    printf("wMsg=MIM_MOREDATA\n");
+    assert(false);
     break;
   default:
-    printf("wMsg = unknown\n");
+    assert(false);
     break;
   }
   return;

@@ -63,6 +63,10 @@ i32 Global::vstToneAssignment = 0;
 char Global::vstToneName[256] = "Default";
 i32 Global::vstToneNameLength = sizeof("Default") - 1;
 #endif // SUPPORT_VST
+#ifdef SUPPORT_MIDI
+bool Global::midiWindow = false;
+std::vector<std::string> Global::midiDeviceNames;
+#endif // SUPPORT_MIDI
 
 Settings::Info Global::settings;
 

@@ -194,6 +194,10 @@ namespace Global {
     extern char vstToneName[256];
     extern i32 vstToneNameLength;
 #endif // SUPPORT_VST
+#ifdef SUPPORT_MIDI
+    extern bool midiWindow;
+    extern std::vector<std::string> midiDeviceNames;
+#endif // SUPPORT_MIDI
     
     extern Settings::Info settings;
 

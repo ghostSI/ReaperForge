@@ -9,6 +9,7 @@
 #include "highway.h"
 #include "input.h"
 #include "installer.h"
+#include "midi.h"
 #include "opengl.h"
 #include "player.h"
 #include "profile.h"
@@ -106,22 +107,22 @@ int main(int argc, char* argv[]) {
     SDL_Quit();
   }
 
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 #if defined __EMSCRIPTEN__ || defined FORCE_OPENGL_ES
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 #ifdef _WIN32
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 #endif // _WIN32
-#else
+#else // __EMSCRIPTEN__
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 #endif // __EMSCRIPTEN__
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
   i32 fullScreenFlag;
@@ -187,6 +188,10 @@ int main(int argc, char* argv[]) {
 #ifdef SUPPORT_VST
   Vst::init();
 #endif // SUPPORT_VST
+#ifdef SUPPORT_MIDI
+  Midi::init();
+#endif // SUPPORT_MIDI
+
   Profile::init();
 #ifndef __EMSCRIPTEN__
   Ui::init();

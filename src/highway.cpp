@@ -1134,8 +1134,8 @@ static void drawSongInfo()
 
   {
     const i32 letters = Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].songName.size();
-    const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-    const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+    const f32 scaleX = 3.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
+    const f32 scaleY = 3.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
     Font::draw(Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].songName.c_str(), 0.95f - scaleX, 0.3f, 0.0f, scaleX, scaleY);
   }
   {

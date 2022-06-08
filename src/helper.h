@@ -126,7 +126,7 @@ inline u64 u40_be(const u8* bytes)
 }
 
 namespace string {
-    std::vector<std::string> split(std::string str, char delimeter);
+    std::vector<std::string> split(const std::string& str, char delimeter);
 
     bool endsWith(const std::string &str, const std::string &ending);
 }

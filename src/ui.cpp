@@ -4,13 +4,13 @@
 #include "data.h"
 #include "global.h"
 #include "installer.h"
+#include "midi.h"
 #include "opengl.h"
 #include "player.h"
 #include "profile.h"
 #include "shader.h"
 #include "sound.h"
 #include "vst.h"
-
 
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_DEFAULT_FONT
@@ -2098,6 +2098,39 @@ static void effectsWindow()
 }
 #endif SUPPORT_VST
 
+#ifdef SUPPORT_MIDI
+static void midiWindow()
+{
+  if (Global::midiWindow = nk_begin(ctx, "Midi", nk_rect(130, 130, 400, 500), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE))
+  {
+    nk_layout_row_dynamic(ctx, 22, 3);
+    {
+      nk_label(ctx, "Devices", NK_TEXT_LEFT);
+
+      std::vector<const char*> midiDeviceNamesData(Global::midiDeviceNames.size());
+      for (i32 i = 0; i < Global::midiDeviceNames.size(); ++i)
+      {
+        midiDeviceNamesData[i] = Global::midiDeviceNames[i].c_str();
+      }
+
+      static i32 selectedMidiDevice;
+      selectedMidiDevice = nk_combo(ctx, &midiDeviceNamesData[0], midiDeviceNamesData.size(), selectedMidiDevice, 25, nk_vec2(300, 200));
+
+      if (nk_button_label(ctx, "Open"))
+      {
+        if (static bool initMidiDevice; !initMidiDevice)
+        {
+          initMidiDevice = !initMidiDevice;
+
+          Midi::openDevice(selectedMidiDevice);
+        }
+      }
+    }
+  }
+  nk_end(ctx);
+}
+#endif // SUPPORT_MIDI
+
 static i32 findBestManifestIndexForInstrument(const std::vector<Manifest::Info>& manifestInfos, const InstrumentFlags instrumentFlags)
 {
   { // find best manifest index for current instrument
@@ -2251,8 +2284,9 @@ static void songWindow() {
     nk_layout_row_template_push_static(ctx, 47);
     nk_layout_row_template_push_dynamic(ctx);
     nk_layout_row_template_push_static(ctx, 35);
-    nk_layout_row_template_push_static(ctx, 30);
-    nk_layout_row_template_push_static(ctx, 50);
+    nk_layout_row_template_push_static(ctx, 40);
+    nk_layout_row_template_push_static(ctx, 20);
+    nk_layout_row_template_push_static(ctx, 48);
     nk_layout_row_template_end(ctx);
 
     { // current Instrument Selection
@@ -2284,6 +2318,14 @@ static void songWindow() {
     if (nk_button_label(ctx, "VST"))
     {
       Global::effectsWindow = !Global::effectsWindow;
+    }
+#else
+    nk_spacing(ctx, 1);
+#endif // SUPPORT_VST
+#ifdef SUPPORT_MIDI
+    if (nk_button_label(ctx, "MIDI"))
+    {
+      Global::midiWindow = !Global::midiWindow;
     }
 #else
     nk_spacing(ctx, 1);
@@ -2444,9 +2486,9 @@ static void songWindow() {
       }
       nk_group_end(ctx);
     }
-  }
+    }
   nk_end(ctx);
-}
+    }
 
 static void settingsWindow()
 {
@@ -3007,6 +3049,11 @@ void Ui::tick() {
   if (Global::effectsWindow)
     effectsWindow();
 #endif // SUPPORT_VST
+#ifdef SUPPORT_MIDI
+  if (Global::midiWindow)
+    midiWindow();
+#endif // SUPPORT_MIDI
+
   if (Global::helpWindow)
     helpWindow();
 }

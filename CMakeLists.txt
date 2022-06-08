@@ -45,6 +45,7 @@ set(HEADER_FILES
 		src/json.h
 		src/kiss_fft.h
 		src/manifest.h
+		src/midi.h
 		src/nuklear.h
 		src/ogg.h
         src/opengl.h
@@ -92,6 +93,7 @@ set(SOURCE_FILES
         src/kiss_fft.cpp
         src/main.cpp
         src/manifest.cpp
+        src/midi.cpp
         src/ogg.cpp
         src/opengl.cpp
         src/pcm.cpp

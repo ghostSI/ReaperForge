@@ -193,7 +193,7 @@ vec3 VecMath::truncate(const vec3& x, const f32 max)
   return x;
 }
 
-std::vector<std::string> string::split(std::string str, char delimeter) {
+std::vector<std::string> string::split(const std::string& str, const char delimeter) {
     std::stringstream ss(str);
     std::string item;
     std::vector<std::string> splittedStrings;

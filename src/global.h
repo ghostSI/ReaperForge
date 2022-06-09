@@ -128,6 +128,14 @@ namespace Const {
     inline constexpr i32 soundMaxCount = 8;
     inline constexpr i32 gearMaxKnobs = 10;
     inline constexpr i32 profileToneAssignmentCount = 10;
+#ifdef SUPPORT_MIDI
+    inline constexpr const char* midiBindingsNames[] = {
+      "MixerMusicVolume",
+      "MixerGuitar1Volume",
+      "MixerBass1Volume",
+      "MixerGuitar2Volume",
+    };
+#endif // SUPPORT_MIDI
 }
 
 namespace Global {
@@ -197,6 +205,7 @@ namespace Global {
 #ifdef SUPPORT_MIDI
     extern bool midiWindow;
     extern std::vector<std::string> midiDeviceNames;
+    extern u8 midiLearnNote;
 #endif // SUPPORT_MIDI
     
     extern Settings::Info settings;

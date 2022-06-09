@@ -78,6 +78,8 @@ static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DW
     u8 data1 = (dwParam1 >> 8) & 0xFF; // noteNumber
     u8 data2 = (dwParam1 >> 16) & 0xFF; // velocity
 
+    Global::midiLearnNote = data1;
+
     controlVolume(data1, data2);
   }
   break;

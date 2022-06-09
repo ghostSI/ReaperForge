@@ -66,6 +66,7 @@ i32 Global::vstToneNameLength = sizeof("Default") - 1;
 #ifdef SUPPORT_MIDI
 bool Global::midiWindow = false;
 std::vector<std::string> Global::midiDeviceNames;
+u8 Global::midiLearnNote = 0xFF;
 #endif // SUPPORT_MIDI
 
 Settings::Info Global::settings;

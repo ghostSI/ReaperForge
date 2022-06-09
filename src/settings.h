@@ -96,6 +96,7 @@ namespace Settings {
       colorVec4("#D20000"),
       colorVec4("#009B71"),
     };
+    u8 midiBinding[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
     std::string psarcPath = "psarc";
     std::string vstPath = "vst";
     i32 mixerMusicVolume = 100;

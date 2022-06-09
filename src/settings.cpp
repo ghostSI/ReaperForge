@@ -248,6 +248,12 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
         { "GuitarStringColor6",     hexColor(settings.instrumentGuitarStringColor[6]) }
       }
     },
+    //{
+    //  "Midi",
+    //  {
+    //    { "binding0", std::to_string(settings.midiBinding[0]) },
+    //  }
+    //},
     {
       "Paths",
       {

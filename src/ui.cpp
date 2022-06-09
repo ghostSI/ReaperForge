@@ -2101,6 +2101,8 @@ static void effectsWindow()
 #ifdef SUPPORT_MIDI
 static void midiWindow()
 {
+  static i32 learnSlot = 0;
+
   if (Global::midiWindow = nk_begin(ctx, "Midi", nk_rect(130, 130, 400, 500), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE))
   {
     nk_layout_row_dynamic(ctx, 22, 3);
@@ -2125,6 +2127,38 @@ static void midiWindow()
           Midi::openDevice(selectedMidiDevice);
         }
       }
+
+      for (i32 i = 0; i < NUM(Const::midiBindingsNames); ++i)
+      {
+        nk_label(ctx, Const::midiBindingsNames[i], NK_TEXT_LEFT);
+
+        char noteText[10] = { '\0' };
+        i32 noteTextLen = 0;
+        if (Global::settings.midiBinding[i] >= 0 && Global::settings.midiBinding[i] <= 127)
+        {
+          itoa(Global::settings.midiBinding[i], noteText, 10);
+          if (Global::settings.midiBinding[i] < 10)
+            noteTextLen = 1;
+          else if (Global::settings.midiBinding[i] < 100)
+            noteTextLen = 2;
+          else
+            noteTextLen = 3;
+        }
+
+        nk_edit_string(ctx, NK_EDIT_SIMPLE, noteText, &noteTextLen, sizeof(noteText), nk_filter_default); (ctx, Const::midiBindingsNames[i], NK_TEXT_LEFT);
+        if (nk_button_label(ctx, "Learn"))
+        {
+          learnSlot = i;
+        }
+      }
+
+      if (learnSlot != -1 && Global::midiLearnNote >= 0 && Global::midiLearnNote <= 127)
+      {
+        Global::settings.midiBinding[learnSlot] = Global::midiLearnNote;
+        learnSlot = -1;
+      }
+
+      Global::midiLearnNote = 0xFF;
     }
   }
   nk_end(ctx);
@@ -2274,8 +2308,8 @@ static std::vector<i32> sortManifestIndices(const std::vector<Manifest::Info>& m
   return sortedIndex;
 }
 
-static void songWindow() {
-
+static void songWindow()
+{
   if (nk_begin(ctx, "Songs", nk_rect(300, 30, 695, 710), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR))
   {
     nk_layout_row_template_begin(ctx, 22);
@@ -2486,9 +2520,9 @@ static void songWindow() {
       }
       nk_group_end(ctx);
     }
-    }
+  }
   nk_end(ctx);
-    }
+}
 
 static void settingsWindow()
 {

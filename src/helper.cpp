@@ -6,7 +6,7 @@
 #include <sstream>
 
 Color makeColor(u8 r, u8 g, u8 b, u8 a) {
-    return r << 24 | g << 16 | b << 8 | a;
+  return r << 24 | g << 16 | b << 8 | a;
 }
 
 Color makeColor(const char* hexColor) {
@@ -14,19 +14,19 @@ Color makeColor(const char* hexColor) {
 }
 
 u8 colorR(Color color) {
-    return color >> 24;
+  return color >> 24;
 }
 
 u8 colorG(Color color) {
-    return color >> 16;
+  return color >> 16;
 }
 
 u8 colorB(Color color) {
-    return color >> 8;
+  return color >> 8;
 }
 
 u8 colorA(Color color) {
-    return color;
+  return color;
 }
 
 vec4 colorVec4(const Color& color) {
@@ -35,7 +35,7 @@ vec4 colorVec4(const Color& color) {
   const u8 b = colorB(color);
   const u8 a = colorA(color);
 
-  return vec4 {
+  return vec4{
     .v0 = r / 255.0f,
     .v1 = g / 255.0f,
     .v2 = b / 255.0f,
@@ -78,20 +78,20 @@ std::string hexColor(vec4 color)
   return hexString;
 }
 
-Color getColor(const u8 *rgbaData, i32 index) {
-    return reinterpret_cast<const Color *>(rgbaData)[index];
+Color getColor(const u8* rgbaData, i32 index) {
+  return reinterpret_cast<const Color*>(rgbaData)[index];
 }
 
-void setColor(std::vector<u8> &rgbaData, i32 index, Color color) {
-    reinterpret_cast<std::vector<Color> &>(rgbaData)[index] = color;
+void setColor(std::vector<u8>& rgbaData, i32 index, Color color) {
+  reinterpret_cast<std::vector<Color>&>(rgbaData)[index] = color;
 }
 
 std::string n2hexStr(i32 value) {
-    assert(value >= 0);
-    assert(value <= 255);
-    char hexString[4 * sizeof(int) + 1];
-    sprintf(hexString, "%X", value);
-    return std::string(hexString);
+  assert(value >= 0);
+  assert(value <= 255);
+  char hexString[4 * sizeof(int) + 1];
+  sprintf(hexString, "%X", value);
+  return std::string(hexString);
 }
 
 f32 x2GlScreen(f32 x)
@@ -105,11 +105,11 @@ f32 y2GlScreen(f32 y)
 }
 
 f32 deg2rad(f32 deg) {
-    return 0.0174533f * deg;
+  return 0.0174533f * deg;
 }
 
 f32 VecMath::lengthSquared(f32 x, f32 y) {
-    return x * x + y * y;
+  return x * x + y * y;
 }
 
 f32 VecMath::lengthSquared(const vec3& x) {
@@ -117,23 +117,23 @@ f32 VecMath::lengthSquared(const vec3& x) {
 }
 
 f32 VecMath::length(f32 x, f32 y) {
-    return sqrtf(lengthSquared(x, y));
+  return sqrtf(lengthSquared(x, y));
 }
 
 f32 VecMath::length(const vec3& x) {
   return sqrtf(lengthSquared(x));
 }
 
-void VecMath::rotate(f32 &x, f32 &y, f32 rad) {
-    const f32 oldX = x;
-    x = x * cosf(rad) - y * sinf(rad);
-    y = oldX * sinf(rad) + y * cosf(rad);
+void VecMath::rotate(f32& x, f32& y, f32 rad) {
+  const f32 oldX = x;
+  x = x * cosf(rad) - y * sinf(rad);
+  y = oldX * sinf(rad) + y * cosf(rad);
 }
 
-void VecMath::norm(f32 &x, f32 &y) {
-    const f32 len = length(x, y);
-    x /= len;
-    y /= len;
+void VecMath::norm(f32& x, f32& y) {
+  const f32 len = length(x, y);
+  x /= len;
+  y /= len;
 }
 
 vec3 VecMath::norm(const vec3& x) {
@@ -194,17 +194,17 @@ vec3 VecMath::truncate(const vec3& x, const f32 max)
 }
 
 std::vector<std::string> string::split(const std::string& str, const char delimeter) {
-    std::stringstream ss(str);
-    std::string item;
-    std::vector<std::string> splittedStrings;
-    while (std::getline(ss, item, delimeter)) {
-        splittedStrings.push_back(item);
-    }
-    return splittedStrings;
+  std::stringstream ss(str);
+  std::string item;
+  std::vector<std::string> splittedStrings;
+  while (std::getline(ss, item, delimeter)) {
+    splittedStrings.push_back(item);
+  }
+  return splittedStrings;
 }
 
-bool string::endsWith(const std::string &str, const std::string &ending) {
-    if (str.length() >= ending.length())
-        return (0 == str.compare(str.length() - ending.length(), ending.length(), ending));
-    return false;
+bool string::endsWith(const std::string& str, const std::string& ending) {
+  if (str.length() >= ending.length())
+    return (0 == str.compare(str.length() - ending.length(), ending.length(), ending));
+  return false;
 }

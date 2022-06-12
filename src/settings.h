@@ -97,6 +97,7 @@ namespace Settings {
       colorVec4("#009B71"),
     };
     u8 midiBinding[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
+    std::string autoConnectDevices;
     std::string psarcPath = "psarc";
     std::string vstPath = "vst";
     i32 mixerMusicVolume = 100;
@@ -105,7 +106,7 @@ namespace Settings {
     i32 mixerGuitar2Volume = 100;
     i32 mixerBass2Volume = 100;
     i32 mixerMicrophoneVolume = 100;
-    SaveMode saveMode = SaveMode::none;
+    SaveMode profileSaveMode = SaveMode::statsOnly;
     f32 uiScale = 1.0f;
   };
 

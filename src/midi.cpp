@@ -10,65 +10,99 @@
 #include <windows.h>   /* required before including mmsystem.h */
 #include <mmsystem.h>  /* multimedia functions (such as MIDI) for Windows */
 
-#include <thread>
+#include <set>
+
+static HMIDIIN inputDevice[Const::midiMaxDeviceCount];
+
+void autoConnectDevices(const std::string& deviceNames)
+{
+  std::vector<std::string> v = string::split(deviceNames, ',');
+  for (const std::string& name : v)
+  {
+    for (i32 i = 0; i < Const::midiMaxDeviceCount; ++i)
+    {
+      if (name == Global::midiDeviceNames[i])
+      {
+        Midi::openDevice(i);
+        continue;
+      }
+    }
+  }
+}
 
 void Midi::init()
 {
-  const u32 deviceCount = midiInGetNumDevs();
-  Global::midiDeviceNames.resize(deviceCount);
+  Global::midiDeviceCount = midiInGetNumDevs();
+  assert(Global::midiDeviceCount <= Const::midiMaxDeviceCount);
 
-  for (u32 i = 0; i < deviceCount; ++i)
+  for (u32 i = 0; i < Global::midiDeviceCount; ++i)
   {
     MIDIINCAPS inputCapabilities;
     midiInGetDevCaps(i, &inputCapabilities, sizeof(inputCapabilities));
     Global::midiDeviceNames[i] = inputCapabilities.szPname;
   }
+
+  autoConnectDevices(Global::settings.autoConnectDevices);
+}
+
+void Midi::fini()
+{
+  std::set<std::string> deviceNames;
+
+  for (i32 i = 0; i < Const::midiMaxDeviceCount; ++i)
+  {
+    if (Global::connectedDevices[i] != 0)
+    {
+      Midi::closeDevice(i);
+      deviceNames.insert(Global::midiDeviceNames[i]);
+    }
+  }
+
+  Global::settings.autoConnectDevices.clear();
+  for (const std::string& name : deviceNames)
+    Global::settings.autoConnectDevices += name + ',';
+  if (Global::settings.autoConnectDevices.size() >= 1)
+    Global::settings.autoConnectDevices.pop_back();
 }
 
 static void controlVolume(const u8 noteNumber, const u8 velocity)
 {
   switch (noteNumber)
   {
-    case 1:
-      Global::settings.mixerMusicVolume = velocity;
-      break;
-    case 2:
-      Global::settings.mixerGuitar1Volume = velocity;
-      break;
-    case 3:
-      Global::settings.mixerBass1Volume = velocity;
-      break;
-    case 4:
-      Global::settings.mixerGuitar2Volume = velocity;
-      break;
-    case 5:
-      Global::settings.highwayBackgroundColor.v0 = f32(velocity) / 127.0f; // missing mutex
-      break;
-    case 6:
-      Global::settings.highwayBackgroundColor.v1 = f32(velocity) / 127.0f;
-      break;
-    case 7:
-      Global::settings.highwayBackgroundColor.v2 = f32(velocity) / 127.0f;
-      break;
-    case 8:
-      Global::settings.highwayBackgroundColor.v3 = f32(velocity) / 127.0f;
-      break;
+  case 1:
+    Global::settings.mixerMusicVolume = velocity;
+    break;
+  case 2:
+    Global::settings.mixerGuitar1Volume = velocity;
+    break;
+  case 3:
+    Global::settings.mixerBass1Volume = velocity;
+    break;
+  case 4:
+    Global::settings.mixerGuitar2Volume = velocity;
+    break;
+  case 5:
+    Global::settings.highwayBackgroundColor.v0 = f32(velocity) / 127.0f; // missing mutex
+    break;
+  case 6:
+    Global::settings.highwayBackgroundColor.v1 = f32(velocity) / 127.0f;
+    break;
+  case 7:
+    Global::settings.highwayBackgroundColor.v2 = f32(velocity) / 127.0f;
+    break;
+  case 8:
+    Global::settings.highwayBackgroundColor.v3 = f32(velocity) / 127.0f;
+    break;
   }
 }
 
 static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
 {
-  char buffer[80] = {};
-  LPMIDIHDR lpMIDIHeader;
-  u8* ptr;
-  u8 bytes;
-
   switch (wMsg)
   {
   case MIM_OPEN:
     break;
   case MIM_CLOSE:
-    assert(false);
     break;
   case MIM_DATA:
   {
@@ -84,7 +118,7 @@ static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DW
   }
   break;
   case MIM_LONGDATA:
-    assert(false);
+    //assert(false);
     break;
   case MIM_ERROR:
     assert(false);
@@ -104,24 +138,39 @@ static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DW
 
 void Midi::openDevice(i32 index)
 {
-  static HMIDIIN inputDevice;
-  const MMRESULT flag = midiInOpen(&inputDevice, index, (DWORD_PTR)(void*)MidiInProc, 0, CALLBACK_FUNCTION);
+  MMRESULT flag = midiInOpen(&inputDevice[index], index, (DWORD_PTR)(void*)MidiInProc, 0, CALLBACK_FUNCTION);
   assert(flag == MMSYSERR_NOERROR);
 
   MIDIHDR midiHeader{};
-
   static char SysXBuffer[256] = {};
   midiHeader.lpData = &SysXBuffer[0];
   midiHeader.dwBufferLength = sizeof(SysXBuffer);
 
-  i32 res = midiInPrepareHeader(inputDevice, &midiHeader, sizeof(midiHeader));
-  assert(res == MMSYSERR_NOERROR);
+  flag = midiInPrepareHeader(inputDevice[index], &midiHeader, sizeof(midiHeader));
+  assert(flag == MMSYSERR_NOERROR);
 
-  res = midiInAddBuffer(inputDevice, &midiHeader, sizeof(midiHeader));
-  assert(res == MMSYSERR_NOERROR);
+  flag = midiInAddBuffer(inputDevice[index], &midiHeader, sizeof(midiHeader));
+  assert(flag == MMSYSERR_NOERROR);
 
-  res = midiInStart(inputDevice);
-  assert(res == MMSYSERR_NOERROR);
+  flag = midiInStart(inputDevice[index]);
+  assert(flag == MMSYSERR_NOERROR);
+
+  Global::connectedDevices[index] = true;
+}
+
+void Midi::closeDevice(i32 index)
+{
+  MMRESULT flag = midiInStop(inputDevice[index]);
+  assert(flag == MMSYSERR_NOERROR);
+
+  MIDIHDR midiHeader{};
+  flag = midiInUnprepareHeader(inputDevice[index], &midiHeader, sizeof(midiHeader));
+  assert(flag == MMSYSERR_NOERROR);
+
+  flag = midiInClose(inputDevice[index]);
+  assert(flag == MMSYSERR_NOERROR);
+
+  Global::connectedDevices[index] = false;
 }
 
 #endif // SUPPORT_MIDI

@@ -10,7 +10,7 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
 {
   std::map<std::string, std::map<std::string, std::string>> serializedSaves;
 
-  switch (Global::settings.saveMode)
+  switch (Global::settings.profileSaveMode)
   {
   case SaveMode::statsOnly:
     for (const auto& manifestInfo : manifestInfos)
@@ -177,7 +177,7 @@ static void loadStatsOnly()
 
 void Profile::init()
 {
-  switch (Global::settings.saveMode)
+  switch (Global::settings.profileSaveMode)
   {
   case SaveMode::statsOnly:
     loadStatsOnly();
@@ -276,7 +276,7 @@ static void saveWholeManifest()
 
 void Profile::fini()
 {
-  switch (Global::settings.saveMode)
+  switch (Global::settings.profileSaveMode)
   {
   case SaveMode::statsOnly:
     saveStatsOnly();

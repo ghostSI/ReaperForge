@@ -24,9 +24,9 @@ vec4 colorVec4(const std::string& hexColor);
 
 std::string hexColor(vec4 color);
 
-Color getColor(const u8 *rgbaData, i32 index);
+Color getColor(const u8* rgbaData, i32 index);
 
-void setColor(std::vector<u8> &rgbaData, i32 index, Color color);
+void setColor(std::vector<u8>& rgbaData, i32 index, Color color);
 
 std::string n2hexStr(i32 value);
 
@@ -37,31 +37,31 @@ f32 y2GlScreen(f32 y);
 f32 deg2rad(f32 deg);
 
 namespace VecMath {
-    f32 lengthSquared(f32 x, f32 y);
-    f32 lengthSquared(const vec3& x);
+  f32 lengthSquared(f32 x, f32 y);
+  f32 lengthSquared(const vec3& x);
 
-    f32 length(f32 x, f32 y);
-    f32 length(const vec3& x);
+  f32 length(f32 x, f32 y);
+  f32 length(const vec3& x);
 
-    void norm(f32 &x, f32 &y);
-    vec3 norm(const vec3& x);
+  void norm(f32& x, f32& y);
+  vec3 norm(const vec3& x);
 
-    void rotate(f32 &x, f32 &y, f32 rad);
+  void rotate(f32& x, f32& y, f32 rad);
 
-    vec3 multipicate(const vec3& x, const f32 scale);
-    mat4 multipicate(const mat4& m0, const mat4& m1);
+  vec3 multipicate(const vec3& x, const f32 scale);
+  mat4 multipicate(const mat4& m0, const mat4& m1);
 
-    vec3 truncate(const vec3& x, const f32 max);
+  vec3 truncate(const vec3& x, const f32 max);
 }
 
 template<typename T>
-const T &min_(const T &a, const T &b) {
-    return (b < a) ? b : a;
+const T& min_(const T& a, const T& b) {
+  return (b < a) ? b : a;
 }
 
 template<typename T>
-const T &max_(const T &a, const T &b) {
-    return (a < b) ? b : a;
+const T& max_(const T& a, const T& b) {
+  return (a < b) ? b : a;
 }
 
 template<typename T>
@@ -76,8 +76,8 @@ constexpr f32 map(f32 x, f32 in_min, f32 in_max, f32 out_min, f32 out_max)
 }
 
 template<typename T>
-bool sameSign(const T &a, const T &b) {
-    return a < 0 == b < 0;
+bool sameSign(const T& a, const T& b) {
+  return a < 0 == b < 0;
 }
 
 inline u16 u16_le(const u8* bytes)
@@ -126,9 +126,9 @@ inline u64 u40_be(const u8* bytes)
 }
 
 namespace string {
-    std::vector<std::string> split(const std::string& str, char delimeter);
+  std::vector<std::string> split(const std::string& str, char delimeter);
 
-    bool endsWith(const std::string &str, const std::string &ending);
+  bool endsWith(const std::string& str, const std::string& ending);
 }
 
 #ifdef __EMSCRIPTEN__

@@ -2103,30 +2103,36 @@ static void midiWindow()
 {
   static i32 learnSlot = 0;
 
-  if (Global::midiWindow = nk_begin(ctx, "Midi", nk_rect(130, 130, 400, 500), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE))
+  if (Global::midiWindow = nk_begin(ctx, "Midi", nk_rect(130, 130, 400, 500), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE | NK_WINDOW_SCALABLE))
   {
-    nk_layout_row_dynamic(ctx, 22, 3);
     {
-      nk_label(ctx, "Devices", NK_TEXT_LEFT);
-
-      std::vector<const char*> midiDeviceNamesData(Global::midiDeviceNames.size());
-      for (i32 i = 0; i < Global::midiDeviceNames.size(); ++i)
+      nk_layout_row_dynamic(ctx, 140, 1);
       {
-        midiDeviceNamesData[i] = Global::midiDeviceNames[i].c_str();
-      }
-
-      static i32 selectedMidiDevice;
-      selectedMidiDevice = nk_combo(ctx, &midiDeviceNamesData[0], midiDeviceNamesData.size(), selectedMidiDevice, 25, nk_vec2(300, 200));
-
-      if (nk_button_label(ctx, "Open"))
-      {
-        if (static bool initMidiDevice; !initMidiDevice)
+        if (nk_group_begin(ctx, "Devices", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
         {
-          initMidiDevice = !initMidiDevice;
-
-          Midi::openDevice(selectedMidiDevice);
+          nk_layout_row_dynamic(ctx, 18, 1);
+          for (i32 i = 0; i < Global::midiDeviceCount; ++i)
+          {
+            bool wasSelected = Global::connectedDevices[i];
+            nk_selectable_label(ctx, (Global::connectedDevices[i]) ? (Global::midiDeviceNames[i] + " [connected]").c_str() : Global::midiDeviceNames[i].c_str(), NK_TEXT_LEFT, &Global::connectedDevices[i]);
+            if (!wasSelected && Global::connectedDevices[i])
+            {
+              Midi::openDevice(i);
+            }
+            else if (wasSelected && !Global::connectedDevices[i])
+            {
+              Midi::closeDevice(i);
+            }
+          }
+          nk_group_end(ctx);
         }
       }
+
+      nk_layout_row_template_begin(ctx, 22);
+      nk_layout_row_template_push_dynamic(ctx);
+      nk_layout_row_template_push_static(ctx, 100);
+      nk_layout_row_template_push_static(ctx, 60);
+      nk_layout_row_template_end(ctx);
 
       for (i32 i = 0; i < NUM(Const::midiBindingsNames); ++i)
       {
@@ -2520,9 +2526,9 @@ static void songWindow()
       }
       nk_group_end(ctx);
     }
-  }
+    }
   nk_end(ctx);
-}
+    }
 
 static void settingsWindow()
 {
@@ -3011,7 +3017,7 @@ static void settingsWindow()
           "Stats only",
           "Whole manifest"
         };
-        Global::settings.saveMode = SaveMode(nk_combo(ctx, saveModeNames, NUM(saveModeNames), to_underlying(Global::settings.saveMode), 25, nk_vec2(200, 200)));
+        Global::settings.profileSaveMode = SaveMode(nk_combo(ctx, saveModeNames, NUM(saveModeNames), to_underlying(Global::settings.profileSaveMode), 25, nk_vec2(200, 200)));
         nk_label(ctx, "Profile Name", NK_TEXT_LEFT);
         {
           i32 textlen = strlen(Global::profileName);

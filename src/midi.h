@@ -12,8 +12,10 @@
 namespace Midi
 {
   void init();
+  void fini();
 
   void openDevice(i32 index);
+  void closeDevice(i32 index);
 }
 
 #endif // SUPPORT_MIDI

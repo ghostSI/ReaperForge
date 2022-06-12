@@ -205,6 +205,7 @@ int main(int argc, char* argv[]) {
     mainloop();
 #endif // __EMSCRIPTEN__
 
+  Midi::fini();
   Profile::fini();
   Settings::fini();
   Sound::fini();

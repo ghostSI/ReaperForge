@@ -129,18 +129,24 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
   SDL_memset(stream, 0, len);
 #ifdef SUPPORT_VST
   u8 srcBuffer = 0;
+
   for (i32 i = 0; i < NUM(Global::effectChain); ++i)
   {
     if (Global::effectChain[i] < 0)
       continue;
 
+    i32 instance = 0;
+    for (i32 j = 0; j < i; ++j)
+      if (Global::effectChain[i] == Global::effectChain[j])
+        ++instance;
+
     switch (srcBuffer)
     {
     case 0:
-      Vst::processBlock(Global::effectChain[i], buffer0Vst, buffer1Vst, (len / sizeof(f32)) / 2);
+      Vst::processBlock(Global::effectChain[i], instance, buffer0Vst, buffer1Vst, (len / sizeof(f32)) / 2);
       break;
     case 1:
-      Vst::processBlock(Global::effectChain[i], buffer1Vst, buffer0Vst, (len / sizeof(f32)) / 2);
+      Vst::processBlock(Global::effectChain[i], instance, buffer1Vst, buffer0Vst, (len / sizeof(f32)) / 2);
       break;
     default:
       assert(false);

@@ -151,11 +151,19 @@ static void loadStatsOnly()
   {
     strcpy(Global::vstToneName, toneAssignmentNames[1][0].c_str());
     Global::vstToneNameLength = toneAssignmentNames[1][0].size();
+
     for (i32 j = 0; j < NUM(Global::effectChain); ++j)
     {
       Global::effectChain[j] = toneAssignmentIndex[1][0][j];
       if (Global::effectChain[j] >= 0)
-        Vst::loadParameter(j, toneAssignmentBase64[1][0][j]);
+      {
+        i32 instance = 0;
+        for (i32 k = 0; k < j; ++k)
+          if (Global::effectChain[j] == Global::effectChain[k])
+            ++instance;
+
+        Vst::loadParameter(Global::effectChain[j], instance, toneAssignmentBase64[1][0][j]);
+      }
     }
   }
 #endif // SUPPORT_VST
@@ -207,7 +215,14 @@ void Profile::tick()
     {
       Global::effectChain[i] = toneAssignmentIndex[h][Global::vstToneAssignment][i];
       if (Global::effectChain[i] != -1)
-        Vst::loadParameter(i, toneAssignmentBase64[h][Global::vstToneAssignment][i]);
+      {
+        i32 instance = 0;
+        for (i32 j = 0; j < i; ++j)
+          if (Global::effectChain[i] == Global::effectChain[j])
+            ++instance;
+
+        Vst::loadParameter(i, instance, toneAssignmentBase64[h][Global::vstToneAssignment][i]);
+      }
     }
   }
 
@@ -293,11 +308,19 @@ void Profile::saveTone()
   const i32 h = Global::currentInstrument == InstrumentFlags::BassGuitar ? 0 : 1;
 
   toneAssignmentNames[h][Global::vstToneAssignment] = std::string(Global::vstToneName);
+  std::vector<i32> instances(Global::vstPluginNames.size());
   for (i32 i = 0; i < NUM(Global::effectChain); ++i)
   {
     toneAssignmentIndex[h][Global::vstToneAssignment][i] = Global::effectChain[i];
     if (Global::effectChain[i] >= 0)
-      toneAssignmentBase64[h][Global::vstToneAssignment][i] = Vst::saveParameters(Global::effectChain[i]);
+    {
+      i32 instance = 0;
+      for (i32 j = 0; j < i; ++j)
+        if (Global::effectChain[i] == Global::effectChain[j])
+          ++instance;
+
+      toneAssignmentBase64[h][Global::vstToneAssignment][i] = Vst::saveParameters(Global::effectChain[i], instance);
+    }
   }
 }
 #endif // SUPPORT_VST

@@ -2038,7 +2038,12 @@ static void effectsWindow()
             else
             {
               Global::vstWindow = Global::effectChain[i];
-              Vst::openWindow(Global::vstWindow);
+              i32 instance = 0;
+              for (i32 j = 0; j < i; ++j)
+                if (Global::effectChain[i] == Global::effectChain[j])
+                  ++instance;
+
+              Vst::openWindow(Global::vstWindow, instance);
             }
           }
           else

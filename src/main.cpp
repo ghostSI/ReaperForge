@@ -181,18 +181,18 @@ int main(int argc, char* argv[]) {
     Global::gameController = SDL_GameControllerOpen(0);
 
   Shader::init();
+#ifdef SUPPORT_VST
+  Vst::init();
+#endif // SUPPORT_VST
+  Profile::init();
   Sound::init();
   Camera::init();
   Font::init();
   Collection::init();
-#ifdef SUPPORT_VST
-  Vst::init();
-#endif // SUPPORT_VST
 #ifdef SUPPORT_MIDI
   Midi::init();
 #endif // SUPPORT_MIDI
 
-  Profile::init();
 #ifndef __EMSCRIPTEN__
   Ui::init();
 #endif // __EMSCRIPTEN__

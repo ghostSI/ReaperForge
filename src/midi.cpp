@@ -46,6 +46,7 @@ void Midi::init()
 
   for (i32 i = 0; i < NUM(Global::settings.midiBinding); ++i)
   {
+
     Global::midiNoteBinding[Global::settings.midiBinding[i]] = i;
   }
 }
@@ -90,7 +91,7 @@ enum struct MidiBinding {
   ToneAssignment9
 };
 
-static void controlVolume(const u8 noteNumber, const u8 velocity)
+static void interpretMidiNote(const u8 noteNumber, const u8 velocity)
 {
   const MidiBinding binding = MidiBinding(Global::midiNoteBinding[noteNumber]);
   if (binding == MidiBinding(0xFF))
@@ -162,20 +163,28 @@ static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DW
     break;
   case MIM_DATA:
   {
-    DWORD type = dwParam1 & 0xFF;
+    DWORD status = dwParam1 & 0xFF;
+    switch (status)
+    {
+    case 144: // Note
+    case 176: // CC
+    case 192: // Unknown;
+      break;
+    default:
+      assert(false);
+      break;
+    }
 
-    u8 status = dwParam1 & 0xFF;
     u8 data1 = (dwParam1 >> 8) & 0xFF; // noteNumber
     u8 data2 = (dwParam1 >> 16) & 0xFF; // velocity
 
     Global::midiLearnNote = data1;
 
-    controlVolume(data1, data2);
+    interpretMidiNote(data1, data2);
   }
   break;
   case MIM_LONGDATA:
     //assert(false);
-    break;
   case MIM_ERROR:
     assert(false);
     break;

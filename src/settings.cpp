@@ -143,7 +143,7 @@ static bool parseCommandLineArgs(int argc, char* argv[]) {
 
 static std::map<std::string, std::map<std::string, std::string>> serialize(const Settings::Info& settings)
 {
-  const std::map<std::string, std::map<std::string, std::string>> serializedSettings =
+  std::map<std::string, std::map<std::string, std::string>> serializedSettings =
   {
     {
       "Audio",
@@ -252,7 +252,6 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
       "Midi",
       {
         { "AutoConnectDevices", settings.autoConnectDevices },
-        { "binding0", std::to_string(settings.midiBinding[0]) },
       }
     },
     {
@@ -286,6 +285,14 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
       }
     }
   };
+
+  for (i32 i = 0; i < NUM(Const::midiBindingsNames); ++i)
+  {
+    if (Global::settings.midiBinding[i] == 0xFF)
+      serializedSettings["Midi"].insert({ std::string("Binding") + Const::midiBindingsNames[i], "" });
+    else
+      serializedSettings["Midi"].insert({ std::string("Binding") + Const::midiBindingsNames[i], std::to_string(Global::settings.midiBinding[i]) });
+  }
 
   return serializedSettings;
 }
@@ -407,6 +414,12 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
     .profileSaveMode = SaveMode(atoi(serializedSettings.at("Profile").at("SaveMode").c_str())),
     .uiScale = f32(atof(serializedSettings.at("Ui").at("Scale").c_str()))
   };
+
+  for (i32 i = 0; i < NUM(Const::midiBindingsNames); ++i)
+  {
+    if (!serializedSettings.at("Midi").at(std::string("Binding") + Const::midiBindingsNames[i]).empty())
+      settings.midiBinding[i] = atoi(serializedSettings.at("Midi").at(std::string("Binding") + Const::midiBindingsNames[i]).c_str());
+  }
 
   return settings;
 }

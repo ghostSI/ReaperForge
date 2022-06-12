@@ -176,7 +176,7 @@ inline void unreachable() {}
 
 #define UNUSED(x) (void)x;
 
-#define ARR_SET2(X)(X)(X)
+#define ARR_SET2(X)(X),(X)
 #define ARR_SET4(X)ARR_SET2(X),ARR_SET2(X)
 #define ARR_SET8(X)ARR_SET4(X),ARR_SET4(X)
 #define ARR_SET16(X)ARR_SET8(X),ARR_SET8(X)

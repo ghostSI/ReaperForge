@@ -135,6 +135,19 @@ namespace Const {
       "MixerGuitar1Volume",
       "MixerBass1Volume",
       "MixerGuitar2Volume",
+      "HighwayBackgroundColor.v0",
+      "HighwayBackgroundColor.v1",
+      "HighwayBackgroundColor.v2",
+      "ToneAssignment0",
+      "ToneAssignment1",
+      "ToneAssignment2",
+      "ToneAssignment3",
+      "ToneAssignment4",
+      "ToneAssignment5",
+      "ToneAssignment6",
+      "ToneAssignment7",
+      "ToneAssignment8",
+      "ToneAssignment9"
     };
 #endif // SUPPORT_MIDI
 }
@@ -204,11 +217,11 @@ namespace Global {
     extern i32 vstToneNameLength;
 #endif // SUPPORT_VST
 #ifdef SUPPORT_MIDI
-    extern bool midiWindow;
     extern i32 midiDeviceCount;
     extern i32 connectedDevices[Const::midiMaxDeviceCount];
     extern std::string midiDeviceNames[Const::midiMaxDeviceCount];
     extern u8 midiLearnNote;
+    extern u8 midiNoteBinding[128];
 #endif // SUPPORT_MIDI
     
     extern Settings::Info settings;

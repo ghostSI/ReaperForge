@@ -96,7 +96,7 @@ namespace Settings {
       colorVec4("#D20000"),
       colorVec4("#009B71"),
     };
-    u8 midiBinding[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
+    u8 midiBinding[17] = { ARR_SET16(0xFF), 0xFF };
     std::string autoConnectDevices;
     std::string psarcPath = "psarc";
     std::string vstPath = "vst";

@@ -43,6 +43,11 @@ void Midi::init()
   }
 
   autoConnectDevices(Global::settings.autoConnectDevices);
+
+  for (i32 i = 0; i < NUM(Global::settings.midiBinding); ++i)
+  {
+    Global::midiNoteBinding[Global::settings.midiBinding[i]] = i;
+  }
 }
 
 void Midi::fini()
@@ -65,33 +70,84 @@ void Midi::fini()
     Global::settings.autoConnectDevices.pop_back();
 }
 
+enum struct MidiBinding {
+  MixerMusicVolume,
+  MixerGuitar1Volume,
+  MixerBass1Volume,
+  MixerGuitar2Volume,
+  HighwayBackgroundColorV0,
+  HighwayBackgroundColorV1,
+  HighwayBackgroundColorV2,
+  ToneAssignment0,
+  ToneAssignment1,
+  ToneAssignment2,
+  ToneAssignment3,
+  ToneAssignment4,
+  ToneAssignment5,
+  ToneAssignment6,
+  ToneAssignment7,
+  ToneAssignment8,
+  ToneAssignment9
+};
+
 static void controlVolume(const u8 noteNumber, const u8 velocity)
 {
-  switch (noteNumber)
+  const MidiBinding binding = MidiBinding(Global::midiNoteBinding[noteNumber]);
+  if (binding == MidiBinding(0xFF))
+    return;
+
+  switch (binding)
   {
-  case 1:
+  case MidiBinding::MixerMusicVolume:
     Global::settings.mixerMusicVolume = velocity;
     break;
-  case 2:
+  case MidiBinding::MixerGuitar1Volume:
     Global::settings.mixerGuitar1Volume = velocity;
     break;
-  case 3:
+  case MidiBinding::MixerBass1Volume:
     Global::settings.mixerBass1Volume = velocity;
     break;
-  case 4:
+  case MidiBinding::MixerGuitar2Volume:
     Global::settings.mixerGuitar2Volume = velocity;
     break;
-  case 5:
+  case MidiBinding::HighwayBackgroundColorV0:
     Global::settings.highwayBackgroundColor.v0 = f32(velocity) / 127.0f; // missing mutex
     break;
-  case 6:
+  case MidiBinding::HighwayBackgroundColorV1:
     Global::settings.highwayBackgroundColor.v1 = f32(velocity) / 127.0f;
     break;
-  case 7:
+  case MidiBinding::HighwayBackgroundColorV2:
     Global::settings.highwayBackgroundColor.v2 = f32(velocity) / 127.0f;
     break;
-  case 8:
-    Global::settings.highwayBackgroundColor.v3 = f32(velocity) / 127.0f;
+  case MidiBinding::ToneAssignment0:
+    Global::vstToneAssignment = 0;
+    break;
+  case MidiBinding::ToneAssignment1:
+    Global::vstToneAssignment = 1;
+    break;
+  case MidiBinding::ToneAssignment2:
+    Global::vstToneAssignment = 2;
+    break;
+  case MidiBinding::ToneAssignment3:
+    Global::vstToneAssignment = 3;
+    break;
+  case MidiBinding::ToneAssignment4:
+    Global::vstToneAssignment = 4;
+    break;
+  case MidiBinding::ToneAssignment5:
+    Global::vstToneAssignment = 5;
+    break;
+  case MidiBinding::ToneAssignment6:
+    Global::vstToneAssignment = 6;
+    break;
+  case MidiBinding::ToneAssignment7:
+    Global::vstToneAssignment = 7;
+    break;
+  case MidiBinding::ToneAssignment8:
+    Global::vstToneAssignment = 8;
+    break;
+  case MidiBinding::ToneAssignment9:
+    Global::vstToneAssignment = 9;
     break;
   }
 }
@@ -165,6 +221,9 @@ void Midi::closeDevice(i32 index)
 
   MIDIHDR midiHeader{};
   flag = midiInUnprepareHeader(inputDevice[index], &midiHeader, sizeof(midiHeader));
+  assert(flag == MMSYSERR_NOERROR);
+
+  flag = midiInReset(inputDevice[index]);
   assert(flag == MMSYSERR_NOERROR);
 
   flag = midiInClose(inputDevice[index]);

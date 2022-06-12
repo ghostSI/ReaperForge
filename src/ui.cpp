@@ -2098,79 +2098,6 @@ static void effectsWindow()
 }
 #endif SUPPORT_VST
 
-#ifdef SUPPORT_MIDI
-static void midiWindow()
-{
-  static i32 learnSlot = 0;
-
-  if (Global::midiWindow = nk_begin(ctx, "Midi", nk_rect(130, 130, 400, 500), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE | NK_WINDOW_SCALABLE))
-  {
-    {
-      nk_layout_row_dynamic(ctx, 140, 1);
-      {
-        if (nk_group_begin(ctx, "Devices", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
-        {
-          nk_layout_row_dynamic(ctx, 18, 1);
-          for (i32 i = 0; i < Global::midiDeviceCount; ++i)
-          {
-            bool wasSelected = Global::connectedDevices[i];
-            nk_selectable_label(ctx, (Global::connectedDevices[i]) ? (Global::midiDeviceNames[i] + " [connected]").c_str() : Global::midiDeviceNames[i].c_str(), NK_TEXT_LEFT, &Global::connectedDevices[i]);
-            if (!wasSelected && Global::connectedDevices[i])
-            {
-              Midi::openDevice(i);
-            }
-            else if (wasSelected && !Global::connectedDevices[i])
-            {
-              Midi::closeDevice(i);
-            }
-          }
-          nk_group_end(ctx);
-        }
-      }
-
-      nk_layout_row_template_begin(ctx, 22);
-      nk_layout_row_template_push_dynamic(ctx);
-      nk_layout_row_template_push_static(ctx, 100);
-      nk_layout_row_template_push_static(ctx, 60);
-      nk_layout_row_template_end(ctx);
-
-      for (i32 i = 0; i < NUM(Const::midiBindingsNames); ++i)
-      {
-        nk_label(ctx, Const::midiBindingsNames[i], NK_TEXT_LEFT);
-
-        char noteText[10] = { '\0' };
-        i32 noteTextLen = 0;
-        if (Global::settings.midiBinding[i] >= 0 && Global::settings.midiBinding[i] <= 127)
-        {
-          itoa(Global::settings.midiBinding[i], noteText, 10);
-          if (Global::settings.midiBinding[i] < 10)
-            noteTextLen = 1;
-          else if (Global::settings.midiBinding[i] < 100)
-            noteTextLen = 2;
-          else
-            noteTextLen = 3;
-        }
-
-        nk_edit_string(ctx, NK_EDIT_SIMPLE, noteText, &noteTextLen, sizeof(noteText), nk_filter_default); (ctx, Const::midiBindingsNames[i], NK_TEXT_LEFT);
-        if (nk_button_label(ctx, "Learn"))
-        {
-          learnSlot = i;
-        }
-      }
-
-      if (learnSlot != -1 && Global::midiLearnNote >= 0 && Global::midiLearnNote <= 127)
-      {
-        Global::settings.midiBinding[learnSlot] = Global::midiLearnNote;
-        learnSlot = -1;
-      }
-
-      Global::midiLearnNote = 0xFF;
-    }
-  }
-  nk_end(ctx);
-}
-#endif // SUPPORT_MIDI
-
 static i32 findBestManifestIndexForInstrument(const std::vector<Manifest::Info>& manifestInfos, const InstrumentFlags instrumentFlags)
 {
   { // find best manifest index for current instrument
@@ -2324,7 +2251,6 @@ static void songWindow()
     nk_layout_row_template_push_static(ctx, 47);
     nk_layout_row_template_push_dynamic(ctx);
     nk_layout_row_template_push_static(ctx, 35);
-    nk_layout_row_template_push_static(ctx, 40);
     nk_layout_row_template_push_static(ctx, 20);
     nk_layout_row_template_push_static(ctx, 48);
     nk_layout_row_template_end(ctx);
@@ -2358,14 +2284,6 @@ static void songWindow()
     if (nk_button_label(ctx, "VST"))
     {
       Global::effectsWindow = !Global::effectsWindow;
-    }
-#else
-    nk_spacing(ctx, 1);
-#endif // SUPPORT_VST
-#ifdef SUPPORT_MIDI
-    if (nk_button_label(ctx, "MIDI"))
-    {
-      Global::midiWindow = !Global::midiWindow;
     }
 #else
     nk_spacing(ctx, 1);
@@ -2526,14 +2444,14 @@ static void songWindow()
       }
       nk_group_end(ctx);
     }
-    }
+  }
   nk_end(ctx);
-    }
+}
 
 static void settingsWindow()
 {
-  if (nk_begin(ctx, "Settings", nk_rect(30, 30, 250, 480), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
-
+  if (nk_begin(ctx, "Settings", nk_rect(30, 30, 250, 480), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
+  {
     if (nk_tree_push(ctx, NK_TREE_TAB, "Audio", NK_MINIMIZED)) {
       nk_layout_row_dynamic(ctx, 22, 2);
       {
@@ -3008,10 +2926,74 @@ static void settingsWindow()
       }
       nk_tree_pop(ctx);
     }
-    if (nk_tree_push(ctx, NK_TREE_TAB, "Saves", NK_MINIMIZED)) {
+    if (nk_tree_push(ctx, NK_TREE_TAB, "Midi", NK_MINIMIZED))
+    {
+      nk_layout_row_dynamic(ctx, 140, 1);
+      {
+        if (nk_group_begin(ctx, "Devices", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
+        {
+          nk_layout_row_dynamic(ctx, 18, 1);
+          for (i32 i = 0; i < Global::midiDeviceCount; ++i)
+          {
+            bool wasSelected = Global::connectedDevices[i];
+            nk_selectable_label(ctx, (Global::connectedDevices[i]) ? (Global::midiDeviceNames[i] + " [connected]").c_str() : Global::midiDeviceNames[i].c_str(), NK_TEXT_LEFT, &Global::connectedDevices[i]);
+            if (!wasSelected && Global::connectedDevices[i])
+            {
+              Midi::openDevice(i);
+            }
+            else if (wasSelected && !Global::connectedDevices[i])
+            {
+              Midi::closeDevice(i);
+            }
+          }
+          nk_group_end(ctx);
+        }
+      }
+
+      nk_layout_row_template_begin(ctx, 22);
+      nk_layout_row_template_push_dynamic(ctx);
+      nk_layout_row_template_push_static(ctx, 60);
+      nk_layout_row_template_push_static(ctx, 25);
+      nk_layout_row_template_end(ctx);
+
+      static i32 learnSlot = 0;
+      for (i32 i = 0; i < NUM(Const::midiBindingsNames); ++i)
+      {
+        nk_label(ctx, Const::midiBindingsNames[i], NK_TEXT_LEFT);
+
+        if (Global::settings.midiBinding[i] >= 0 && Global::settings.midiBinding[i] <= 127)
+        {
+          if (nk_button_label(ctx, std::to_string(Global::settings.midiBinding[i]).c_str()))
+            learnSlot = i;
+          if (nk_button_label(ctx, "X"))
+          {
+            Global::midiNoteBinding[Global::settings.midiBinding[i]] = 0xFF;
+            Global::settings.midiBinding[i] = 0xFF;
+          }
+        }
+        else
+        {
+          if (nk_button_label(ctx, "Learn"))
+            learnSlot = i;
+          nk_spacing(ctx, 1);
+        }
+      }
+
+      if (learnSlot != -1 && Global::midiLearnNote >= 0 && Global::midiLearnNote <= 127)
+      {
+        Global::settings.midiBinding[learnSlot] = Global::midiLearnNote;
+        Global::midiNoteBinding[Global::midiLearnNote] = learnSlot;
+        learnSlot = -1;
+      }
+
+      Global::midiLearnNote = 0xFF;
+      nk_tree_pop(ctx);
+    }
+    if (nk_tree_push(ctx, NK_TREE_TAB, "Profile", NK_MINIMIZED))
+    {
       nk_layout_row_dynamic(ctx, 22, 2);
       {
-        nk_label(ctx, "Save and Cache", NK_TEXT_LEFT);
+        nk_label(ctx, "Save Mode", NK_TEXT_LEFT);
         static const char* saveModeNames[] = {
           "None",
           "Stats only",
@@ -3089,10 +3071,6 @@ void Ui::tick() {
   if (Global::effectsWindow)
     effectsWindow();
 #endif // SUPPORT_VST
-#ifdef SUPPORT_MIDI
-  if (Global::midiWindow)
-    midiWindow();
-#endif // SUPPORT_MIDI
 
   if (Global::helpWindow)
     helpWindow();

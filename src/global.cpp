@@ -58,17 +58,17 @@ f32 Global::toneAssignment = 0.0f;
 bool Global::effectsWindow = false;
 i32 Global::vstWindow = -1;
 std::vector<std::string> Global::vstPluginNames;
-i32 Global::effectChain[16] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+i32 Global::effectChain[16] = { ARR_SET16(-1) };
 i32 Global::vstToneAssignment = 0;
 char Global::vstToneName[256] = "Default";
 i32 Global::vstToneNameLength = sizeof("Default") - 1;
 #endif // SUPPORT_VST
 #ifdef SUPPORT_MIDI
-bool Global::midiWindow = false;
 i32 Global::midiDeviceCount = 0;
 i32 Global::connectedDevices[Const::midiMaxDeviceCount] = {};
 std::string Global::midiDeviceNames[Const::midiMaxDeviceCount];
 u8 Global::midiLearnNote = 0xFF;
+u8 Global::midiNoteBinding[128] = { ARR_SET128(0xFF) };
 #endif // SUPPORT_MIDI
 
 Settings::Info Global::settings;

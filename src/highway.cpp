@@ -240,7 +240,7 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
   }
   if (note.sustain != 0.0f)
   {
-    setStringColor(shader, 5 - note.string + instrumentStringOffset, 0.85f);
+    setStringColor(shader, 5 - note.string + instrumentStringOffset, 0.65f);
 
     if (note.tremolo)
     {
@@ -398,7 +398,7 @@ static void drawNotes(f32 fretboardNoteDistance[7][24])
 
         const f32 x = Const::highwayFretPosition[note.fret - 1] + 0.5f * (Const::highwayFretPosition[note.fret] - Const::highwayFretPosition[note.fret - 1]);
 
-        Font::drawFretNumber(note.fret, x, -0.2f, noteTime * Global::settings.highwaySpeedMultiplier, 0.25f, 0.25f);
+        Font::drawFretNumber(note.fret, x, -0.2f, noteTime * Global::settings.highwaySpeedMultiplier + 0.2f, 0.25f, 0.25f);
       }
       else
       {
@@ -570,7 +570,7 @@ static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime
           {
             const f32 x = Const::highwayFretPosition[i - 1] + 0.5f * (Const::highwayFretPosition[i] - Const::highwayFretPosition[i - 1]);
 
-            Font::drawFretNumber(i, x, -0.2f, noteTime * Global::settings.highwaySpeedMultiplier + 0.1f, 0.25f, 0.25f);
+            Font::drawFretNumber(i, x, -0.2f, noteTime * Global::settings.highwaySpeedMultiplier + 0.2f, 0.25f, 0.25f);
           }
         }
       }
@@ -946,7 +946,7 @@ static void drawStringNoteNames()
     const f32 yy = f32(y) * Const::highwayStringSpacing;
     const i32 stringTuning = getStringTuning(y);
 
-    Font::drawNoteNameFlat(stringTuning, -0.2f, yy, 0.03f, 0.15f, 0.15f);
+    Font::drawNoteNameFlat(stringTuning, -0.2f, yy, 0.1f, 0.15f, 0.15f);
   }
 }
 
@@ -964,7 +964,7 @@ static void drawFretNoteNames()
     {
       const f32 x = Const::highwayFretPosition[i - 1] + 0.2f;
 
-      Font::drawNoteNameFlat((stringTuning + i) % 12, x, yy, 0.03f, 0.15f, 0.15f);
+      Font::drawNoteNameFlat((stringTuning + i) % 12, x, yy, 0.1f, 0.15f, 0.15f);
     }
   }
 }

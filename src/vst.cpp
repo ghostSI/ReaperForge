@@ -530,7 +530,7 @@ void Vst::loadParameter(i32 index, i32 instance, const std::string& base64)
   assert(index < vstPlugins.size());
   u8 data[4096];
   const i64 len = Base64::decode(base64, data);
-  assert(len > 0);
+  assert(len >= 0);
 
   if (instance == vstPlugins[index].aEffect.size())
     loadPluginInstance(vstPlugins[index]); // plugin is loaded multiple times, create another instance

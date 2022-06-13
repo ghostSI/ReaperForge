@@ -148,7 +148,7 @@ static void loadStatsOnly()
     }
   }
 
-  {
+  { // Load Tone Assignment 0
     strcpy(Global::vstToneName, toneAssignmentNames[1][0].c_str());
     Global::vstToneNameLength = toneAssignmentNames[1][0].size();
 

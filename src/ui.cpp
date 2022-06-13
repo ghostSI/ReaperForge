@@ -1949,7 +1949,7 @@ static void toneWindow()
 static void vstWindow()
 {
   const Rect rect = Vst::getWindowRect(Global::vstWindow);
-  if (bool show = nk_begin(ctx, "VST", nk_rect(100, 100, rect.right + 2, rect.bottom + 30),
+  if (bool show = nk_begin(ctx, "VST-Effect", nk_rect(400, 120, rect.right + 2, rect.bottom + 30),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE |
     NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
@@ -1993,7 +1993,7 @@ static void effectsWindow()
   static i32 selectedEffect = -1;
   i32 unusedVar = 1;
 
-  if (Global::effectsWindow = nk_begin(ctx, "Effects", nk_rect(100, 100, 400, 500),
+  if (Global::effectsWindow = nk_begin(ctx, "VST", nk_rect(100, 100, 400, 500),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE |
     NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
@@ -2412,7 +2412,7 @@ static void songWindow()
 
                 nk_label(ctx, songLength, NK_TEXT_LEFT);
               }
-              nk_label(ctx, "Score:       98.4%", NK_TEXT_LEFT);
+              nk_label(ctx, "Score:       0.0%", NK_TEXT_LEFT);
               nk_spacing(ctx, 1);
               nk_label(ctx, "Tuning:", NK_TEXT_LEFT);
               nk_label(ctx, Song::tuningName(songInfo.manifestInfos[manifestIndex].tuning), NK_TEXT_LEFT);

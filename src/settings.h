@@ -18,8 +18,8 @@ namespace Settings {
     f32 cameraXFactor = 0.9f;
     f32 cameraXOffset = 1.9f;
     f32 cameraXRotation = 0.247f;
-    f32 cameraYFactor = 1.1f;
-    f32 cameraYOffset = 3.0f;
+    f32 cameraYFactor = 0.877f;
+    f32 cameraYOffset = 3.725f;
     f32 cameraYRotation = 0.175f;
     f32 cameraZFactor = 0.9f;
     f32 cameraZOffset = 7.0f;

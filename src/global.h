@@ -197,9 +197,9 @@ namespace Global {
     extern Song::Track songTrack;
     extern std::vector<Song::Vocal> songVocals;
     extern u8* musicBuffer;
-    extern u32 musicBufferLength;
+    extern u64 musicBufferLength;
     extern u8* musicBufferPosition;
-    extern u32 musicBufferRemainingLength;
+    extern u64 musicBufferRemainingLength;
     extern f32 musicTimeElapsed;
     extern f32 musicSpeedMultiplier;
     extern char searchText[256];

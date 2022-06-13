@@ -193,14 +193,22 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
   SDL_MixAudioFormat(stream, buffer0.sdl, AUDIO_F32LSB, len, Global::settings.mixerGuitar1Volume);
 #endif // SUPPORT_VST
 
-  if (Global::musicBufferRemainingLength > 0)
+  if (Global::musicBufferPosition != nullptr)
   {
-    len = (len > Global::musicBufferRemainingLength ? Global::musicBufferRemainingLength : len);
-    SDL_MixAudioFormat(stream, Global::musicBufferPosition, AUDIO_F32LSB, len, Global::settings.mixerMusicVolume);
+    const i64 remainingLength = &Global::musicBuffer[Global::musicBufferLength] - Global::musicBufferPosition;
+    if (remainingLength > 0)
+    {
+      len = (len > remainingLength ? remainingLength : len);
+      SDL_MixAudioFormat(stream, Global::musicBufferPosition, AUDIO_F32LSB, len, Global::settings.mixerMusicVolume);
 
-    Global::musicBufferPosition += len;
-    Global::musicBufferRemainingLength -= len;
+      Global::musicBufferPosition += len;
+    }
+    else
+    {
+      Global::musicBufferPosition = nullptr;
+    }
   }
+
 
   recordingFirst = !recordingFirst;
   cv.notify_one();

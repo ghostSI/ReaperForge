@@ -35,6 +35,8 @@ void Input::prePollEvent() {
   prePollEventKeyInput(Global::inputWireframe);
   prePollEventKeyInput(Global::inputDebug);
   prePollEventKeyInput(Global::inputEsc);
+  prePollEventKeyInput(Global::inputLmb);
+  prePollEventKeyInput(Global::inputRmb);
   prePollEventKeyInput(Global::debugCamera);
   prePollEventKeyInput(Global::quickRepeater);
 }
@@ -223,8 +225,10 @@ void Input::pollEvent(SDL_Event& event) {
   case SDL_MOUSEBUTTONDOWN: {
     switch (event.button.button) {
     case SDL_BUTTON_LEFT:
+      Global::inputLmb.pressed = true;
       break;
     case SDL_BUTTON_RIGHT:
+      Global::inputRmb.pressed = true;
       break;
     }
   }
@@ -233,8 +237,10 @@ void Input::pollEvent(SDL_Event& event) {
   case SDL_MOUSEBUTTONUP: {
     switch (event.button.button) {
     case SDL_BUTTON_LEFT:
+      Global::inputLmb.pressed = false;
       break;
     case SDL_BUTTON_RIGHT:
+      Global::inputRmb.pressed = false;
       break;
     }
   }
@@ -363,6 +369,8 @@ void Input::postPollEvent() {
   postPollEventKeyInput(Global::inputWireframe);
   postPollEventKeyInput(Global::inputDebug);
   postPollEventKeyInput(Global::inputEsc);
+  postPollEventKeyInput(Global::inputLmb);
+  postPollEventKeyInput(Global::inputRmb);
   postPollEventKeyInput(Global::debugCamera);
   postPollEventKeyInput(Global::quickRepeater);
 }

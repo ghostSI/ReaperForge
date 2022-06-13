@@ -11,6 +11,7 @@
 #include "installer.h"
 #include "midi.h"
 #include "opengl.h"
+#include "phrases.h"
 #include "player.h"
 #include "profile.h"
 #include "settings.h"
@@ -61,6 +62,7 @@ static void mainloop() {
   { // render frame
     Profile::tick();
     Player::tick();
+    Phrases::tick();
     Highway::tick();
     Camera::tick();
 #ifndef __EMSCRIPTEN__
@@ -78,6 +80,7 @@ static void mainloop() {
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif // __EMSCRIPTEN__
 
+    Phrases::render();
     Highway::render();
     Camera::render();
 #ifndef __EMSCRIPTEN__

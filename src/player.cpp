@@ -80,7 +80,6 @@ static void playSongEmscripten()
 static f32 quickRepeaterBeginTime = 0.0f;
 static f32 quickRepeaterEndTime = 0.0f;
 static u8* quickRepeaterMusicBufferPosition = nullptr;
-static u32 quickRepeaterMusicRemainingLength = 0;
 
 static void quickRepeater()
 {
@@ -90,7 +89,6 @@ static void quickRepeater()
     {
       quickRepeaterBeginTime = Global::musicTimeElapsed;
       quickRepeaterMusicBufferPosition = Global::musicBufferPosition;
-      quickRepeaterMusicRemainingLength = Global::musicBufferRemainingLength;
     }
     else
     {
@@ -109,7 +107,6 @@ static void quickRepeater()
     Global::musicTimeElapsed = quickRepeaterBeginTime;
 
     Global::musicBufferPosition = quickRepeaterMusicBufferPosition;
-    Global::musicBufferRemainingLength = quickRepeaterMusicRemainingLength;
   }
 }
 
@@ -120,7 +117,6 @@ void Player::tick()
   if (playNextTick)
   {
     Global::musicBufferPosition = Global::musicBuffer;
-    Global::musicBufferRemainingLength = Global::musicBufferLength;
     if (!previewPlaying)
     {
       Global::musicTimeElapsed = 0.0f;

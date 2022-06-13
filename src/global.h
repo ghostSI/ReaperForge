@@ -177,6 +177,8 @@ namespace Global {
     extern KeyInput inputWireframe;
     extern KeyInput inputDebug;
     extern KeyInput inputEsc;
+    extern KeyInput inputLmb;
+    extern KeyInput inputRmb;
     extern KeyInput debugCamera;
     extern KeyInput quickRepeater;
 
@@ -199,7 +201,6 @@ namespace Global {
     extern u8* musicBuffer;
     extern u64 musicBufferLength;
     extern u8* musicBufferPosition;
-    extern u64 musicBufferRemainingLength;
     extern f32 musicTimeElapsed;
     extern f32 musicSpeedMultiplier;
     extern char searchText[256];

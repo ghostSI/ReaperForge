@@ -24,6 +24,8 @@ KeyInput Global::inputPause;
 KeyInput Global::inputWireframe;
 KeyInput Global::inputDebug;
 KeyInput Global::inputEsc;
+KeyInput Global::inputLmb;
+KeyInput Global::inputRmb;
 KeyInput Global::debugCamera;
 KeyInput Global::quickRepeater;
 
@@ -46,7 +48,6 @@ std::vector<Song::Vocal> Global::songVocals;
 u8* Global::musicBuffer = nullptr;
 u64 Global::musicBufferLength = 0;
 u8* Global::musicBufferPosition = nullptr;
-u64 Global::musicBufferRemainingLength = 0;
 f32 Global::musicTimeElapsed = 0.0f;
 f32 Global::musicSpeedMultiplier = 1.0f;
 char Global::searchText[256] = "";

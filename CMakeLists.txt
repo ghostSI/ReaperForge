@@ -50,6 +50,7 @@ set(HEADER_FILES
 		src/ogg.h
         src/opengl.h
         src/pcm.h
+        src/phrases.h
         src/player.h
         src/profile.h
         src/psarc.h
@@ -97,6 +98,7 @@ set(SOURCE_FILES
         src/ogg.cpp
         src/opengl.cpp
         src/pcm.cpp
+        src/phrases.cpp
         src/player.cpp
         src/profile.cpp
         src/psarc.cpp

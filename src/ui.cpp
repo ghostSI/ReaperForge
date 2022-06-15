@@ -2101,7 +2101,7 @@ static void effectsWindow()
       slotSelectEffectWindow = -1;
   }
 }
-#endif SUPPORT_VST
+#endif // SUPPORT_VST
 
 static i32 findBestManifestIndexForInstrument(const std::vector<Manifest::Info>& manifestInfos, const InstrumentFlags instrumentFlags)
 {

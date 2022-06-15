@@ -49,6 +49,7 @@ bool recordingFirst = true;
 static Chromagram chromagram(Global::settings.audioBufferSize, Global::settings.audioSampleRate);
 static ChordDetector chordDetector;
 
+#ifndef __EMSCRIPTEN__
 static void audioRecordingCallback(void* userdata, u8* stream, int len)
 {
   ASSERT(len <= sizeof(buffer0.sdl));
@@ -113,6 +114,7 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
   recordingFirst = !recordingFirst;
   cv.notify_one();
 }
+#endif // __EMSCRIPTEN__
 
 static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
 {
@@ -123,8 +125,10 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
 
   ++Global::debugAudioCallbackPlayback;
 
+#ifndef __EMSCRIPTEN__
   std::unique_lock<std::mutex> lock(mutex);
   cv.wait(lock, [] { return !recordingFirst ? true : false; });
+#endif // __EMSCRIPTEN__
 
   SDL_memset(stream, 0, len);
 #ifdef SUPPORT_VST
@@ -209,13 +213,15 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
     }
   }
 
-
+#ifndef __EMSCRIPTEN__
   recordingFirst = !recordingFirst;
   cv.notify_one();
+#endif // __EMSCRIPTEN__
 }
 
 void Sound::init()
 {
+#ifndef __EMSCRIPTEN__
   { // Input
     SDL_memset(&want_in, 0, sizeof(want_in));
 
@@ -229,6 +235,7 @@ void Sound::init()
     devid_in = SDL_OpenAudioDevice(NULL, SDL_TRUE, &want_in, nullptr, 0);
     ASSERT(devid_in != 0);
   }
+#endif // #ifndef __EMSCRIPTEN__
 
   { // Output
     SDL_AudioSpec have;
@@ -245,8 +252,7 @@ void Sound::init()
     ASSERT(devid_out != 0);
   }
 
-  SDL_PauseAudioDevice(devid_in, 0);
-  SDL_PauseAudioDevice(devid_out, 0);
+  pauseAudioDevice(false);
 }
 
 void Sound::fini()
@@ -256,6 +262,8 @@ void Sound::fini()
 
 void Sound::pauseAudioDevice(bool pause_on)
 {
+#ifndef __EMSCRIPTEN__
   SDL_PauseAudioDevice(devid_in, pause_on);
+#endif // #ifndef __EMSCRIPTEN__
   SDL_PauseAudioDevice(devid_out, pause_on);
 }

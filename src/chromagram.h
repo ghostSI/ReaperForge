@@ -24,6 +24,8 @@
 #ifndef __CHROMAGRAM_H
 #define __CHROMAGRAM_H
 
+#include "typedefs.h"
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <vector>
@@ -103,7 +105,6 @@ private:
     void calculateMagnitudeSpectrum();
 	void downSampleFrame (std::vector<double> inputAudioFrame);
     void makeHammingWindow();
-    double round (double val);
     
     std::vector<double> window;
     std::vector<double> buffer;

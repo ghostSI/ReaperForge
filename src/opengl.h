@@ -15,7 +15,7 @@
 
 namespace OpenGl {
   void init();
-  GLuint loadDDSTexture(const unsigned char* in_dds, size_t in_size);
+  GLuint loadDDSTexture(const u8* in_dds, i32 in_size);
 }
 
 void glUseProgram(GLuint program);
@@ -59,10 +59,10 @@ void glBindRenderbuffer(GLenum target, GLuint renderbuffer);
 void glRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
 void glFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
 void glDrawBuffers(GLsizei n, const GLenum* bufs);
-void glBindTexture(GLenum target, GLuint texture);
-void glGenTextures(GLsizei n, GLuint* textures);
+//void glBindTexture(GLenum target, GLuint texture);
+//void glGenTextures(GLsizei n, GLuint* textures);
 void* glMapBuffer(GLenum target, GLenum access);
-void glDeleteTextures(GLsizei n, const GLuint* textures);
+//void glDeleteTextures(GLsizei n, const GLuint* textures);
 GLboolean glUnmapBuffer(GLenum target);
 void glBlendEquation(GLenum mode);
 void glDeleteBuffers(GLsizei n, const GLuint* buffers);

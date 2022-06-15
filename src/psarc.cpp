@@ -80,8 +80,7 @@ static void inflateTocEntry(Psarc::Info::TOCEntry &tocEntry, const u32 blockSize
         } else {
             const u16 num = u16_be(&psarcData[tocEntry.offset + inCur]);
             if (num == zHeader) {
-                const i32 size = Inflate::inflate(&psarcData[tocEntry.offset + inCur], blockSize,
-                                                  &tocEntry.content[outCur], tocEntry.length - outCur);
+                const i32 size = Inflate::inflate(&psarcData[tocEntry.offset + inCur], blockSize, &tocEntry.content[outCur], i32(tocEntry.length - outCur));
                 inCur += blockSize;
                 outCur += size;
             } else { // raw. used only for data(chunks) smaller than 64 kb

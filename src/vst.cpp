@@ -257,15 +257,27 @@ static intptr_t AudioMaster(AEffect* effect, AudioMasterOpcode opcode, int32_t i
     return 0;
 
   case AudioMasterOpcode::getVendorString:
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
     strcpy((char*)ptr, "ReaperForge");
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
     return 1;
 
   case AudioMasterOpcode::getProductString:
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
     strcpy((char*)ptr, "ReaperForge");
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
     return 1;
 
   case AudioMasterOpcode::getVendorVersion:
-    return (intptr_t)(VERSION_MAJOR << 24 | VERSION_MINOR << 16 | VERSION_REVISION << 8 | VERSION_BUILD);
+    return (intptr_t)(VERSION_MAJOR << 24 | VERSION_MINOR << 16 | VERSION_PATCH << 8 | VERSION_BUILD);
 
   case AudioMasterOpcode::needIdle:
     return 0;
@@ -345,28 +357,28 @@ static std::string getString(AEffect* aEffect, EffOpcode opcode, i32 index = 0)
 
 static void loadPluginInstance(VstPlugin& vstPlugin)
 {
-  const i32 instance = vstPlugin.aEffect.size();
+  const i32 instance = i32(vstPlugin.aEffect.size());
   vstPlugin.aEffect.push_back(vstPlugin.pluginMain(AudioMaster));
   vstPlugin.aEffect[instance]->ptr2 = &vstPlugin;
 
-  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::SetSampleRate, 0, 0, NULL, f32(Global::settings.audioSampleRate));
-  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::SetBlockSize, 0, Global::settings.audioBufferSize, NULL, 0);
-  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::Identify, 0, 0, NULL, 0);
+  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::SetSampleRate, 0, 0, nullptr, f32(Global::settings.audioSampleRate));
+  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::SetBlockSize, 0, Global::settings.audioBufferSize, nullptr, 0);
+  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::Identify, 0, 0, nullptr, 0);
 
-  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::Open, 0, 0, NULL, 0.0);
+  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::Open, 0, 0, nullptr, 0.0);
 
-  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::BeginSetProgram, 0, 0, NULL, 0.0);
-  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::SetProgram, 0, 0, NULL, 0.0);
-  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::EndSetProgram, 0, 0, NULL, 0.0);
+  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::BeginSetProgram, 0, 0, nullptr, 0.0);
+  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::SetProgram, 0, 0, nullptr, 0.0);
+  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::EndSetProgram, 0, 0, nullptr, 0.0);
 
-  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::MainsChanged, 0, 1, NULL, 0.0);
+  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::MainsChanged, 0, 1, nullptr, 0.0);
 
-  i32 vstVersion = callDispatcher(vstPlugin.aEffect[instance], EffOpcode::GetVstVersion, 0, 0, NULL, 0); // might not be needed
+  const i32 vstVersion = i32(callDispatcher(vstPlugin.aEffect[instance], EffOpcode::GetVstVersion, 0, 0, nullptr, 0)); // might not be needed
   if (vstVersion >= 2)
-    callDispatcher(vstPlugin.aEffect[instance], EffOpcode::StartProcess, 0, 0, NULL, 0.0);
+    callDispatcher(vstPlugin.aEffect[instance], EffOpcode::StartProcess, 0, 0, nullptr, 0.0);
 
-  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::SetSampleRate, 0, 0, NULL, Global::settings.audioSampleRate);
-  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::SetBlockSize, 0, Global::settings.audioBufferSize, NULL, 0.0);
+  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::SetSampleRate, 0, 0, nullptr, f32(Global::settings.audioSampleRate));
+  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::SetBlockSize, 0, Global::settings.audioBufferSize, nullptr, 0.0);
 }
 
 #define INT32_SWAP(val) \
@@ -396,7 +408,7 @@ void Vst::init()
 
     loadPluginInstance(vstPlugin);
 
-    vstPlugin.vstVersion = callDispatcher(vstPlugin.aEffect[0], EffOpcode::GetVstVersion, 0, 0, NULL, 0);
+    vstPlugin.vstVersion = i32(callDispatcher(vstPlugin.aEffect[0], EffOpcode::GetVstVersion, 0, 0, nullptr, 0));
 
     if (vstPlugin.aEffect[0]->magic == kEffectMagic &&
       !(to_underlying(vstPlugin.aEffect[0]->flags & EffFlags::IsSynth)) &&
@@ -418,7 +430,7 @@ void Vst::init()
       if (vstPlugin.vstVersion >= 2)
       {
         vstPlugin.vendor = getString(vstPlugin.aEffect[0], EffOpcode::GetVendorString);
-        vstPlugin.version = INT32_SWAP(callDispatcher(vstPlugin.aEffect[0], EffOpcode::GetVendorVersion, 0, 0, NULL, 0));
+        vstPlugin.version = INT32_SWAP(callDispatcher(vstPlugin.aEffect[0], EffOpcode::GetVendorVersion, 0, 0, nullptr, 0));
       }
       if (vstPlugin.version == 0)
       {
@@ -439,7 +451,7 @@ void Vst::init()
       vstPlugin.automatable = false;
       for (i32 i = 0; i < vstPlugin.aEffect[0]->numParams; i++)
       {
-        if (callDispatcher(vstPlugin.aEffect[0], EffOpcode::CanBeAutomated, 0, i, NULL, 0.0))
+        if (callDispatcher(vstPlugin.aEffect[0], EffOpcode::CanBeAutomated, 0, i, nullptr, 0.0))
         {
           vstPlugin.automatable = true;
           break;
@@ -497,7 +509,7 @@ void Vst::closeWindow(i32 index)
 }
 
 
-u64 Vst::processBlock(i32 index, i32 instance, f32** inBlock, f32** outBlock, size_t blockLen)
+u64 Vst::processBlock(i32 index, i32 instance, f32** inBlock, f32** outBlock, i32 blockLen)
 {
   assert(index >= 0);
   assert(index < vstPlugins.size());
@@ -535,9 +547,9 @@ void Vst::loadParameter(i32 index, i32 instance, const std::string& base64)
   if (instance == vstPlugins[index].aEffect.size())
     loadPluginInstance(vstPlugins[index]); // plugin is loaded multiple times, create another instance
 
-  callDispatcher(vstPlugins[index].aEffect[instance], EffOpcode::BeginSetProgram, 0, 0, NULL, 0.0);
+  callDispatcher(vstPlugins[index].aEffect[instance], EffOpcode::BeginSetProgram, 0, 0, nullptr, 0.0);
   callDispatcher(vstPlugins[index].aEffect[instance], EffOpcode::SetChunk, 1, len, data, 0.0);
-  callDispatcher(vstPlugins[index].aEffect[instance], EffOpcode::EndSetProgram, 0, 0, NULL, 0.0);
+  callDispatcher(vstPlugins[index].aEffect[instance], EffOpcode::EndSetProgram, 0, 0, nullptr, 0.0);
 }
 
 #endif // SUPPORT_VST

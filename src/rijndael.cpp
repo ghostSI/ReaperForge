@@ -735,8 +735,8 @@ static void decrypt_(const u8 *in, u8 *result, size_t n) {
 void Rijndael::decrypt(const u8 *key, const u8 *in, u8 *result, size_t n, const u8* iv) {
   if (iv == nullptr)
   {
-    const u8 iv[16] = {};
-    makeKey(key, iv);
+    const u8 iv_empty[16] = {};
+    makeKey(key, iv_empty);
   }
   else
     makeKey(key, iv);

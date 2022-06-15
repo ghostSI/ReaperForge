@@ -56,22 +56,46 @@ std::string hexColor(vec4 color)
 {
   std::string hexString = "#";
 
-  const u8 r = color.v0 * 255.0f;
-  const u8 g = color.v1 * 255.0f;
-  const u8 b = color.v2 * 255.0f;
-  const u8 a = color.v3 * 255.0f;
+  const u8 r = u8(color.v0 * 255.0f);
+  const u8 g = u8(color.v1 * 255.0f);
+  const u8 b = u8(color.v2 * 255.0f);
+  const u8 a = u8(color.v3 * 255.0f);
 
   char hex[3];
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
   sprintf(hex, "%02X", r);
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
   hexString += hex;
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
   sprintf(hex, "%02X", g);
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
   hexString += hex;
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
   sprintf(hex, "%02X", b);
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
   hexString += hex;
 
   if (a != 0xFF)
   {
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
     sprintf(hex, "%02X", a);
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
     hexString += hex;
   }
 
@@ -90,7 +114,13 @@ std::string n2hexStr(i32 value) {
   assert(value >= 0);
   assert(value <= 255);
   char hexString[4 * sizeof(int) + 1];
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
   sprintf(hexString, "%X", value);
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
   return std::string(hexString);
 }
 

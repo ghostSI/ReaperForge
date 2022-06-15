@@ -13,10 +13,10 @@ void Phrases::tick()
 {
   if (Global::songTrack.phraseIterations.size() >= 1)
   {
-    const i32 left = 0.1f * Global::settings.graphicsResolutionWidth;
-    const i32 right = 0.9f * Global::settings.graphicsResolutionWidth;
-    const i32 top = 0.04f * Global::settings.graphicsResolutionHeight;
-    const i32 bottom = 0.135f * Global::settings.graphicsResolutionHeight;
+    const i32 left = i32(0.1f * Global::settings.graphicsResolutionWidth);
+    const i32 right = i32(0.9f * Global::settings.graphicsResolutionWidth);
+    const i32 top = i32(0.04f * Global::settings.graphicsResolutionHeight);
+    const i32 bottom = i32(0.135f * Global::settings.graphicsResolutionHeight);
 
     if (Global::inputCursorPosX >= left && Global::inputCursorPosX <= right && Global::inputCursorPosY >= top && Global::inputCursorPosY <= bottom)
     {
@@ -62,8 +62,8 @@ void Phrases::render()
     f32 end = phraseIteration1.time / Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].songLength;
     f32 difficulty = f32(phase.maxDifficulty) / f32(maxDifficulty);
 
-    const f32 left = -0.7985 + begin * 1.6f;
-    const f32 right = -0.8015 + end * 1.6f;
+    const f32 left = -0.7985f + begin * 1.6f;
+    const f32 right = -0.8015f + end * 1.6f;
     const f32 posZ = 0.3f;
 
     const f32 progress = map(Global::musicTimeElapsed, phraseIteration0.time, phraseIteration1.time, 0.0f, 1.0f);

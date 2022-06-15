@@ -100,7 +100,7 @@ XBlock::Info XBlock::readXBlock(const std::vector<u8>& xBlockData)
   XBlock::Info xblockInfo;
 
   pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(xBlockData.data()));
+  pugi::xml_parse_result result = doc.load_string(reinterpret_cast<const char*>(xBlockData.data()));
 #ifndef XML_IGNORE_ERROR
   assert(result.status == pugi::status_ok);
 #endif // XML_IGNORE_ERROR

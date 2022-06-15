@@ -412,7 +412,7 @@ Song::Track Song::loadTrack(const Psarc::Info& psarcInfo, InstrumentFlags instru
       if (tocEntry.name.ends_with("_lead.xml"))
       {
         pugi::xml_document doc;
-        pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
+        pugi::xml_parse_result result = doc.load_string(reinterpret_cast<const char*>(tocEntry.content.data()));
         assert(result.status == pugi::status_ok);
 
         readPhrases(doc, track.phrases);
@@ -431,7 +431,7 @@ Song::Track Song::loadTrack(const Psarc::Info& psarcInfo, InstrumentFlags instru
       if (tocEntry.name.ends_with("_rhythm.xml"))
       {
         pugi::xml_document doc;
-        pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
+        pugi::xml_parse_result result = doc.load_string(reinterpret_cast<const char*>(tocEntry.content.data()));
         assert(result.status == pugi::status_ok);
 
         readPhrases(doc, track.phrases);
@@ -450,7 +450,7 @@ Song::Track Song::loadTrack(const Psarc::Info& psarcInfo, InstrumentFlags instru
       if (tocEntry.name.ends_with("_bass.xml"))
       {
         pugi::xml_document doc;
-        pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
+        pugi::xml_parse_result result = doc.load_string(reinterpret_cast<const char*>(tocEntry.content.data()));
         assert(result.status == pugi::status_ok);
 
         readPhrases(doc, track.phrases);
@@ -477,7 +477,7 @@ std::vector<Song::Vocal> Song::loadVocals(const Psarc::Info& psarcInfo) {
     if (tocEntry.name.ends_with("_vocals.xml"))
     {
       pugi::xml_document doc;
-      pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(tocEntry.content.data()));
+      pugi::xml_parse_result result = doc.load_string(reinterpret_cast<const char*>(tocEntry.content.data()));
       assert(result.status == pugi::status_ok);
 
       pugi::xml_node vocals = doc.child("vocals");

@@ -198,7 +198,7 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
     const i64 remainingLength = &Global::musicBuffer[Global::musicBufferLength] - Global::musicBufferPosition;
     if (remainingLength > 0)
     {
-      len = (len > remainingLength ? remainingLength : len);
+      len = i32(len > remainingLength ? remainingLength : len);
       SDL_MixAudioFormat(stream, Global::musicBufferPosition, AUDIO_F32LSB, len, Global::settings.mixerMusicVolume);
 
       Global::musicBufferPosition += len;

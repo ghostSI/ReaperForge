@@ -122,7 +122,7 @@ inline u32 u32_be(const u8* bytes)
 
 inline u64 u40_be(const u8* bytes)
 {
-  return u64(bytes[0]) << 32 | bytes[1] << 24 | bytes[2] << 16 | bytes[3] << 8 | bytes[4];
+  return u64(bytes[0]) << 32 | u64(bytes[1]) << 24 | u64(bytes[2]) << 16 | u64(bytes[3]) << 8 | bytes[4];
 }
 
 namespace string {

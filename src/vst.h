@@ -18,7 +18,7 @@ namespace Vst
   void moveWindow(i32 index, i32 x, i32 y);
   void closeWindow(i32 index);
 
-  u64 processBlock(i32 index, i32 instance, f32** inBlock, f32** outBlock, size_t blockLen);
+  u64 processBlock(i32 index, i32 instance, f32** inBlock, f32** outBlock, i32 blockLen);
 
   std::string saveParameters(i32 index, i32 instance);
   void loadParameter(i32 index, i32 instance, const std::string& base64);

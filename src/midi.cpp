@@ -35,7 +35,7 @@ void Midi::init()
   Global::midiDeviceCount = midiInGetNumDevs();
   assert(Global::midiDeviceCount <= Const::midiMaxDeviceCount);
 
-  for (u32 i = 0; i < Global::midiDeviceCount; ++i)
+  for (i32 i = 0; i < Global::midiDeviceCount; ++i)
   {
     MIDIINCAPS inputCapabilities;
     midiInGetDevCaps(i, &inputCapabilities, sizeof(inputCapabilities));

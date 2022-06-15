@@ -2347,7 +2347,7 @@ static void songWindow()
               if (songInfo.albumCover128_ogl == 0 && songInfo.albumCover128_tocIndex >= 1)
                 songInfo.albumCover128_ogl = OpenGl::loadDDSTexture(
                   Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.data(),
-                  Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.size());
+                  i32(Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.size()));
 
               if (songInfo.albumCover128_ogl != 0)
                 thumbnail = nk_image_id((int)songInfo.albumCover128_ogl);

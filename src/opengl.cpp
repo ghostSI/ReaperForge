@@ -47,10 +47,10 @@ static PFNGLBINDRENDERBUFFERPROC glBindRenderbufferProc;
 static PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorageProc;
 static PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbufferProc;
 static PFNGLDRAWBUFFERSPROC glDrawBuffersProc;
-static PFNGLBINDTEXTUREEXTPROC glBindTextureProc;
-static PFNGLGENTEXTURESEXTPROC glGenTexturesProc;
+//static PFNGLBINDTEXTUREEXTPROC glBindTextureProc;
+//static PFNGLGENTEXTURESEXTPROC glGenTexturesProc;
 static PFNGLMAPBUFFERPROC glMapBufferProc;
-static PFNGLDELETETEXTURESEXTPROC glDeleteTexturesProc;
+//static PFNGLDELETETEXTURESEXTPROC glDeleteTexturesProc;
 static PFNGLUNMAPBUFFERPROC glUnmapBufferProc;
 static PFNGLBLENDEQUATIONPROC glBlendEquationProc;
 static PFNGLDELETEBUFFERSPROC glDeleteBuffersProc;
@@ -100,17 +100,17 @@ void OpenGl::init() {
   glRenderbufferStorageProc = reinterpret_cast<PFNGLRENDERBUFFERSTORAGEPROC>(SDL_GL_GetProcAddress("glRenderbufferStorage"));
   glFramebufferRenderbufferProc = reinterpret_cast<PFNGLFRAMEBUFFERRENDERBUFFERPROC>(SDL_GL_GetProcAddress("glFramebufferRenderbuffer"));
   glDrawBuffersProc = reinterpret_cast<PFNGLDRAWBUFFERSPROC>(SDL_GL_GetProcAddress("glDrawBuffers"));
-  glBindTextureProc = reinterpret_cast<PFNGLBINDTEXTUREEXTPROC>(SDL_GL_GetProcAddress("glBindTexture"));
-  glGenTexturesProc = reinterpret_cast<PFNGLGENTEXTURESEXTPROC>(SDL_GL_GetProcAddress("glGenTextures"));
+  //glBindTextureProc = reinterpret_cast<PFNGLBINDTEXTUREEXTPROC>(SDL_GL_GetProcAddress("glBindTexture"));
+  //glGenTexturesProc = reinterpret_cast<PFNGLGENTEXTURESEXTPROC>(SDL_GL_GetProcAddress("glGenTextures"));
   glMapBufferProc = reinterpret_cast<PFNGLMAPBUFFERPROC>(SDL_GL_GetProcAddress("glMapBuffer"));
-  glDeleteTexturesProc = reinterpret_cast<PFNGLDELETETEXTURESEXTPROC>(SDL_GL_GetProcAddress("glDeleteTextures"));
+  //glDeleteTexturesProc = reinterpret_cast<PFNGLDELETETEXTURESEXTPROC>(SDL_GL_GetProcAddress("glDeleteTextures"));
   glUnmapBufferProc = reinterpret_cast<PFNGLUNMAPBUFFERPROC>(SDL_GL_GetProcAddress("glUnmapBuffer"));
   glBlendEquationProc = reinterpret_cast<PFNGLBLENDEQUATIONPROC>(SDL_GL_GetProcAddress("glBlendEquation"));
   glDeleteBuffersProc = reinterpret_cast<PFNGLDELETEBUFFERSPROC>(SDL_GL_GetProcAddress("glDeleteBuffers"));
   glCompressedTexImage2DProc = reinterpret_cast<PFNGLCOMPRESSEDTEXIMAGE2DPROC>(SDL_GL_GetProcAddress("glCompressedTexImage2D"));
 }
 
-GLuint OpenGl::loadDDSTexture(const unsigned char* in_dds, size_t in_size) {
+GLuint OpenGl::loadDDSTexture(const u8* in_dds, i32 in_size) {
   assert(memcmp(in_dds, "DDS ", 4) == 0);
 
   u32 height = (in_dds[12]) | (in_dds[13] << 8) | (in_dds[14] << 16) | (in_dds[15] << 24);
@@ -321,21 +321,21 @@ void glDrawBuffers(GLsizei n, const GLenum* bufs) {
   glDrawBuffersProc(n, bufs);
 }
 
-void glBindTexture(GLenum target, GLuint texture) {
-  glBindTextureProc(target, texture);
-}
-
-void glGenTextures(GLsizei n, GLuint* textures) {
-  glGenTexturesProc(n, textures);
-}
+//void glBindTexture(GLenum target, GLuint texture) {
+//  glBindTextureProc(target, texture);
+//}
+//
+//void glGenTextures(GLsizei n, GLuint* textures) {
+//  glGenTexturesProc(n, textures);
+//}
 
 void* glMapBuffer(GLenum target, GLenum access) {
   return glMapBufferProc(target, access);
 }
 
-void glDeleteTextures(GLsizei n, const GLuint* textures) {
-  glDeleteTexturesProc(n, textures);
-}
+//void glDeleteTextures(GLsizei n, const GLuint* textures) {
+//  glDeleteTexturesProc(n, textures);
+//}
 
 GLboolean glUnmapBuffer(GLenum target) {
   return glUnmapBufferProc(target);

@@ -104,7 +104,7 @@ GLuint Shader::useShader(Shader::Stem shaderStem)
   glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &Global::cameraMat.m00);
 
   mat4 projectionMat;
-  const f32 scale = 1 / tan(Global::settings.cameraFieldOfView * 0.5 * PI / 180);
+  const f32 scale = 1.0f / tanf((Global::settings.cameraFieldOfView * 0.5f * PI) / 180.0f);
   const f32 near_ = 0.1f;
   const f32 far_ = 100.0f;
   projectionMat.m00 = scale;

@@ -29,8 +29,8 @@ static std::vector<u8> decryptSngData(const std::vector<u8>& sngData)
     Rijndael::decrypt(sngKey, &sngData[24 + i], &decrypedData[i], 16, iv);
 
     {
-      bool carry = false;
-      for (i64 j = (sizeof(iv)) - 1, carry = true; j >= 0 && carry; j--)
+      bool carry = true;
+      for (i64 j = (sizeof(iv)) - 1; j >= 0 && carry; j--)
         carry = ((iv[j] = (u8)(iv[j] + 1)) == 0);
     }
   }
@@ -45,7 +45,7 @@ static std::vector<u8> inflateSngPlainText(const std::vector<u8>& decrypedSngDat
   assert(zHeader == 0x78DA || zHeader == 0xDA78); //LE 55928 //BE 30938
 
   std::vector<u8> plainText(plainTextLen);
-  Inflate::inflate(&decrypedSngData[4], decrypedSngData.size() - 4, &plainText[0], plainTextLen);
+  Inflate::inflate(&decrypedSngData[4], i32(decrypedSngData.size() - 4), &plainText[0], plainTextLen);
 
   return plainText;
 }
@@ -501,9 +501,9 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
           j += 4;
           {
             sngInfo.arrangement[i].notes[ii].bendData.resize(bendDataCount);
-            for (i32 ii = 0; ii < bendDataCount; ++ii)
+            for (i32 iii = 0; iii < bendDataCount; ++ii)
             {
-              memcpy(&sngInfo.arrangement[i].notes[ii].bendData, &plainText[j], 2328);
+              memcpy(&sngInfo.arrangement[i].notes[iii].bendData, &plainText[j], 2328);
               j += 2328;
             }
           }

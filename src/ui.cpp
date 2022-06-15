@@ -1726,7 +1726,7 @@ static void gearWindow(bool& showGearWindow, std::vector<Data::Gear::Knob>* knob
 
     nk_layout_row_dynamic(ctx, 22, 2);
 
-    for (i32 i = 0; i < knobs->size(); ++i)
+    for (i32 i = 0; i < i32(knobs->size()); ++i)
     {
       gearWindowRow((*knobs)[i], editGearResult[i]);
     }
@@ -2931,6 +2931,7 @@ static void settingsWindow()
       }
       nk_tree_pop(ctx);
     }
+#ifdef SUPPORT_MIDI
     if (nk_tree_push(ctx, NK_TREE_TAB, "Midi", NK_MINIMIZED))
     {
       nk_layout_row_dynamic(ctx, 140, 1);
@@ -2994,6 +2995,7 @@ static void settingsWindow()
       Global::midiLearnNote = 0xFF;
       nk_tree_pop(ctx);
     }
+#endif // SUPPORT_MIDI
     if (nk_tree_push(ctx, NK_TREE_TAB, "Profile", NK_MINIMIZED))
     {
       nk_layout_row_dynamic(ctx, 22, 2);

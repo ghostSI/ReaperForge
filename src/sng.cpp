@@ -501,7 +501,7 @@ Sng::Info Sng::parse(const std::vector<u8>& sngData)
           j += 4;
           {
             sngInfo.arrangement[i].notes[ii].bendData.resize(bendDataCount);
-            for (i32 iii = 0; iii < bendDataCount; ++ii)
+            for (i32 iii = 0; iii < bendDataCount; ++iii)
             {
               memcpy(&sngInfo.arrangement[i].notes[iii].bendData, &plainText[j], 2328);
               j += 2328;

@@ -208,7 +208,9 @@ int main(int argc, char* argv[]) {
     mainloop();
 #endif // __EMSCRIPTEN__
 
+#ifdef SUPPORT_MIDI
   Midi::fini();
+#endif // SUPPORT_MIDI
   Profile::fini();
   Settings::fini();
   Sound::fini();

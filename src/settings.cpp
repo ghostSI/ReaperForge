@@ -286,6 +286,7 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
     }
   };
 
+#ifdef SUPPORT_MIDI
   for (i32 i = 0; i < NUM(Const::midiBindingsNames); ++i)
   {
     if (Global::settings.midiBinding[i] == 0xFF)
@@ -293,6 +294,7 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
     else
       serializedSettings["Midi"].insert({ std::string("Binding") + Const::midiBindingsNames[i], std::to_string(Global::settings.midiBinding[i]) });
   }
+#endif // SUPPORT_MIDI
 
   return serializedSettings;
 }
@@ -405,7 +407,9 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
       colorVec4(serializedSettings.at("Instrument").at("GuitarStringColor5")),
       colorVec4(serializedSettings.at("Instrument").at("GuitarStringColor6"))
     },
+  #ifdef SUPPORT_MIDI
     .autoConnectDevices = serializedSettings.at("Midi").at("AutoConnectDevices"),
+  #endif // SUPPORT_MIDI
     .psarcPath = serializedSettings.at("Paths").at("Psarc"),
     .vstPath = serializedSettings.at("Paths").at("Vst"),
     .mixerMusicVolume = atoi(serializedSettings.at("Mixer").at("MusicVolume").c_str()),
@@ -415,11 +419,13 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
     .uiScale = f32(atof(serializedSettings.at("Ui").at("Scale").c_str()))
   };
 
+#ifdef SUPPORT_MIDI
   for (i32 i = 0; i < NUM(Const::midiBindingsNames); ++i)
   {
     if (!serializedSettings.at("Midi").at(std::string("Binding") + Const::midiBindingsNames[i]).empty())
       settings.midiBinding[i] = atoi(serializedSettings.at("Midi").at(std::string("Binding") + Const::midiBindingsNames[i]).c_str());
   }
+#endif // SUPPORT_MIDI
 
   return settings;
 }

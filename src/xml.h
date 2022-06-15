@@ -1054,15 +1054,6 @@ namespace pugi
         // Removes all nodes, then copies the entire contents of the specified document
         void reset(const xml_document& proto);
 
-#ifndef PUGIXML_NO_STL
-        // Load document from stream.
-        xml_parse_result load(std::basic_istream<char, std::char_traits<char> >& stream, unsigned int options = parse_default, xml_encoding encoding = encoding_auto);
-        xml_parse_result load(std::basic_istream<wchar_t, std::char_traits<wchar_t> >& stream, unsigned int options = parse_default);
-#endif
-
-        // (deprecated: use load_string instead) Load document from zero-terminated string. No encoding conversions are applied.
-        PUGIXML_DEPRECATED xml_parse_result load(const char_t* contents, unsigned int options = parse_default);
-
         // Load document from zero-terminated string. No encoding conversions are applied.
         xml_parse_result load_string(const char_t* contents, unsigned int options = parse_default);
 

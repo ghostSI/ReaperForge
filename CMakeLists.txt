@@ -45,10 +45,12 @@ set(HEADER_FILES
 		src/json.h
 		src/kiss_fft.h
 		src/manifest.h
+		src/midi.h
 		src/nuklear.h
 		src/ogg.h
         src/opengl.h
         src/pcm.h
+        src/phrases.h
         src/player.h
         src/profile.h
         src/psarc.h
@@ -92,9 +94,11 @@ set(SOURCE_FILES
         src/kiss_fft.cpp
         src/main.cpp
         src/manifest.cpp
+        src/midi.cpp
         src/ogg.cpp
         src/opengl.cpp
         src/pcm.cpp
+        src/phrases.cpp
         src/player.cpp
         src/profile.cpp
         src/psarc.cpp

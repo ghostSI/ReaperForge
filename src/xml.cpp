@@ -7171,22 +7171,6 @@ namespace pugi
 	}
 #endif
 
-#ifndef PUGIXML_NO_STL
-    PUGI__FN xml_parse_result xml_document::load(std::basic_istream<char, std::char_traits<char> >& stream, unsigned int options, xml_encoding encoding)
-    {
-        reset();
-
-        return impl::load_stream_impl(static_cast<impl::xml_document_struct*>(_root), stream, options, encoding, &_buffer);
-    }
-
-    PUGI__FN xml_parse_result xml_document::load(std::basic_istream<wchar_t, std::char_traits<wchar_t> >& stream, unsigned int options)
-    {
-        reset();
-
-        return impl::load_stream_impl(static_cast<impl::xml_document_struct*>(_root), stream, options, encoding_wchar, &_buffer);
-    }
-#endif
-
     PUGI__FN xml_parse_result xml_document::load_string(const char_t* contents, unsigned int options)
     {
         // Force native encoding (skip autodetection)
@@ -7197,11 +7181,6 @@ namespace pugi
 #endif
 
         return load_buffer(contents, impl::strlength(contents) * sizeof(char_t), options, encoding);
-    }
-
-    PUGI__FN xml_parse_result xml_document::load(const char_t* contents, unsigned int options)
-    {
-        return load_string(contents, options);
     }
 
     PUGI__FN xml_parse_result xml_document::load_file(const char* path_, unsigned int options, xml_encoding encoding)

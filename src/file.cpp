@@ -70,7 +70,7 @@ void File::save(const char *filepath, const char *content, size_t len) {
 GLuint File::loadDds(const char *filepath) {
     const std::vector<u8> fileData = File::load(filepath, "rb");
 
-    return OpenGl::loadDDSTexture(fileData.data(), fileData.size());
+    return OpenGl::loadDDSTexture(fileData.data(), i32(fileData.size()));
 }
 
 std::map<std::string, std::map<std::string, std::string>> File::loadIni(const char *filepath) {

@@ -9,7 +9,9 @@
 #include "highway.h"
 #include "input.h"
 #include "installer.h"
+#include "midi.h"
 #include "opengl.h"
+#include "phrases.h"
 #include "player.h"
 #include "profile.h"
 #include "settings.h"
@@ -60,6 +62,7 @@ static void mainloop() {
   { // render frame
     Profile::tick();
     Player::tick();
+    Phrases::tick();
     Highway::tick();
     Camera::tick();
 #ifndef __EMSCRIPTEN__
@@ -77,6 +80,7 @@ static void mainloop() {
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif // __EMSCRIPTEN__
 
+    Phrases::render();
     Highway::render();
     Camera::render();
 #ifndef __EMSCRIPTEN__
@@ -106,22 +110,22 @@ int main(int argc, char* argv[]) {
     SDL_Quit();
   }
 
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 #if defined __EMSCRIPTEN__ || defined FORCE_OPENGL_ES
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 #ifdef _WIN32
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 #endif // _WIN32
-#else
+#else // __EMSCRIPTEN__
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 #endif // __EMSCRIPTEN__
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
   i32 fullScreenFlag;
@@ -180,14 +184,18 @@ int main(int argc, char* argv[]) {
     Global::gameController = SDL_GameControllerOpen(0);
 
   Shader::init();
-  Sound::init();
-  Camera::init();
-  Font::init();
-  Collection::init();
 #ifdef SUPPORT_VST
   Vst::init();
 #endif // SUPPORT_VST
   Profile::init();
+  Sound::init();
+  Camera::init();
+  Font::init();
+  Collection::init();
+#ifdef SUPPORT_MIDI
+  Midi::init();
+#endif // SUPPORT_MIDI
+
 #ifndef __EMSCRIPTEN__
   Ui::init();
 #endif // __EMSCRIPTEN__
@@ -200,6 +208,7 @@ int main(int argc, char* argv[]) {
     mainloop();
 #endif // __EMSCRIPTEN__
 
+  Midi::fini();
   Profile::fini();
   Settings::fini();
   Sound::fini();

@@ -176,4 +176,13 @@ inline void unreachable() {}
 
 #define UNUSED(x) (void)x;
 
+#define ARR_SET2(X)(X),(X)
+#define ARR_SET4(X)ARR_SET2(X),ARR_SET2(X)
+#define ARR_SET8(X)ARR_SET4(X),ARR_SET4(X)
+#define ARR_SET16(X)ARR_SET8(X),ARR_SET8(X)
+#define ARR_SET32(X)ARR_SET16(X),ARR_SET16(X)
+#define ARR_SET64(X)ARR_SET32(X),ARR_SET32(X)
+#define ARR_SET128(X)ARR_SET64(X),ARR_SET64(X)
+#define ARR_SET256(X)ARR_SET128(X),ARR_SET128(X)
+
 #endif // TYPEDEFS_H

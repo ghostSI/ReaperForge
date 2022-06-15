@@ -10,7 +10,7 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
 {
   std::map<std::string, std::map<std::string, std::string>> serializedSaves;
 
-  switch (Global::settings.saveMode)
+  switch (Global::settings.profileSaveMode)
   {
   case SaveMode::statsOnly:
     for (const auto& manifestInfo : manifestInfos)
@@ -95,8 +95,14 @@ static std::string toneAssignmentBase64[2][Const::profileToneAssignmentCount][NU
 static void loadStatsOnly()
 {
   char profileIni[sizeof("profile_") + NUM(Global::profileName) + sizeof(".ini")] = "profile_";
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
   strcat(profileIni, Global::profileName);
   strcat(profileIni, ".ini");
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
 
   if (!File::exists(profileIni))
     return;
@@ -104,10 +110,10 @@ static void loadStatsOnly()
   const std::map<std::string, std::map<std::string, std::string>> serializedSaves = File::loadIni(profileIni);
 
 #ifdef SUPPORT_VST
-  const auto search = serializedSaves.find("!ToneAssignment");
-  if (search != serializedSaves.end())
+  const auto toneAssignmentIt = serializedSaves.find("!ToneAssignment");
+  if (toneAssignmentIt != serializedSaves.end())
   {
-    const std::map<std::string, std::string>& toneAssignment = search->second;
+    const std::map<std::string, std::string>& toneAssignment = toneAssignmentIt->second;
 
     for (i32 h = 0; h < 2; ++h)
     {
@@ -148,14 +154,28 @@ static void loadStatsOnly()
     }
   }
 
-  {
+  { // Load Tone Assignment 0
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
     strcpy(Global::vstToneName, toneAssignmentNames[1][0].c_str());
-    Global::vstToneNameLength = toneAssignmentNames[1][0].size();
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
+    Global::vstToneNameLength = i32(toneAssignmentNames[1][0].size());
+
     for (i32 j = 0; j < NUM(Global::effectChain); ++j)
     {
       Global::effectChain[j] = toneAssignmentIndex[1][0][j];
       if (Global::effectChain[j] >= 0)
-        Vst::loadParameter(j, toneAssignmentBase64[1][0][j]);
+      {
+        i32 instance = 0;
+        for (i32 k = 0; k < j; ++k)
+          if (Global::effectChain[j] == Global::effectChain[k])
+            ++instance;
+
+        Vst::loadParameter(Global::effectChain[j], instance, toneAssignmentBase64[1][0][j]);
+      }
     }
   }
 #endif // SUPPORT_VST
@@ -165,11 +185,11 @@ static void loadStatsOnly()
   {
     for (Manifest::Info& manifestInfo : songInfo.manifestInfos)
     {
-      const auto search = serializedSaves.find(manifestInfo.persistentID);
-      if (search != serializedSaves.end())
+      const auto persistentIdIt = serializedSaves.find(manifestInfo.persistentID);
+      if (persistentIdIt != serializedSaves.end())
       {
-        manifestInfo.lastPlayed = strtoul(search->second.at("LastPlayed").c_str(), nullptr, 0);
-        manifestInfo.score = stof(search->second.at(std::string("Score_") + Global::profileName));
+        manifestInfo.lastPlayed = strtoul(persistentIdIt->second.at("LastPlayed").c_str(), nullptr, 0);
+        manifestInfo.score = stof(persistentIdIt->second.at(std::string("Score_") + Global::profileName));
       }
     }
   }
@@ -177,7 +197,7 @@ static void loadStatsOnly()
 
 void Profile::init()
 {
-  switch (Global::settings.saveMode)
+  switch (Global::settings.profileSaveMode)
   {
   case SaveMode::statsOnly:
     loadStatsOnly();
@@ -200,14 +220,27 @@ void Profile::tick()
 
     if (instrumentLastFrame == Global::currentInstrument)
       toneAssignmentNames[h][vstToneAssignmentLastFrame] = Global::vstToneName;
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
     strcpy(Global::vstToneName, toneAssignmentNames[h][Global::vstToneAssignment].c_str());
-    Global::vstToneNameLength = toneAssignmentNames[h][Global::vstToneAssignment].size();
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
+    Global::vstToneNameLength = i32(toneAssignmentNames[h][Global::vstToneAssignment].size());
     Global::toneAssignment = Global::time;
     for (i32 i = 0; i < NUM(Global::effectChain); ++i)
     {
       Global::effectChain[i] = toneAssignmentIndex[h][Global::vstToneAssignment][i];
       if (Global::effectChain[i] != -1)
-        Vst::loadParameter(i, toneAssignmentBase64[h][Global::vstToneAssignment][i]);
+      {
+        i32 instance = 0;
+        for (i32 j = 0; j < i; ++j)
+          if (Global::effectChain[i] == Global::effectChain[j])
+            ++instance;
+
+        Vst::loadParameter(i, instance, toneAssignmentBase64[h][Global::vstToneAssignment][i]);
+      }
     }
   }
 
@@ -251,8 +284,15 @@ static void saveStatsOnly()
   }
 
   char profileIni[sizeof("profile_") + NUM(Global::profileName) + sizeof(".ini")] = "profile_";
+
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
   strcat(profileIni, Global::profileName);
   strcat(profileIni, ".ini");
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
 
   File::saveIni(profileIni, serializedSaves);
 }
@@ -268,15 +308,22 @@ static void saveWholeManifest()
   }
 
   char profileIni[sizeof("profile_") + NUM(Global::profileName) + sizeof(".ini")] = "profile_";
+
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
   strcat(profileIni, Global::profileName);
   strcat(profileIni, ".ini");
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
 
   File::saveIni(profileIni, serializedSaves);
 }
 
 void Profile::fini()
 {
-  switch (Global::settings.saveMode)
+  switch (Global::settings.profileSaveMode)
   {
   case SaveMode::statsOnly:
     saveStatsOnly();
@@ -293,11 +340,19 @@ void Profile::saveTone()
   const i32 h = Global::currentInstrument == InstrumentFlags::BassGuitar ? 0 : 1;
 
   toneAssignmentNames[h][Global::vstToneAssignment] = std::string(Global::vstToneName);
+  std::vector<i32> instances(Global::vstPluginNames.size());
   for (i32 i = 0; i < NUM(Global::effectChain); ++i)
   {
     toneAssignmentIndex[h][Global::vstToneAssignment][i] = Global::effectChain[i];
     if (Global::effectChain[i] >= 0)
-      toneAssignmentBase64[h][Global::vstToneAssignment][i] = Vst::saveParameters(Global::effectChain[i]);
+    {
+      i32 instance = 0;
+      for (i32 j = 0; j < i; ++j)
+        if (Global::effectChain[i] == Global::effectChain[j])
+          ++instance;
+
+      toneAssignmentBase64[h][Global::vstToneAssignment][i] = Vst::saveParameters(Global::effectChain[i], instance);
+    }
   }
 }
 #endif // SUPPORT_VST

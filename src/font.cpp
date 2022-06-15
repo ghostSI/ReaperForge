@@ -10,7 +10,7 @@
 static std::vector<u32> fretNumberBitmap[25];
 static std::vector<u32> noteNameFlatBitmap[12];
 
-static std::vector<u32> createTextBitmap(const char* text, u64 letters)
+static std::vector<u32> createTextBitmap(const char* text, i32 letters)
 {
   std::vector<u32> textBitmap;
 
@@ -49,18 +49,24 @@ void Font::init()
   for (i32 i = 0; i <= 24; ++i)
   {
     char fretNumber[3];
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
     sprintf(fretNumber, "%d", i);
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
 
     fretNumberBitmap[i] = createTextBitmap(fretNumber, i >= 10 ? 2 : 1);
   }
 
   for (i32 i = 0; i < 12; ++i)
   {
-    noteNameFlatBitmap[i] = createTextBitmap(Const::notesFlat[i], strlen(Const::notesFlat[i]));
+    noteNameFlatBitmap[i] = createTextBitmap(Const::notesFlat[i], i32(strlen(Const::notesFlat[i])));
   }
 }
 
-static void drawBitmap(const std::vector<u32>& textBitmap, u64 letters, f32 posX, f32 posY, f32 posZ, f32 scaleX, f32 scaleY)
+static void drawBitmap(const std::vector<u32>& textBitmap, i32 letters, f32 posX, f32 posY, f32 posZ, f32 scaleX, f32 scaleY)
 {
   const f32 left = posX - scaleX;
   const f32 top = posY - scaleY;
@@ -96,7 +102,7 @@ static void drawBitmap(const std::vector<u32>& textBitmap, u64 letters, f32 posX
 
 void Font::draw(const char* text, f32 posX, f32 posY, f32 posZ, f32 scaleX, f32 scaleY)
 {
-  const u64 letters = strlen(text);
+  const i32 letters = i32(strlen(text));
 
   const std::vector<u32> textBitmap = createTextBitmap(text, letters);
 
@@ -108,7 +114,7 @@ void Font::drawFretNumber(i32 fretNumber, f32 posX, f32 posY, f32 posZ, f32 scal
   assert(fretNumber >= 0);
   assert(fretNumber < 25);
 
-  const u64 letters = fretNumber >= 10 ? 2 : 1;
+  const i32 letters = fretNumber >= 10 ? 2 : 1;
 
   drawBitmap(fretNumberBitmap[fretNumber], letters, posX, posY, posZ, scaleX, scaleY);
 }
@@ -118,7 +124,7 @@ void Font::drawNoteNameFlat(i32 note, f32 posX, f32 posY, f32 posZ, f32 scaleX, 
   assert(note >= 0);
   assert(note < 12);
 
-  const u64 letters = strlen(Const::notesFlat[note]);
+  const i32 letters = i32(strlen(Const::notesFlat[note]));
 
   drawBitmap(noteNameFlatBitmap[note], letters, posX, posY, posZ, scaleX, scaleY);
 }

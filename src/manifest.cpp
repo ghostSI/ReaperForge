@@ -60,14 +60,14 @@ static void readAttribute(Json::object_element* it, Manifest::Info& manifestInfo
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.capoFret = atof(number->number);
+    manifestInfo.capoFret = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "CentOffset"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.capoFret = atof(number->number);
+    manifestInfo.capoFret = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "DLC"))
@@ -87,28 +87,28 @@ static void readAttribute(Json::object_element* it, Manifest::Info& manifestInfo
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.dNA_Chords = atof(number->number);
+    manifestInfo.dNA_Chords = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "DNA_Riffs"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.dNA_Riffs = atof(number->number);
+    manifestInfo.dNA_Riffs = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "DNA_Solo"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.dNA_Solo = atof(number->number);
+    manifestInfo.dNA_Solo = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "EasyMastery"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.easyMastery = atof(number->number);
+    manifestInfo.easyMastery = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "LeaderboardChallengeRating"))
@@ -143,28 +143,28 @@ static void readAttribute(Json::object_element* it, Manifest::Info& manifestInfo
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.mediumMastery = atof(number->number);
+    manifestInfo.mediumMastery = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "NotesEasy"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.notesEasy = atof(number->number);
+    manifestInfo.notesEasy = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "NotesHard"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.notesHard = atof(number->number);
+    manifestInfo.notesHard = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "NotesMedium"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.notesMedium = atof(number->number);
+    manifestInfo.notesMedium = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "Representative"))
@@ -198,28 +198,28 @@ static void readAttribute(Json::object_element* it, Manifest::Info& manifestInfo
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.notesMedium = atof(number->number);
+    manifestInfo.notesMedium = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "SongDiffHard"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.notesMedium = atof(number->number);
+    manifestInfo.notesMedium = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "SongDiffMed"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.notesMedium = atof(number->number);
+    manifestInfo.notesMedium = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "SongDifficulty"))
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.notesMedium = atof(number->number);
+    manifestInfo.notesMedium = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "SongKey"))
@@ -233,7 +233,7 @@ static void readAttribute(Json::object_element* it, Manifest::Info& manifestInfo
   {
     assert(it->value->type == Json::type_number);
     Json::number* number = (Json::number*)it->value->payload;
-    manifestInfo.songLength = atof(number->number);
+    manifestInfo.songLength = f32(atof(number->number));
     return;
   }
   if (0 == strcmp(it->name->string, "SongName"))
@@ -436,22 +436,22 @@ static void readGear(Json::object_element* it, Manifest::Tone::GearList::Gear& g
   {
     assert(0 == strcmp(it2->name->string, "KnobValues"));
 
-    Json::value* entries_value = it2->value;
-    assert(entries_value->type == Json::type_object);
+    Json::value* knobValues_value = it2->value;
+    assert(knobValues_value->type == Json::type_object);
 
-    Json::object* id_o = (Json::object*)entries_value->payload;
+    Json::object* knobValues_o = (Json::object*)knobValues_value->payload;
 
-    if (id_o->length >= 1)
+    if (knobValues_o->length >= 1)
     {
-      Json::object_element* it = id_o->start;
+      Json::object_element* knobValues_it = knobValues_o->start;
       do
       {
-        Json::number* value = (Json::number*)it->value->payload;
+        Json::number* value = (Json::number*)knobValues_it->value->payload;
         Manifest::Tone::GearList::Gear::KnobValue knobValue;
-        knobValue.name = it->name->string;
-        knobValue.value = atof(value->number);
+        knobValue.name = knobValues_it->name->string;
+        knobValue.value = f32(atof(value->number));
         gear.knobValues.push_back(knobValue);
-      } while (it = it->next);
+      } while (knobValues_it = knobValues_it->next);
     }
   }
   it2 = it2->next;
@@ -517,10 +517,10 @@ static void readTone(Json::object_element* it, Manifest::Tone& tone)
     Json::value* attribute = it->value;
     assert(attribute->type == Json::type_object);
 
-    Json::object* arr = (Json::object*)attribute->payload;
+    Json::object* attribute_o = (Json::object*)attribute->payload;
 
-    Json::object_element* it = arr->start;
-    readGearList(it, tone.gearList);
+    Json::object_element* attribute_it = attribute_o->start;
+    readGearList(attribute_it, tone.gearList);
     return;
   }
   if (0 == strcmp(it->name->string, "IsCustom"))
@@ -533,7 +533,7 @@ static void readTone(Json::object_element* it, Manifest::Tone& tone)
   {
     assert(it->value->type == Json::type_string);
     Json::string* string = (Json::string*)it->value->payload;
-    tone.volume = atof(string->string);
+    tone.volume = f32(atof(string->string));
     return;
   }
   if (0 == strcmp(it->name->string, "ToneDescriptors"))
@@ -573,7 +573,7 @@ static void readTone(Json::object_element* it, Manifest::Tone& tone)
   {
     assert(it->value->type == Json::type_number);
     Json::string* string = (Json::string*)it->value->payload;
-    tone.sortOrder = atof(string->string);
+    tone.sortOrder = f32(atof(string->string));
     return;
   }
 }
@@ -598,8 +598,6 @@ std::vector<Manifest::Tone> Manifest::readJson(const std::vector<u8>& jsonData)
 
   Json::object_element* persistentId = id_o->start;
 
-  //assert(0 == strcmp(persistentId->name->string, "887710005D5C4A42A788F2BBA5FD9A41"));
-
   Json::value* persistentId_value = persistentId->value;
   assert(persistentId_value->type == Json::type_object);
 
@@ -623,13 +621,13 @@ std::vector<Manifest::Tone> Manifest::readJson(const std::vector<u8>& jsonData)
   {
     if (0 == strcmp(it->name->string, "Tones"))
     {
-      Json::value* itValue = it->value;
+      Json::value* tones_value = it->value;
 
-      assert(itValue->type == Json::type_array);
+      assert(tones_value->type == Json::type_array);
 
-      Json::array* arr = (Json::array*)itValue->payload;
+      Json::array* tones_arr = (Json::array*)tones_value->payload;
 
-      Json::array_element* it2 = arr->start;
+      Json::array_element* it2 = tones_arr->start;
 
       Json::value* arrValue = it2->value;
 

@@ -930,7 +930,7 @@ static void songInfoTest(const Psarc::Info& psarcInfo)
 static void pcmTest(const std::vector<u8>& ogg)
 {
   u8* pcmData = nullptr;
-  u32 pcmDataSize;
+  u64 pcmDataSize;
   const i32 sampleRate = Pcm::decodeOgg(ogg.data(), ogg.size(), &pcmData, pcmDataSize);
   assert(pcmDataSize == 3568128);
   assert(sampleRate == 48000);

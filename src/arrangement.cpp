@@ -9,7 +9,7 @@ Arrangement::Info Arrangement::readArrangement(const std::vector<u8>& arrangemen
   Arrangement::Info arrangementInfo;
 
   pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load(reinterpret_cast<const char*>(arrangementData.data()));
+  pugi::xml_parse_result result = doc.load_string(reinterpret_cast<const char*>(arrangementData.data()));
   assert(result.status == pugi::status_ok);
 
   pugi::xml_node root = doc.child("song");
@@ -28,7 +28,7 @@ Arrangement::Info Arrangement::readArrangement(const std::vector<u8>& arrangemen
   arrangementInfo.artist = root.child("artistName").text().as_string();
   arrangementInfo.albumName = root.child("albumName").text().as_string();
   arrangementInfo.albumYear = root.child("albumYear").text().as_int();
-  arrangementInfo.songLength = root.child("songLength").text().as_int();
+  arrangementInfo.songLength = root.child("songLength").text().as_float();
 
   pugi::xml_node arrangementProperties = root.child("arrangementProperties");
   arrangementInfo.arrangementProperties.represent = arrangementProperties.attribute("represent").as_bool();

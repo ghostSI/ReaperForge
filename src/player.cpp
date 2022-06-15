@@ -40,14 +40,21 @@ static void loadAudio(const Psarc::Info& psarcInfo, bool preview)
     const u32 wemFileId = readWemFileIdFromBnkFile(tocEntry.content.data(), tocEntry.content.size());
 
     char wemFileName[40];
-    sprintf(wemFileName, "%u.wem", wemFileId);
 
-    for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries)
+#ifdef _WIN32
+#pragma warning( disable: 4996 ) // ignore msvc unsafe warning
+#endif // _WIN32
+    sprintf(wemFileName, "%u.wem", wemFileId);
+#ifdef _WIN32
+#pragma warning( default: 4996 )
+#endif // _WIN32
+
+    for (const Psarc::Info::TOCEntry& tocEntry2 : psarcInfo.tocEntries)
     {
-      if (!tocEntry.name.ends_with(wemFileName))
+      if (!tocEntry2.name.ends_with(wemFileName))
         continue;
      
-      const std::vector<u8> ogg = Wem::to_ogg(tocEntry.content.data(), tocEntry.length);
+      const std::vector<u8> ogg = Wem::to_ogg(tocEntry2.content.data(), tocEntry2.length);
       i32 sampleRate = Pcm::decodeOgg(ogg.data(), ogg.size(), &Global::musicBuffer, Global::musicBufferLength);
       Pcm::resample(&Global::musicBuffer, Global::musicBufferLength, sampleRate, Global::settings.audioSampleRate);
 
@@ -78,7 +85,6 @@ static void playSongEmscripten()
 static f32 quickRepeaterBeginTime = 0.0f;
 static f32 quickRepeaterEndTime = 0.0f;
 static u8* quickRepeaterMusicBufferPosition = nullptr;
-static u32 quickRepeaterMusicRemainingLength = 0;
 
 static void quickRepeater()
 {
@@ -88,7 +94,6 @@ static void quickRepeater()
     {
       quickRepeaterBeginTime = Global::musicTimeElapsed;
       quickRepeaterMusicBufferPosition = Global::musicBufferPosition;
-      quickRepeaterMusicRemainingLength = Global::musicBufferRemainingLength;
     }
     else
     {
@@ -107,7 +112,6 @@ static void quickRepeater()
     Global::musicTimeElapsed = quickRepeaterBeginTime;
 
     Global::musicBufferPosition = quickRepeaterMusicBufferPosition;
-    Global::musicBufferRemainingLength = quickRepeaterMusicRemainingLength;
   }
 }
 
@@ -118,7 +122,6 @@ void Player::tick()
   if (playNextTick)
   {
     Global::musicBufferPosition = Global::musicBuffer;
-    Global::musicBufferRemainingLength = Global::musicBufferLength;
     if (!previewPlaying)
     {
       Global::musicTimeElapsed = 0.0f;

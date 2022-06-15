@@ -143,7 +143,7 @@ static bool parseCommandLineArgs(int argc, char* argv[]) {
 
 static std::map<std::string, std::map<std::string, std::string>> serialize(const Settings::Info& settings)
 {
-  const std::map<std::string, std::map<std::string, std::string>> serializedSettings =
+  std::map<std::string, std::map<std::string, std::string>> serializedSettings =
   {
     {
       "Audio",
@@ -249,6 +249,12 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
       }
     },
     {
+      "Midi",
+      {
+        { "AutoConnectDevices", settings.autoConnectDevices },
+      }
+    },
+    {
       "Paths",
       {
         { "Psarc", settings.psarcPath },
@@ -267,9 +273,9 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
       }
     },
     {
-      "Save",
+      "Profile",
       {
-        { "Mode", std::to_string(to_underlying(settings.saveMode)) }
+        { "SaveMode", std::to_string(to_underlying(settings.profileSaveMode)) }
       }
     },
     {
@@ -279,6 +285,14 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
       }
     }
   };
+
+  for (i32 i = 0; i < NUM(Const::midiBindingsNames); ++i)
+  {
+    if (Global::settings.midiBinding[i] == 0xFF)
+      serializedSettings["Midi"].insert({ std::string("Binding") + Const::midiBindingsNames[i], "" });
+    else
+      serializedSettings["Midi"].insert({ std::string("Binding") + Const::midiBindingsNames[i], std::to_string(Global::settings.midiBinding[i]) });
+  }
 
   return serializedSettings;
 }
@@ -319,7 +333,7 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
       colorVec4(serializedSettings.at("Highway").at("ChordBoxColor1"))
     },
     .highwayChordNameColor = colorVec4(serializedSettings.at("Highway").at("ChordNameColor")),
-    .highwayDetectorColor = colorVec4(serializedSettings.at("Highway").at("LyricsColor1")),
+    .highwayDetectorColor = colorVec4(serializedSettings.at("Highway").at("DetectorColor")),
     .highwayEbeat = bool(atoi(serializedSettings.at("Highway").at("Ebeat").c_str())),
     .highwayEbeatColor = {
       colorVec4(serializedSettings.at("Highway").at("EbeatColor0")),
@@ -391,17 +405,21 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
       colorVec4(serializedSettings.at("Instrument").at("GuitarStringColor5")),
       colorVec4(serializedSettings.at("Instrument").at("GuitarStringColor6"))
     },
+    .autoConnectDevices = serializedSettings.at("Midi").at("AutoConnectDevices"),
     .psarcPath = serializedSettings.at("Paths").at("Psarc"),
     .vstPath = serializedSettings.at("Paths").at("Vst"),
     .mixerMusicVolume = atoi(serializedSettings.at("Mixer").at("MusicVolume").c_str()),
     .mixerGuitar1Volume = atoi(serializedSettings.at("Mixer").at("Guitar1Volume").c_str()),
     .mixerBass1Volume = atoi(serializedSettings.at("Mixer").at("Bass1Volume").c_str()),
-    .mixerGuitar2Volume = atoi(serializedSettings.at("Mixer").at("Guitar2Volume").c_str()),
-    .mixerBass2Volume = atoi(serializedSettings.at("Mixer").at("Bass2Volume").c_str()),
-    .mixerMicrophoneVolume = atoi(serializedSettings.at("Mixer").at("MicrophoneVolume").c_str()),
-    .saveMode = SaveMode(atoi(serializedSettings.at("Save").at("Mode").c_str())),
+    .profileSaveMode = SaveMode(atoi(serializedSettings.at("Profile").at("SaveMode").c_str())),
     .uiScale = f32(atof(serializedSettings.at("Ui").at("Scale").c_str()))
   };
+
+  for (i32 i = 0; i < NUM(Const::midiBindingsNames); ++i)
+  {
+    if (!serializedSettings.at("Midi").at(std::string("Binding") + Const::midiBindingsNames[i]).empty())
+      settings.midiBinding[i] = atoi(serializedSettings.at("Midi").at(std::string("Binding") + Const::midiBindingsNames[i]).c_str());
+  }
 
   return settings;
 }

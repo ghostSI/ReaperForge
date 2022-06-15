@@ -4,13 +4,13 @@
 #include "data.h"
 #include "global.h"
 #include "installer.h"
+#include "midi.h"
 #include "opengl.h"
 #include "player.h"
 #include "profile.h"
 #include "shader.h"
 #include "sound.h"
 #include "vst.h"
-
 
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_DEFAULT_FONT
@@ -1949,7 +1949,7 @@ static void toneWindow()
 static void vstWindow()
 {
   const Rect rect = Vst::getWindowRect(Global::vstWindow);
-  if (bool show = nk_begin(ctx, "VST", nk_rect(100, 100, rect.right + 2, rect.bottom + 30),
+  if (bool show = nk_begin(ctx, "VST-Effect", nk_rect(400, 120, rect.right + 2, rect.bottom + 30),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE |
     NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
@@ -1993,7 +1993,7 @@ static void effectsWindow()
   static i32 selectedEffect = -1;
   i32 unusedVar = 1;
 
-  if (Global::effectsWindow = nk_begin(ctx, "Effects", nk_rect(100, 100, 400, 500),
+  if (Global::effectsWindow = nk_begin(ctx, "VST", nk_rect(100, 100, 400, 500),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE |
     NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
@@ -2038,7 +2038,12 @@ static void effectsWindow()
             else
             {
               Global::vstWindow = Global::effectChain[i];
-              Vst::openWindow(Global::vstWindow);
+              i32 instance = 0;
+              for (i32 j = 0; j < i; ++j)
+                if (Global::effectChain[i] == Global::effectChain[j])
+                  ++instance;
+
+              Vst::openWindow(Global::vstWindow, instance);
             }
           }
           else
@@ -2241,8 +2246,8 @@ static std::vector<i32> sortManifestIndices(const std::vector<Manifest::Info>& m
   return sortedIndex;
 }
 
-static void songWindow() {
-
+static void songWindow()
+{
   if (nk_begin(ctx, "Songs", nk_rect(300, 30, 695, 710), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR))
   {
     nk_layout_row_template_begin(ctx, 22);
@@ -2251,8 +2256,8 @@ static void songWindow() {
     nk_layout_row_template_push_static(ctx, 47);
     nk_layout_row_template_push_dynamic(ctx);
     nk_layout_row_template_push_static(ctx, 35);
-    nk_layout_row_template_push_static(ctx, 30);
-    nk_layout_row_template_push_static(ctx, 50);
+    nk_layout_row_template_push_static(ctx, 20);
+    nk_layout_row_template_push_static(ctx, 48);
     nk_layout_row_template_end(ctx);
 
     { // current Instrument Selection
@@ -2342,7 +2347,7 @@ static void songWindow() {
               if (songInfo.albumCover128_ogl == 0 && songInfo.albumCover128_tocIndex >= 1)
                 songInfo.albumCover128_ogl = OpenGl::loadDDSTexture(
                   Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.data(),
-                  Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.size());
+                  i32(Global::psarcInfos[i].tocEntries[songInfo.albumCover128_tocIndex].content.size()));
 
               if (songInfo.albumCover128_ogl != 0)
                 thumbnail = nk_image_id((int)songInfo.albumCover128_ogl);
@@ -2407,7 +2412,7 @@ static void songWindow() {
 
                 nk_label(ctx, songLength, NK_TEXT_LEFT);
               }
-              nk_label(ctx, "Score:       98.4%", NK_TEXT_LEFT);
+              nk_label(ctx, "Score:       0.0%", NK_TEXT_LEFT);
               nk_spacing(ctx, 1);
               nk_label(ctx, "Tuning:", NK_TEXT_LEFT);
               nk_label(ctx, Song::tuningName(songInfo.manifestInfos[manifestIndex].tuning), NK_TEXT_LEFT);
@@ -2450,8 +2455,8 @@ static void songWindow() {
 
 static void settingsWindow()
 {
-  if (nk_begin(ctx, "Settings", nk_rect(30, 30, 250, 480), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
-
+  if (nk_begin(ctx, "Settings", nk_rect(30, 30, 250, 480), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
+  {
     if (nk_tree_push(ctx, NK_TREE_TAB, "Audio", NK_MINIMIZED)) {
       nk_layout_row_dynamic(ctx, 22, 2);
       {
@@ -2926,16 +2931,80 @@ static void settingsWindow()
       }
       nk_tree_pop(ctx);
     }
-    if (nk_tree_push(ctx, NK_TREE_TAB, "Saves", NK_MINIMIZED)) {
+    if (nk_tree_push(ctx, NK_TREE_TAB, "Midi", NK_MINIMIZED))
+    {
+      nk_layout_row_dynamic(ctx, 140, 1);
+      {
+        if (nk_group_begin(ctx, "Devices", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
+        {
+          nk_layout_row_dynamic(ctx, 18, 1);
+          for (i32 i = 0; i < Global::midiDeviceCount; ++i)
+          {
+            bool wasSelected = Global::connectedDevices[i];
+            nk_selectable_label(ctx, (Global::connectedDevices[i]) ? (Global::midiDeviceNames[i] + " [connected]").c_str() : Global::midiDeviceNames[i].c_str(), NK_TEXT_LEFT, &Global::connectedDevices[i]);
+            if (!wasSelected && Global::connectedDevices[i])
+            {
+              Midi::openDevice(i);
+            }
+            else if (wasSelected && !Global::connectedDevices[i])
+            {
+              Midi::closeDevice(i);
+            }
+          }
+          nk_group_end(ctx);
+        }
+      }
+
+      nk_layout_row_template_begin(ctx, 22);
+      nk_layout_row_template_push_dynamic(ctx);
+      nk_layout_row_template_push_static(ctx, 60);
+      nk_layout_row_template_push_static(ctx, 25);
+      nk_layout_row_template_end(ctx);
+
+      static i32 learnSlot = 0;
+      for (i32 i = 0; i < NUM(Const::midiBindingsNames); ++i)
+      {
+        nk_label(ctx, Const::midiBindingsNames[i], NK_TEXT_LEFT);
+
+        if (Global::settings.midiBinding[i] >= 0 && Global::settings.midiBinding[i] <= 127)
+        {
+          if (nk_button_label(ctx, std::to_string(Global::settings.midiBinding[i]).c_str()))
+            learnSlot = i;
+          if (nk_button_label(ctx, "X"))
+          {
+            Global::midiNoteBinding[Global::settings.midiBinding[i]] = 0xFF;
+            Global::settings.midiBinding[i] = 0xFF;
+          }
+        }
+        else
+        {
+          if (nk_button_label(ctx, "Learn"))
+            learnSlot = i;
+          nk_spacing(ctx, 1);
+        }
+      }
+
+      if (learnSlot != -1 && Global::midiLearnNote >= 0 && Global::midiLearnNote <= 127)
+      {
+        Global::settings.midiBinding[learnSlot] = Global::midiLearnNote;
+        Global::midiNoteBinding[Global::midiLearnNote] = learnSlot;
+        learnSlot = -1;
+      }
+
+      Global::midiLearnNote = 0xFF;
+      nk_tree_pop(ctx);
+    }
+    if (nk_tree_push(ctx, NK_TREE_TAB, "Profile", NK_MINIMIZED))
+    {
       nk_layout_row_dynamic(ctx, 22, 2);
       {
-        nk_label(ctx, "Save and Cache", NK_TEXT_LEFT);
+        nk_label(ctx, "Save Mode", NK_TEXT_LEFT);
         static const char* saveModeNames[] = {
           "None",
           "Stats only",
           "Whole manifest"
         };
-        Global::settings.saveMode = SaveMode(nk_combo(ctx, saveModeNames, NUM(saveModeNames), to_underlying(Global::settings.saveMode), 25, nk_vec2(200, 200)));
+        Global::settings.profileSaveMode = SaveMode(nk_combo(ctx, saveModeNames, NUM(saveModeNames), to_underlying(Global::settings.profileSaveMode), 25, nk_vec2(200, 200)));
         nk_label(ctx, "Profile Name", NK_TEXT_LEFT);
         {
           i32 textlen = strlen(Global::profileName);
@@ -3007,6 +3076,7 @@ void Ui::tick() {
   if (Global::effectsWindow)
     effectsWindow();
 #endif // SUPPORT_VST
+
   if (Global::helpWindow)
     helpWindow();
 }

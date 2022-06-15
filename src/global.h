@@ -37,7 +37,7 @@ namespace Const {
       .v2 = -9.16f
     };
     inline constexpr f32 highwayMaxFutureTime = -10.0f;
-    inline constexpr f32 highwayNoteDetectionTimeOffset = 0.4f;
+    inline constexpr f32 highwayNoteDetectionTimeOffset = 0.1f;
     inline constexpr f32 highwayTremoloFrequency = 0.04f;
     inline constexpr f32 highwayLeftHandPreTime = -2.0f;
     inline constexpr f32 highwayDrawSongInfoStartTime = 1.0f;
@@ -128,6 +128,28 @@ namespace Const {
     inline constexpr i32 soundMaxCount = 8;
     inline constexpr i32 gearMaxKnobs = 10;
     inline constexpr i32 profileToneAssignmentCount = 10;
+#ifdef SUPPORT_MIDI
+    inline constexpr i32 midiMaxDeviceCount = 32;
+    inline constexpr const char* midiBindingsNames[] = {
+      "MixerMusicVolume",
+      "MixerGuitar1Volume",
+      "MixerBass1Volume",
+      "MixerGuitar2Volume",
+      "HighwayBackgroundColor.v0",
+      "HighwayBackgroundColor.v1",
+      "HighwayBackgroundColor.v2",
+      "ToneAssignment0",
+      "ToneAssignment1",
+      "ToneAssignment2",
+      "ToneAssignment3",
+      "ToneAssignment4",
+      "ToneAssignment5",
+      "ToneAssignment6",
+      "ToneAssignment7",
+      "ToneAssignment8",
+      "ToneAssignment9"
+    };
+#endif // SUPPORT_MIDI
 }
 
 namespace Global {
@@ -155,6 +177,8 @@ namespace Global {
     extern KeyInput inputWireframe;
     extern KeyInput inputDebug;
     extern KeyInput inputEsc;
+    extern KeyInput inputLmb;
+    extern KeyInput inputRmb;
     extern KeyInput debugCamera;
     extern KeyInput quickRepeater;
 
@@ -175,9 +199,8 @@ namespace Global {
     extern Song::Track songTrack;
     extern std::vector<Song::Vocal> songVocals;
     extern u8* musicBuffer;
-    extern u32 musicBufferLength;
+    extern u64 musicBufferLength;
     extern u8* musicBufferPosition;
-    extern u32 musicBufferRemainingLength;
     extern f32 musicTimeElapsed;
     extern f32 musicSpeedMultiplier;
     extern char searchText[256];
@@ -194,6 +217,13 @@ namespace Global {
     extern char vstToneName[256];
     extern i32 vstToneNameLength;
 #endif // SUPPORT_VST
+#ifdef SUPPORT_MIDI
+    extern i32 midiDeviceCount;
+    extern i32 connectedDevices[Const::midiMaxDeviceCount];
+    extern std::string midiDeviceNames[Const::midiMaxDeviceCount];
+    extern u8 midiLearnNote;
+    extern u8 midiNoteBinding[128];
+#endif // SUPPORT_MIDI
     
     extern Settings::Info settings;
 

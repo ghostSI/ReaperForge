@@ -364,12 +364,9 @@ class Bit_oggstream {
   uint32_t seqno;
 
 public:
-  class Weird_char_size {};
 
   Bit_oggstream(std::ostream& _os) :
     os(_os), bit_buffer(0), bits_stored(0), payload_bytes(0), first(true), continued(false), granule(0), seqno(0) {
-    if (std::numeric_limits<unsigned char>::digits != 8)
-      assert(false); // Weird_char_size();
   }
 
   void put_bit(bool bit) {
@@ -480,12 +477,10 @@ class Bit_stream {
   unsigned long total_bits_read;
 
 public:
-  class Weird_char_size {};
+  //class Weird_char_size {};
   class Out_of_bits {};
 
   Bit_stream(std::istream& _is) : is(_is), bit_buffer(0), bits_left(0), total_bits_read(0) {
-    if (std::numeric_limits<unsigned char>::digits != 8)
-      assert(false); // Weird_char_size();
   }
   bool get_bit() {
     if (bits_left == 0) {
@@ -533,7 +528,7 @@ class codebook_library
 {
   char* codebook_data;
   long* codebook_offsets;
-  long codebook_count;
+  i32 codebook_count;
 
   // Intentionally undefined
   codebook_library& operator=(const codebook_library& rhs);
@@ -6883,11 +6878,11 @@ codebook_library::codebook_library(const string& filename)
   if (!is) assert(false); // File_open_error(filename);
 
   is.seekg(0, ios::end);
-  long file_size = is.tellg();
+  const i64 file_size = is.tellg();
 
   is.seekg(file_size - 4, ios::beg);
-  long offset_offset = read_32_le(is);
-  codebook_count = (file_size - offset_offset) / 4;
+  const i32 offset_offset = read_32_le(is);
+  codebook_count = i32((file_size - offset_offset) / 4);
 
   codebook_data = new char[offset_offset];
   codebook_offsets = new long[codebook_count];
@@ -7215,7 +7210,7 @@ class Wwise_RIFF_Vorbis
   string _file_name;
   string _codebooks_name;
   ifstream _infile;
-  long _file_size;
+  i64 _file_size;
 
   bool _little_endian;
 
@@ -7835,7 +7830,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
     os << vhead;
 
     static const char vendor[] = "converted from Audiokinetic Wwise by ww2ogg 0.24";
-    Bit_uint<32> vendor_size(strlen(vendor));
+    Bit_uint<32> vendor_size(u32(strlen(vendor)));
 
     os << vendor_size;
     for (unsigned int i = 0; i < vendor_size; i++) {
@@ -7862,7 +7857,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
       loop_end_str << "LoopEnd=" << _loop_end;
 
       Bit_uint<32> loop_start_comment_length;
-      loop_start_comment_length = loop_start_str.str().length();
+      loop_start_comment_length = u32(loop_start_str.str().length());
       os << loop_start_comment_length;
       for (unsigned int i = 0; i < loop_start_comment_length; i++)
       {
@@ -7871,7 +7866,7 @@ void Wwise_RIFF_Vorbis::generate_ogg_header(Bit_oggstream& os, bool*& mode_block
       }
 
       Bit_uint<32> loop_end_comment_length;
-      loop_end_comment_length = loop_end_str.str().length();
+      loop_end_comment_length = u32(loop_end_str.str().length());
       os << loop_end_comment_length;
       for (unsigned int i = 0; i < loop_end_comment_length; i++)
       {
@@ -8662,9 +8657,9 @@ std::vector<u8> Wem::to_ogg(const u8* data, u64 size)
 {
   ww2ogg_options opt;
 
-  const auto in_filename = filesystem::temp_directory_path() / filesystem::u8path("reaperForgeInput.wem");
-  const auto out_filename = filesystem::temp_directory_path() / filesystem::u8path("reaperForgeOutput.ogg");
-  const auto codebook_filename = filesystem::temp_directory_path() / filesystem::u8path("reaperForgeCodebook.ogg");
+  const auto in_filename = filesystem::temp_directory_path() / filesystem::path("reaperForgeInput.wem");
+  const auto out_filename = filesystem::temp_directory_path() / filesystem::path("reaperForgeOutput.ogg");
+  const auto codebook_filename = filesystem::temp_directory_path() / filesystem::path("reaperForgeCodebook.ogg");
 
   opt.in_filename = in_filename.string();
   opt.out_filename = out_filename.string();

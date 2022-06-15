@@ -129,18 +129,24 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
   SDL_memset(stream, 0, len);
 #ifdef SUPPORT_VST
   u8 srcBuffer = 0;
+
   for (i32 i = 0; i < NUM(Global::effectChain); ++i)
   {
     if (Global::effectChain[i] < 0)
       continue;
 
+    i32 instance = 0;
+    for (i32 j = 0; j < i; ++j)
+      if (Global::effectChain[i] == Global::effectChain[j])
+        ++instance;
+
     switch (srcBuffer)
     {
     case 0:
-      Vst::processBlock(Global::effectChain[i], buffer0Vst, buffer1Vst, (len / sizeof(f32)) / 2);
+      Vst::processBlock(Global::effectChain[i], instance, buffer0Vst, buffer1Vst, (len / sizeof(f32)) / 2);
       break;
     case 1:
-      Vst::processBlock(Global::effectChain[i], buffer1Vst, buffer0Vst, (len / sizeof(f32)) / 2);
+      Vst::processBlock(Global::effectChain[i], instance, buffer1Vst, buffer0Vst, (len / sizeof(f32)) / 2);
       break;
     default:
       assert(false);
@@ -187,14 +193,22 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
   SDL_MixAudioFormat(stream, buffer0.sdl, AUDIO_F32LSB, len, Global::settings.mixerGuitar1Volume);
 #endif // SUPPORT_VST
 
-  if (Global::musicBufferRemainingLength > 0)
+  if (Global::musicBufferPosition != nullptr)
   {
-    len = (len > Global::musicBufferRemainingLength ? Global::musicBufferRemainingLength : len);
-    SDL_MixAudioFormat(stream, Global::musicBufferPosition, AUDIO_F32LSB, len, Global::settings.mixerMusicVolume);
+    const i64 remainingLength = &Global::musicBuffer[Global::musicBufferLength] - Global::musicBufferPosition;
+    if (remainingLength > 0)
+    {
+      len = i32(len > remainingLength ? remainingLength : len);
+      SDL_MixAudioFormat(stream, Global::musicBufferPosition, AUDIO_F32LSB, len, Global::settings.mixerMusicVolume);
 
-    Global::musicBufferPosition += len;
-    Global::musicBufferRemainingLength -= len;
+      Global::musicBufferPosition += len;
+    }
+    else
+    {
+      Global::musicBufferPosition = nullptr;
+    }
   }
+
 
   recordingFirst = !recordingFirst;
   cv.notify_one();

@@ -24,6 +24,8 @@ KeyInput Global::inputPause;
 KeyInput Global::inputWireframe;
 KeyInput Global::inputDebug;
 KeyInput Global::inputEsc;
+KeyInput Global::inputLmb;
+KeyInput Global::inputRmb;
 KeyInput Global::debugCamera;
 KeyInput Global::quickRepeater;
 
@@ -44,9 +46,8 @@ std::vector<Song::Info> Global::songInfos;
 Song::Track Global::songTrack;
 std::vector<Song::Vocal> Global::songVocals;
 u8* Global::musicBuffer = nullptr;
-u32 Global::musicBufferLength = 0;
+u64 Global::musicBufferLength = 0;
 u8* Global::musicBufferPosition = nullptr;
-u32 Global::musicBufferRemainingLength = 0;
 f32 Global::musicTimeElapsed = 0.0f;
 f32 Global::musicSpeedMultiplier = 1.0f;
 char Global::searchText[256] = "";
@@ -58,11 +59,18 @@ f32 Global::toneAssignment = 0.0f;
 bool Global::effectsWindow = false;
 i32 Global::vstWindow = -1;
 std::vector<std::string> Global::vstPluginNames;
-i32 Global::effectChain[16] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+i32 Global::effectChain[16] = { ARR_SET16(-1) };
 i32 Global::vstToneAssignment = 0;
 char Global::vstToneName[256] = "Default";
 i32 Global::vstToneNameLength = sizeof("Default") - 1;
 #endif // SUPPORT_VST
+#ifdef SUPPORT_MIDI
+i32 Global::midiDeviceCount = 0;
+i32 Global::connectedDevices[Const::midiMaxDeviceCount] = {};
+std::string Global::midiDeviceNames[Const::midiMaxDeviceCount];
+u8 Global::midiLearnNote = 0xFF;
+u8 Global::midiNoteBinding[128] = { ARR_SET128(0xFF) };
+#endif // SUPPORT_MIDI
 
 Settings::Info Global::settings;
 

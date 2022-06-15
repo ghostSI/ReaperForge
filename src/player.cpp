@@ -73,8 +73,6 @@ static void playSongEmscripten()
 
   Sound::pauseAudioDevice(true);
   loadAudio(psarcInfo, false);
-
-  playNextTick = true;
 }
 
 static f32 quickRepeaterBeginTime = 0.0f;

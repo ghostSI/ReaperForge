@@ -27,7 +27,7 @@ void Phrases::tick()
       {
         const f32 progress = f32(Global::inputCursorPosX - left) / f32(right - left);
 
-        const i64 prog = u64(progress * Global::musicBufferLength);
+        const i64 prog = (u64(progress * Global::musicBufferLength) / sizeof(f32)) * sizeof(f32); // make sure we don't end somewhere between two f32.
 
         Global::musicBufferPosition = &Global::musicBuffer[prog];
 

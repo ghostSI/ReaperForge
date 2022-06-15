@@ -1251,9 +1251,6 @@ static void drawLyricsUnusedText(GLuint shader, i32& line0Cur, i32 line0Begin, i
 
 static void drawLyricsNextLine(GLuint shader, i32 line0End)
 {
-  char line1[4096];
-  i32 line1Cur = 0;
-
   i32 line1End = 0;
   for (i32 i = line0End + 1; i < Global::songVocals.size(); ++i)
   {
@@ -1265,6 +1262,11 @@ static void drawLyricsNextLine(GLuint shader, i32 line0End)
       break;
     }
   }
+  if (line1End == 0)
+    return; // There is no next line.
+
+  char line1[4096];
+  i32 line1Cur = 0;
 
   for (i32 i = line0End + 1; i < line1End; ++i)
   {
@@ -1319,7 +1321,8 @@ static void drawLyrics()
   i32 line0Begin = 0;
   i32 line0Active = -1;
   i32 line0End = i32(Global::songVocals.size()) - 1;
-  for (i32 i = line0Begin; i < line0End; ++i)
+  i32 i = line0Begin;
+  for (; i < line0End; ++i)
   {
     const Song::Vocal& vocal = Global::songVocals[i];
     const Song::Vocal& vocal2 = Global::songVocals[i + 1];
@@ -1349,9 +1352,9 @@ static void drawLyrics()
   }
   if (!skipUnusedText)
   { // draw unused text
-    drawLyricsUnusedText(shader, line0Cur, line0Begin, line0Active, line0End);
+    if (line0Active != -1 || line0End != i32(Global::songVocals.size()) - 1)
+      drawLyricsUnusedText(shader, line0Cur, line0Begin, line0Active, line0End);
   }
-
   drawLyricsNextLine(shader, line0End);
 }
 

@@ -209,7 +209,7 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
     }
     else
     {
-      Global::musicBufferPosition = nullptr;
+;      Global::musicBufferPosition = nullptr;
     }
   }
 

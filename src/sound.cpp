@@ -54,9 +54,6 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
 {
   ASSERT(len <= sizeof(buffer0.sdl));
 
-  if (Global::appQuit)
-    return;
-
   ++Global::debugAudioCallbackRecording;
 
   std::unique_lock<std::mutex> lock(mutex);
@@ -119,9 +116,6 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
 static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
 {
   ASSERT(len <= sizeof(buffer0.sdl));
-
-  if (Global::appQuit)
-    return;
 
   ++Global::debugAudioCallbackPlayback;
 
@@ -251,19 +245,8 @@ void Sound::init()
     devid_out = SDL_OpenAudioDevice(NULL, 0, &(want_out), &have, 0);
     ASSERT(devid_out != 0);
   }
-
-  pauseAudioDevice(false);
-}
-
-void Sound::fini()
-{
-  pauseAudioDevice(true);
-}
-
-void Sound::pauseAudioDevice(bool pause_on)
-{
 #ifndef __EMSCRIPTEN__
-  SDL_PauseAudioDevice(devid_in, pause_on);
+  SDL_PauseAudioDevice(devid_in, false);
 #endif // #ifndef __EMSCRIPTEN__
-  SDL_PauseAudioDevice(devid_out, pause_on);
+  SDL_PauseAudioDevice(devid_out, false);
 }

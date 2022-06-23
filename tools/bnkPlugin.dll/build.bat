@@ -1,0 +1,9 @@
+call "E:\vs2013\VC\bin\x86_amd64\vcvarsx86_amd64.bat"
+
+CL.exe /c /I"..\..\3rdparty\Wwise 2013.2.9.4872\include" /Zi /nologo /W3 /WX- /O2 /Ob2 /Oi /Oy- /D NDEBUG /D AK_OPTIMIZED /D WIN64 /D _WINDOWS /D _CRT_SECURE_NO_WARNINGS /D _CRT_SECURE_NO_DEPRECATE /D _CRT_NON_CONFORMING_SWPRINTFS /D _WINDLL /D _UNICODE /D UNICODE /GF /Gm- /EHsc /MT /GS- /fp:fast /Zc:wchar_t /Zc:forScope /GR- /Gd /TP /errorReport:prompt bnkPlugin.cpp
+link.exe /ERRORREPORT:PROMPT /INCREMENTAL /NOLOGO /LIBPATH:"C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\\lib\x64" /LIBPATH:"..\..\3rdparty\Wwise 2013.2.9.4872\lib" AkConvolutionReverbFX.lib iZTrashMultibandDistortionFX.lib AstoundsoundExpanderFX.lib AkTremoloFX.lib AkMemoryMgr.lib AkMotionGenerator.lib AkSineSource.lib AkSoundSeedWind.lib AkStereoDelayFX.lib AkGuitarDistortionFX.lib AkRumble.lib AkSoundEngine.lib AkMP3Source.lib iZTrashBoxModelerFX.lib AkSoundSeedImpactFX.lib AkRoomVerbFX.lib iZTrashDelayFX.lib McDSPFutzBoxFX.lib AkParametricEQFX.lib McDSPLimiterFX.lib AkToneSource.lib AkFlangerFX.lib AkCompressorFX.lib AstoundsoundFolddownFX.lib AkAudioInputSource.lib AkMusicEngine.lib AkDelayFX.lib CrankcaseAudioREVModelPlayerFX.lib AkSoundSeedWoosh.lib iZHybridReverbFX.lib AkPitchShifterFX.lib iZTrashDynamicsFX.lib iZTrashDistortionFX.lib AstoundsoundRTIFX.lib AkSilenceSource.lib AkGainFX.lib AkVorbisDecoder.lib AkTimeStretchFX.lib AstoundsoundShared.lib iZTrashFiltersFX.lib AkMatrixReverbFX.lib AkMeterFX.lib AkStreamMgr.lib AkHarmonizerFX.lib AkPeakLimiterFX.lib AkExpanderFX.lib dxguid.lib ws2_32.lib Dsound.lib Msacm32.lib Dbghelp.lib d3d9.lib D3dx9.lib Winmm.lib kernel32.lib user32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /MACHINE:X64 /DLL bnkPlugin.obj
+del bnkPlugin.exp
+del bnkPlugin.ilk
+del bnkPlugin.lib
+del bnkPlugin.obj
+del vc120.pdb

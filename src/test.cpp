@@ -12,8 +12,12 @@
 #include "settings.h"
 #include "song.h"
 #include "wem.h"
+#ifdef SUPPORT_BNK
+#include "bnk.h"
+#endif // SUPPORT_BNK
 
-#include "SDL2/SDL.h"
+
+#include <SDL2/SDL.h>
 
 #include <filesystem>
 
@@ -28,7 +32,7 @@ static void base64Test()
   char newText[sizeof(text)];
   const u64 newLen = Base64::decode(base64, (u8*)newText);
 
-  assert(sizeof(text) - 1 ==  newLen);
+  assert(sizeof(text) - 1 == newLen);
   assert(strncmp(text, newText, newLen) == 0);
 }
 
@@ -25081,7 +25085,72 @@ static void psarcTest() {
   oggTest(psarcInfo);
 }
 
+#ifdef SUPPORT_BNK
+static void bnkTest()
+{
+  Bnk::init();
+
+  std::vector<std::string> bnkFileNames;
+  for (const auto& file : std::filesystem::directory_iterator(std::filesystem::path("bnk")))
+  {
+    if (file.path().extension() != std::filesystem::path(".bnk"))
+      continue;
+
+    bnkFileNames.push_back(file.path().filename().string());
+  }
+
+  std::vector<Bnk::Result> results;
+  for (const std::string& bnk : bnkFileNames)
+  {
+    Bnk::BankID bankID;
+    results.push_back(Bnk::Result(Bnk::loadBank(bnk.c_str(), bankID)));
+  }
+
+  std::vector<std::string> success;
+  std::vector<std::string> wrongBankVersion;
+  std::vector<std::string> bankAlreadyLoaded;
+  std::vector<std::string> notInitialized;
+  std::vector<std::string> initBankNotLoaded;
+  for (int i = 0; i < results.size(); ++i)
+  {
+    switch (results[i])
+    {
+    case Bnk::Result::Success:
+      success.push_back(bnkFileNames[i]);
+      break;
+    case Bnk::Result::WrongBankVersion:
+      wrongBankVersion.push_back(bnkFileNames[i]);
+      break;
+    case Bnk::Result::BankAlreadyLoaded:
+      bankAlreadyLoaded.push_back(bnkFileNames[i]);
+      break;
+    case Bnk::Result::NotInitialized:
+      notInitialized.push_back(bnkFileNames[i]);
+      break;
+    case Bnk::Result::InitBankNotLoaded:
+      initBankNotLoaded.push_back(bnkFileNames[i]);
+      break;
+    default:
+      assert(false);
+      break;
+    }
+  }
+
+  assert(17 == success.size());
+  assert(1143 == wrongBankVersion.size());
+  assert(0 == bankAlreadyLoaded.size());
+  assert(0 == notInitialized.size());
+  assert(10 == initBankNotLoaded.size());
+}
+#endif // SUPPORT_BNK
+
 void Test::run() {
+#ifdef SUPPORT_BNK
+#if 0
+  bnkTest();
+#endif
+#endif // SUPPORT_BNK
+
   base64Test();
   mat4Test();
   endianesTest();

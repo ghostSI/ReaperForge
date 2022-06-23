@@ -31,6 +31,7 @@ namespace Const {
     inline constexpr i32 fontCharHeight = 20;
     inline constexpr i32 fontTextureWidth = 192;
     inline constexpr i32 fontTextureHeight = 108;
+    inline constexpr u64 bnkGameObject = 0xBA55BABE;
     inline constexpr vec3 cameraInitialPosition = {
       .v0 = -6.3f,
       .v1 = -7.0f,

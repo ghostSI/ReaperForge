@@ -6,9 +6,6 @@
 namespace Sound
 {
   void init();
-  void fini();
-
-  void pauseAudioDevice(bool pauseAudio);
 };
 
 #endif // SOUND_H

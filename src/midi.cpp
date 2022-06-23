@@ -1,8 +1,9 @@
 #include "midi.h"
 
+#ifdef SUPPORT_MIDI
+
 #include "global.h"
 
-#ifdef SUPPORT_MIDI
 
 #include <conio.h>     /* include for kbhit() and getch() functions */
 #include <stdio.h>     /* for printf() function */
@@ -39,7 +40,14 @@ void Midi::init()
   {
     MIDIINCAPS inputCapabilities;
     midiInGetDevCaps(i, &inputCapabilities, sizeof(inputCapabilities));
+#ifdef UNICODE
+    char ch[MAXPNAMELEN];
+    const char DefChar = ' ';
+    WideCharToMultiByte(CP_ACP, 0, inputCapabilities.szPname, -1, ch, MAXPNAMELEN, &DefChar, NULL);
+    Global::midiDeviceNames[i] = ch;
+#else // UNICODE
     Global::midiDeviceNames[i] = inputCapabilities.szPname;
+#endif // UNICODE
   }
 
   autoConnectDevices(Global::settings.autoConnectDevices);

@@ -78,7 +78,6 @@ static void playSongEmscripten()
   Global::songTrack = Song::loadTrack(psarcInfo, InstrumentFlags::LeadGuitar);
   Global::songVocals = Song::loadVocals(psarcInfo);
 
-  Sound::pauseAudioDevice(true);
   loadAudio(psarcInfo, false);
 }
 
@@ -127,7 +126,6 @@ void Player::tick()
       Global::musicTimeElapsed = 0.0f;
       Global::inputEsc.toggle = !Global::inputEsc.toggle;
     }
-    Sound::pauseAudioDevice(false);
     playNextTick = false;
   }
 

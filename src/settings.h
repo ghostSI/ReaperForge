@@ -98,6 +98,7 @@ namespace Settings {
     };
     u8 midiBinding[17] = { ARR_SET16(0xFF), 0xFF };
     std::string autoConnectDevices;
+    std::string bnkPath = "bnk";
     std::string psarcPath = "psarc";
     std::string vstPath = "vst";
     i32 mixerMusicVolume = 100;

@@ -1,5 +1,6 @@
 #include "configuration.h"
 
+#include "bnk.h"
 #include "camera.h"
 #include "collection.h"
 #include "data.h"
@@ -21,7 +22,7 @@
 #include "ui.h"
 #include "vst.h"
 
-#include "SDL2/SDL.h"
+#include <SDL2/SDL.h>
 
 #include <chrono>
 
@@ -60,6 +61,9 @@ static void mainloop() {
 
   //if (Global::frameDelta >= 16.666_f32)
   { // render frame
+#ifdef SUPPORT_BNK
+    Bnk::tick();
+#endif // SUPPORT_BNK
     Profile::tick();
     Player::tick();
     Phrases::tick();
@@ -189,6 +193,9 @@ int main(int argc, char* argv[]) {
 #endif // SUPPORT_VST
   Profile::init();
   Sound::init();
+#ifdef SUPPORT_BNK
+  Bnk::init();
+#endif // SUPPORT_BNK
   Camera::init();
   Font::init();
   Collection::init();
@@ -213,8 +220,6 @@ int main(int argc, char* argv[]) {
 #endif // SUPPORT_MIDI
   Profile::fini();
   Settings::fini();
-  Sound::fini();
 
-  SDL_Quit();
-  return 0;
+  quick_exit(0);
 }

@@ -6,7 +6,7 @@
 #include "global.h"
 #include "version.h"
 
-#include "SDL2/SDL_syswm.h"
+#include <SDL2/SDL_syswm.h>
 
 #include <windows.h> 
 
@@ -238,12 +238,6 @@ const i32 kVstTransportPlaying = 1 << 1;
 const i32 kVstTransportCycleActive = 1 << 2;
 const i32 kVstTransportChanged = 1;
 
-
-#define REAPERFORGE_VERSION 0
-#define REAPERFORGE_RELEASE 0
-#define REAPERFORGE_REVISION 0
-#define REAPERFORGE_MODLEVEL 0
-
 static intptr_t AudioMaster(AEffect* effect, AudioMasterOpcode opcode, int32_t index, intptr_t value, void* ptr, f32 opt)
 {
   VstPlugin* vst = (effect ? (VstPlugin*)effect->ptr2 : nullptr);
@@ -395,7 +389,12 @@ void Vst::init()
     if (file.path().extension() != std::filesystem::path(".dll"))
       continue;
 
-    HINSTANCE hinstLib = LoadLibrary(TEXT(file.path().string().c_str()));
+#ifdef UNICODE
+    HINSTANCE hinstLib = LoadLibrary(file.path().wstring().c_str());
+#else // UNICODE
+    HINSTANCE hinstLib = LoadLibrary(file.path().string().c_str());
+#endif // UNICODE
+
     assert(hinstLib != nullptr);
 
     vstPlugins.push_back(VstPlugin());

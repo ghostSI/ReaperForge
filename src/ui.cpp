@@ -1,5 +1,6 @@
 #include "ui.h"
 
+#include "bnk.h"
 #include "collection.h"
 #include "data.h"
 #include "global.h"
@@ -24,7 +25,7 @@
 
 #include "nuklear.h"
 
-#include "SDL2/SDL.h"
+#include <SDL2/SDL.h>
 
 #include <math.h>
 
@@ -3059,6 +3060,62 @@ static void helpWindow()
   nk_end(ctx);
 }
 
+#ifdef SUPPORT_BNK
+static void bnkWindow() {
+  if (nk_begin(ctx, "Bnk", nk_rect(60, 60, 300, 300), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE))
+  {
+    nk_layout_row_dynamic(ctx, 22, 1);
+    {
+      static int check;
+      nk_checkbox_label(ctx, "Car", &check);
+      if (check)
+      {
+        if (static Bnk::BankID bankId{}; bankId == 0)
+        {
+          Bnk::loadBank("Car.bnk", bankId);
+          Bnk::postEvent(Bnk::EVENTS::PLAY_ENGINE);
+        }
+        static f32 rpm = 1000;
+        nk_slider_float(ctx, 1000.0f, &rpm, 10000.0f, 1.0f);
+        Bnk::setRTPCValue(Bnk::GAME_PARAMETERS::RPM, rpm);
+      }
+    }
+    {
+      static int check;
+      nk_checkbox_label(ctx, "Microphone", &check);
+      if (check)
+      {
+        if (static Bnk::BankID bankId{}; bankId == 0)
+        {
+          Bnk::loadBank("Microphone.bnk", bankId);
+          Bnk::PlayID playID = Bnk::postEvent(Bnk::EVENTS::PLAY_MICROPHONE);
+          Bnk::inputOn(playID);
+        }
+        static int check2;
+        nk_checkbox_label(ctx, "Delay", &check2);
+        if (check2)
+        {
+          Bnk::postEvent(Bnk::EVENTS::ENABLE_MICROPHONE_DELAY);
+        }
+        else
+        {
+          Bnk::postEvent(Bnk::EVENTS::DISABLE_MICROPHONE_DELAY);
+        }
+        static int check3;
+        nk_checkbox_label(ctx, "pedal_classicflanger", &check3);
+        if (check3)
+        {
+          if (static Bnk::BankID bankId{}; bankId == 0)
+          {
+          }
+        }
+      }
+    }
+  }
+  nk_end(ctx);
+}
+#endif // SUPPORT_BNK
+
 void Ui::tick() {
   if (!Global::isInstalled)
   {
@@ -3081,6 +3138,10 @@ void Ui::tick() {
 
   if (Global::helpWindow)
     helpWindow();
+
+#ifdef SUPPORT_BNK
+  bnkWindow();
+#endif // SUPPORT_BNK
 }
 
 void Ui::render() {

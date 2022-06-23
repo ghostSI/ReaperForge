@@ -6,7 +6,7 @@
 #include "installer.h"
 #include "helper.h"
 
-#include "SDL2/SDL_video.h"
+#include <SDL2/SDL_video.h>
 
 #include <filesystem>
 #include <map>
@@ -257,6 +257,9 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
     {
       "Paths",
       {
+#ifdef SUPPORT_BNK
+        { "Bnk", settings.bnkPath },
+#endif // SUPPORT_BNK
         { "Psarc", settings.psarcPath },
         { "Vst", settings.vstPath }
       }
@@ -407,9 +410,12 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
       colorVec4(serializedSettings.at("Instrument").at("GuitarStringColor5")),
       colorVec4(serializedSettings.at("Instrument").at("GuitarStringColor6"))
     },
-  #ifdef SUPPORT_MIDI
+#ifdef SUPPORT_MIDI
     .autoConnectDevices = serializedSettings.at("Midi").at("AutoConnectDevices"),
-  #endif // SUPPORT_MIDI
+#endif // SUPPORT_MIDI
+#ifdef SUPPORT_BNK
+    .bnkPath = serializedSettings.at("Paths").at("Bnk"),
+#endif SUPPORT_BNK
     .psarcPath = serializedSettings.at("Paths").at("Psarc"),
     .vstPath = serializedSettings.at("Paths").at("Vst"),
     .mixerMusicVolume = atoi(serializedSettings.at("Mixer").at("MusicVolume").c_str()),

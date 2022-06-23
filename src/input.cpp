@@ -5,7 +5,7 @@
 #include "sound.h"
 #include "type.h"
 
-#include "SDL2/SDL_events.h"
+#include <SDL2/SDL_events.h>
 
 static void prePollEventKeyInput(KeyInput& keyInput) {
   keyInput.pressedLastFrame = keyInput.pressed;
@@ -394,7 +394,7 @@ void Input::proccessInputEvents() {
 
   if (Global::inputPause.up) {
     Global::pauseAudio = Global::inputPause.toggle;
-    Sound::pauseAudioDevice(Global::pauseAudio);
+    //Sound::pauseAudioDevice(Global::pauseAudio);
   }
 
   if (Global::inputKP0.pressed && !Global::inputKP0.pressedLastFrame)

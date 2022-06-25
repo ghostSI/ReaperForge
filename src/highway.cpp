@@ -1080,7 +1080,7 @@ static void drawSongInfo()
 
 static void drawToneAssignment()
 {
-  const f32 timeElapsed = Global::time - Global::toneAssignment;
+  const f32 timeElapsed = Global::time - Global::toneAssignmentTime;
 
   if (Const::highwayDrawToneAssignmentEndTime < timeElapsed)
     return;
@@ -1095,10 +1095,12 @@ static void drawToneAssignment()
   glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayToneAssignmentColor.v0, Global::settings.highwayToneAssignmentColor.v1, Global::settings.highwayToneAssignmentColor.v2, alpha);
 
   {
-    const i32 letters = sizeof("Tone Switch") - 1;
-    const f32 scaleX = 1.5f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
+    const i32 len = sizeof("Tone Switch [Bank 63]");
+    char text[len];
+    sprintf(text, "Tone Switch [Bank %2d]", Global::toneAssignment / 10);
+    const f32 scaleX = 1.5f * f32(Const::fontCharWidth * (len - 1)) / f32(Global::settings.graphicsResolutionWidth);
     const f32 scaleY = 1.5f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
-    Font::draw("Tone Switch", 0.95f - scaleX, 0.6f, 0.0f, scaleX, scaleY);
+    Font::draw(text, 0.95f - scaleX, 0.6f, 0.0f, scaleX, scaleY);
   }
 #ifdef SUPPORT_VST
   {

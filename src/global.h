@@ -128,7 +128,7 @@ namespace Const {
     inline constexpr bool isMarkedFret[]{ 0,1,0,1,0,1,0,1,0,1,0,0,1,0,0,1,0,1,0,1,0,1,0,0,1 };
     inline constexpr i32 soundMaxCount = 8;
     inline constexpr i32 gearMaxKnobs = 10;
-    inline constexpr i32 profileToneAssignmentCount = 10;
+    inline constexpr i32 profileToneAssignmentCount = 640; // 64 Banks with 10 Tones each.
 #ifdef SUPPORT_MIDI
     inline constexpr i32 midiMaxDeviceCount = 32;
     inline constexpr const char* midiBindingsNames[] = {
@@ -148,7 +148,9 @@ namespace Const {
       "ToneAssignment6",
       "ToneAssignment7",
       "ToneAssignment8",
-      "ToneAssignment9"
+      "ToneAssignment9",
+      "ToneAssignmentBankDec",
+      "ToneAssignmentBankInc"
     };
 #endif // SUPPORT_MIDI
 }
@@ -163,6 +165,10 @@ namespace Global {
     extern KeyInput inputS;
     extern KeyInput inputE;
     extern KeyInput inputC;
+    extern KeyInput inputKPDivide;
+    extern KeyInput inputKPMultiply;
+    extern KeyInput inputKPPlus;
+    extern KeyInput inputKPMinus;
     extern KeyInput inputKP0;
     extern KeyInput inputKP1;
     extern KeyInput inputKP2;
@@ -208,13 +214,13 @@ namespace Global {
     extern i32 searchTextLength;
     extern bool toneWindow;
     extern bool helpWindow;
-    extern f32 toneAssignment;
+    extern f32 toneAssignmentTime;
 #ifdef SUPPORT_VST
     extern bool effectsWindow;
     extern i32 vstWindow;
     extern std::vector<std::string> vstPluginNames;
     extern i32 effectChain[16];
-    extern i32 vstToneAssignment;
+    extern i32 toneAssignment;
     extern char vstToneName[256];
     extern i32 vstToneNameLength;
 #endif // SUPPORT_VST

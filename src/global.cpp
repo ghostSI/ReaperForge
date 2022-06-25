@@ -9,6 +9,10 @@ KeyInput Global::inputW;
 KeyInput Global::inputS;
 KeyInput Global::inputE;
 KeyInput Global::inputC;
+KeyInput Global::inputKPDivide;
+KeyInput Global::inputKPMultiply;
+KeyInput Global::inputKPPlus;
+KeyInput Global::inputKPMinus;
 KeyInput Global::inputKP0;
 KeyInput Global::inputKP1;
 KeyInput Global::inputKP2;
@@ -54,13 +58,13 @@ char Global::searchText[256] = "";
 i32 Global::searchTextLength = 0;
 bool Global::toneWindow = false;
 bool Global::helpWindow = false;
-f32 Global::toneAssignment = 0.0f;
+f32 Global::toneAssignmentTime = 0.0f;
 #ifdef SUPPORT_VST
 bool Global::effectsWindow = false;
 i32 Global::vstWindow = -1;
 std::vector<std::string> Global::vstPluginNames;
 i32 Global::effectChain[16] = { ARR_SET16(-1) };
-i32 Global::vstToneAssignment = 0;
+i32 Global::toneAssignment = 0;
 char Global::vstToneName[256] = "Default";
 i32 Global::vstToneNameLength = sizeof("Default") - 1;
 #endif // SUPPORT_VST

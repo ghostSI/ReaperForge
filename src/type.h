@@ -3,13 +3,15 @@
 
 #include "typedefs.h"
 
-enum struct FullscreenMode : u8 {
+enum struct FullscreenMode : u8
+{
   windowed,
   fullscreen,
   windowedFullscreen
 };
 
-enum struct InstrumentFlags : u16 {
+enum struct InstrumentFlags : u16
+{
   none,
   LeadGuitar = 1 << 0,
   RhythmGuitar = 1 << 1,
@@ -22,10 +24,18 @@ enum struct InstrumentFlags : u16 {
   //Third = 1 << 8
 }BIT_FLAGS(InstrumentFlags);
 
-enum struct SaveMode : u8 {
+enum struct SaveMode : u8
+{
   none,
   statsOnly,
   wholeManifest,
+};
+
+enum struct SignalChain : u8
+{
+  bnk,
+  vst,
+  COUNT
 };
 
 enum struct PsarcGear

@@ -10,6 +10,7 @@ namespace Settings {
     i32 audioBufferSize = 1024;
     i32 audioChannelInstrument[2] = { 0, 1 };
     i32 audioSampleRate = 48000;
+    SignalChain audioSignalChain = SignalChain::bnk;
     f32 cameraBreakRadius = 2.0f;
     f32 cameraFieldOfView = 60.0f;
     f32 cameraMaximumBreakForce = 2.0f;
@@ -96,7 +97,7 @@ namespace Settings {
       colorVec4("#D20000"),
       colorVec4("#009B71"),
     };
-    u8 midiBinding[17] = { ARR_SET16(0xFF), 0xFF };
+    u8 midiBinding[128] = { ARR_SET128(0xFF) };
     std::string autoConnectDevices;
     std::string bnkPath = "bnk";
     std::string psarcPath = "psarc";

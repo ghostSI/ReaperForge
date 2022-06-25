@@ -151,7 +151,8 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
         { "BufferSize",         std::to_string(settings.audioBufferSize) },
         { "ChannelInstrument0", std::to_string(settings.audioChannelInstrument[0]) },
         { "ChannelInstrument1", std::to_string(settings.audioChannelInstrument[1]) },
-        { "SampleRate",         std::to_string(settings.audioSampleRate) }
+        { "SampleRate",         std::to_string(settings.audioSampleRate) },
+        { "SignalChain",        std::to_string(to_underlying(settings.audioSignalChain)) }
       }
     },
     {
@@ -312,6 +313,7 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
       atoi(serializedSettings.at("Audio").at("ChannelInstrument1").c_str())
     },
     .audioSampleRate = atoi(serializedSettings.at("Audio").at("SampleRate").c_str()),
+    .audioSignalChain = SignalChain(atoi(serializedSettings.at("Audio").at("SignalChain").c_str())),
     .cameraBreakRadius = f32(atof(serializedSettings.at("Camera").at("BreakRadius").c_str())),
     .cameraFieldOfView = f32(atof(serializedSettings.at("Camera").at("FieldOfView").c_str())),
     .cameraMaximumBreakForce = f32(atof(serializedSettings.at("Camera").at("MaximumBreakForce").c_str())),

@@ -2015,6 +2015,17 @@ static void effectsWindow()
       Profile::saveTone();
     }
 
+    {
+      nk_layout_row_static(ctx, 22, 185, 2);
+
+      i32 toneAssignmentBank = Global::toneAssignment / 10;
+      i32 toneAssignmentMod10 = Global::toneAssignment % 10;
+      nk_propertyi(ctx, "Bank", 0, toneAssignmentBank, Const::profileToneAssignmentCount / 10, 1, 1);
+      nk_propertyi(ctx, "Tone", 0, toneAssignmentMod10, 10, 1, 1);
+
+      Global::toneAssignment = toneAssignmentBank * 10 + toneAssignmentMod10;
+    }
+
     nk_layout_row_template_begin(ctx, 421);
     nk_layout_row_template_push_dynamic(ctx);
     nk_layout_row_template_end(ctx);
@@ -2450,9 +2461,9 @@ static void songWindow()
       }
       nk_group_end(ctx);
     }
-  }
+    }
   nk_end(ctx);
-}
+  }
 
 static void settingsWindow()
 {

@@ -20,6 +20,10 @@ void Input::prePollEvent() {
   prePollEventKeyInput(Global::inputS);
   prePollEventKeyInput(Global::inputE);
   prePollEventKeyInput(Global::inputC);
+  prePollEventKeyInput(Global::inputKPDivide);
+  prePollEventKeyInput(Global::inputKPMultiply);
+  prePollEventKeyInput(Global::inputKPMinus);
+  prePollEventKeyInput(Global::inputKPPlus);
   prePollEventKeyInput(Global::inputKP0);
   prePollEventKeyInput(Global::inputKP1);
   prePollEventKeyInput(Global::inputKP2);
@@ -65,6 +69,18 @@ void Input::pollEvent(SDL_Event& event) {
       break;
     case SDLK_c:
       Global::inputC.pressed = true;
+      break;
+    case SDLK_KP_DIVIDE:
+      Global::inputKPDivide.pressed = true;
+      break;
+    case SDLK_KP_MULTIPLY:
+      Global::inputKPMultiply.pressed = true;
+      break;
+    case SDLK_KP_MINUS:
+      Global::inputKPMinus.pressed = true;
+      break;
+    case SDLK_KP_PLUS:
+      Global::inputKPPlus.pressed = true;
       break;
     case SDLK_KP_0:
       Global::inputKP0.pressed = true;
@@ -153,6 +169,18 @@ void Input::pollEvent(SDL_Event& event) {
       break;
     case SDLK_c:
       Global::inputC.pressed = false;
+      break;
+    case SDLK_KP_DIVIDE:
+      Global::inputKPDivide.pressed = false;
+      break;
+    case SDLK_KP_MULTIPLY:
+      Global::inputKPMultiply.pressed = false;
+      break;
+    case SDLK_KP_MINUS:
+      Global::inputKPMinus.pressed = false;
+      break;
+    case SDLK_KP_PLUS:
+      Global::inputKPPlus.pressed = false;
       break;
     case SDLK_KP_0:
       Global::inputKP0.pressed = false;
@@ -354,6 +382,10 @@ void Input::postPollEvent() {
   postPollEventKeyInput(Global::inputS);
   postPollEventKeyInput(Global::inputE);
   postPollEventKeyInput(Global::inputC);
+  postPollEventKeyInput(Global::inputKPDivide);
+  postPollEventKeyInput(Global::inputKPMultiply);
+  postPollEventKeyInput(Global::inputKPMinus);
+  postPollEventKeyInput(Global::inputKPPlus);
   postPollEventKeyInput(Global::inputKP0);
   postPollEventKeyInput(Global::inputKP1);
   postPollEventKeyInput(Global::inputKP2);
@@ -397,64 +429,89 @@ void Input::proccessInputEvents() {
     //Sound::pauseAudioDevice(Global::pauseAudio);
   }
 
+
+
+  postPollEventKeyInput(Global::inputKPDivide);
+  postPollEventKeyInput(Global::inputKPMultiply);
+  postPollEventKeyInput(Global::inputKPMinus);
+  postPollEventKeyInput(Global::inputKPPlus);
+
+  if (Global::inputKPDivide.pressed && !Global::inputKPDivide.pressedLastFrame)
+  {
+  }
+  if (Global::inputKPMultiply.pressed && !Global::inputKPMultiply.pressedLastFrame)
+  {
+  }
+  if (Global::inputKPMinus.pressed && !Global::inputKPMinus.pressedLastFrame)
+  {
+    // decrease ToneAssignmentBank
+    if (Global::toneAssignment / 10 > 0)
+      Global::toneAssignment -= 10;
+  }
+  if (Global::inputKPPlus.pressed && !Global::inputKPPlus.pressedLastFrame)
+  {
+    // increase ToneAssignmentBank
+    if (Global::toneAssignment / 10 < Const::profileToneAssignmentCount / 10 - 1)
+      Global::toneAssignment += 10;
+  }
   if (Global::inputKP0.pressed && !Global::inputKP0.pressedLastFrame)
   {
 #ifdef SUPPORT_VST
-    Global::vstToneAssignment = 0;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10;
 #endif // SUPPORT_VST
   }
   if (Global::inputKP1.pressed && !Global::inputKP1.pressedLastFrame)
   {
 #ifdef SUPPORT_VST
-    Global::vstToneAssignment = 1;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 1;
 #endif // SUPPORT_VST
   }
   if (Global::inputKP2.pressed && !Global::inputKP2.pressedLastFrame)
   {
 #ifdef SUPPORT_VST
-    Global::vstToneAssignment = 2;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 2;
 #endif // SUPPORT_VST
   }
   if (Global::inputKP3.pressed && !Global::inputKP3.pressedLastFrame)
   {
 #ifdef SUPPORT_VST
-    Global::vstToneAssignment = 3;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 3;
 #endif // SUPPORT_VST
   }
   if (Global::inputKP4.pressed && !Global::inputKP4.pressedLastFrame)
   {
 #ifdef SUPPORT_VST
-    Global::vstToneAssignment = 4;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 4;
 #endif // SUPPORT_VST
   }
   if (Global::inputKP5.pressed && !Global::inputKP5.pressedLastFrame)
   {
 #ifdef SUPPORT_VST
-    Global::vstToneAssignment = 5;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 5;
 #endif // SUPPORT_VST
   }
   if (Global::inputKP6.pressed && !Global::inputKP6.pressedLastFrame)
   {
 #ifdef SUPPORT_VST
-    Global::vstToneAssignment = 6;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 6;
 #endif // SUPPORT_VST
   }
   if (Global::inputKP7.pressed && !Global::inputKP7.pressedLastFrame)
   {
 #ifdef SUPPORT_VST
-    Global::vstToneAssignment = 7;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 7;
 #endif // SUPPORT_VST
   }
   if (Global::inputKP8.pressed && !Global::inputKP8.pressedLastFrame)
   {
 #ifdef SUPPORT_VST
-    Global::vstToneAssignment = 8;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 8;
 #endif // SUPPORT_VST
   }
   if (Global::inputKP9.pressed && !Global::inputKP9.pressedLastFrame)
   {
 #ifdef SUPPORT_VST
-    Global::vstToneAssignment = 9;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 9;
 #endif // SUPPORT_VST
   }
 }

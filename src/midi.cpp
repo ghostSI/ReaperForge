@@ -96,11 +96,16 @@ enum struct MidiBinding {
   ToneAssignment6,
   ToneAssignment7,
   ToneAssignment8,
-  ToneAssignment9
+  ToneAssignment9,
+  ToneAssignmentBankInc,
+  ToneAssignmentBankDec
 };
 
 static void interpretMidiNote(const u8 noteNumber, const u8 velocity)
 {
+  if (velocity != 127) // for now only footswitches are supported
+    return;
+
   const MidiBinding binding = MidiBinding(Global::midiNoteBinding[noteNumber]);
   if (binding == MidiBinding(0xFF))
     return;
@@ -129,34 +134,42 @@ static void interpretMidiNote(const u8 noteNumber, const u8 velocity)
     Global::settings.highwayBackgroundColor.v2 = f32(velocity) / 127.0f;
     break;
   case MidiBinding::ToneAssignment0:
-    Global::vstToneAssignment = 0;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10;
     break;
   case MidiBinding::ToneAssignment1:
-    Global::vstToneAssignment = 1;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 1;
     break;
   case MidiBinding::ToneAssignment2:
-    Global::vstToneAssignment = 2;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 2;
     break;
   case MidiBinding::ToneAssignment3:
-    Global::vstToneAssignment = 3;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 3;
     break;
   case MidiBinding::ToneAssignment4:
-    Global::vstToneAssignment = 4;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 4;
     break;
   case MidiBinding::ToneAssignment5:
-    Global::vstToneAssignment = 5;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 5;
     break;
   case MidiBinding::ToneAssignment6:
-    Global::vstToneAssignment = 6;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 6;
     break;
   case MidiBinding::ToneAssignment7:
-    Global::vstToneAssignment = 7;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 7;
     break;
   case MidiBinding::ToneAssignment8:
-    Global::vstToneAssignment = 8;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 8;
     break;
   case MidiBinding::ToneAssignment9:
-    Global::vstToneAssignment = 9;
+    Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 9;
+    break;
+  case MidiBinding::ToneAssignmentBankDec:
+    if (Global::toneAssignment / 10 > 0)
+      Global::toneAssignment -= 10;
+    break;
+  case MidiBinding::ToneAssignmentBankInc:
+    if (Global::toneAssignment / 10 < Const::profileToneAssignmentCount / 10 - 1)
+      Global::toneAssignment += 10;
     break;
   }
 }

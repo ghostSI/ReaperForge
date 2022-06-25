@@ -80,6 +80,8 @@ void Midi::fini()
 }
 
 enum struct MidiBinding {
+  AudioSignalChainDec,
+  AudioSignalChainInc,
   MixerMusicVolume,
   MixerGuitar1Volume,
   MixerBass1Volume,
@@ -112,6 +114,14 @@ static void interpretMidiNote(const u8 noteNumber, const u8 velocity)
 
   switch (binding)
   {
+  case MidiBinding::AudioSignalChainDec:
+    if (to_underlying(Global::settings.audioSignalChain) < to_underlying(SignalChain::COUNT) - 1)
+      Global::settings.audioSignalChain = SignalChain(to_underlying(Global::settings.audioSignalChain) + 1);
+    break;
+  case MidiBinding::AudioSignalChainInc:
+    if (to_underlying(Global::settings.audioSignalChain) > 0)
+      Global::settings.audioSignalChain = SignalChain(to_underlying(Global::settings.audioSignalChain) - 1);
+    break;
   case MidiBinding::MixerMusicVolume:
     Global::settings.mixerMusicVolume = velocity;
     break;

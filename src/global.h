@@ -132,6 +132,8 @@ namespace Const {
 #ifdef SUPPORT_MIDI
     inline constexpr i32 midiMaxDeviceCount = 32;
     inline constexpr const char* midiBindingsNames[] = {
+      "AudioSignalChainDec",
+      "AudioSignalChainInc",
       "MixerMusicVolume",
       "MixerGuitar1Volume",
       "MixerBass1Volume",

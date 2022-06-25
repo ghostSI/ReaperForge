@@ -438,9 +438,13 @@ void Input::proccessInputEvents() {
 
   if (Global::inputKPDivide.pressed && !Global::inputKPDivide.pressedLastFrame)
   {
+    if (to_underlying(Global::settings.audioSignalChain) > 0)
+      Global::settings.audioSignalChain = SignalChain(to_underlying(Global::settings.audioSignalChain) - 1);
   }
   if (Global::inputKPMultiply.pressed && !Global::inputKPMultiply.pressedLastFrame)
   {
+    if (to_underlying(Global::settings.audioSignalChain) < to_underlying(SignalChain::COUNT) - 1)
+      Global::settings.audioSignalChain = SignalChain(to_underlying(Global::settings.audioSignalChain) + 1);
   }
   if (Global::inputKPMinus.pressed && !Global::inputKPMinus.pressedLastFrame)
   {

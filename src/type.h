@@ -31,7 +31,7 @@ enum struct SaveMode : u8
   wholeManifest,
 };
 
-enum struct SignalChain : u8
+enum struct SignalChain : i8
 {
   bnk,
   vst,

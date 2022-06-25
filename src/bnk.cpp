@@ -64,7 +64,9 @@ void Bnk::init()
   loadLibrary();
 #endif // BNK_DLL_IMPORT
 
-  bnkInit(Global::settings.bnkPath.c_str());
+
+
+  bnkInit("D:/ReaperForge/bnk/");
 }
 
 void Bnk::tick()

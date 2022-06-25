@@ -3078,6 +3078,19 @@ static void bnkWindow() {
     nk_layout_row_dynamic(ctx, 22, 1);
     {
       static int check;
+      static int lastCheck;
+      nk_checkbox_label(ctx, "Microphone Delay", &check);
+      if (check != lastCheck)
+      {
+        lastCheck = check;
+        if (check)
+          Bnk::postEvent(Bnk::EVENTS::ENABLE_MICROPHONE_DELAY);
+        else
+          Bnk::postEvent(Bnk::EVENTS::DISABLE_MICROPHONE_DELAY);
+      }
+    }
+    {
+      static int check;
       nk_checkbox_label(ctx, "Car", &check);
       if (check)
       {
@@ -3089,37 +3102,6 @@ static void bnkWindow() {
         static f32 rpm = 1000;
         nk_slider_float(ctx, 1000.0f, &rpm, 10000.0f, 1.0f);
         Bnk::setRTPCValue(Bnk::GAME_PARAMETERS::RPM, rpm);
-      }
-    }
-    {
-      static int check;
-      nk_checkbox_label(ctx, "Microphone", &check);
-      if (check)
-      {
-        if (static Bnk::BankID bankId{}; bankId == 0)
-        {
-          Bnk::loadBank("Microphone.bnk", bankId);
-          Bnk::PlayID playID = Bnk::postEvent(Bnk::EVENTS::PLAY_MICROPHONE);
-          Bnk::inputOn(playID);
-        }
-        static int check2;
-        nk_checkbox_label(ctx, "Delay", &check2);
-        if (check2)
-        {
-          Bnk::postEvent(Bnk::EVENTS::ENABLE_MICROPHONE_DELAY);
-        }
-        else
-        {
-          Bnk::postEvent(Bnk::EVENTS::DISABLE_MICROPHONE_DELAY);
-        }
-        static int check3;
-        nk_checkbox_label(ctx, "pedal_classicflanger", &check3);
-        if (check3)
-        {
-          if (static Bnk::BankID bankId{}; bankId == 0)
-          {
-          }
-        }
       }
     }
   }

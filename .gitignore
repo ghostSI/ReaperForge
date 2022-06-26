@@ -33,11 +33,9 @@ enc_temp_folder/
 /*.suo
 /*.sdf
 /ALL_BUILD.vcxproj
-/ALL_BUILD.vcxproj.user
-/ALL_BUILD.vcxproj.filters
 /ReaperForge.vcxproj
-/ReaperForge.vcxproj.user
-/ReaperForge.vcxproj.filters
+*.vcxproj.user
+*.vcxproj.filters
 *.aps
 *.bak
 *.blend1

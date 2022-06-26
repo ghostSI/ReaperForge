@@ -4,8 +4,7 @@
 
 #include "global.h"
 
-#define BNK_DLL_IMPORT // enabled use __declspec(dllimport), disabled use LoadLibrary
-#ifdef BNK_DLL_IMPORT
+#ifdef BNK_DLL_IMPORT // enabled use __declspec(dllimport), disabled use LoadLibrary
 
 extern "C" __declspec(dllimport) void bnkInit(const char*);
 extern "C" __declspec(dllimport) void bnkTick();
@@ -45,7 +44,7 @@ static void loadLibrary()
   assert(hinstLib != nullptr);
   bnkInit = (bnkInitFunc)GetProcAddress(hinstLib, "bnkInit");
   assert(bnkInit != nullptr);
-  bnkTick = (bnkInitFunc)GetProcAddress(hinstLib, "bnkTick");
+  bnkTick = (bnkTickFunc)GetProcAddress(hinstLib, "bnkTick");
   assert(bnkTick != nullptr);
   bnkLoadBank = (bnkLoadBankFunc)GetProcAddress(hinstLib, "bnkLoadBank");
   assert(bnkLoadBank != nullptr);

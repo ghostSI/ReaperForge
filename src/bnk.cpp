@@ -37,7 +37,7 @@ static bnkInputOnFunc bnkInputOn;
 static bool loadLibrary()
 {
 #ifdef UNICODE
-  HINSTANCE hinstLib = LoadLibrary(file.path().wstring().c_str());
+  HINSTANCE hinstLib = LoadLibrary(L"bnkPlugin.dll");
 #else // UNICODE
   HINSTANCE hinstLib = LoadLibrary("bnkPlugin.dll");
 #endif // UNICODE

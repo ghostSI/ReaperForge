@@ -220,7 +220,8 @@ namespace Global {
 #ifdef SUPPORT_VST
     extern bool effectsWindow;
     extern i32 vstWindow;
-    extern std::vector<std::string> vstPluginNames;
+    extern std::vector<std::string> pluginNames;
+    extern std::vector<std::string> vst3PluginNames;
     extern i32 effectChain[16];
     extern i32 toneAssignment;
     extern char vstToneName[256];

@@ -125,7 +125,7 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
 #endif // __EMSCRIPTEN__
 
   SDL_memset(stream, 0, len);
-#ifdef SUPPORT_VST
+#ifndef SUPPORT_VST
   u8 srcBuffer = 0;
 
   for (i32 i = 0; i < NUM(Global::effectChain); ++i)

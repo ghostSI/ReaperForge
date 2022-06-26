@@ -21,6 +21,7 @@
 #include "test.h"
 #include "ui.h"
 #include "vst.h"
+#include "vst3.h"
 
 #include <SDL2/SDL.h>
 
@@ -191,6 +192,9 @@ int main(int argc, char* argv[]) {
 #ifdef SUPPORT_VST
   Vst::init();
 #endif // SUPPORT_VST
+#ifdef SUPPORT_VST3
+  Vst3::init();
+#endif // SUPPORT_VST3
   Profile::init();
   Sound::init();
 #ifdef SUPPORT_BNK

@@ -262,7 +262,8 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
         { "Bnk", settings.bnkPath },
 #endif // SUPPORT_BNK
         { "Psarc", settings.psarcPath },
-        { "Vst", settings.vstPath }
+        { "Vst", settings.vstPath },
+        { "Vst3", settings.vst3Path }
       }
     },
     {
@@ -420,6 +421,7 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
 #endif SUPPORT_BNK
     .psarcPath = serializedSettings.at("Paths").at("Psarc"),
     .vstPath = serializedSettings.at("Paths").at("Vst"),
+    .vst3Path = serializedSettings.at("Paths").at("Vst3"),
     .mixerMusicVolume = atoi(serializedSettings.at("Mixer").at("MusicVolume").c_str()),
     .mixerGuitar1Volume = atoi(serializedSettings.at("Mixer").at("Guitar1Volume").c_str()),
     .mixerBass1Volume = atoi(serializedSettings.at("Mixer").at("Bass1Volume").c_str()),

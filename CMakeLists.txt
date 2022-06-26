@@ -67,6 +67,7 @@ set(HEADER_FILES
         src/ui.h
         src/version.h
         src/vst.h
+        src/vst3.h
         src/wem.h
         src/xblock.h
         src/xml.h
@@ -97,6 +98,7 @@ set(SOURCE_FILES
         src/main.cpp
         src/manifest.cpp
         src/midi.cpp
+        src/module_win32.cpp
         src/ogg.cpp
         src/opengl.cpp
         src/pcm.cpp
@@ -113,6 +115,7 @@ set(SOURCE_FILES
         src/test.cpp
         src/ui.cpp
         src/vst.cpp
+        src/vst3.cpp
         src/wem.cpp
         src/xblock.cpp
         src/xml.cpp
@@ -155,6 +158,17 @@ if(${BNK_DLL_IMPORT})
     add_definitions(-DBNK_DLL_IMPORT)
     target_link_directories(ReaperForge PRIVATE ${CMAKE_BINARY_DIR})
     target_link_libraries(ReaperForge bnkPlugin.lib)
+endif()
+
+set(SUPPORT_VST3 ON)
+if(${SUPPORT_VST3})
+    add_definitions(-D _UNICODE -DUNICODE)
+    target_include_directories(ReaperForge PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/vst3sdk/Windows/include)
+    target_link_directories(ReaperForge PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/vst3sdk/Windows/lib/)
+    target_link_libraries(ReaperForge base.lib)
+    target_link_libraries(ReaperForge pluginterfaces.lib)
+    target_link_libraries(ReaperForge sdk_hosting.lib)
+    target_link_libraries(ReaperForge sdk_common.lib)
 endif()
 
     # static link

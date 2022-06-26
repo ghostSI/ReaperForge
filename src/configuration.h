@@ -15,8 +15,9 @@
 
 #ifdef _WIN32
 #define SUPPORT_BNK
-#define SUPPORT_MIDI // bind effects 
+#define SUPPORT_MIDI // bind notes to switch Tone Assignments
 #define SUPPORT_VST
+#define SUPPORT_VST3
 #endif // _WIN32
 
 #endif // CONFIGURATION_H

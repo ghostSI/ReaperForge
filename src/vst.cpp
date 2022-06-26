@@ -213,7 +213,6 @@ struct VstPlugin
 };
 
 static std::vector<VstPlugin> vstPlugins;
-std::vector<std::string> vstPluginNames;
 
 
 #define CCONST(a, b, c, d)( ( ( (i32) a ) << 24 ) |      \
@@ -384,80 +383,84 @@ static void loadPluginInstance(VstPlugin& vstPlugin)
 
 void Vst::init()
 {
-  for (const auto& file : std::filesystem::directory_iterator(std::filesystem::path("vst")))
+  const std::vector<std::string> paths = string::split(Global::settings.vstPath, ';');
+  for (const std::string& path : paths)
   {
-    if (file.path().extension() != std::filesystem::path(".dll"))
-      continue;
+    for (const auto& file : std::filesystem::directory_iterator(std::filesystem::path(path)))
+    {
+      if (file.path().extension() != std::filesystem::path(".dll"))
+        continue;
 
 #ifdef UNICODE
-    HINSTANCE hinstLib = LoadLibrary(file.path().wstring().c_str());
+      HINSTANCE hinstLib = LoadLibrary(file.path().wstring().c_str());
 #else // UNICODE
-    HINSTANCE hinstLib = LoadLibrary(file.path().string().c_str());
+      HINSTANCE hinstLib = LoadLibrary(file.path().string().c_str());
 #endif // UNICODE
 
-    assert(hinstLib != nullptr);
+      assert(hinstLib != nullptr);
 
-    vstPlugins.push_back(VstPlugin());
-    VstPlugin& vstPlugin = vstPlugins[vstPlugins.size() - 1];
+      vstPlugins.push_back(VstPlugin());
+      VstPlugin& vstPlugin = vstPlugins[vstPlugins.size() - 1];
 
-    vstPlugin.pluginMain = (vstPluginMain)GetProcAddress(hinstLib, "VSTPluginMain");
-    if (vstPlugin.pluginMain == nullptr)
-      vstPlugin.pluginMain = (vstPluginMain)GetProcAddress(hinstLib, "main");
-    assert(vstPlugin.pluginMain != nullptr);
+      vstPlugin.pluginMain = (vstPluginMain)GetProcAddress(hinstLib, "VSTPluginMain");
+      if (vstPlugin.pluginMain == nullptr)
+        vstPlugin.pluginMain = (vstPluginMain)GetProcAddress(hinstLib, "main");
+      assert(vstPlugin.pluginMain != nullptr);
 
-    loadPluginInstance(vstPlugin);
+      loadPluginInstance(vstPlugin);
 
-    vstPlugin.vstVersion = i32(callDispatcher(vstPlugin.aEffect[0], EffOpcode::GetVstVersion, 0, 0, nullptr, 0));
+      vstPlugin.vstVersion = i32(callDispatcher(vstPlugin.aEffect[0], EffOpcode::GetVstVersion, 0, 0, nullptr, 0));
 
-    if (vstPlugin.aEffect[0]->magic == kEffectMagic &&
-      !(to_underlying(vstPlugin.aEffect[0]->flags & EffFlags::IsSynth)) &&
-      to_underlying(vstPlugin.aEffect[0]->flags & EffFlags::CanReplacing))
-    {
-      if (vstPlugin.vstVersion >= 2)
+      if (vstPlugin.aEffect[0]->magic == kEffectMagic &&
+        !(to_underlying(vstPlugin.aEffect[0]->flags & EffFlags::IsSynth)) &&
+        to_underlying(vstPlugin.aEffect[0]->flags & EffFlags::CanReplacing))
       {
-        vstPlugin.name = getString(vstPlugin.aEffect[0], EffOpcode::GetEffectName);
+        if (vstPlugin.vstVersion >= 2)
+        {
+          vstPlugin.name = getString(vstPlugin.aEffect[0], EffOpcode::GetEffectName);
+          if (vstPlugin.name.length() == 0)
+          {
+            vstPlugin.name = getString(vstPlugin.aEffect[0], EffOpcode::GetProductString);
+          }
+        }
         if (vstPlugin.name.length() == 0)
         {
-          vstPlugin.name = getString(vstPlugin.aEffect[0], EffOpcode::GetProductString);
+          vstPlugin.name = file.path().stem().string();
         }
-      }
-      if (vstPlugin.name.length() == 0)
-      {
-        vstPlugin.name = file.path().stem().string();
-      }
 
-      if (vstPlugin.vstVersion >= 2)
-      {
-        vstPlugin.vendor = getString(vstPlugin.aEffect[0], EffOpcode::GetVendorString);
-        vstPlugin.version = INT32_SWAP(callDispatcher(vstPlugin.aEffect[0], EffOpcode::GetVendorVersion, 0, 0, nullptr, 0));
-      }
-      if (vstPlugin.version == 0)
-      {
-        vstPlugin.version = INT32_SWAP(vstPlugin.aEffect[0]->version);
-      }
-
-      if (to_underlying(vstPlugin.aEffect[0]->flags & EffFlags::HasEditor) || vstPlugin.aEffect[0]->numParams != 0)
-      {
-        vstPlugin.interactive = true;
-      }
-
-      vstPlugin.audioIns = vstPlugin.aEffect[0]->numInputs;
-      vstPlugin.audioOuts = vstPlugin.aEffect[0]->numOutputs;
-
-      vstPlugin.midiIns = 0;
-      vstPlugin.midiOuts = 0;
-
-      vstPlugin.automatable = false;
-      for (i32 i = 0; i < vstPlugin.aEffect[0]->numParams; i++)
-      {
-        if (callDispatcher(vstPlugin.aEffect[0], EffOpcode::CanBeAutomated, 0, i, nullptr, 0.0))
+        if (vstPlugin.vstVersion >= 2)
         {
-          vstPlugin.automatable = true;
-          break;
+          vstPlugin.vendor = getString(vstPlugin.aEffect[0], EffOpcode::GetVendorString);
+          vstPlugin.version = INT32_SWAP(callDispatcher(vstPlugin.aEffect[0], EffOpcode::GetVendorVersion, 0, 0, nullptr, 0));
+        }
+        if (vstPlugin.version == 0)
+        {
+          vstPlugin.version = INT32_SWAP(vstPlugin.aEffect[0]->version);
+        }
+
+        if (to_underlying(vstPlugin.aEffect[0]->flags & EffFlags::HasEditor) || vstPlugin.aEffect[0]->numParams != 0)
+        {
+          vstPlugin.interactive = true;
+        }
+
+        vstPlugin.audioIns = vstPlugin.aEffect[0]->numInputs;
+        vstPlugin.audioOuts = vstPlugin.aEffect[0]->numOutputs;
+
+        vstPlugin.midiIns = 0;
+        vstPlugin.midiOuts = 0;
+
+        vstPlugin.automatable = false;
+        for (i32 i = 0; i < vstPlugin.aEffect[0]->numParams; i++)
+        {
+          if (callDispatcher(vstPlugin.aEffect[0], EffOpcode::CanBeAutomated, 0, i, nullptr, 0.0))
+          {
+            vstPlugin.automatable = true;
+            break;
+          }
         }
       }
+      Global::pluginNames.push_back(vstPlugin.name);
     }
-    Global::vstPluginNames.push_back(vstPlugin.name);
   }
 }
 

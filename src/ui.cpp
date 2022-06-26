@@ -12,6 +12,7 @@
 #include "shader.h"
 #include "sound.h"
 #include "vst.h"
+#include "vst3.h"
 
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_DEFAULT_FONT
@@ -1975,9 +1976,9 @@ static i32 selectEffectWindow()
 
     //nk_layout_row_static(ctx, 400.0f, 400.0f, 1);
     nk_layout_row_static(ctx, 18, 230, 1);
-    for (int i = 0; i < Global::vstPluginNames.size(); ++i)
+    for (int i = 0; i < Global::pluginNames.size(); ++i)
     {
-      if (nk_button_label(ctx, Global::vstPluginNames[i].c_str()))
+      if (nk_button_label(ctx, Global::pluginNames[i].c_str()))
       {
         selectedEffect = i;
       }
@@ -2038,7 +2039,7 @@ static void effectsWindow()
       nk_layout_row_template_end(ctx);
       for (int i = 0; i < NUM(Global::effectChain); ++i)
       {
-        if (nk_selectable_label(ctx, (Global::effectChain[i] != -1) ? Global::vstPluginNames[Global::effectChain[i]].c_str() : "...", (Global::effectChain[i] != -1) ? NK_TEXT_LEFT : NK_TEXT_CENTERED, &unusedVar))
+        if (nk_selectable_label(ctx, (Global::effectChain[i] != -1) ? Global::pluginNames[Global::effectChain[i]].c_str() : "...", (Global::effectChain[i] != -1) ? NK_TEXT_LEFT : NK_TEXT_CENTERED, &unusedVar))
         {
           if (Global::effectChain[i] != -1)
           {
@@ -2055,7 +2056,9 @@ static void effectsWindow()
                 if (Global::effectChain[i] == Global::effectChain[j])
                   ++instance;
 
-              Vst::openWindow(Global::vstWindow, instance);
+
+              //Vst::openWindow(Global::vstWindow, instance);
+              Vst3::openWindow(0, 0);
             }
           }
           else

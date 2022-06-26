@@ -62,7 +62,8 @@ f32 Global::toneAssignmentTime = 0.0f;
 #ifdef SUPPORT_VST
 bool Global::effectsWindow = false;
 i32 Global::vstWindow = -1;
-std::vector<std::string> Global::vstPluginNames;
+std::vector<std::string> Global::pluginNames;
+std::vector<std::string> Global::vst3PluginNames;
 i32 Global::effectChain[16] = { ARR_SET16(-1) };
 i32 Global::toneAssignment = 0;
 char Global::vstToneName[256] = "Default";

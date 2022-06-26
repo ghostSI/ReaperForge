@@ -138,9 +138,9 @@ static void loadStatsOnly()
             const std::string pluginName = search2->second.substr(0, seperator);
             if (!pluginName.empty())
             {
-              for (i32 k = 0; k < Global::vstPluginNames.size(); ++k)
+              for (i32 k = 0; k < Global::pluginNames.size(); ++k)
               {
-                if (pluginName == Global::vstPluginNames[k])
+                if (pluginName == Global::pluginNames[k])
                 {
                   toneAssignmentIndex[h][i][j] = k;
                   const std::string base64 = search2->second.substr(seperator + 1);
@@ -271,7 +271,7 @@ static void saveStatsOnly()
           continue;
 
         const std::string base64 = toneAssignmentBase64[h][i][j];
-        toneAssignmentTime.insert({ std::to_string(i) + instChar + std::to_string(j), Global::vstPluginNames[toneAssignmentIndex[h][i][j]] + ';' + base64 });
+        toneAssignmentTime.insert({ std::to_string(i) + instChar + std::to_string(j), Global::pluginNames[toneAssignmentIndex[h][i][j]] + ';' + base64 });
       }
     }
   }
@@ -341,7 +341,7 @@ void Profile::saveTone()
   const i32 h = Global::currentInstrument == InstrumentFlags::BassGuitar ? 0 : 1;
 
   toneAssignmentNames[h][Global::toneAssignment] = std::string(Global::vstToneName);
-  std::vector<i32> instances(Global::vstPluginNames.size());
+  std::vector<i32> instances(Global::pluginNames.size());
   for (i32 i = 0; i < NUM(Global::effectChain); ++i)
   {
     toneAssignmentIndex[h][Global::toneAssignment][i] = Global::effectChain[i];

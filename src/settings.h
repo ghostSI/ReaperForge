@@ -102,6 +102,7 @@ namespace Settings {
     std::string bnkPath = "bnk";
     std::string psarcPath = "psarc";
     std::string vstPath = "vst";
+    std::string vst3Path = "vst3";
     i32 mixerMusicVolume = 100;
     i32 mixerGuitar1Volume = 100;
     i32 mixerBass1Volume = 100;

@@ -233,6 +233,9 @@ namespace Global {
     extern u8 midiLearnNote;
     extern u8 midiNoteBinding[128];
 #endif // SUPPORT_MIDI
+#ifdef SUPPORT_BNK
+    extern bool bnkPluginLoaded;
+#endif // SUPPORT_BNK
     
     extern Settings::Info settings;
 

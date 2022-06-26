@@ -3133,7 +3133,8 @@ void Ui::tick() {
     helpWindow();
 
 #ifdef SUPPORT_BNK
-  bnkWindow();
+  if (Global::bnkPluginLoaded)
+    bnkWindow();
 #endif // SUPPORT_BNK
 }
 

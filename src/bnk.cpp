@@ -34,42 +34,51 @@ static bnkSetRTPCValueFunc bnkSetRTPCValue;
 typedef u32(*bnkInputOnFunc)(u32);
 static bnkInputOnFunc bnkInputOn;
 
-static void loadLibrary()
+static bool loadLibrary()
 {
 #ifdef UNICODE
   HINSTANCE hinstLib = LoadLibrary(file.path().wstring().c_str());
 #else // UNICODE
   HINSTANCE hinstLib = LoadLibrary("bnkPlugin.dll");
 #endif // UNICODE
-  assert(hinstLib != nullptr);
-  bnkInit = (bnkInitFunc)GetProcAddress(hinstLib, "bnkInit");
-  assert(bnkInit != nullptr);
-  bnkTick = (bnkTickFunc)GetProcAddress(hinstLib, "bnkTick");
-  assert(bnkTick != nullptr);
-  bnkLoadBank = (bnkLoadBankFunc)GetProcAddress(hinstLib, "bnkLoadBank");
-  assert(bnkLoadBank != nullptr);
-  bnkPostEvent = (bnkPostEventFunc)GetProcAddress(hinstLib, "bnkPostEvent");
-  assert(bnkPostEvent != nullptr);
-  bnkSetRTPCValue = (bnkSetRTPCValueFunc)GetProcAddress(hinstLib, "bnkSetRTPCValue");
-  assert(bnkSetRTPCValue != nullptr);
-  bnkInputOn = (bnkInputOnFunc)GetProcAddress(hinstLib, "bnkInputOn");
-  assert(bnkInputOn != nullptr);
+  if (hinstLib)
+  {
+    bnkInit = (bnkInitFunc)GetProcAddress(hinstLib, "bnkInit");
+    assert(bnkInit != nullptr);
+    bnkTick = (bnkTickFunc)GetProcAddress(hinstLib, "bnkTick");
+    assert(bnkTick != nullptr);
+    bnkLoadBank = (bnkLoadBankFunc)GetProcAddress(hinstLib, "bnkLoadBank");
+    assert(bnkLoadBank != nullptr);
+    bnkPostEvent = (bnkPostEventFunc)GetProcAddress(hinstLib, "bnkPostEvent");
+    assert(bnkPostEvent != nullptr);
+    bnkSetRTPCValue = (bnkSetRTPCValueFunc)GetProcAddress(hinstLib, "bnkSetRTPCValue");
+    assert(bnkSetRTPCValue != nullptr);
+    bnkInputOn = (bnkInputOnFunc)GetProcAddress(hinstLib, "bnkInputOn");
+    assert(bnkInputOn != nullptr);
+
+    return true;
+  }
+  return false;
 }
 #endif // BNK_DLL_IMPORT
 
 void Bnk::init()
 {
 #ifndef BNK_DLL_IMPORT
-  loadLibrary();
+  Global::bnkPluginLoaded = loadLibrary();
 #endif // BNK_DLL_IMPORT
 
+  if (!Global::bnkPluginLoaded)
+    return;
 
-
-  bnkInit("D:/ReaperForge/bnk/");
+  bnkInit("bnk/");
 }
 
 void Bnk::tick()
 {
+  if (!Global::bnkPluginLoaded)
+    return;
+
   bnkTick();
 }
 

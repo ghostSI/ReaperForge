@@ -75,6 +75,9 @@ std::string Global::midiDeviceNames[Const::midiMaxDeviceCount];
 u8 Global::midiLearnNote = 0xFF;
 u8 Global::midiNoteBinding[128] = { ARR_SET128(0xFF) };
 #endif // SUPPORT_MIDI
+#ifdef SUPPORT_BNK
+bool Global::bnkPluginLoaded = false;
+#endif // SUPPORT_BNK
 
 Settings::Info Global::settings;
 

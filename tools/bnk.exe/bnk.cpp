@@ -31,7 +31,22 @@ int main(int argc, char* argv[])
     {
     case 91:
       {
-        fileData[8] = 88;
+        {
+          // insert set version to 88
+          fileData[8] = 88;
+        }
+        //{
+        //  // remove 4 zero bytes at 25
+        //  if (fileData[25] == 0 && fileData[26] == 0 && fileData[27] == 0 && fileData[28] == 0)
+        //  {
+        //    fileData.erase(fileData.begin() + 25, fileData.begin() + 29);
+        //  }
+        //  else
+        //  {
+        //    puts("expected byte 25 - 28 to be empty");
+        //  }
+        //}
+
         FILE* outFile = fopen(file.path().string().c_str(), "wb");
         fwrite(fileData.data(), fileData.size(), 1, outFile);
         fclose(outFile);

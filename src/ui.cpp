@@ -2461,9 +2461,9 @@ static void songWindow()
       }
       nk_group_end(ctx);
     }
-    }
-  nk_end(ctx);
   }
+  nk_end(ctx);
+}
 
 static void settingsWindow()
 {

@@ -11,11 +11,9 @@
 
 #define DEMO_DEFAULT_POOL_SIZE 4000ULL*1024*1024
 #define DEMO_LENGINE_DEFAULT_POOL_SIZE 4000ULL*1024*1024
+#define SOUND_BANK_PATH L"../../bnk/"
 
-#ifndef AK_OPTIMIZED
-#include <AK/Comm/AkCommunication.h>	// Communication between Wwise and the game (excluded in release build)
-#endif
-
+#include <AK/MusicEngine/Common/AkMusicEngine.h>    // Sound engine
 #include <AK/Plugin/AllPluginsFactories.h>
 #include <AK/SoundEngine/Common/AkCallback.h>    // Callback
 #include <AK/SoundEngine/Common/AkCommonDefs.h>
@@ -39,8 +37,6 @@
 
 #include <queue>
 
-
-// Forward definition
 struct AkAudioFormat;
 class AkAudioBuffer;
 
@@ -64,9 +60,6 @@ public:
 private:
   AkPlayingID m_playingID;
 };
-
-
-
 
 #define MAX_NUM_SOUNDINPUT		4
 
@@ -126,10 +119,6 @@ protected:
 
   AkUInt32 m_MicCount;
 };
-
-
-
-
 
 // SoundInputMgr definition.
 class SoundInputMgr : public SoundInputMgrBase
@@ -3378,209 +3367,258 @@ namespace AK
 //  MAIN
 /////////////////////////
 
-static AkMemSettings memSettings;
-static AkStreamMgrSettings stmSettings;
-static AkDeviceSettings deviceSettings;
-static AkInitSettings initSettings;
-static AkPlatformInitSettings platformInitSettings;
-static CAkFilePackageLowLevelIOBlocking m_pLowLevelIO;
 
-static void GetDefaultSettings(AkMemSettings& out_memSettings,
-  AkStreamMgrSettings& out_stmSettings,
-  AkDeviceSettings& out_deviceSettings,
-  AkInitSettings& out_initSettings,
-  AkPlatformInitSettings& out_platformInitSettings)
+static void AkAssertHookA(const char* in_pszExpression, const char* in_pszFileName, int in_lineNumber)
 {
-  out_memSettings.uMaxNumPools = 20;
-  AK::StreamMgr::GetDefaultSettings(out_stmSettings);
+  abort();
+}
 
-  AK::StreamMgr::GetDefaultDeviceSettings(out_deviceSettings);
-
-  AK::SoundEngine::GetDefaultInitSettings(out_initSettings);
-  out_initSettings.uDefaultPoolSize = DEMO_DEFAULT_POOL_SIZE;
-#if defined( INTEGRATIONDEMO_ASSERT_HOOK )
-  out_initSettings.pfnAssertHook = INTEGRATIONDEMO_ASSERT_HOOK;
-#endif // defined( INTEGRATIONDEMO_ASSERT_HOOK )
-
-  AK::SoundEngine::GetDefaultPlatformInitSettings(out_platformInitSettings);
-  out_platformInitSettings.uLEngineDefaultPoolSize = DEMO_LENGINE_DEFAULT_POOL_SIZE;
+static void MusicCallback(AkCallbackType in_eType, AkCallbackInfo* in_pCallbackInfo)
+{
+  if (in_eType == AK_MusicSyncBar)
+  {
+  }
+  else if (in_eType == AK_MusicSyncBeat)
+  {
+  }
+  else if (in_eType == AK_EndOfEvent)
+  {
+  }
 }
 
 
-static bool InitWwise(
-  AkMemSettings& in_memSettings,
-  AkStreamMgrSettings& in_stmSettings,
-  AkDeviceSettings& in_deviceSettings,
-  AkInitSettings& in_initSettings,
-  AkPlatformInitSettings& in_platformInitSettings
-)
+static AK::IAkPlugin* createPluginCallback(AK::IAkPluginMemAlloc* in_pAllocator)
 {
-  //
-  // Create and initialize an instance of the default memory manager. Note
-  // that you can override the default memory manager with your own. Refer
-  // to the SDK documentation for more information.
-  //
+  return nullptr;
+}
+static AK::IAkPluginParam* createParamCallback(AK::IAkPluginMemAlloc* in_pAllocator)
+{
+  return nullptr;
+}
 
-  AKRESULT res = AK::MemoryMgr::Init(&in_memSettings);
+int main()
+{
+  AkStreamMgrSettings stmSettings;
+  AK::StreamMgr::GetDefaultSettings(stmSettings);
+
+  AkDeviceSettings deviceSettings;
+  AK::StreamMgr::GetDefaultDeviceSettings(deviceSettings);
+
+  AkInitSettings initSettings;
+  AK::SoundEngine::GetDefaultInitSettings(initSettings);
+  initSettings.uDefaultPoolSize = DEMO_DEFAULT_POOL_SIZE;
+  initSettings.pfnAssertHook = AkAssertHookA;
+
+  AkMusicSettings initMusicSettings;
+  initMusicSettings.fStreamingLookAheadRatio = 1.0f;
+  AK::MusicEngine::GetDefaultInitSettings(initMusicSettings);
+
+  AkPlatformInitSettings platformInitSettings;
+  AK::SoundEngine::GetDefaultPlatformInitSettings(platformInitSettings);
+  platformInitSettings.uLEngineDefaultPoolSize = DEMO_LENGINE_DEFAULT_POOL_SIZE;
+
+  if (AK::MemoryMgr::IsInitialized())
+    abort();
+
+  AkMemSettings memSettings;
+  memSettings.uMaxNumPools = 20;
+  AKRESULT res = AK::MemoryMgr::Init(&memSettings);
   if (res != AK_Success)
-  {
-    //__AK_OSCHAR_SNPRINTF(in_szErrorBuffer, in_unErrorBufferCharCount, AKTEXT("AK::MemoryMgr::Init() returned AKRESULT %d"), res);
-    return false;
-  }
+    abort();
 
-  //
-    // Create and initialize an instance of the default streaming manager. Note
-    // that you can override the default streaming manager with your own. Refer
-    // to the SDK documentation for more information.
-    //
+  if (!AK::MemoryMgr::IsInitialized())
+    abort();
 
-    // Customize the Stream Manager settings here.
+  if (!AK::StreamMgr::Create(stmSettings))
+    abort();
 
-  if (!AK::StreamMgr::Create(in_stmSettings))
-  {
-    //AKPLATFORM::SafeStrCpy(in_szErrorBuffer, AKTEXT("AK::StreamMgr::Create() failed"), in_unErrorBufferCharCount);
-    return false;
-  }
-
-  // 
-    // Create a streaming device with blocking low-level I/O handshaking.
-    // Note that you can override the default low-level I/O module with your own. Refer
-    // to the SDK documentation for more information.        
-  //
-
-    // CAkFilePackageLowLevelIOBlocking::Init() creates a streaming device
-    // in the Stream Manager, and registers itself as the File Location Resolver.
-  res = m_pLowLevelIO.Init(in_deviceSettings);
+  CAkFilePackageLowLevelIOBlocking m_pLowLevelIO;
+  res = m_pLowLevelIO.Init(deviceSettings);
   if (res != AK_Success)
-  {
-    //__AK_OSCHAR_SNPRINTF(in_szErrorBuffer, in_unErrorBufferCharCount, AKTEXT("m_lowLevelIO.Init() returned AKRESULT %d"), res);
-    return false;
-  }
+    abort();
 
-  //
-  // Create the Sound Engine
-  // Using default initialization parameters
-  //
-
-  res = AK::SoundEngine::Init(&in_initSettings, &in_platformInitSettings);
+  res = AK::SoundEngine::Init(&initSettings, &platformInitSettings);
   if (res != AK_Success)
-  {
-    //__AK_OSCHAR_SNPRINTF(in_szErrorBuffer, in_unErrorBufferCharCount, AKTEXT("AK::SoundEngine::Init() returned AKRESULT %d"), res);
-    return false;
-  }
+    abort();
 
-#if !defined AK_OPTIMIZED && !defined INTEGRATIONDEMO_DISABLECOMM
-  //
-  // Initialize communications (not in release build!)
-  //
-  AkCommSettings commSettings;
-  AK::Comm::GetDefaultInitSettings(commSettings);
-  res = AK::Comm::Init(commSettings);
+  res = AK::MusicEngine::Init(&initMusicSettings);
   if (res != AK_Success)
-  {
-    //__AK_OSCHAR_SNPRINTF(in_szErrorBuffer, in_unErrorBufferCharCount, AKTEXT("AK::Comm::Init() returned AKRESULT %d. Communication between the Wwise authoring application and the game will not be possible."), res);
-  }
-#endif // AK_OPTIMIZED
+    abort();
 
-  //
-  // Register plugins
-  /// Note: This a convenience method for rapid prototyping. 
-  /// To reduce executable code size register/link only the plug-ins required by your game 
   res = AK::SoundEngine::RegisterAllPlugins();
   if (res != AK_Success)
-  {
-    //__AK_OSCHAR_SNPRINTF(in_szErrorBuffer, in_unErrorBufferCharCount, AKTEXT("AK::SoundEngine::RegisterAllPlugins() returned AKRESULT %d."), res);
-  }
+    abort();
 
-  return true;
-}
+  m_pLowLevelIO.SetBasePath(SOUND_BANK_PATH);
 
-extern "C" __declspec(dllexport) void bnkInit(const char* bnkPath)
-{
-  GetDefaultSettings(memSettings, stmSettings, deviceSettings, initSettings, platformInitSettings);
-
-  //platformInitSettings.hWnd = hWnd;
-
-  bool bSuccess;
-
-
-  // Initialize Wwise
-  bSuccess = InitWwise(memSettings, stmSettings, deviceSettings, initSettings, platformInitSettings);
-  if (!bSuccess)
-  {
-    assert(false);
-  }
-
-  const size_t size = strlen(bnkPath) + 1;
-  wchar_t wText[260];
-  mbstowcs(wText, bnkPath, size);
-
-  // Set the path to the SoundBank Files.
-  m_pLowLevelIO.SetBasePath(wText);
-
-  // Set global language. Low-level I/O devices can use this string to find language-specific assets.
   if (AK::StreamMgr::SetCurrentLanguage(AKTEXT("English(US)")) != AK_Success)
-  {
-    assert(false);
-  }
+    abort();
 
-  // Load the Init sound bank
-// NOTE: The Init sound bank must be the first bank loaded by Wwise!
   AkBankID bankID;
-  if (AK::SoundEngine::LoadBank("init.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
-  {
-    assert(false);
-  }
 
   if (AK::SoundEngine::LoadBank("InitFromIntegrationDemo.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
-  {
-    assert(false);
-  }
+    abort();
+
+  if (AK::SoundEngine::LoadBank("boot.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
+    abort();
+
+  if (AK::SoundEngine::LoadBank("core.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
+    abort();
+
+  if (AK::SoundEngine::LoadBank("init.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
+    abort();
 
   if (!SoundInputMgr::Instance().Initialize())
+    abort();
+#define GAME_OBJECT 1234
+  if (AK::SoundEngine::RegisterGameObj(GAME_OBJECT, "GAME_OBJECT") != AK_Success)
+    abort();
+
+  AkPlayingID playId;
   {
-    assert(false);
+    if (AK::SoundEngine::LoadBank("MusicCallbacks.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
+      abort();
+
+    playId = AK::SoundEngine::PostEvent(AK::EVENTS::PLAYMUSICDEMO1, GAME_OBJECT);
   }
 
-  AK::SoundEngine::RegisterGameObj(0xBA55BABE, "Global");
-
-  // Load the sound bank
-  if (AK::SoundEngine::LoadBank("Microphone.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
   {
-    assert(false);
+    if (AK::SoundEngine::LoadBank("Microphone.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
+      abort();
+    playId = AK::SoundEngine::PostEvent(AK::EVENTS::PLAY_MICROPHONE, GAME_OBJECT);
+    if (SoundInput::Instance().InputOn())
+      SoundInput::Instance().SetPlayingID(playId);
+    playId = AK::SoundEngine::PostEvent(AK::EVENTS::ENABLE_MICROPHONE_DELAY, GAME_OBJECT);
   }
 
-  if (!SoundInput::Instance().InputOn(/*We only support one microphone*/))
+  //{
+  //  if (AK::SoundEngine::LoadBank("_80srevival_drums.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
+  //    abort();
+  //  AkPlayingID playId = AK::SoundEngine::PostEvent(215472875, GAME_OBJECT);
+  //  playId = AK::SoundEngine::PostEvent(1824496774, GAME_OBJECT);
+  //  playId = AK::SoundEngine::PostEvent(2650314417, GAME_OBJECT);
+  //  playId = AK::SoundEngine::PostEvent(3350917424, GAME_OBJECT);
+  //  playId = AK::SoundEngine::PostEvent(3621857864, GAME_OBJECT);
+  //  SoundInput::Instance().SetPlayingID(playId);
+  //}
+
+  //{
+  //  if (AK::SoundEngine::LoadBank("song_brightlights_preview.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
+  //    abort();
+  //  playId = AK::SoundEngine::PostEvent(3051082168, GAME_OBJECT);
+  //  playId = AK::SoundEngine::PostEvent(991327132, GAME_OBJECT);
+  //  SoundInput::Instance().SetPlayingID(playId);
+  //}
+
   {
-    assert(false);
+    if (AK::SoundEngine::LoadBank("amp_at120.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
+      abort();
+
+    AKRESULT result = AK::SoundEngine::RegisterPlugin(AkPluginType::AkPluginTypeEffect, 0, 0x7E, createPluginCallback, createParamCallback);
+    result = AK::SoundEngine::RegisterPlugin(AkPluginType::AkPluginTypeEffect, 0, 0x83, createPluginCallback, createParamCallback);
+
+    playId = AK::SoundEngine::PostEvent(38854832, GAME_OBJECT);
+    playId = AK::SoundEngine::PostEvent(38854833, GAME_OBJECT);
+    playId = AK::SoundEngine::PostEvent(38854834, GAME_OBJECT);
+    playId = AK::SoundEngine::PostEvent(38854835, GAME_OBJECT);
+    playId = AK::SoundEngine::PostEvent(1481751032, GAME_OBJECT);
+    playId = AK::SoundEngine::PostEvent(1481751034, GAME_OBJECT);
+    playId = AK::SoundEngine::PostEvent(1481751035, GAME_OBJECT);
+    playId = AK::SoundEngine::PostEvent(1481751037, GAME_OBJECT);
+    playId = AK::SoundEngine::PostEvent(2220269873, GAME_OBJECT);
+    playId = AK::SoundEngine::PostEvent(3758901456, GAME_OBJECT);
+
+    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 38854833);
+    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 38854834);
+    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 38854835);
+    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 1481751032);
+    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 1481751034);
+    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 1481751035);
+    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 1481751037);
+    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 2220269873);
+    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 3758901456);
+
   }
 
-  AkPlayingID playId = AK::SoundEngine::PostEvent(AK::EVENTS::PLAY_MICROPHONE, 0xBA55BABE);
-}
+  if (AK::SoundEngine::LoadBank("amp_at20.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_bt15.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_bt30.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_bt45.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_ca100.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_ca38.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_ca85.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_cs100.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_cs120.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_cs90.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_en30.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_en50.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_epiphoneelectarcentury.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_epiphoneelectarm.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_epiphoneelectrichawaiian.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_epiphonezephyr.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_gb100.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_gb38.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_gb50.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_gibsonga79.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_gibsonga8.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_gibsonga88.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_hg100.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_hg180.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_hg500.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_marshall1962bluesbreaker.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_marshalldsl100h.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_marshalldsl15h.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_marshalljcm800.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_marshalljtm45.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_marshalljvm410h.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_marshallplexi.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_orangead50.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_orangejimmybean.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_orangeor100.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_orangeor50h.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_orangerockerverb.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_orangetinyterror.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_tw22.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_tw26.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("amp_tw40.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_bt600b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_bt880b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_bt975b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_ch300b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_ch350b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_ch600b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_cs240b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_cs300b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_cs75b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_edene300.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_edenwt550.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_edenwt800.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_ht100b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_ht300b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_ht400b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_lt25b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_lt85b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_amp_orangead200b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_at1150bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_at810bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_bt115bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_bt212bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_bt410bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_ca1510bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_ch210bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_ch310bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_ch410bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_cs112bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_cs15bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_cs410bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_edend115xlt.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_edend212xlt.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  if (AK::SoundEngine::LoadBank("bass_cab_edend410xst.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
 
-extern "C" __declspec(dllexport) void bnkTick()
-{
-  if (AK::SoundEngine::IsInitialized())
-    AK::SoundEngine::RenderAudio();
-}
+  for (;;) {
+    if (AK::SoundEngine::IsInitialized())
+      AK::SoundEngine::RenderAudio();
+  }
 
-extern "C" __declspec(dllexport) AKRESULT bnkLoadBank(const char* name, AkBankID* const bankID)
-{
-  return AK::SoundEngine::LoadBank(name, AK_DEFAULT_POOL_ID, *bankID);
-}
-
-extern "C" __declspec(dllexport) AkPlayingID bnkPostEvent(AkUniqueID eventID)
-{
-  return AK::SoundEngine::PostEvent(eventID, 0xBA55BABE);
-}
-
-extern "C" __declspec(dllexport) AKRESULT bnkSetRTPCValue(AkRtpcID rtpcId, AkRtpcValue value)
-{
-  return AK::SoundEngine::SetRTPCValue(rtpcId, value, 0xBA55BABE);
-}
-
-extern "C" __declspec(dllexport) void bnkInputOn(AkPlayingID playID)
-{
-  SoundInput::Instance().InputOn();
-  SoundInput::Instance().SetPlayingID(playID);
+  return 0;
 }

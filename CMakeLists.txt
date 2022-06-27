@@ -98,7 +98,6 @@ set(SOURCE_FILES
         src/main.cpp
         src/manifest.cpp
         src/midi.cpp
-        src/module_win32.cpp
         src/ogg.cpp
         src/opengl.cpp
         src/pcm.cpp

@@ -156,10 +156,26 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
       switch (srcBuffer)
       {
       case 0:
-        Vst::processBlock(Global::effectChain[i].index, instance, buffer0Vst, buffer1Vst, (len / sizeof(f32)) / 2);
+        switch (Global::effectChain[i].effectType)
+        {
+        case EffectType::vst:
+          Vst::processBlock(Global::effectChain[i].index, instance, buffer0Vst, buffer1Vst, (len / sizeof(f32)) / 2);
+          break;
+        case EffectType::vst3:
+          Vst3::processBlock(0, instance, buffer0Vst, buffer1Vst, (len / sizeof(f32)) / 2);
+          break;
+        }
         break;
       case 1:
-        Vst::processBlock(Global::effectChain[i].index, instance, buffer1Vst, buffer0Vst, (len / sizeof(f32)) / 2);
+        switch (Global::effectChain[i].effectType)
+        {
+        case EffectType::vst:
+          Vst::processBlock(Global::effectChain[i].index, instance, buffer1Vst, buffer0Vst, (len / sizeof(f32)) / 2);
+          break;
+        case EffectType::vst3:
+          Vst::processBlock(0, instance, buffer1Vst, buffer0Vst, (len / sizeof(f32)) / 2);
+          break;
+        }
         break;
       default:
         assert(false);

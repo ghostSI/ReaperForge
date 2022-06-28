@@ -1967,9 +1967,9 @@ static void vstWindow()
   nk_end(ctx);
 }
 
-static i32 selectEffectWindow()
+static Effect selectEffectWindow()
 {
-  i32 selectedEffect = -1;
+  Effect selectedEffect;
 
   if (nk_begin(ctx, "Select Effect", nk_rect(600, 100, 260, 500),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
@@ -1980,7 +1980,12 @@ static i32 selectEffectWindow()
     {
       if (nk_button_label(ctx, Global::pluginNames[i].c_str()))
       {
-        selectedEffect = i;
+        selectedEffect.index = i;
+        if (i > 12)
+        {
+          selectedEffect.index = 0;
+          selectedEffect.effectType = EffectType::vst3;
+        }
       }
     }
   }
@@ -2056,9 +2061,7 @@ static void effectsWindow()
                 if (Global::effectChain[i].index == Global::effectChain[j].index)
                   ++instance;
 
-
-              //Vst::openWindow(Global::vstWindow, instance);
-              Vst::openWindow(0, 0);
+              Vst::openWindow(Global::vstWindow, instance);
             }
           }
           else
@@ -2111,7 +2114,7 @@ static void effectsWindow()
 
   if (slotSelectEffectWindow >= 0)
   {
-    Global::effectChain[slotSelectEffectWindow].index = selectEffectWindow();
+    Global::effectChain[slotSelectEffectWindow] = selectEffectWindow();
     if (Global::effectChain[slotSelectEffectWindow].index != -1)
       slotSelectEffectWindow = -1;
   }

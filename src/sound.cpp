@@ -61,23 +61,11 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
   cv.wait(lock, [] { return recordingFirst ? true : false; });
 
   const i32 channelOffset = Global::settings.audioChannelInstrument[0] == 0 ? 0 : 4;
-  for (i32 i = 0; i < len; i += 8)
+  switch (Global::settings.audioSignalChain)
   {
-    switch (Global::settings.audioSignalChain)
+  case SignalChain::bnk:
+    for (i32 i = 0; i < len; i += 8)
     {
-    case SignalChain::bnk:
-      buffer0.vst.left[i / 2] = stream[i + channelOffset];
-      buffer0.vst.left[i / 2 + 1] = stream[i + channelOffset + 1];
-      buffer0.vst.left[i / 2 + 2] = stream[i + channelOffset + 2];
-      buffer0.vst.left[i / 2 + 3] = stream[i + channelOffset + 3];
-
-      buffer0.vst.right[i / 2] = stream[i + channelOffset];
-      buffer0.vst.right[i / 2 + 1] = stream[i + channelOffset + 1];
-      buffer0.vst.right[i / 2 + 2] = stream[i + channelOffset + 2];
-      buffer0.vst.right[i / 2 + 3] = stream[i + channelOffset + 3];
-      break;
-    case SignalChain::vst:
-      // Left Output Channel
       buffer0.sdl[i] = stream[i + channelOffset];
       buffer0.sdl[i + 1] = stream[i + channelOffset + 1];
       buffer0.sdl[i + 2] = stream[i + channelOffset + 2];
@@ -88,10 +76,24 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
       buffer0.sdl[i + 5] = stream[i + channelOffset + 1];
       buffer0.sdl[i + 6] = stream[i + channelOffset + 2];
       buffer0.sdl[i + 7] = stream[i + channelOffset + 3];
-      break;
-    default:
-      assert(false);
     }
+    break;
+  case SignalChain::vst:
+    for (i32 i = 0; i < len; i += 8)
+    {
+      buffer0.vst.left[i / 2] = stream[i + channelOffset];
+      buffer0.vst.left[i / 2 + 1] = stream[i + channelOffset + 1];
+      buffer0.vst.left[i / 2 + 2] = stream[i + channelOffset + 2];
+      buffer0.vst.left[i / 2 + 3] = stream[i + channelOffset + 3];
+
+      buffer0.vst.right[i / 2] = stream[i + channelOffset];
+      buffer0.vst.right[i / 2 + 1] = stream[i + channelOffset + 1];
+      buffer0.vst.right[i / 2 + 2] = stream[i + channelOffset + 2];
+      buffer0.vst.right[i / 2 + 3] = stream[i + channelOffset + 3];
+    }
+    break;
+  default:
+    assert(false);
   }
 
   f32 instrumentVolume = 0.0f;

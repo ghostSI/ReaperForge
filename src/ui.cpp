@@ -2039,9 +2039,9 @@ static void effectsWindow()
       nk_layout_row_template_end(ctx);
       for (int i = 0; i < NUM(Global::effectChain); ++i)
       {
-        if (nk_selectable_label(ctx, (Global::effectChain[i] != -1) ? Global::pluginNames[Global::effectChain[i]].c_str() : "...", (Global::effectChain[i] != -1) ? NK_TEXT_LEFT : NK_TEXT_CENTERED, &unusedVar))
+        if (nk_selectable_label(ctx, (Global::effectChain[i].index != -1) ? Global::pluginNames[Global::effectChain[i].index].c_str() : "...", (Global::effectChain[i].index != -1) ? NK_TEXT_LEFT : NK_TEXT_CENTERED, &unusedVar))
         {
-          if (Global::effectChain[i] != -1)
+          if (Global::effectChain[i].index != -1)
           {
             if (Global::vstWindow != -1)
             {
@@ -2050,15 +2050,15 @@ static void effectsWindow()
             }
             else
             {
-              Global::vstWindow = Global::effectChain[i];
+              Global::vstWindow = Global::effectChain[i].index;
               i32 instance = 0;
               for (i32 j = 0; j < i; ++j)
-                if (Global::effectChain[i] == Global::effectChain[j])
+                if (Global::effectChain[i].index == Global::effectChain[j].index)
                   ++instance;
 
 
               //Vst::openWindow(Global::vstWindow, instance);
-              Vst3::openWindow(0, 0);
+              Vst::openWindow(0, 0);
             }
           }
           else
@@ -2066,19 +2066,19 @@ static void effectsWindow()
             slotSelectEffectWindow = i;
           }
         }
-        if (Global::effectChain[i] >= 0)
+        if (Global::effectChain[i].index >= 0)
         {
           if (nk_button_label(ctx, "X"))
           {
-            Global::effectChain[i] = -1;
+            Global::effectChain[i].index = -1;
           }
           if (i >= 1)
           {
             if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_UP))
             {
-              const i32 tmp = Global::effectChain[i];
+              const i32 tmp = Global::effectChain[i].index;
               Global::effectChain[i] = Global::effectChain[i - 1];
-              Global::effectChain[i - 1] = tmp;
+              Global::effectChain[i - 1].index = tmp;
             }
           }
           else
@@ -2089,9 +2089,9 @@ static void effectsWindow()
           {
             if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_DOWN))
             {
-              const i32 tmp = Global::effectChain[i];
+              const i32 tmp = Global::effectChain[i].index;
               Global::effectChain[i] = Global::effectChain[i + 1];
-              Global::effectChain[i + 1] = tmp;
+              Global::effectChain[i + 1].index = tmp;
             }
           }
           else
@@ -2111,8 +2111,8 @@ static void effectsWindow()
 
   if (slotSelectEffectWindow >= 0)
   {
-    Global::effectChain[slotSelectEffectWindow] = selectEffectWindow();
-    if (Global::effectChain[slotSelectEffectWindow] != -1)
+    Global::effectChain[slotSelectEffectWindow].index = selectEffectWindow();
+    if (Global::effectChain[slotSelectEffectWindow].index != -1)
       slotSelectEffectWindow = -1;
   }
 }
@@ -2531,6 +2531,13 @@ static void settingsWindow()
         Global::settings.audioChannelInstrument[0] = nk_combo(ctx, channelNames, NUM(channelNames), Global::settings.audioChannelInstrument[0], 25, nk_vec2(200, 200));
         nk_label(ctx, "Instrument 1", NK_TEXT_LEFT);
         Global::settings.audioChannelInstrument[1] = nk_combo(ctx, channelNames, NUM(channelNames), Global::settings.audioChannelInstrument[1], 25, nk_vec2(200, 200));
+
+        nk_label(ctx, "SignalChain", NK_TEXT_LEFT);
+        static const char* signalChainNames[] = {
+          "bnk",
+          "vst"
+        };
+        Global::settings.audioSignalChain = SignalChain(nk_combo(ctx, signalChainNames, NUM(signalChainNames), to_underlying(Global::settings.audioSignalChain), 25, nk_vec2(200, 200)));
       }
       nk_tree_pop(ctx);
     }

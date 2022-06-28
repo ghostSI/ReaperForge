@@ -222,7 +222,7 @@ namespace Global {
     extern i32 vstWindow;
     extern std::vector<std::string> pluginNames;
     extern std::vector<std::string> vst3PluginNames;
-    extern i32 effectChain[16];
+    extern Effect effectChain[16];
     extern i32 toneAssignment;
     extern char vstToneName[256];
     extern i32 vstToneNameLength;

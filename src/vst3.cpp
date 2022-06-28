@@ -1052,7 +1052,7 @@ void Vst3::init()
 
       vst3Plugins.push_back(Vst3Plugin());
       Vst3Plugin& vst3Plugin = vst3Plugins[vst3Plugins.size() - 1];
-      vst3Plugin.processSetup.processMode = Steinberg::Vst::kRealtime;
+      vst3Plugin.processSetup.processMode = Steinberg::Vst::kOffline;
       vst3Plugin.processSetup.symbolicSampleSize = Steinberg::Vst::kSample32;
       vst3Plugin.processSetup.maxSamplesPerBlock = 8192;
       vst3Plugin.processSetup.sampleRate = f64(Global::settings.audioSampleRate);
@@ -1118,6 +1118,26 @@ void Vst3::init()
 
           vst3Plugin.componentConnectionProxy->connect(controllerConnectionPoint);
           vst3Plugin.controllerConnectionProxy->connect(componentConnectionPoint);
+        }
+
+
+
+        assert(vst3Plugin.audioProcessor->canProcessSampleSize(vst3Plugin.processSetup.symbolicSampleSize) == Steinberg::kResultOk);
+        {
+          const Steinberg::tresult result = vst3Plugin.audioProcessor->setupProcessing(vst3Plugin.processSetup);
+          assert(result == Steinberg::kResultOk);
+        }
+        {
+          const Steinberg::tresult result = vst3Plugin.effectComponent->setActive(true);
+          assert(result == Steinberg::kResultOk);
+        }
+        {
+          /*const Steinberg::tresult result =*/ vst3Plugin.audioProcessor->setProcessing(true);
+          //assert(result == Steinberg::kResultOk);
+        }
+        {
+          const u32 latency = vst3Plugin.audioProcessor->getLatencySamples();
+          assert(latency < 512);
         }
       }
     }
@@ -1211,12 +1231,82 @@ void Vst3::closeWindow(i32 index)
 
 u64 Vst3::processBlock(i32 index, i32 instance, f32** inBlock, f32** outBlock, i32 blockLen)
 {
-  //assert(index >= 0);
-  //assert(index < vst3Plugins.size());
+  assert(index >= 0);
+  assert(index < vst3Plugins.size());
 
-  //if (blockLen >= 0)
-  //  vst3Plugins[index].aEffect[instance]->processReplacing(vst3Plugins[index].aEffect[instance], inBlock, outBlock, blockLen);
+  Vst3Plugin& vst3Plugin = vst3Plugins[index];
 
+  using namespace Steinberg;
+  if (auto audioProcessor = FUnknownPtr<Vst::IAudioProcessor>(vst3Plugin.effectComponent))
+  {
+    Vst::ProcessData data;
+    data.processMode = vst3Plugin.processSetup.processMode;
+    data.symbolicSampleSize = vst3Plugin.processSetup.symbolicSampleSize;
+    data.numSamples = blockLen;
+    data.numInputs = vst3Plugin.effectComponent->getBusCount(Vst::kAudio, Vst::kInput);
+    data.numOutputs = vst3Plugin.effectComponent->getBusCount(Vst::kAudio, Vst::kOutput);
+
+    if (data.numInputs > 0)
+    {
+      int inputBlocksOffset{ 0 };
+
+      data.inputs = static_cast<Vst::AudioBusBuffers*>(alloca(sizeof(Vst::AudioBusBuffers) * data.numInputs));
+
+      for (int busIndex = 0; busIndex < data.numInputs; ++busIndex)
+      {
+        Vst::BusInfo busInfo{ };
+        if (vst3Plugin.effectComponent->getBusInfo(Vst::kAudio, Vst::kInput, busIndex, busInfo) != kResultOk)
+        {
+          return 0;
+        }
+        if (busInfo.busType == Vst::kMain)
+        {
+          data.inputs[busIndex].numChannels = busInfo.channelCount;
+          data.inputs[busIndex].channelBuffers32 = const_cast<f32**>(inBlock + inputBlocksOffset);
+          inputBlocksOffset += busInfo.channelCount;
+        }
+        else
+        {
+          //aux is not yet supported
+          data.inputs[busIndex].numChannels = 0;
+          data.inputs[busIndex].channelBuffers32 = nullptr;
+        }
+        data.inputs[busIndex].silenceFlags = 0UL;
+      }
+    }
+    if (data.numOutputs > 0)
+    {
+      int outputBlocksOffset{ 0 };
+
+      data.outputs = static_cast<Vst::AudioBusBuffers*>(alloca(sizeof(Vst::AudioBusBuffers) * data.numOutputs));
+      for (int busIndex = 0; busIndex < data.numOutputs; ++busIndex)
+      {
+        Vst::BusInfo busInfo{ };
+        if (vst3Plugin.effectComponent->getBusInfo(Vst::kAudio, Vst::kOutput, busIndex, busInfo) != kResultOk)
+        {
+          return 0;
+        }
+        if (busInfo.busType == Vst::kMain)
+        {
+          data.outputs[busIndex].numChannels = busInfo.channelCount;
+          data.outputs[busIndex].channelBuffers32 = const_cast<float**>(outBlock + outputBlocksOffset);
+          outputBlocksOffset += busInfo.channelCount;
+        }
+        else
+        {
+          //aux is not yet supported
+          data.outputs[busIndex].numChannels = 0;
+          data.outputs[busIndex].channelBuffers32 = nullptr;
+        }
+        data.outputs[busIndex].silenceFlags = 0UL;
+      }
+    }
+
+    const auto processResult = audioProcessor->process(data);
+
+    return processResult == kResultOk ?
+      data.numSamples : 0;
+  }
   return blockLen;
 }
 

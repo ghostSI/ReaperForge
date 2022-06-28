@@ -64,7 +64,7 @@ bool Global::effectsWindow = false;
 i32 Global::vstWindow = -1;
 std::vector<std::string> Global::pluginNames;
 std::vector<std::string> Global::vst3PluginNames;
-i32 Global::effectChain[16] = { ARR_SET16(-1) };
+Effect Global::effectChain[16] = {};
 i32 Global::toneAssignment = 0;
 char Global::vstToneName[256] = "Default";
 i32 Global::vstToneNameLength = sizeof("Default") - 1;

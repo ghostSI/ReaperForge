@@ -38,6 +38,19 @@ enum struct SignalChain : i8
   COUNT
 };
 
+enum struct EffectType : i8
+{
+  vst,
+  vst3,
+  COUNT
+};
+
+struct Effect
+{
+  i16 index = -1;
+  EffectType effectType = EffectType::vst;
+};
+
 enum struct PsarcGear
 {
   none = -1,

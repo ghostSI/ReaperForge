@@ -167,15 +167,15 @@ static void loadStatsOnly()
 
     for (i32 j = 0; j < NUM(Global::effectChain); ++j)
     {
-      Global::effectChain[j] = toneAssignmentIndex[1][0][j];
-      if (Global::effectChain[j] >= 0)
+      Global::effectChain[j].index = toneAssignmentIndex[1][0][j];
+      if (Global::effectChain[j].index >= 0)
       {
         i32 instance = 0;
         for (i32 k = 0; k < j; ++k)
-          if (Global::effectChain[j] == Global::effectChain[k])
+          if (Global::effectChain[j].index == Global::effectChain[k].index)
             ++instance;
 
-        Vst::loadParameter(Global::effectChain[j], instance, toneAssignmentBase64[1][0][j]);
+        Vst::loadParameter(Global::effectChain[j].index, instance, toneAssignmentBase64[1][0][j]);
       }
     }
   }
@@ -232,12 +232,12 @@ void Profile::tick()
     Global::toneAssignmentTime = Global::time;
     for (i32 i = 0; i < NUM(Global::effectChain); ++i)
     {
-      Global::effectChain[i] = toneAssignmentIndex[h][Global::toneAssignment][i];
-      if (Global::effectChain[i] != -1)
+      Global::effectChain[i].index = toneAssignmentIndex[h][Global::toneAssignment][i];
+      if (Global::effectChain[i].index != -1)
       {
         i32 instance = 0;
         for (i32 j = 0; j < i; ++j)
-          if (Global::effectChain[i] == Global::effectChain[j])
+          if (Global::effectChain[i].index == Global::effectChain[j].index)
             ++instance;
 
         Vst::loadParameter(i, instance, toneAssignmentBase64[h][Global::toneAssignment][i]);
@@ -344,15 +344,15 @@ void Profile::saveTone()
   std::vector<i32> instances(Global::pluginNames.size());
   for (i32 i = 0; i < NUM(Global::effectChain); ++i)
   {
-    toneAssignmentIndex[h][Global::toneAssignment][i] = Global::effectChain[i];
-    if (Global::effectChain[i] >= 0)
+    toneAssignmentIndex[h][Global::toneAssignment][i] = Global::effectChain[i].index;
+    if (Global::effectChain[i].index >= 0)
     {
       i32 instance = 0;
       for (i32 j = 0; j < i; ++j)
-        if (Global::effectChain[i] == Global::effectChain[j])
+        if (Global::effectChain[i].index == Global::effectChain[j].index)
           ++instance;
 
-      toneAssignmentBase64[h][Global::toneAssignment][i] = Vst::saveParameters(Global::effectChain[i], instance);
+      toneAssignmentBase64[h][Global::toneAssignment][i] = Vst::saveParameters(Global::effectChain[i].index, instance);
     }
   }
 }

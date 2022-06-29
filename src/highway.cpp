@@ -1102,14 +1102,14 @@ static void drawToneAssignment()
     const f32 scaleY = 1.5f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
     Font::draw(text, 0.95f - scaleX, 0.6f, 0.0f, scaleX, scaleY);
   }
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
   {
     const i32 letters = Global::vstToneNameLength;
     const f32 scaleX = 3.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
     const f32 scaleY = 3.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
     Font::draw(Global::vstToneName, 0.95f - scaleX, 0.5f, 0.0f, scaleX, scaleY);
   }
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
 }
 
 static void drawLyricsUsedText(GLuint shader, i32& line0Cur, i32 line0Begin, i32 line0Active)

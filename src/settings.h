@@ -10,7 +10,7 @@ namespace Settings {
     i32 audioBufferSize = 1024;
     i32 audioChannelInstrument[2] = { 0, 1 };
     i32 audioSampleRate = 48000;
-    SignalChain audioSignalChain = SignalChain::bnk;
+    SignalChain audioSignalChain = SignalChain::soundBank;
     f32 cameraBreakRadius = 2.0f;
     f32 cameraFieldOfView = 60.0f;
     f32 cameraMaximumBreakForce = 2.0f;

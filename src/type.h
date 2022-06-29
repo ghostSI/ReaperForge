@@ -33,22 +33,9 @@ enum struct SaveMode : u8
 
 enum struct SignalChain : i8
 {
-  bnk,
-  vst,
+  soundBank,
+  plugin,
   COUNT
-};
-
-enum struct EffectType : i8
-{
-  vst,
-  vst3,
-  COUNT
-};
-
-struct Effect
-{
-  i16 index = -1;
-  EffectType effectType = EffectType::vst;
 };
 
 enum struct PsarcGear

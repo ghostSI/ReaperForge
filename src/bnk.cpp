@@ -64,7 +64,7 @@ static bool loadLibrary()
 
 void Bnk::init()
 {
-  if (Global::settings.audioSignalChain != SignalChain::bnk)
+  if (Global::settings.audioSignalChain != SignalChain::soundBank)
     return;
 
 #ifndef BNK_DLL_IMPORT
@@ -102,7 +102,7 @@ Bnk::Result Bnk::setRTPCValue(Bnk::RtpcID rtpcId, Bnk::RtpcValue value)
 
 void Bnk::inputOn(Bnk::PlayID playID)
 {
-  if (Global::settings.audioSignalChain != SignalChain::bnk)
+  if (Global::settings.audioSignalChain != SignalChain::soundBank)
     return;
 
   bnkInputOn(playID);

@@ -56,19 +56,18 @@ f32 Global::musicTimeElapsed = 0.0f;
 f32 Global::musicSpeedMultiplier = 1.0f;
 char Global::searchText[256] = "";
 i32 Global::searchTextLength = 0;
-bool Global::toneWindow = false;
-bool Global::helpWindow = false;
+bool Global::uiToneWindowOpen = false;
+bool Global::uiHelpWindowOpen = false;
 f32 Global::toneAssignmentTime = 0.0f;
-#ifdef SUPPORT_VST
-bool Global::effectsWindow = false;
-i32 Global::vstWindow = -1;
+#ifdef SUPPORT_PLUGIN
+bool Global::uiEffectChainWindowOpen = false;
+i32 Global::pluginWindow = { -1 };
 std::vector<std::string> Global::pluginNames;
-std::vector<std::string> Global::vst3PluginNames;
-Effect Global::effectChain[16] = {};
+i32 Global::effectChain[16] = { ARR_SET16(-1) };
 i32 Global::toneAssignment = 0;
 char Global::vstToneName[256] = "Default";
 i32 Global::vstToneNameLength = sizeof("Default") - 1;
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
 #ifdef SUPPORT_MIDI
 i32 Global::midiDeviceCount = 0;
 i32 Global::connectedDevices[Const::midiMaxDeviceCount] = {};

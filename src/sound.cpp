@@ -3,9 +3,8 @@
 #include "data.h"
 #include "global.h"
 #include "pcm.h"
+#include "plugin.h"
 #include "settings.h"
-#include "vst.h"
-#include "vst3.h"
 
 #include "chromagram.h"
 #include "chordDetector.h"
@@ -23,20 +22,20 @@ static SDL_AudioSpec want_in;
 union Buffer
 {
   u8 sdl[Const::audioMaximumPossibleBufferSize * sizeof(f32) * 2]; // SDL format: L0, R0, L1, R1, ...
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
   struct
   {
-    u8 left[Const::audioMaximumPossibleBufferSize * sizeof(f32)]; // VST format: L0, L1, ...
-    u8 right[Const::audioMaximumPossibleBufferSize * sizeof(f32)];  // VST format: R0, R1, ...
-  } vst;
-#endif // SUPPORT_VST
+    u8 left[Const::audioMaximumPossibleBufferSize * sizeof(f32)]; // VST and VST3 format: L0, L1, ...
+    u8 right[Const::audioMaximumPossibleBufferSize * sizeof(f32)];  // VST and VST3 format: R0, R1, ...
+  } plugin;
+#endif // SUPPORT_PLUGIN
 };
 static Buffer buffer0;
-#ifdef SUPPORT_VST
-static f32* buffer0Vst[2] = { (f32*)buffer0.vst.left, (f32*)buffer0.vst.right };
+#ifdef SUPPORT_PLUGIN
+static f32* buffer0Vst[2] = { (f32*)buffer0.plugin.left, (f32*)buffer0.plugin.right };
 static Buffer buffer1;
-static f32* buffer1Vst[2] = { (f32*)buffer1.vst.left, (f32*)buffer1.vst.right };
-#endif // SUPPORT_VST
+static f32* buffer1Vst[2] = { (f32*)buffer1.plugin.left, (f32*)buffer1.plugin.right };
+#endif // SUPPORT_PLUGIN
 static u8 buffer_mixer[Const::audioMaximumPossibleBufferSize * sizeof(f32) * 2];
 std::vector<double> frame(Global::settings.audioBufferSize);
 
@@ -45,7 +44,7 @@ static SDL_AudioSpec want_out;
 
 static std::condition_variable cv;
 static std::mutex mutex;
-bool recordingFirst = true;
+static bool recordingFirst = true;
 
 static Chromagram chromagram(Global::settings.audioBufferSize, Global::settings.audioSampleRate);
 static ChordDetector chordDetector;
@@ -63,7 +62,7 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
   const i32 channelOffset = Global::settings.audioChannelInstrument[0] == 0 ? 0 : 4;
   switch (Global::settings.audioSignalChain)
   {
-  case SignalChain::bnk:
+  case SignalChain::soundBank:
     for (i32 i = 0; i < len; i += 8)
     {
       buffer0.sdl[i] = stream[i + channelOffset];
@@ -78,18 +77,18 @@ static void audioRecordingCallback(void* userdata, u8* stream, int len)
       buffer0.sdl[i + 7] = stream[i + channelOffset + 3];
     }
     break;
-  case SignalChain::vst:
+  case SignalChain::plugin:
     for (i32 i = 0; i < len; i += 8)
     {
-      buffer0.vst.left[i / 2] = stream[i + channelOffset];
-      buffer0.vst.left[i / 2 + 1] = stream[i + channelOffset + 1];
-      buffer0.vst.left[i / 2 + 2] = stream[i + channelOffset + 2];
-      buffer0.vst.left[i / 2 + 3] = stream[i + channelOffset + 3];
+      buffer0.plugin.left[i / 2] = stream[i + channelOffset];
+      buffer0.plugin.left[i / 2 + 1] = stream[i + channelOffset + 1];
+      buffer0.plugin.left[i / 2 + 2] = stream[i + channelOffset + 2];
+      buffer0.plugin.left[i / 2 + 3] = stream[i + channelOffset + 3];
 
-      buffer0.vst.right[i / 2] = stream[i + channelOffset];
-      buffer0.vst.right[i / 2 + 1] = stream[i + channelOffset + 1];
-      buffer0.vst.right[i / 2 + 2] = stream[i + channelOffset + 2];
-      buffer0.vst.right[i / 2 + 3] = stream[i + channelOffset + 3];
+      buffer0.plugin.right[i / 2] = stream[i + channelOffset];
+      buffer0.plugin.right[i / 2 + 1] = stream[i + channelOffset + 1];
+      buffer0.plugin.right[i / 2 + 2] = stream[i + channelOffset + 2];
+      buffer0.plugin.right[i / 2 + 3] = stream[i + channelOffset + 3];
     }
     break;
   default:
@@ -136,46 +135,30 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
   SDL_memset(stream, 0, len);
   switch (Global::settings.audioSignalChain)
   {
-  case SignalChain::bnk:
+  case SignalChain::soundBank:
     SDL_MixAudioFormat(stream, buffer0.sdl, AUDIO_F32LSB, len, Global::settings.mixerGuitar1Volume);
     break;
-  case SignalChain::vst:
+  case SignalChain::plugin:
   {
-    u8 srcBuffer = 0;
+    bool srcBuffer = 0;
 
     for (i32 i = 0; i < NUM(Global::effectChain); ++i)
     {
-      if (Global::effectChain[i].index < 0)
+      if (Global::effectChain[i] < 0)
         continue;
 
       i32 instance = 0;
       for (i32 j = 0; j < i; ++j)
-        if (Global::effectChain[i].index == Global::effectChain[j].index)
+        if (Global::effectChain[i] == Global::effectChain[j])
           ++instance;
 
       switch (srcBuffer)
       {
       case 0:
-        switch (Global::effectChain[i].effectType)
-        {
-        case EffectType::vst:
-          Vst::processBlock(Global::effectChain[i].index, instance, buffer0Vst, buffer1Vst, (len / sizeof(f32)) / 2);
-          break;
-        case EffectType::vst3:
-          Vst3::processBlock(0, instance, buffer0Vst, buffer1Vst, (len / sizeof(f32)) / 2);
-          break;
-        }
+        Plugin::processBlock(Global::effectChain[i], instance, buffer0Vst, buffer1Vst, (len / sizeof(f32)) / 2);
         break;
       case 1:
-        switch (Global::effectChain[i].effectType)
-        {
-        case EffectType::vst:
-          Vst::processBlock(Global::effectChain[i].index, instance, buffer1Vst, buffer0Vst, (len / sizeof(f32)) / 2);
-          break;
-        case EffectType::vst3:
-          Vst::processBlock(0, instance, buffer1Vst, buffer0Vst, (len / sizeof(f32)) / 2);
-          break;
-        }
+        Plugin::processBlock(Global::effectChain[i], instance, buffer1Vst, buffer0Vst, (len / sizeof(f32)) / 2);
         break;
       default:
         assert(false);
@@ -188,30 +171,30 @@ static void audioPlaybackCallback(void* userdata, u8* stream, i32 len)
     case 0:
       for (i32 i = 0; i < len; i += 8)
       {
-        buffer1.sdl[i] = buffer0.vst.left[i / 2];
-        buffer1.sdl[i + 1] = buffer0.vst.left[i / 2 + 1];
-        buffer1.sdl[i + 2] = buffer0.vst.left[i / 2 + 2];
-        buffer1.sdl[i + 3] = buffer0.vst.left[i / 2 + 3];
+        buffer1.sdl[i] = buffer0.plugin.left[i / 2];
+        buffer1.sdl[i + 1] = buffer0.plugin.left[i / 2 + 1];
+        buffer1.sdl[i + 2] = buffer0.plugin.left[i / 2 + 2];
+        buffer1.sdl[i + 3] = buffer0.plugin.left[i / 2 + 3];
 
-        buffer1.sdl[i + 4] = buffer0.vst.right[i / 2];
-        buffer1.sdl[i + 5] = buffer0.vst.right[i / 2 + 1];
-        buffer1.sdl[i + 6] = buffer0.vst.right[i / 2 + 2];
-        buffer1.sdl[i + 7] = buffer0.vst.right[i / 2 + 3];
+        buffer1.sdl[i + 4] = buffer0.plugin.right[i / 2];
+        buffer1.sdl[i + 5] = buffer0.plugin.right[i / 2 + 1];
+        buffer1.sdl[i + 6] = buffer0.plugin.right[i / 2 + 2];
+        buffer1.sdl[i + 7] = buffer0.plugin.right[i / 2 + 3];
       }
       SDL_MixAudioFormat(stream, buffer1.sdl, AUDIO_F32LSB, len, Global::settings.mixerGuitar1Volume);
       break;
     case 1:
       for (i32 i = 0; i < len; i += 8)
       {
-        buffer0.sdl[i] = buffer1.vst.left[i / 2];
-        buffer0.sdl[i + 1] = buffer1.vst.left[i / 2 + 1];
-        buffer0.sdl[i + 2] = buffer1.vst.left[i / 2 + 2];
-        buffer0.sdl[i + 3] = buffer1.vst.left[i / 2 + 3];
+        buffer0.sdl[i] = buffer1.plugin.left[i / 2];
+        buffer0.sdl[i + 1] = buffer1.plugin.left[i / 2 + 1];
+        buffer0.sdl[i + 2] = buffer1.plugin.left[i / 2 + 2];
+        buffer0.sdl[i + 3] = buffer1.plugin.left[i / 2 + 3];
 
-        buffer0.sdl[i + 4] = buffer1.vst.right[i / 2];
-        buffer0.sdl[i + 5] = buffer1.vst.right[i / 2 + 1];
-        buffer0.sdl[i + 6] = buffer1.vst.right[i / 2 + 2];
-        buffer0.sdl[i + 7] = buffer1.vst.right[i / 2 + 3];
+        buffer0.sdl[i + 4] = buffer1.plugin.right[i / 2];
+        buffer0.sdl[i + 5] = buffer1.plugin.right[i / 2 + 1];
+        buffer0.sdl[i + 6] = buffer1.plugin.right[i / 2 + 2];
+        buffer0.sdl[i + 7] = buffer1.plugin.right[i / 2 + 3];
       }
       SDL_MixAudioFormat(stream, buffer0.sdl, AUDIO_F32LSB, len, Global::settings.mixerGuitar1Volume);
       break;

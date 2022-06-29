@@ -14,14 +14,13 @@
 #include "opengl.h"
 #include "phrases.h"
 #include "player.h"
+#include "plugin.h"
 #include "profile.h"
 #include "settings.h"
 #include "shader.h"
 #include "sound.h"
 #include "test.h"
 #include "ui.h"
-#include "vst.h"
-#include "vst3.h"
 
 #include <SDL2/SDL.h>
 
@@ -189,12 +188,7 @@ int main(int argc, char* argv[]) {
     Global::gameController = SDL_GameControllerOpen(0);
 
   Shader::init();
-#ifdef SUPPORT_VST
-  Vst::init();
-#endif // SUPPORT_VST
-#ifdef SUPPORT_VST3
-  Vst3::init();
-#endif // SUPPORT_VST3
+  Plugin::init();
   Profile::init();
   Sound::init();
 #ifdef SUPPORT_BNK

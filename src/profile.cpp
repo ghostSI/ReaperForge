@@ -2,7 +2,7 @@
 
 #include "file.h"
 #include "global.h"
-#include "vst.h"
+#include "plugin.h"
 
 #include <string.h>
 
@@ -52,7 +52,7 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
   return serializedSaves;
 }
 
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
 static std::string toneAssignmentNames[2][Const::profileToneAssignmentCount] =
 {
   {
@@ -91,7 +91,7 @@ static i32 toneAssignmentIndex[2][Const::profileToneAssignmentCount][NUM(Global:
   }
 };
 static std::string toneAssignmentBase64[2][Const::profileToneAssignmentCount][NUM(Global::effectChain)];
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
 
 static void loadStatsOnly()
 {
@@ -110,7 +110,7 @@ static void loadStatsOnly()
 
   const std::map<std::string, std::map<std::string, std::string>> serializedSaves = File::loadIni(profileIni);
 
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
   const auto toneAssignmentIt = serializedSaves.find("!ToneAssignment");
   if (toneAssignmentIt != serializedSaves.end())
   {
@@ -167,19 +167,19 @@ static void loadStatsOnly()
 
     for (i32 j = 0; j < NUM(Global::effectChain); ++j)
     {
-      Global::effectChain[j].index = toneAssignmentIndex[1][0][j];
-      if (Global::effectChain[j].index >= 0)
+      Global::effectChain[j] = toneAssignmentIndex[1][0][j];
+      if (Global::effectChain[j] >= 0)
       {
         i32 instance = 0;
         for (i32 k = 0; k < j; ++k)
-          if (Global::effectChain[j].index == Global::effectChain[k].index)
+          if (Global::effectChain[j] == Global::effectChain[k])
             ++instance;
 
-        Vst::loadParameter(Global::effectChain[j].index, instance, toneAssignmentBase64[1][0][j]);
+        Plugin::loadParameter(Global::effectChain[j], instance, toneAssignmentBase64[1][0][j]);
       }
     }
   }
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
 
 
   for (Song::Info& songInfo : Global::songInfos)
@@ -211,7 +211,7 @@ void Profile::init()
 
 void Profile::tick()
 {
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
   static InstrumentFlags instrumentLastFrame = Global::currentInstrument;
   static i32 toneAssignmentLastFrame = Global::toneAssignment;
 
@@ -232,29 +232,29 @@ void Profile::tick()
     Global::toneAssignmentTime = Global::time;
     for (i32 i = 0; i < NUM(Global::effectChain); ++i)
     {
-      Global::effectChain[i].index = toneAssignmentIndex[h][Global::toneAssignment][i];
-      if (Global::effectChain[i].index != -1)
+      Global::effectChain[i] = toneAssignmentIndex[h][Global::toneAssignment][i];
+      if (Global::effectChain[i] != -1)
       {
         i32 instance = 0;
         for (i32 j = 0; j < i; ++j)
-          if (Global::effectChain[i].index == Global::effectChain[j].index)
+          if (Global::effectChain[i] == Global::effectChain[j])
             ++instance;
 
-        Vst::loadParameter(i, instance, toneAssignmentBase64[h][Global::toneAssignment][i]);
+        Plugin::loadParameter(Global::effectChain[i], instance, toneAssignmentBase64[h][Global::toneAssignment][i]);
       }
     }
   }
 
   instrumentLastFrame = Global::currentInstrument;
   toneAssignmentLastFrame = Global::toneAssignment;
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
 }
 
 static void saveStatsOnly()
 {
   std::map<std::string, std::map<std::string, std::string>> serializedSaves;
 
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
   std::map<std::string, std::string> toneAssignmentTime;
   for (i32 h = 0; h < 2; ++h)
   {
@@ -276,7 +276,7 @@ static void saveStatsOnly()
     }
   }
   serializedSaves.insert({ "!ToneAssignment", toneAssignmentTime });
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
 
   for (const Song::Info& songInfo : Global::songInfos)
   {
@@ -335,7 +335,7 @@ void Profile::fini()
   }
 }
 
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
 void Profile::saveTone()
 {
   const i32 h = Global::currentInstrument == InstrumentFlags::BassGuitar ? 0 : 1;
@@ -344,16 +344,16 @@ void Profile::saveTone()
   std::vector<i32> instances(Global::pluginNames.size());
   for (i32 i = 0; i < NUM(Global::effectChain); ++i)
   {
-    toneAssignmentIndex[h][Global::toneAssignment][i] = Global::effectChain[i].index;
-    if (Global::effectChain[i].index >= 0)
+    toneAssignmentIndex[h][Global::toneAssignment][i] = Global::effectChain[i];
+    if (Global::effectChain[i] >= 0)
     {
       i32 instance = 0;
       for (i32 j = 0; j < i; ++j)
-        if (Global::effectChain[i].index == Global::effectChain[j].index)
+        if (Global::effectChain[i] == Global::effectChain[j])
           ++instance;
 
-      toneAssignmentBase64[h][Global::toneAssignment][i] = Vst::saveParameters(Global::effectChain[i].index, instance);
+      toneAssignmentBase64[h][Global::toneAssignment][i] = Plugin::saveParameters(Global::effectChain[i], instance);
     }
   }
 }
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN

@@ -1073,7 +1073,6 @@ void Vst3::init()
           continue;
 
         Global::pluginNames.push_back(classInfo.name());
-        Global::vst3PluginNames.push_back(classInfo.name());
 
         vst3Plugin.effectComponent = pluginFactory.createInstance<Steinberg::Vst::IComponent>(classInfo.ID());
         assert(vst3Plugin.effectComponent != nullptr);

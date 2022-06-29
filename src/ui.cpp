@@ -8,11 +8,10 @@
 #include "midi.h"
 #include "opengl.h"
 #include "player.h"
+#include "plugin.h"
 #include "profile.h"
 #include "shader.h"
 #include "sound.h"
-#include "vst.h"
-#include "vst3.h"
 
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_DEFAULT_FONT
@@ -1831,7 +1830,7 @@ static void toneWindow()
   static bool showGearWindow = false;
   static PsarcGear editGearType = PsarcGear::none;
 
-  if (Global::toneWindow = nk_begin(ctx, "Tones", nk_rect(60, 60, 900, 650),
+  if (Global::uiToneWindowOpen = nk_begin(ctx, "Tones", nk_rect(60, 60, 900, 650),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
     NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
@@ -1947,29 +1946,32 @@ static void toneWindow()
   }
 }
 
-#ifdef SUPPORT_VST
-static void vstWindow()
+#ifdef SUPPORT_PLUGIN
+static void pluginWindow()
 {
-  const Rect rect = Vst::getWindowRect(Global::vstWindow);
-  if (bool show = nk_begin(ctx, "VST-Effect", nk_rect(400, 120, rect.right + 2, rect.bottom + 30),
+  assert(Global::pluginWindow >= 0);
+
+  const Rect rect = Plugin::getWindowRect(Global::pluginWindow);
+
+  if (bool show = nk_begin(ctx, Global::pluginNames[Global::pluginWindow].c_str(), nk_rect(400, 120, rect.right + 2, rect.bottom + 30),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE |
     NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
     const auto pos = nk_window_get_position(ctx);
 
-    Vst::moveWindow(Global::vstWindow, pos.x + 1, pos.y + 29);
+    Plugin::moveWindow(Global::pluginWindow, pos.x + 1, pos.y + 29);
   }
   else
   {
-    Vst::closeWindow(Global::vstWindow);
-    Global::vstWindow = -1;
+    Plugin::closeWindow(Global::pluginWindow);
+    Global::pluginWindow = -1;
   }
   nk_end(ctx);
 }
 
-static Effect selectEffectWindow()
+static i32 selectEffectWindow()
 {
-  Effect selectedEffect;
+  i32 selectedEffect = -1;
 
   if (nk_begin(ctx, "Select Effect", nk_rect(600, 100, 260, 500),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
@@ -1980,12 +1982,7 @@ static Effect selectEffectWindow()
     {
       if (nk_button_label(ctx, Global::pluginNames[i].c_str()))
       {
-        selectedEffect.index = i;
-        if (i > 12)
-        {
-          selectedEffect.index = 0;
-          selectedEffect.effectType = EffectType::vst3;
-        }
+        selectedEffect = i;
       }
     }
   }
@@ -1994,13 +1991,13 @@ static Effect selectEffectWindow()
   return selectedEffect;
 }
 
-static void effectsWindow()
+static void effectChainWindow()
 {
   static i32 slotSelectEffectWindow = -1;
   static i32 selectedEffect = -1;
   i32 unusedVar = 1;
 
-  if (Global::effectsWindow = nk_begin(ctx, "VST", nk_rect(100, 100, 400, 500),
+  if (Global::uiEffectChainWindowOpen = nk_begin(ctx, "Effect Chain", nk_rect(100, 100, 400, 500),
     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE |
     NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE)) {
 
@@ -2044,24 +2041,24 @@ static void effectsWindow()
       nk_layout_row_template_end(ctx);
       for (int i = 0; i < NUM(Global::effectChain); ++i)
       {
-        if (nk_selectable_label(ctx, (Global::effectChain[i].index != -1) ? Global::pluginNames[Global::effectChain[i].index].c_str() : "...", (Global::effectChain[i].index != -1) ? NK_TEXT_LEFT : NK_TEXT_CENTERED, &unusedVar))
+        if (nk_selectable_label(ctx, (Global::effectChain[i] != -1) ? Global::pluginNames[Global::effectChain[i]].c_str() : "...", (Global::effectChain[i] != -1) ? NK_TEXT_LEFT : NK_TEXT_CENTERED, &unusedVar))
         {
-          if (Global::effectChain[i].index != -1)
+          if (Global::effectChain[i] != -1)
           {
-            if (Global::vstWindow != -1)
+            if (Global::pluginWindow != -1)
             {
-              Vst::closeWindow(Global::vstWindow);
-              Global::vstWindow = -1;
+              Plugin::closeWindow(Global::pluginWindow);
+              Global::pluginWindow = -1;
             }
             else
             {
-              Global::vstWindow = Global::effectChain[i].index;
+              Global::pluginWindow = Global::effectChain[i];
               i32 instance = 0;
               for (i32 j = 0; j < i; ++j)
-                if (Global::effectChain[i].index == Global::effectChain[j].index)
+                if (Global::effectChain[i] == Global::effectChain[j])
                   ++instance;
 
-              Vst::openWindow(Global::vstWindow, instance);
+              Plugin::openWindow(Global::effectChain[i], instance);
             }
           }
           else
@@ -2069,19 +2066,19 @@ static void effectsWindow()
             slotSelectEffectWindow = i;
           }
         }
-        if (Global::effectChain[i].index >= 0)
+        if (Global::effectChain[i] >= 0)
         {
           if (nk_button_label(ctx, "X"))
           {
-            Global::effectChain[i].index = -1;
+            Global::effectChain[i] = -1;
           }
           if (i >= 1)
           {
             if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_UP))
             {
-              const i32 tmp = Global::effectChain[i].index;
+              const i32 tmp = Global::effectChain[i];
               Global::effectChain[i] = Global::effectChain[i - 1];
-              Global::effectChain[i - 1].index = tmp;
+              Global::effectChain[i - 1] = tmp;
             }
           }
           else
@@ -2092,9 +2089,9 @@ static void effectsWindow()
           {
             if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_DOWN))
             {
-              const i32 tmp = Global::effectChain[i].index;
+              const i32 tmp = Global::effectChain[i];
               Global::effectChain[i] = Global::effectChain[i + 1];
-              Global::effectChain[i + 1].index = tmp;
+              Global::effectChain[i + 1] = tmp;
             }
           }
           else
@@ -2115,11 +2112,11 @@ static void effectsWindow()
   if (slotSelectEffectWindow >= 0)
   {
     Global::effectChain[slotSelectEffectWindow] = selectEffectWindow();
-    if (Global::effectChain[slotSelectEffectWindow].index != -1)
+    if (Global::effectChain[slotSelectEffectWindow] != -1)
       slotSelectEffectWindow = -1;
   }
 }
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
 
 static i32 findBestManifestIndexForInstrument(const std::vector<Manifest::Info>& manifestInfos, const InstrumentFlags instrumentFlags)
 {
@@ -2303,18 +2300,18 @@ static void songWindow()
 
     nk_edit_string(ctx, NK_EDIT_SIMPLE, Global::searchText, &Global::searchTextLength, sizeof(Global::searchText), nk_filter_default);
 
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
     if (nk_button_label(ctx, "VST"))
     {
-      Global::effectsWindow = !Global::effectsWindow;
+      Global::uiEffectChainWindowOpen = !Global::uiEffectChainWindowOpen;
     }
 #else
     nk_spacing(ctx, 1);
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
 
     if (nk_button_label(ctx, "?"))
     {
-      Global::helpWindow = !Global::helpWindow;
+      Global::uiHelpWindowOpen = !Global::uiHelpWindowOpen;
     }
 
     if (nk_button_label(ctx, "Quit"))
@@ -2411,7 +2408,7 @@ static void songWindow()
                 if (Global::songInfos[i].loadState != Song::LoadState::complete)
                   Song::loadSongInfoComplete(Global::psarcInfos[i], Global::songInfos[i]);
 
-                Global::toneWindow = true;
+                Global::uiToneWindowOpen = true;
               }
               nk_spacing(ctx, 1);
               nk_label(ctx, "Year:", NK_TEXT_LEFT);
@@ -3069,7 +3066,7 @@ static void installWindow() {
   nk_end(ctx);
 }
 
-static void helpWindow()
+static void uiHelpWindowOpen()
 {
   if (nk_begin(ctx, "Help", nk_rect(200, 280, 600, 300), NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE | NK_WINDOW_CLOSABLE)) {
 
@@ -3133,17 +3130,17 @@ void Ui::tick() {
   settingsWindow();
   mixerWindow();
   songWindow();
-  if (Global::toneWindow)
+  if (Global::uiToneWindowOpen)
     toneWindow();
-#ifdef SUPPORT_VST
-  if (Global::vstWindow >= 0)
-    vstWindow();
-  if (Global::effectsWindow)
-    effectsWindow();
-#endif // SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
+  if (Global::uiEffectChainWindowOpen)
+    effectChainWindow();
+  if (Global::pluginWindow >= 0)
+    pluginWindow();
+#endif // SUPPORT_PLUGIN
 
-  if (Global::helpWindow)
-    helpWindow();
+  if (Global::uiHelpWindowOpen)
+    uiHelpWindowOpen();
 
 #ifdef SUPPORT_BNK
   if (Global::bnkPluginLoaded)

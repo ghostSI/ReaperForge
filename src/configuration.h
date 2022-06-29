@@ -15,9 +15,13 @@
 
 #ifdef _WIN32
 #define SUPPORT_BNK
+#define SUPPORT_PLUGIN
 #define SUPPORT_MIDI // bind notes to switch Tone Assignments
+#endif // _WIN32
+
+#ifdef SUPPORT_PLUGIN
 #define SUPPORT_VST
 #define SUPPORT_VST3
-#endif // _WIN32
+#endif // SUPPORT_PLUGIN
 
 #endif // CONFIGURATION_H

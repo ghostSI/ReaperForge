@@ -214,19 +214,18 @@ namespace Global {
     extern f32 musicSpeedMultiplier;
     extern char searchText[256];
     extern i32 searchTextLength;
-    extern bool toneWindow;
-    extern bool helpWindow;
+    extern bool uiToneWindowOpen;
+    extern bool uiHelpWindowOpen;
     extern f32 toneAssignmentTime;
-#ifdef SUPPORT_VST
-    extern bool effectsWindow;
-    extern i32 vstWindow;
+#ifdef SUPPORT_PLUGIN
+    extern bool uiEffectChainWindowOpen;
+    extern i32 pluginWindow;
     extern std::vector<std::string> pluginNames;
-    extern std::vector<std::string> vst3PluginNames;
-    extern Effect effectChain[16];
+    extern i32 effectChain[16];
     extern i32 toneAssignment;
     extern char vstToneName[256];
     extern i32 vstToneNameLength;
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
 #ifdef SUPPORT_MIDI
     extern i32 midiDeviceCount;
     extern i32 connectedDevices[Const::midiMaxDeviceCount];

@@ -1,5 +1,5 @@
-#ifndef DEBUGDRAW_H
-#define DEBUGDRAW_H
+#ifndef DEBUG_H
+#define DEBUG_H
 
 #include "typedefs.h"
 
@@ -8,4 +8,4 @@ namespace Debug
 void render();
 }
 
-#endif // DEBUGDRAW_H
+#endif // DEBUG_H

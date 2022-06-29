@@ -28,5 +28,10 @@ void Installer::install() {
       std::filesystem::create_directory((path / Global::settings.vstPath).string().c_str());
 #endif // SUPPORT_VST
 
+#ifdef SUPPORT_VST3
+    if (!(std::filesystem::exists(path / Global::settings.vst3Path) && std::filesystem::is_directory(path / Global::settings.vst3Path)))
+      std::filesystem::create_directory((path / Global::settings.vst3Path).string().c_str());
+#endif // SUPPORT_VST3
+
     Global::isInstalled = true;
 }

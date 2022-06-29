@@ -53,6 +53,7 @@ set(HEADER_FILES
         src/pcm.h
         src/phrases.h
         src/player.h
+        src/plugin.h
         src/profile.h
         src/psarc.h
         src/rijndael.h
@@ -103,6 +104,7 @@ set(SOURCE_FILES
         src/pcm.cpp
         src/phrases.cpp
         src/player.cpp
+        src/plugin.cpp
         src/profile.cpp
         src/psarc.cpp
         src/rijndael.cpp

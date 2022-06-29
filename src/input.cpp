@@ -460,62 +460,62 @@ void Input::proccessInputEvents() {
   }
   if (Global::inputKP0.pressed && !Global::inputKP0.pressedLastFrame)
   {
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
     Global::toneAssignment = (Global::toneAssignment / 10) * 10;
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
   }
   if (Global::inputKP1.pressed && !Global::inputKP1.pressedLastFrame)
   {
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
     Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 1;
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
   }
   if (Global::inputKP2.pressed && !Global::inputKP2.pressedLastFrame)
   {
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
     Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 2;
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
   }
   if (Global::inputKP3.pressed && !Global::inputKP3.pressedLastFrame)
   {
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
     Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 3;
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
   }
   if (Global::inputKP4.pressed && !Global::inputKP4.pressedLastFrame)
   {
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
     Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 4;
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
   }
   if (Global::inputKP5.pressed && !Global::inputKP5.pressedLastFrame)
   {
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
     Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 5;
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
   }
   if (Global::inputKP6.pressed && !Global::inputKP6.pressedLastFrame)
   {
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
     Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 6;
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
   }
   if (Global::inputKP7.pressed && !Global::inputKP7.pressedLastFrame)
   {
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
     Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 7;
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
   }
   if (Global::inputKP8.pressed && !Global::inputKP8.pressedLastFrame)
   {
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
     Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 8;
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
   }
   if (Global::inputKP9.pressed && !Global::inputKP9.pressedLastFrame)
   {
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
     Global::toneAssignment = (Global::toneAssignment / 10) * 10 + 9;
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
   }
 }

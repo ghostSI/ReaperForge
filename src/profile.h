@@ -10,9 +10,9 @@ namespace Profile {
   void tick();
   void fini();
 
-#ifdef SUPPORT_VST
+#ifdef SUPPORT_PLUGIN
   void saveTone();
-#endif // SUPPORT_VST
+#endif // SUPPORT_PLUGIN
 };
 
 #endif // PROFILE_H

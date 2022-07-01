@@ -17,6 +17,8 @@ namespace Shader {
         ebeat,
         chordBox,
         chordBoxConsecutive,
+        chordBoxFretMute,
+        chordBoxPalmMute,
         chordBoxArpeggio,
         phrasesScreen,
         handShapeAnchor,

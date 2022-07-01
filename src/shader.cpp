@@ -68,7 +68,9 @@ void Shader::init()
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::anchorFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::ebeatFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::chordBoxFrag));
-  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::consecutiveChordBoxFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::chordBoxConsecutiveFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::chordBoxFretMuteFrag));
+  shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::chordBoxPalmMuteFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::chordBoxArpeggioFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultScreenVert, Data::Shader::phrasesScreenFrag));
   shaderPrograms.push_back(compileShader(Data::Shader::defaultWorldVert, Data::Shader::handShapeAnchorFrag));

@@ -489,6 +489,9 @@ static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime
   i32 chordBoxLeft = 24;
   i32 chordBoxRight = 0;
 
+  bool allNotesFretMuted = true;
+  bool allNotesPalmMuted = true;
+
   for (const Song::TranscriptionTrack::Note& note : chord.chordNotes)
   {
     if (note.fret > 0 && note.fret < chordBoxLeft)
@@ -498,6 +501,11 @@ static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime
       chordBoxRight = note.fret;
 
     fretsInChord |= 1 << note.fret;
+
+    if (!note.mute)
+      allNotesFretMuted = false;
+    if (!note.palmMute)
+      allNotesPalmMuted = false;
   }
 
   i32 currentAnchor = -1;
@@ -592,7 +600,14 @@ static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime
         right, bottom, posZ, 1.0f, 0.0f,
       };
 
-      const GLuint shader = Shader::useShader(Shader::Stem::chordBoxConsecutive);
+      GLuint shader;
+      if (allNotesFretMuted)
+        shader = Shader::useShader(Shader::Stem::chordBoxFretMute);
+      else if (allNotesPalmMuted)
+        shader = Shader::useShader(Shader::Stem::chordBoxPalmMute);
+      else
+        shader = Shader::useShader(Shader::Stem::chordBoxConsecutive);
+
       glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayChordBoxColor[0].v0, Global::settings.highwayChordBoxColor[0].v1, Global::settings.highwayChordBoxColor[0].v2, Global::settings.highwayChordBoxColor[0].v3);
 
       glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);

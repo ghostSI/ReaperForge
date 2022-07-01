@@ -28,6 +28,7 @@ namespace Data {
     extern const char* fretSilverFrag;
     extern const char* fretBronzeFrag;
     extern const char* stringFrag;
+    extern const char* sustainFrag;
     extern const char* noteStandFrag;
     extern const char* noteStandZeroFrag;
     extern const char* uiFrag;

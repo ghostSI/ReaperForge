@@ -26,6 +26,7 @@ namespace Shader {
         fretSilver,
         fretBronze,
         string,
+        sustain,
         noteStand,
         noteStandZero,
         ui,

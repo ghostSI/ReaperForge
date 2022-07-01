@@ -240,6 +240,8 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
   }
   if (note.sustain != 0.0f)
   {
+    const GLuint shader = Shader::useShader(Shader::Stem::sustain);
+
     setStringColor(shader, 5 - note.string + instrumentStringOffset, 0.65f);
 
     if (note.tremolo)
@@ -254,8 +256,8 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
 
 
       std::vector<GLfloat> vv;
-      vv.insert(vv.end(), { -0.2_f32, 0.0f, 0.0f, 0.8418f, 1.0f });
-      vv.insert(vv.end(), { 0.2_f32, 0.0f, 0.0f, 0.9922f, 1.0f, });
+      vv.insert(vv.end(), { -0.2_f32, 0.0f, 0.0f, 0.0f, 1.0f });
+      vv.insert(vv.end(), { 0.2_f32, 0.0f, 0.0f, 1.0f, 1.0f, });
       i32 j = 0;
       for (f32 f = 0.5f * Const::highwayTremoloFrequency; f < note.sustain - (0.5f * Const::highwayTremoloFrequency); f += Const::highwayTremoloFrequency)
       {
@@ -263,21 +265,21 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
 
         if (j % 2 == 0)
         {
-          vv.insert(vv.end(), { -0.15_f32 , 0.0f, sustainTime, 0.8418f, 0.5f });
-          vv.insert(vv.end(), { 0.25_f32, 0.0f, sustainTime, 0.9922f, 0.5f, });
+          vv.insert(vv.end(), { -0.15_f32 , 0.0f, sustainTime, 0.0f, 0.5f });
+          vv.insert(vv.end(), { 0.25_f32, 0.0f, sustainTime, 1.0f, 0.5f, });
         }
         else
         {
-          vv.insert(vv.end(), { -0.25_f32 , 0.0f, sustainTime, 0.8418f, 0.5f });
-          vv.insert(vv.end(), { 0.15_f32, 0.0f, sustainTime, 0.9922f, 0.5f, });
+          vv.insert(vv.end(), { -0.25_f32 , 0.0f, sustainTime, 0.0f, 0.5f });
+          vv.insert(vv.end(), { 0.15_f32, 0.0f, sustainTime, 1.0f, 0.5f, });
         }
 
         ++j;
       }
 
       const f32 sustainTime = -note.sustain * Global::settings.highwaySpeedMultiplier;
-      vv.insert(vv.end(), { -0.2_f32, 0.0f, sustainTime, 0.8418f, 0.0f });
-      vv.insert(vv.end(), { 0.2_f32, 0.0f, sustainTime, 0.9922f, 0.0f });
+      vv.insert(vv.end(), { -0.2_f32, 0.0f, sustainTime, 0.0f, 0.0f });
+      vv.insert(vv.end(), { 0.2_f32, 0.0f, sustainTime, 1.0f, 0.0f });
 
       glBufferData(GL_ARRAY_BUFFER, vv.size() * sizeof(GLfloat), vv.data(), GL_STATIC_DRAW);
       glDrawArrays(GL_TRIANGLE_STRIP, 0, i32(vv.size() / 5));
@@ -302,10 +304,10 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
       const f32 back = (noteTime - note.sustain) * Global::settings.highwaySpeedMultiplier;
 
       const GLfloat v[] = {
-        -0.2_f32, 0.0f, front, 0.8418f, 1.0f,
-        0.2_f32, 0.0f, front, 0.9922f, 1.0f,
-        -0.2_f32, 0.0f, back, 0.8418f, 0.0f,
-        0.2_f32, 0.0f, back, 0.9922f, 0.0f,
+        -0.2_f32, 0.0f, front, 0.0f, 1.0f,
+        0.2_f32, 0.0f, front, 1.0f, 1.0f,
+        -0.2_f32, 0.0f, back, 0.0f, 0.0f,
+        0.2_f32, 0.0f, back, 1.0f, 0.0f,
       };
 
       glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);

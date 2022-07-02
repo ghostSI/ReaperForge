@@ -22,7 +22,6 @@ elseif (CMAKE_HOST_WIN32)
 endif ()
 
 set(HEADER_FILES
-		src/_kiss_fft_guts.h
 		src/arrangement.h
 		src/base64.h
 		src/bnk.h
@@ -44,7 +43,6 @@ set(HEADER_FILES
 		src/input.h
 		src/installer.h
 		src/json.h
-		src/kiss_fft.h
 		src/manifest.h
 		src/midi.h
 		src/nuklear.h
@@ -95,7 +93,6 @@ set(SOURCE_FILES
         src/input.cpp
         src/installer.cpp
         src/json.cpp
-        src/kiss_fft.cpp
         src/main.cpp
         src/manifest.cpp
         src/midi.cpp

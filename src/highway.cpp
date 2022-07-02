@@ -664,6 +664,8 @@ static void drawChordLeftHand(const Song::TranscriptionTrack::Chord& chord)
   { // Draw Left Hand (Finger Position)
     if (note.fret == 0)
       continue;
+    if (note.leftHand < 0)
+      continue;
 
     GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
     glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayFingerNumberColor.v0, Global::settings.highwayFingerNumberColor.v1, Global::settings.highwayFingerNumberColor.v2, Global::settings.highwayFingerNumberColor.v3);

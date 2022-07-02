@@ -18,7 +18,7 @@ void Phrases::tick()
     const i32 top = i32(0.04f * Global::settings.graphicsResolutionHeight);
     const i32 bottom = i32(0.135f * Global::settings.graphicsResolutionHeight);
 
-    if (Global::inputCursorPosX >= left && Global::inputCursorPosX <= right && Global::inputCursorPosY >= top && Global::inputCursorPosY <= bottom)
+    if (Global::inputEsc.toggle && Global::inputCursorPosX >= left && Global::inputCursorPosX <= right && Global::inputCursorPosY >= top && Global::inputCursorPosY <= bottom)
     {
       static SDL_Cursor* cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_IBEAM);
       SDL_SetCursor(cursor);

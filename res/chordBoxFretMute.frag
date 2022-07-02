@@ -16,7 +16,7 @@ void main()
 
   float x =  max(max(abs(Texcoord.x - 0.5), abs(Texcoord.y - 0.5)) - 0.47, 0.0);
   
-  vec2 coord = vec2(Texcoord.x * 16.0/9.0, Texcoord.y);
+  vec2 coord = vec2(Texcoord.x * (16.0 / 9.0), Texcoord.y);
   coord -= vec2(0.5);
   coord = rotate45() * coord;
   coord += vec2(0.5);

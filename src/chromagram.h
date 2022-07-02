@@ -1,4 +1,4 @@
-#define USE_KISS_FFT
+
 
 //=======================================================================
 /** @file Chromagram.h
@@ -34,10 +34,6 @@
 #include "fftw3.h"
 #endif
 
-
-#ifdef USE_KISS_FFT
-#include "kiss_fft.h"
-#endif
 
 //=======================================================================
 /** A class for calculating a Chromagram from input audio

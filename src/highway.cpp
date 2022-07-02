@@ -949,6 +949,77 @@ static void drawNoteFretboard(i32 fret, i32 string, f32 size)
   glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::noteFretboard) / (sizeof(float) * 5));
 }
 
+static void drawDotInlays()
+{
+  for (i32 i = 3/*skip dot on first thread*/; i <= 24; ++i)
+  {
+    if (!Const::isMarkedFret[i])
+      continue;
+
+    const GLuint shader = Shader::useShader(Shader::Stem::dotInlay);
+    glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayDotInlayColor[0].v0, Global::settings.highwayDotInlayColor[0].v1, Global::settings.highwayDotInlayColor[0].v2, Global::settings.highwayDotInlayColor[0].v3);
+    glUniform4f(glGetUniformLocation(shader, "color2"), Global::settings.highwayDotInlayColor[1].v0, Global::settings.highwayDotInlayColor[1].v1, Global::settings.highwayDotInlayColor[1].v2, Global::settings.highwayDotInlayColor[1].v3);
+
+    const f32 midX = Const::highwayFretPosition[i - 1] / 2.0f + Const::highwayFretPosition[i] / 2.0f;
+    const f32 midY = (f32(5 + instrumentStringOffset + 0.80f) * Const::highwayStringSpacing - 0.80f * Const::highwayStringSpacing) / 2.0f;
+    const f32 z = 0.04f; // make sure inlays don't intersect with strings
+
+    if (i % 12 != 0)
+    {
+      const f32 left = midX - 0.2f;
+      const f32 right = midX + 0.2f;
+      const f32 top = midY + 0.2f;
+      const f32 bottom = midY - 0.2f;
+
+      const GLfloat v[] = {
+        left , top, z, 0.0f, 1.0f,
+        right, top, z, 1.0f, 1.0f,
+        left, bottom, z, 0.0f, 0.0f,
+        right, bottom, z, 1.0f, 0.0f,
+      };
+
+      glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
+    else // 12th and 24th fret draw double dots
+    {
+      const f32 left = midX - 0.2f;
+      const f32 right = midX + 0.2f;
+      const f32 distY = 1.0f;
+
+      {
+        const f32 top = midY + distY + 0.2f;
+        const f32 bottom = midY + distY - 0.2f;
+
+        const GLfloat v[] = {
+          left , top, z, 0.0f, 1.0f,
+          right, top, z, 1.0f, 1.0f,
+          left, bottom, z, 0.0f, 0.0f,
+          right, bottom, z, 1.0f, 0.0f,
+        };
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+      }
+      {
+        const f32 top = midY - distY + 0.2f;
+        const f32 bottom = midY - distY - 0.2f;
+
+        const GLfloat v[] = {
+          left , top, z, 0.0f, 1.0f,
+          right, top, z, 1.0f, 1.0f,
+          left, bottom, z, 0.0f, 0.0f,
+          right, bottom, z, 1.0f, 0.0f,
+        };
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+      }
+    }
+
+  }
+}
+
 static void drawNoteFreadboard(f32 fretboardNoteDistance[7][24])
 {
   for (i32 i = 0; i < instrumentStringCount; ++i)
@@ -1530,6 +1601,7 @@ void Highway::render()
   f32 fretboardNoteDistance[7][24] = { };
   drawNotes(fretboardNoteDistance);
   drawChords(fretboardNoteDistance);
+  drawDotInlays();
   drawNoteFreadboard(fretboardNoteDistance);
   drawFretNumbers();
 

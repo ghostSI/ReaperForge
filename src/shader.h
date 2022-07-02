@@ -10,6 +10,7 @@ namespace Shader {
         detectedChord,
         detectedFret,
         detectedNote,
+        dotInlay,
         ground,
         fontScreen,
         fontWorld,
@@ -30,6 +31,7 @@ namespace Shader {
         noteStand,
         noteStandZero,
         ui,
+        COUNT
     };
 
     void init();

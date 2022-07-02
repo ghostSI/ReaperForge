@@ -2656,6 +2656,28 @@ static void settingsWindow()
         Global::settings.highwayDetectorColor.v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayDetectorColor.v3, 1.0f, 0.01f, 0.005f);
         nk_combo_end(ctx);
       }
+      nk_label(ctx, "DotInlay0:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayDotInlayColor[0])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayDotInlayColor[0]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayDotInlayColor[0]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayDotInlayColor[0].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayDotInlayColor[0].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayDotInlayColor[0].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayDotInlayColor[0].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayDotInlayColor[0].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayDotInlayColor[0].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayDotInlayColor[0].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayDotInlayColor[0].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
+      nk_label(ctx, "DotInlay1:", NK_TEXT_LEFT);
+      if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayDotInlayColor[1])), nk_vec2(200, 400))) {
+        nk_layout_row_dynamic(ctx, 120, 1);
+        *(nk_colorf*)(&Global::settings.highwayDotInlayColor[1]) = nk_color_picker(ctx, *(nk_colorf*)(&Global::settings.highwayDotInlayColor[1]), NK_RGBA);
+        nk_layout_row_dynamic(ctx, 22, 1);
+        Global::settings.highwayDotInlayColor[1].v0 = nk_propertyf(ctx, "#R:", 0, Global::settings.highwayDotInlayColor[1].v0, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayDotInlayColor[1].v1 = nk_propertyf(ctx, "#G:", 0, Global::settings.highwayDotInlayColor[1].v1, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayDotInlayColor[1].v2 = nk_propertyf(ctx, "#B:", 0, Global::settings.highwayDotInlayColor[1].v2, 1.0f, 0.01f, 0.005f);
+        Global::settings.highwayDotInlayColor[1].v3 = nk_propertyf(ctx, "#A:", 0, Global::settings.highwayDotInlayColor[1].v3, 1.0f, 0.01f, 0.005f);
+        nk_combo_end(ctx);
+      }
       nk_label(ctx, "Finger Number:", NK_TEXT_LEFT);
       if (nk_combo_begin_color(ctx, nk_rgb_cf(*(nk_colorf*)(&Global::settings.highwayFingerNumberColor)), nk_vec2(200, 400))) {
         nk_layout_row_dynamic(ctx, 120, 1);

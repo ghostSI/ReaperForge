@@ -38,6 +38,10 @@ namespace Settings {
     };
     vec4 highwayChordNameColor = colorVec4("#ADACAC");
     vec4 highwayDetectorColor = colorVec4("#D81212");
+    vec4 highwayDotInlayColor[2] = {
+      colorVec4("#EB8D17"),
+      colorVec4("#F8B922")
+    };
     bool highwayEbeat = true;
     vec4 highwayEbeatColor[2] = {
       colorVec4("#8795E5"),

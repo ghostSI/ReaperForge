@@ -191,6 +191,8 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
         { "ChordBoxColor1",          hexColor(settings.highwayChordBoxColor[1]) },
         { "ChordNameColor",          hexColor(settings.highwayChordNameColor) },
         { "DetectorColor",           hexColor(settings.highwayDetectorColor) },
+        { "DotInlayColor0",          hexColor(settings.highwayDotInlayColor[0]) },
+        { "DotInlayColor1",          hexColor(settings.highwayDotInlayColor[1]) },
         { "Ebeat",                   std::to_string(settings.highwayEbeat) },
         { "EbeatColor0",             hexColor(settings.highwayEbeatColor[0]) },
         { "EbeatColor1",             hexColor(settings.highwayEbeatColor[1]) },
@@ -342,6 +344,10 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
     },
     .highwayChordNameColor = colorVec4(serializedSettings.at("Highway").at("ChordNameColor")),
     .highwayDetectorColor = colorVec4(serializedSettings.at("Highway").at("DetectorColor")),
+    .highwayDotInlayColor = {
+      colorVec4(serializedSettings.at("Highway").at("DotInlayColor0")),
+      colorVec4(serializedSettings.at("Highway").at("DotInlayColor1"))
+    },
     .highwayEbeat = bool(atoi(serializedSettings.at("Highway").at("Ebeat").c_str())),
     .highwayEbeatColor = {
       colorVec4(serializedSettings.at("Highway").at("EbeatColor0")),

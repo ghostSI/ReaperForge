@@ -25,8 +25,8 @@ namespace Settings {
     f32 cameraZFactor = 0.9f;
     f32 cameraZOffset = 7.0f;
     FullscreenMode graphicsFullscreen = FullscreenMode::windowed;
-    i32 graphicsResolutionWidth = 1024;
-    i32 graphicsResolutionHeight = 768;
+    i32 graphicsWindowWidth = 1024;
+    i32 graphicsWindowHeight = 768;
     vec4 highwayAnchorColor[2] = {
       colorVec4("#2E1168"),
       colorVec4("#132693")

@@ -20,7 +20,7 @@ void Debug::render()
     glUniform4f(glGetUniformLocation(shader, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
 
 
-    const f32 scaleY = f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+    const f32 scaleY = f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
 
     {
 #ifdef _WIN32
@@ -31,7 +31,7 @@ void Debug::render()
 #pragma warning( default: 4996 )
 #endif // _WIN32
       const i32 letters = i32(strlen(text));
-      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
+      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::resolutionWidth);
       Font::draw(text, scaleX - 1.00f, 1.00f - scaleY, 0.0f, scaleX, scaleY);
     }
 
@@ -44,8 +44,8 @@ void Debug::render()
 #pragma warning( default: 4996 )
 #endif // _WIN32
       const i32 letters = i32(strlen(text));
-      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-      const f32 offsetY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::resolutionWidth);
+      const f32 offsetY = 2.0f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
       Font::draw(text, scaleX - 1.00f, 1.00f - scaleY - offsetY, 0.0f, scaleX, scaleY);
     }
 
@@ -58,8 +58,8 @@ void Debug::render()
 #pragma warning( default: 4996 )
 #endif // _WIN32
       const i32 letters = i32(strlen(text));
-      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-      const f32 offsetY = 4.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::resolutionWidth);
+      const f32 offsetY = 4.0f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
       Font::draw(text, scaleX - 1.00f, 1.00f - scaleY - offsetY, 0.0f, scaleX, scaleY);
     }
 
@@ -72,8 +72,8 @@ void Debug::render()
 #pragma warning( default: 4996 )
 #endif // _WIN32
       const i32 letters = i32(strlen(text));
-      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-      const f32 offsetY = 6.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::resolutionWidth);
+      const f32 offsetY = 6.0f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
       Font::draw(text, scaleX - 1.00f, 1.00f - scaleY - offsetY, 0.0f, scaleX, scaleY);
     }
 
@@ -86,8 +86,8 @@ void Debug::render()
 #pragma warning( default: 4996 )
 #endif // _WIN32
       const i32 letters = i32(strlen(text));
-      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-      const f32 offsetY = 8.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::resolutionWidth);
+      const f32 offsetY = 8.0f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
       Font::draw(text, scaleX - 1.00f, 1.00f - scaleY - offsetY, 0.0f, scaleX, scaleY);
     }
 
@@ -100,8 +100,8 @@ void Debug::render()
 #pragma warning( default: 4996 )
 #endif // _WIN32
       const i32 letters = i32(strlen(text));
-      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-      const f32 offsetY = 10.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::resolutionWidth);
+      const f32 offsetY = 10.0f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
       Font::draw(text, scaleX - 1.00f, 1.00f - scaleY - offsetY, 0.0f, scaleX, scaleY);
     }
 
@@ -114,8 +114,8 @@ void Debug::render()
 #pragma warning( default: 4996 )
 #endif // _WIN32
       const i32 letters = i32(strlen(text));
-      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-      const f32 offsetY = 12.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::resolutionWidth);
+      const f32 offsetY = 12.0f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
       Font::draw(text, scaleX - 1.00f, 1.00f - scaleY - offsetY, 0.0f, scaleX, scaleY);
     }
 
@@ -128,8 +128,8 @@ void Debug::render()
 #pragma warning( default: 4996 )
 #endif // _WIN32
       const i32 letters = i32(strlen(text));
-      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-      const f32 offsetY = 14.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+      const f32 scaleX = f32(Const::fontCharWidth * letters) / f32(Global::resolutionWidth);
+      const f32 offsetY = 14.0f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
       Font::draw(text, scaleX - 1.00f, 1.00f - scaleY - offsetY, 0.0f, scaleX, scaleY);
     }
   }

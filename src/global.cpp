@@ -3,6 +3,8 @@
 SDL_Window* Global::window = nullptr;
 SDL_GameController* Global::gameController = nullptr;
 bool Global::appQuit = false;
+i32 Global::resolutionWidth = 1024;
+i32 Global::resolutionHeight = 768;
 KeyInput Global::inputA;
 KeyInput Global::inputD;
 KeyInput Global::inputW;
@@ -35,8 +37,8 @@ KeyInput Global::quickRepeater;
 
 bool Global::pauseAudio = false;
 
-f32 Global::cameraMidX = f32(Global::settings.graphicsResolutionWidth / 2);
-f32 Global::cameraMidY = f32(Global::settings.graphicsResolutionHeight / 2);
+f32 Global::cameraMidX = f32(Global::resolutionWidth / 2);
+f32 Global::cameraMidY = f32(Global::resolutionHeight / 2);
 mat4 Global::cameraMat;
 
 bool Global::isInstalled = false;

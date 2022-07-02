@@ -137,11 +137,10 @@ int main(int argc, char* argv[]) {
   {
   case FullscreenMode::windowed:
     fullScreenFlag = 0;
+    Global::resolutionWidth = Global::settings.graphicsWindowWidth;
+    Global::resolutionHeight = Global::settings.graphicsWindowHeight;
     break;
-  case FullscreenMode::fullscreen:
-    fullScreenFlag = SDL_WINDOW_FULLSCREEN;
-    break;
-  case FullscreenMode::windowedFullscreen:
+  case FullscreenMode::borderless:
     fullScreenFlag = SDL_WINDOW_FULLSCREEN_DESKTOP;
     break;
   default:
@@ -150,7 +149,7 @@ int main(int argc, char* argv[]) {
   }
 
   Global::window = SDL_CreateWindow("ReaperForge", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-    Global::settings.graphicsResolutionWidth, Global::settings.graphicsResolutionHeight,
+    Global::settings.graphicsWindowWidth, Global::settings.graphicsWindowHeight,
     SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL | fullScreenFlag);
 
   if (Global::window == nullptr) {

@@ -46,11 +46,13 @@ void Input::prePollEvent() {
 }
 
 void Input::pollEvent(SDL_Event& event) {
-  switch (event.type) {
+  switch (event.type)
+  {
   case SDL_QUIT:
     Global::appQuit = true;
     break;
-  case SDL_KEYDOWN: {
+  case SDL_KEYDOWN:
+  {
     switch (event.key.keysym.sym) {
     case SDLK_a:
       Global::inputA.pressed = true;
@@ -148,10 +150,12 @@ void Input::pollEvent(SDL_Event& event) {
       break;
     }
   }
-                  break;
+  break;
 
-  case SDL_KEYUP: {
-    switch (event.key.keysym.sym) {
+  case SDL_KEYUP:
+  {
+    switch (event.key.keysym.sym)
+    {
     case SDLK_a:
       Global::inputA.pressed = false;
       break;
@@ -248,9 +252,10 @@ void Input::pollEvent(SDL_Event& event) {
       break;
     }
   }
-                break;
+  break;
 
-  case SDL_MOUSEBUTTONDOWN: {
+  case SDL_MOUSEBUTTONDOWN:
+  {
     switch (event.button.button) {
     case SDL_BUTTON_LEFT:
       Global::inputLmb.pressed = true;
@@ -260,10 +265,12 @@ void Input::pollEvent(SDL_Event& event) {
       break;
     }
   }
-                          break;
+  break;
 
-  case SDL_MOUSEBUTTONUP: {
-    switch (event.button.button) {
+  case SDL_MOUSEBUTTONUP:
+  {
+    switch (event.button.button)
+    {
     case SDL_BUTTON_LEFT:
       Global::inputLmb.pressed = false;
       break;
@@ -272,17 +279,19 @@ void Input::pollEvent(SDL_Event& event) {
       break;
     }
   }
-                        break;
+  break;
 
-  case SDL_MOUSEMOTION: {
+  case SDL_MOUSEMOTION:
+  {
     Global::inputUseController = false;
     Global::inputCursorPosX = event.motion.x;
     Global::inputCursorPosY = event.motion.y;
   }
-                      break;
+  break;
 
   case SDL_CONTROLLERBUTTONDOWN:
-    switch (event.cbutton.button) {
+    switch (event.cbutton.button)
+    {
     case SDL_CONTROLLER_BUTTON_A:
       break;
     case SDL_CONTROLLER_BUTTON_B:
@@ -300,7 +309,8 @@ void Input::pollEvent(SDL_Event& event) {
     }
     break;
   case SDL_CONTROLLERBUTTONUP:
-    switch (event.cbutton.button) {
+    switch (event.cbutton.button)
+    {
     case SDL_CONTROLLER_BUTTON_A:
       break;
     case SDL_CONTROLLER_BUTTON_B:
@@ -319,7 +329,8 @@ void Input::pollEvent(SDL_Event& event) {
     break;
 
   case SDL_JOYAXISMOTION:
-    switch (event.caxis.axis) {
+    switch (event.caxis.axis)
+    {
     case SDL_CONTROLLER_AXIS_LEFTX:
       break;
     case SDL_CONTROLLER_AXIS_LEFTY:
@@ -335,47 +346,58 @@ void Input::pollEvent(SDL_Event& event) {
     }
     break;
 
-  case SDL_CONTROLLERDEVICEADDED: {
+  case SDL_CONTROLLERDEVICEADDED:
+  {
     if (Global::gameController == nullptr && SDL_IsGameController(0))
       Global::gameController = SDL_GameControllerOpen(0);
   }
-                                break;
+  break;
 
-  case SDL_CONTROLLERDEVICEREMOVED: {
+  case SDL_CONTROLLERDEVICEREMOVED:
+  {
     SDL_GameControllerClose(Global::gameController);
     Global::gameController = nullptr;
   }
-                                  break;
+  break;
+  case SDL_WINDOWEVENT:
+  {
+    switch (event.window.event)
+    {
+    case SDL_WINDOWEVENT_SIZE_CHANGED:
+    {
+      Global::resolutionWidth = event.window.data1;
+      Global::resolutionHeight = event.window.data2;
 
-                                  /*case SDL_TEXTINPUT:
-                                    strcat(Global::inputText, event.text.text);
-                                    break;*/
-  case SDL_WINDOWEVENT: {
-    switch (event.window.event) {
-    case SDL_WINDOWEVENT_SIZE_CHANGED: {
-      Global::settings.graphicsResolutionWidth = event.window.data1;
-      Global::settings.graphicsResolutionHeight = event.window.data2;
-      glViewport(0, 0, Global::settings.graphicsResolutionWidth, Global::settings.graphicsResolutionHeight);
+      if (Global::settings.graphicsFullscreen == FullscreenMode::windowed)
+      {
+        Global::settings.graphicsWindowWidth = Global::resolutionWidth;
+        Global::settings.graphicsWindowHeight = Global::resolutionHeight;
+      }
+
+      glViewport(0, 0, Global::resolutionWidth, Global::resolutionHeight);
     }
-                                     break;
+    break;
     }
   }
-                      break;
+  break;
   }
-
 }
 
-static void postPollEventKeyInput(KeyInput& keyInput) {
-  if (keyInput.pressed && !keyInput.pressedLastFrame) {
+static void postPollEventKeyInput(KeyInput& keyInput)
+{
+  if (keyInput.pressed && !keyInput.pressedLastFrame)
+  {
     keyInput.down = true;
     keyInput.toggle = !keyInput.toggle;
   }
-  else if (!keyInput.pressed && keyInput.pressedLastFrame) {
+  else if (!keyInput.pressed && keyInput.pressedLastFrame)
+  {
     keyInput.up = true;
   }
 }
 
-void Input::postPollEvent() {
+void Input::postPollEvent()
+{
   postPollEventKeyInput(Global::inputA);
   postPollEventKeyInput(Global::inputD);
   postPollEventKeyInput(Global::inputW);
@@ -407,29 +429,31 @@ void Input::postPollEvent() {
   postPollEventKeyInput(Global::quickRepeater);
 }
 
-void Input::proccessInputEvents() {
-  if (Global::inputFullscreen.up) {
-    Global::settings.graphicsFullscreen = Global::inputFullscreen.toggle ? FullscreenMode::windowedFullscreen : FullscreenMode::windowed;
+void Input::proccessInputEvents()
+{
+  if (Global::inputFullscreen.pressed && !Global::inputFullscreen.pressedLastFrame)
+  {
     switch (Global::settings.graphicsFullscreen)
     {
     case FullscreenMode::windowed:
+      Global::settings.graphicsFullscreen = FullscreenMode::borderless;
+      SDL_SetWindowFullscreen(Global::window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+      break;
+    case FullscreenMode::borderless:
+      Global::settings.graphicsFullscreen = FullscreenMode::windowed;
       SDL_SetWindowFullscreen(Global::window, 0);
       break;
-    case FullscreenMode::fullscreen:
-      SDL_SetWindowFullscreen(Global::window, SDL_WINDOW_FULLSCREEN);
-      break;
-    case FullscreenMode::windowedFullscreen:
-      SDL_SetWindowFullscreen(Global::window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    default:
+      assert(false);
       break;
     }
   }
 
-  if (Global::inputPause.up) {
+  if (Global::inputPause.up)
+  {
     Global::pauseAudio = Global::inputPause.toggle;
     //Sound::pauseAudioDevice(Global::pauseAudio);
   }
-
-
 
   postPollEventKeyInput(Global::inputKPDivide);
   postPollEventKeyInput(Global::inputKPMultiply);

@@ -1194,14 +1194,14 @@ static void drawSongInfo()
 
   {
     const i32 letters = i32(Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].songName.size());
-    const f32 scaleX = 3.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-    const f32 scaleY = 3.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+    const f32 scaleX = 3.0f * f32(Const::fontCharWidth * letters) / f32(Global::resolutionWidth);
+    const f32 scaleY = 3.0f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
     Font::draw(Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].songName.c_str(), 0.95f - scaleX, 0.3f, 0.0f, scaleX, scaleY);
   }
   {
     const i32 letters = i32(Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].artistName.size());
-    const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-    const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+    const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::resolutionWidth);
+    const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
     Font::draw(Global::songInfos[Global::songSelected].manifestInfos[Global::manifestSelected].artistName.c_str(), 0.95f - scaleX, 0.2f, 0.0f, scaleX, scaleY);
   }
 }
@@ -1226,15 +1226,15 @@ static void drawToneAssignment()
     const i32 len = sizeof("Tone Switch [Bank 63]");
     char text[len];
     sprintf(text, "Tone Switch [Bank %2d]", Global::toneAssignment / 10);
-    const f32 scaleX = 1.5f * f32(Const::fontCharWidth * (len - 1)) / f32(Global::settings.graphicsResolutionWidth);
-    const f32 scaleY = 1.5f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+    const f32 scaleX = 1.5f * f32(Const::fontCharWidth * (len - 1)) / f32(Global::resolutionWidth);
+    const f32 scaleY = 1.5f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
     Font::draw(text, 0.95f - scaleX, 0.6f, 0.0f, scaleX, scaleY);
   }
 #ifdef SUPPORT_PLUGIN
   {
     const i32 letters = Global::vstToneNameLength;
-    const f32 scaleX = 3.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-    const f32 scaleY = 3.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+    const f32 scaleX = 3.0f * f32(Const::fontCharWidth * letters) / f32(Global::resolutionWidth);
+    const f32 scaleY = 3.0f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
     Font::draw(Global::vstToneName, 0.95f - scaleX, 0.5f, 0.0f, scaleX, scaleY);
   }
 #endif // SUPPORT_PLUGIN
@@ -1276,8 +1276,8 @@ static void drawLyricsUsedText(GLuint shader, i32& line0Cur, i32 line0Begin, i32
 
     {
       const i32 letters = line0Cur;
-      const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-      const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+      const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::resolutionWidth);
+      const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
       Font::draw(line0, -0.95f + scaleX, 0.5f, 0.0f, scaleX, scaleY);
     }
   }
@@ -1318,9 +1318,9 @@ static bool drawLyricsActiveText(GLuint shader, i32& line0Cur, i32 line0Active)
     glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[1].v0, Global::settings.highwayLyricsColor[1].v1, Global::settings.highwayLyricsColor[1].v2, Global::settings.highwayLyricsColor[1].v3);
 
     {
-      const f32 offsetX = 4.0f * f32(Const::fontCharWidth * line0Cur) / f32(Global::settings.graphicsResolutionWidth);
-      const f32 scaleX = 2.0f * f32(Const::fontCharWidth * outLetters) / f32(Global::settings.graphicsResolutionWidth);
-      const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+      const f32 offsetX = 4.0f * f32(Const::fontCharWidth * line0Cur) / f32(Global::resolutionWidth);
+      const f32 scaleX = 2.0f * f32(Const::fontCharWidth * outLetters) / f32(Global::resolutionWidth);
+      const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
       Font::draw(line0, -0.95f + scaleX + offsetX, 0.5f, 0.0f, scaleX, scaleY);
     }
 
@@ -1371,10 +1371,10 @@ static void drawLyricsUnusedText(GLuint shader, i32& line0Cur, i32 line0Begin, i
   glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[2].v0, Global::settings.highwayLyricsColor[2].v1, Global::settings.highwayLyricsColor[2].v2, Global::settings.highwayLyricsColor[2].v3);
 
   {
-    const f32 offsetX = 4.0f * f32(Const::fontCharWidth * line0Cur) / f32(Global::settings.graphicsResolutionWidth);
+    const f32 offsetX = 4.0f * f32(Const::fontCharWidth * line0Cur) / f32(Global::resolutionWidth);
     const i32 letters = outLetters;
-    const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-    const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+    const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::resolutionWidth);
+    const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
     Font::draw(line0, -0.95f + scaleX + offsetX, 0.5f, 0.0f, scaleX, scaleY);
   }
 }
@@ -1437,8 +1437,8 @@ static void drawLyricsNextLine(GLuint shader, i32 line0End)
   glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayLyricsColor[2].v0, Global::settings.highwayLyricsColor[2].v1, Global::settings.highwayLyricsColor[2].v2, Global::settings.highwayLyricsColor[2].v3);
   {
     const i32 letters = line1Cur + outLetters;
-    const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::settings.graphicsResolutionWidth);
-    const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::settings.graphicsResolutionHeight);
+    const f32 scaleX = 2.0f * f32(Const::fontCharWidth * letters) / f32(Global::resolutionWidth);
+    const f32 scaleY = 2.0f * f32(Const::fontCharHeight) / f32(Global::resolutionHeight);
     Font::draw(line1, -0.95f + scaleX, 0.4f, 0.0f, scaleX, scaleY);
   }
 }

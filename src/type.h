@@ -6,8 +6,8 @@
 enum struct FullscreenMode : u8
 {
   windowed,
-  fullscreen,
-  windowedFullscreen
+  borderless,
+  //fullscreen // not supported. vst plugin ui does not show.
 };
 
 enum struct InstrumentFlags : u16

@@ -13,10 +13,10 @@ void Phrases::tick()
 {
   if (Global::songTrack.phraseIterations.size() >= 1)
   {
-    const i32 left = i32(0.1f * Global::settings.graphicsResolutionWidth);
-    const i32 right = i32(0.9f * Global::settings.graphicsResolutionWidth);
-    const i32 top = i32(0.04f * Global::settings.graphicsResolutionHeight);
-    const i32 bottom = i32(0.135f * Global::settings.graphicsResolutionHeight);
+    const i32 left = i32(0.1f * Global::resolutionWidth);
+    const i32 right = i32(0.9f * Global::resolutionWidth);
+    const i32 top = i32(0.04f * Global::resolutionHeight);
+    const i32 bottom = i32(0.135f * Global::resolutionHeight);
 
     if (Global::inputEsc.toggle && Global::inputCursorPosX >= left && Global::inputCursorPosX <= right && Global::inputCursorPosY >= top && Global::inputCursorPosY <= bottom)
     {

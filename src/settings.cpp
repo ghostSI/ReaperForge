@@ -24,8 +24,8 @@ static void printUsage() {
     "\n"
     "Options:\n"
     "  -s            Path to settings.ini\n"
-    "  -w            Resolution width\n"
-    "  -h            Resolution height\n"
+    "  -w            Window width\n"
+    "  -h            Window height\n"
     "  -f            Fullscreen\n"
     "  -p            Path to song library directory that contains the .psarc files\n"
     "  -l            Show lyrics on highway\n"
@@ -177,8 +177,8 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
       "Graphics",
       {
         { "Fullscreen",       std::to_string(to_underlying(settings.graphicsFullscreen)) },
-        { "ResolutionWidth",  std::to_string(settings.graphicsResolutionWidth) },
-        { "ResolutionHeight", std::to_string(settings.graphicsResolutionHeight) },
+        { "WindowWidth",  std::to_string(settings.graphicsWindowWidth) },
+        { "WindowHeight", std::to_string(settings.graphicsWindowHeight) },
       }
     },
     {
@@ -331,8 +331,8 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
     .cameraZFactor = f32(atof(serializedSettings.at("Camera").at("ZFactor").c_str())),
     .cameraZOffset = f32(atof(serializedSettings.at("Camera").at("ZOffset").c_str())),
     .graphicsFullscreen = FullscreenMode(atoi(serializedSettings.at("Graphics").at("Fullscreen").c_str())),
-    .graphicsResolutionWidth = atoi(serializedSettings.at("Graphics").at("ResolutionWidth").c_str()),
-    .graphicsResolutionHeight = atoi(serializedSettings.at("Graphics").at("ResolutionHeight").c_str()),
+    .graphicsWindowWidth = atoi(serializedSettings.at("Graphics").at("WindowWidth").c_str()),
+    .graphicsWindowHeight = atoi(serializedSettings.at("Graphics").at("WindowHeight").c_str()),
     .highwayAnchorColor = {
       colorVec4(serializedSettings.at("Highway").at("AnchorColor0")),
       colorVec4(serializedSettings.at("Highway").at("AnchorColor1"))

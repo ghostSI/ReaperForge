@@ -126,12 +126,12 @@ std::string n2hexStr(i32 value) {
 
 f32 x2GlScreen(f32 x)
 {
-  return 2.0f * x / f32(Global::settings.graphicsResolutionWidth) - 1.0_f32;
+  return 2.0f * x / f32(Global::resolutionWidth) - 1.0_f32;
 }
 
 f32 y2GlScreen(f32 y)
 {
-  return -(2.0f * y / f32(Global::settings.graphicsResolutionHeight) - 1.0_f32);
+  return -(2.0f * y / f32(Global::resolutionHeight) - 1.0_f32);
 }
 
 f32 deg2rad(f32 deg) {

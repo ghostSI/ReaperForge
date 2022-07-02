@@ -2569,10 +2569,25 @@ static void settingsWindow()
         nk_label(ctx, "Fullscreen Mode", NK_TEXT_LEFT);
         static const char* fullscreenModeNames[] = {
           "Windowed",
-          "Fullscreen",
-          "Windowed Fullscreen"
+          "Borderless"
         };
+        const FullscreenMode previousFullScreenMode = Global::settings.graphicsFullscreen;
         Global::settings.graphicsFullscreen = FullscreenMode(nk_combo(ctx, fullscreenModeNames, NUM(fullscreenModeNames), to_underlying(Global::settings.graphicsFullscreen), 25, nk_vec2(200, 200)));
+        if (previousFullScreenMode != Global::settings.graphicsFullscreen)
+        {
+          switch (Global::settings.graphicsFullscreen)
+          {
+          case FullscreenMode::windowed:
+            SDL_SetWindowFullscreen(Global::window, 0);
+            break;
+          case FullscreenMode::borderless:
+            SDL_SetWindowFullscreen(Global::window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+            break;
+          default:
+            assert(false);
+            break;
+          }
+        }
       }
       nk_tree_pop(ctx);
     }
@@ -3178,8 +3193,8 @@ void Ui::render() {
           {0.0f,  0.0f,  -1.0f, 0.0f},
           {-1.0f, 1.0f,  0.0f,  1.0f},
   };
-  ortho[0][0] /= (GLfloat)Global::settings.graphicsResolutionWidth;
-  ortho[1][1] /= (GLfloat)Global::settings.graphicsResolutionHeight;
+  ortho[0][0] /= (GLfloat)Global::resolutionWidth;
+  ortho[1][1] /= (GLfloat)Global::resolutionHeight;
 
   glDisable(GL_DEPTH_TEST);
 
@@ -3249,7 +3264,7 @@ void Ui::render() {
       if (!cmd->elem_count) continue;
       glBindTexture(GL_TEXTURE_2D, (GLuint)cmd->texture.id);
       glScissor((GLint)(cmd->clip_rect.x * Global::settings.uiScale),
-        (GLint)((Global::settings.graphicsResolutionHeight - (GLint)(cmd->clip_rect.y + cmd->clip_rect.h)) * Global::settings.uiScale),
+        (GLint)((Global::resolutionHeight - (GLint)(cmd->clip_rect.y + cmd->clip_rect.h)) * Global::settings.uiScale),
         (GLint)(cmd->clip_rect.w * Global::settings.uiScale),
         (GLint)(cmd->clip_rect.h * Global::settings.uiScale));
       glDrawElements(GL_TRIANGLES, (GLsizei)cmd->elem_count, GL_UNSIGNED_SHORT, offset);

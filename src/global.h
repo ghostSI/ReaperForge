@@ -162,6 +162,8 @@ namespace Global {
     extern SDL_Window *window;
     extern SDL_GameController *gameController;
     extern bool appQuit;
+    extern i32 resolutionWidth;
+    extern i32 resolutionHeight;
     extern KeyInput inputA;
     extern KeyInput inputD;
     extern KeyInput inputW;

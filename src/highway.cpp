@@ -286,32 +286,70 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
     }
     else
     {
-
-      mat4 modelMat;
-      if (note.fret == 0)
+      if (note.slideTo != -1 && note.slideTo != note.fret)
       {
-        modelMat.m00 = 8.0f;
-        modelMat.m30 = Const::highwayFretPosition[chordBoxLeft] + 0.25f * (Const::highwayFretPosition[chordBoxLeft + chordBoxWidth] - Const::highwayFretPosition[chordBoxLeft]);
+        const i32 slideWidth = note.slideTo - note.fret;
+
+        const f32 x = Const::highwayFretPosition[note.fret - 1] + 0.5f * (Const::highwayFretPosition[note.fret] - Const::highwayFretPosition[note.fret - 1]);
+
+        mat4 modelMat;
+        modelMat.m30 = x;
+        modelMat.m31 = f32(5 - note.string + instrumentStringOffset) * Const::highwayStringSpacing;
+        modelMat.m32 = noteTime * Global::settings.highwaySpeedMultiplier;
+        glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+
+        std::vector<GLfloat> vv;
+        {
+          const f32 x[] = { 0.0f, 0.0f, slideWidth, slideWidth };
+          const f32 y[] = { 0.0f, 0.3, 0.7f, 1.0f };
+
+          for (f32 f = 0; f < note.sustain; f += Const::highwaySlideFrequency)
+          {
+            const f32 u = f / note.sustain;
+            const f32 xu = pow(1.0f - u, 3.0f) * x[0] + 3.0f * u * pow(1.0f - u, 2.0f) * x[1] + 3.0f * pow(u, 2.0f) * (1.0f - u) * x[2] + pow(u, 3.0f) * x[3];
+            const f32 yu = pow(1.0f - u, 3.0f) * y[0] + 3.0f * u * pow(1.0f - u, 2.0f) * y[1] + 3.0f * pow(u, 2.0f) * (1.0f - u) * y[2] + pow(u, 3.0f) * y[3];
+
+            vv.insert(vv.end(), { -0.2_f32 + xu , 0.0f, -yu * note.sustain * Global::settings.highwaySpeedMultiplier, 0.0f, 0.5f });
+            vv.insert(vv.end(), { 0.2_f32 + xu, 0.0f, -yu * note.sustain * Global::settings.highwaySpeedMultiplier, 1.0f, 0.5f, });
+          }
+        }
+
+        const f32 sustainTime = -note.sustain * Global::settings.highwaySpeedMultiplier;
+        vv.insert(vv.end(), { -0.2_f32 + slideWidth, 0.0f, sustainTime, 0.0f, 0.0f });
+        vv.insert(vv.end(), { 0.2_f32 + slideWidth, 0.0f, sustainTime, 1.0f, 0.0f });
+
+        glBufferData(GL_ARRAY_BUFFER, vv.size() * sizeof(GLfloat), vv.data(), GL_STATIC_DRAW);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, i32(vv.size() / 5));
       }
       else
       {
-        modelMat.m30 = Const::highwayFretPosition[note.fret - 1] + 0.5f * (Const::highwayFretPosition[note.fret] - Const::highwayFretPosition[note.fret - 1]);
+        mat4 modelMat;
+        if (note.fret == 0)
+        {
+          modelMat.m00 = 8.0f;
+          modelMat.m30 = Const::highwayFretPosition[chordBoxLeft] + 0.25f * (Const::highwayFretPosition[chordBoxLeft + chordBoxWidth] - Const::highwayFretPosition[chordBoxLeft]);
+        }
+        else
+        {
+          modelMat.m30 = Const::highwayFretPosition[note.fret - 1] + 0.5f * (Const::highwayFretPosition[note.fret] - Const::highwayFretPosition[note.fret - 1]);
+        }
+        modelMat.m31 = f32(5 - note.string + instrumentStringOffset) * Const::highwayStringSpacing;
+        glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+        const f32 front = min_(noteTime * Global::settings.highwaySpeedMultiplier, 0.0f);
+        const f32 back = (noteTime - note.sustain) * Global::settings.highwaySpeedMultiplier;
+
+        const GLfloat v[] = {
+          -0.2_f32, 0.0f, front, 0.0f, 1.0f,
+          0.2_f32, 0.0f, front, 1.0f, 1.0f,
+          -0.2_f32, 0.0f, back, 0.0f, 0.0f,
+          0.2_f32, 0.0f, back, 1.0f, 0.0f,
+        };
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
       }
-      modelMat.m31 = f32(5 - note.string + instrumentStringOffset) * Const::highwayStringSpacing;
-      glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
-
-      const f32 front = min_(noteTime * Global::settings.highwaySpeedMultiplier, 0.0f);
-      const f32 back = (noteTime - note.sustain) * Global::settings.highwaySpeedMultiplier;
-
-      const GLfloat v[] = {
-        -0.2_f32, 0.0f, front, 0.0f, 1.0f,
-        0.2_f32, 0.0f, front, 1.0f, 1.0f,
-        -0.2_f32, 0.0f, back, 0.0f, 0.0f,
-        0.2_f32, 0.0f, back, 1.0f, 0.0f,
-      };
-
-      glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
-      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
   }
 }
@@ -373,8 +411,8 @@ static void drawNotes(f32 fretboardNoteDistance[7][24])
     i32 currentAnchor = -1;
     for (i32 j = 0; j < i32(Global::songTrack.transcriptionTrack.anchors.size()) - 2; ++j)
     {
-      const Song::TranscriptionTrack::Anchor& anchor0 = Global::songTrack.transcriptionTrack.anchors[i];
-      const Song::TranscriptionTrack::Anchor& anchor1 = Global::songTrack.transcriptionTrack.anchors[i + 1];
+      const Song::TranscriptionTrack::Anchor& anchor0 = Global::songTrack.transcriptionTrack.anchors[j];
+      const Song::TranscriptionTrack::Anchor& anchor1 = Global::songTrack.transcriptionTrack.anchors[j + 1];
 
       if (note.time >= anchor0.time && note.time < anchor1.time)
       {

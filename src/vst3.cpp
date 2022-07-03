@@ -1373,6 +1373,10 @@ void Vst3::loadParameter(i32 index, i32 instance, const std::string& base64)
   parameterBuffer.get().setSize(len);
   assert(parameterBuffer.get().getFillSize() == 0); // does not work when fill size is set
 
+  //Global::effectChain
+  //if (instance == vstPlugins[index].aEffect.size())
+  //  loadPluginInstance(vstPlugins[index]); // plugin is loaded multiple times, create another instance
+
   const Steinberg::tresult result = vst3Plugin.effectComponent->setState(&parameterBuffer);
   assert(result == Steinberg::kResultOk);
 }

@@ -516,6 +516,13 @@ u64 Vst::processBlock(i32 index, i32 instance, f32** inBlock, f32** outBlock, i3
   assert(index >= 0);
   assert(index < vstPlugins.size());
 
+  // After the start of the application one instance is created for each plugin.
+  // When a plugin will be used twice or more in a effect chain an additional instance is needed.
+  // Instead of pausing the audio, creating an new instance, unpausing the audio. It is done here.
+  // Right now there is no way to pause the audio output. It might need to be changed if this does not work as expected.
+  while (vstPlugins[index].aEffect.size() <= instance)
+    loadPluginInstance(vstPlugins[index]);
+
   if (blockLen >= 0)
     vstPlugins[index].aEffect[instance]->processReplacing(vstPlugins[index].aEffect[instance], inBlock, outBlock, blockLen);
 

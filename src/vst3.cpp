@@ -1337,8 +1337,6 @@ public:
   }
 };
 
-static PresetsBufferStream bufferStream;
-
 std::string Vst3::saveParameters(i32 index, i32 instance)
 {
   assert(index >= 0);
@@ -1346,28 +1344,32 @@ std::string Vst3::saveParameters(i32 index, i32 instance)
 
   Vst3Plugin& vst3Plugin = vst3Plugins[index];
 
+  PresetsBufferStream bufferStream;
   const Steinberg::tresult result = vst3Plugin.effectComponent->getState(&bufferStream);
   assert(result == Steinberg::kResultOk);
+  assert(bufferStream.get().getFillSize() > 0);
 
-  assert(bufferStream.get().getSize() > 0);
-
-  return Base64::encode(reinterpret_cast<u8*>(&bufferStream.get()), bufferStream.get().getSize());
+  return Base64::encode(reinterpret_cast<u8*>(bufferStream.get().pass()), bufferStream.get().getFillSize());
 }
 
 void Vst3::loadParameter(i32 index, i32 instance, const std::string& base64)
 {
-  //assert(index >= 0);
-  //assert(index < vst3Plugins.size());
-  //u8 data[4096];
-  //const i64 len = Base64::decode(base64, data);
-  //assert(len >= 0);
+  assert(index >= 0);
+  assert(index < vst3Plugins.size());
 
-  //if (instance == vst3Plugins[index].aEffect.size())
-  //  loadPluginInstance(vst3Plugins[index]); // plugin is loaded multiple times, create another instance
+  Vst3Plugin& vst3Plugin = vst3Plugins[index];
 
-  //callDispatcher(vst3Plugins[index].aEffect[instance], EffOpcode::BeginSetProgram, 0, 0, nullptr, 0.0);
-  //callDispatcher(vst3Plugins[index].aEffect[instance], EffOpcode::SetChunk, 1, len, data, 0.0);
-  //callDispatcher(vst3Plugins[index].aEffect[instance], EffOpcode::EndSetProgram, 0, 0, nullptr, 0.0);
+  const u64 estimatedSize = (base64.size() / 4 * 3);
+
+  PresetsBufferStream bufferStream;
+  bufferStream.get().setSize(estimatedSize);
+  const i64 len = Base64::decode(base64, reinterpret_cast<u8*>(bufferStream.get().pass()));
+
+  assert(len <= estimatedSize);
+  assert(len > estimatedSize - 3);
+
+  const Steinberg::tresult result = vst3Plugin.effectComponent->setState(&bufferStream);
+  assert(result == Steinberg::kResultOk);
 }
 
 #endif // SUPPORT_VST

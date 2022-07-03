@@ -37,6 +37,8 @@
 #include "public.sdk/source/vst/utility/optional.h"
 #include "public.sdk/source/vst/utility/stringconvert.h"
 #include "public.sdk/source/vst/hosting/module.h"
+#include "public.sdk/source/vst/vstpresetfile.h"
+#include "base/source/fbuffer.h"
 
 #include <windows.h>
 #include <shlobj.h>
@@ -983,6 +985,7 @@ struct Vst3Plugin
   Steinberg::IPtr<Steinberg::Vst::IConnectionPoint> controllerConnectionProxy;
   Steinberg::IPlugView* plugView{};
 
+  HWND hwnd{};
 };
 
 static std::vector<Vst3Plugin> vst3Plugins;
@@ -1072,7 +1075,7 @@ void Vst3::init()
         if (i != 0)
           continue;
 
-        Global::pluginNames.push_back(classInfo.name());
+        Global::pluginNames.push_back("VST3 " + classInfo.name());
 
         vst3Plugin.effectComponent = pluginFactory.createInstance<Steinberg::Vst::IComponent>(classInfo.ID());
         assert(vst3Plugin.effectComponent != nullptr);
@@ -1187,6 +1190,8 @@ void Vst3::openWindow(i32 index, i32 instance)
     const Steinberg::tresult result = vst3Plugin.plugView->attached(wmInfo.info.win.window, Steinberg::kPlatformTypeHWND);
     assert(result == Steinberg::kResultOk);
   }
+
+  vst3Plugin.hwnd = GetWindow(wmInfo.info.win.window, GW_CHILD);
 }
 
 Rect Vst3::getWindowRect(i32 index)
@@ -1216,7 +1221,16 @@ void Vst3::moveWindow(i32 index, i32 x, i32 y)
   assert(index >= 0);
   assert(index < vst3Plugins.size());
 
-  //MoveWindow(vst3Plugins[index].hwnd, x, y, vst3Plugins[index].windowRect->right, vst3Plugins[index].windowRect->bottom, TRUE);
+  Vst3Plugin& vst3Plugin = vst3Plugins[index];
+
+  Steinberg::ViewRect size;
+  const Steinberg::tresult result = vst3Plugin.plugView->getSize(&size);
+  assert(result == Steinberg::kResultOk);
+
+  assert(size.left == 0);
+  assert(size.top == 0);
+
+  MoveWindow(vst3Plugin.hwnd, x, y, size.right, size.bottom, TRUE);
 }
 
 void Vst3::closeWindow(i32 index)
@@ -1224,7 +1238,12 @@ void Vst3::closeWindow(i32 index)
   assert(index >= 0);
   assert(index < vst3Plugins.size());
 
-  //DestroyWindow(vst3Plugins[index].hwnd);
+  Vst3Plugin& vst3Plugin = vst3Plugins[index];
+
+  DestroyWindow(vst3Plugin.hwnd);
+
+  vst3Plugin.plugView->removed();
+  vst3Plugin.plugView = nullptr;;
 }
 
 
@@ -1309,20 +1328,30 @@ u64 Vst3::processBlock(i32 index, i32 instance, f32** inBlock, f32** outBlock, i
   return blockLen;
 }
 
+class PresetsBufferStream : public Steinberg::Vst::BufferStream
+{
+public:
+  Steinberg::Buffer& get()
+  {
+    return mBuffer;
+  }
+};
+
+static PresetsBufferStream bufferStream;
+
 std::string Vst3::saveParameters(i32 index, i32 instance)
 {
-  //assert(index >= 0);
-  //assert(index < vst3Plugins.size());
+  assert(index >= 0);
+  assert(index < vst3Plugins.size());
 
-  //u8* chunk = nullptr;
-  //if (to_underlying(vst3Plugins[index].aEffect[instance]->flags & EffFlags::ProgramChunks))
-  //{
-  //  const i64 len = callDispatcher(vst3Plugins[index].aEffect[instance], EffOpcode::GetChunk, 1, 0, &chunk, 0.0);
-  //  assert(len > 0);
+  Vst3Plugin& vst3Plugin = vst3Plugins[index];
 
-  //  return Base64::encode(chunk, len);
-  //}
-  return {};
+  const Steinberg::tresult result = vst3Plugin.effectComponent->getState(&bufferStream);
+  assert(result == Steinberg::kResultOk);
+
+  assert(bufferStream.get().getSize() > 0);
+
+  return Base64::encode(reinterpret_cast<u8*>(&bufferStream.get()), bufferStream.get().getSize());
 }
 
 void Vst3::loadParameter(i32 index, i32 instance, const std::string& base64)

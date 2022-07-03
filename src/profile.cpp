@@ -55,41 +55,10 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
 #ifdef SUPPORT_PLUGIN
 static std::string toneAssignmentNames[2][Const::profileToneAssignmentCount] =
 {
-  {
-    "Default"
-  },
-  {
-    "Default"
-  }
+  { "Default" },
+  { "Default" }
 };
-static i32 toneAssignmentIndex[2][Const::profileToneAssignmentCount][NUM(Global::effectChain)] =
-{
-  {
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) }
-  },
-  {
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) },
-    { ARR_SET16(-1) }
-  }
-};
+static i32 toneAssignmentIndex[2][Const::profileToneAssignmentCount][NUM(Global::effectChain)];
 static std::string toneAssignmentBase64[2][Const::profileToneAssignmentCount][NUM(Global::effectChain)];
 #endif // SUPPORT_PLUGIN
 
@@ -129,7 +98,7 @@ static void loadStatsOnly()
 
         for (i32 j = 0; j < NUM(Global::effectChain); ++j)
         {
-          toneAssignmentIndex[h][i][j] = -1;
+          toneAssignmentIndex[h][i][j] = 0;
           const auto search2 = toneAssignmentTime.find(std::to_string(i) + instChar + std::to_string(j));
           if (search2 != toneAssignmentTime.end())
           {
@@ -142,7 +111,7 @@ static void loadStatsOnly()
               {
                 if (pluginName == Global::pluginNames[k])
                 {
-                  toneAssignmentIndex[h][i][j] = k;
+                  toneAssignmentIndex[h][i][j] = k + 1;
                   const std::string base64 = search2->second.substr(seperator + 1);
                   toneAssignmentBase64[h][i][j] = base64;
                   break;
@@ -167,7 +136,7 @@ static void loadStatsOnly()
 
     for (i32 j = 0; j < NUM(Global::effectChain); ++j)
     {
-      Global::effectChain[j] = toneAssignmentIndex[1][0][j];
+      Global::effectChain[j] = toneAssignmentIndex[1][0][j] - 1;
       if (Global::effectChain[j] >= 0)
       {
         i32 instance = 0;
@@ -232,7 +201,7 @@ void Profile::tick()
     Global::toneAssignmentTime = Global::time;
     for (i32 i = 0; i < NUM(Global::effectChain); ++i)
     {
-      Global::effectChain[i] = toneAssignmentIndex[h][Global::toneAssignment][i];
+      Global::effectChain[i] = toneAssignmentIndex[h][Global::toneAssignment][i] - 1;
       if (Global::effectChain[i] != -1)
       {
         i32 instance = 0;
@@ -255,7 +224,7 @@ static void saveStatsOnly()
   std::map<std::string, std::map<std::string, std::string>> serializedSaves;
 
 #ifdef SUPPORT_PLUGIN
-  std::map<std::string, std::string> toneAssignmentTime;
+  std::map<std::string, std::string> serializedToneAssignments;
   for (i32 h = 0; h < 2; ++h)
   {
     const char instChar = h == 0 ? 'B' : 'G';
@@ -263,19 +232,19 @@ static void saveStatsOnly()
     for (i32 i = 0; i < Const::profileToneAssignmentCount; ++i)
     {
       if (!toneAssignmentNames[h][i].empty())
-        toneAssignmentTime.insert({ std::to_string(i) + instChar, toneAssignmentNames[h][i] });
+        serializedToneAssignments.insert({ std::to_string(i) + instChar, toneAssignmentNames[h][i] });
 
       for (i32 j = 0; j < NUM(Global::effectChain); ++j)
       {
-        if (toneAssignmentIndex[h][i][j] < 0)
+        if (toneAssignmentIndex[h][i][j] == 0)
           continue;
 
         const std::string base64 = toneAssignmentBase64[h][i][j];
-        toneAssignmentTime.insert({ std::to_string(i) + instChar + std::to_string(j), Global::pluginNames[toneAssignmentIndex[h][i][j]] + ';' + base64 });
+        serializedToneAssignments.insert({ std::to_string(i) + instChar + std::to_string(j), Global::pluginNames[toneAssignmentIndex[h][i][j] - 1] + ';' + base64 });
       }
     }
   }
-  serializedSaves.insert({ "!ToneAssignment", toneAssignmentTime });
+  serializedSaves.insert({ "!ToneAssignment", serializedToneAssignments });
 #endif // SUPPORT_PLUGIN
 
   for (const Song::Info& songInfo : Global::songInfos)
@@ -344,7 +313,7 @@ void Profile::saveTone()
   std::vector<i32> instances(Global::pluginNames.size());
   for (i32 i = 0; i < NUM(Global::effectChain); ++i)
   {
-    toneAssignmentIndex[h][Global::toneAssignment][i] = Global::effectChain[i];
+    toneAssignmentIndex[h][Global::toneAssignment][i] = Global::effectChain[i] + 1;
     if (Global::effectChain[i] >= 0)
     {
       i32 instance = 0;

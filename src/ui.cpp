@@ -3090,7 +3090,8 @@ static void installWindow() {
     nk_label(ctx, " -profile_Anon.ini  <- for Highscores, Number of Plays and Tone assignments.", NK_TEXT_LEFT);
     nk_label(ctx, "In addition Reaperforge will create the following directories in the current location:", NK_TEXT_LEFT);
     nk_label(ctx, " -psarc             <- copy your _p.psarc files into this directory.", NK_TEXT_LEFT);
-    nk_label(ctx, " -vst               <- copy your .dll of your vst plugins into this directory.", NK_TEXT_LEFT);
+    nk_label(ctx, " -vst               <- copy your .dll files of your vst plugins into this directory.", NK_TEXT_LEFT);
+    nk_label(ctx, " -vst3              <- copy your .vst3 files of your vst3 plugins into this directory.", NK_TEXT_LEFT);
     nk_label(ctx, "ReaperForge will exit after pressing Install.", NK_TEXT_LEFT);
 
     nk_layout_row_dynamic(ctx, 29, 1);
@@ -3113,7 +3114,10 @@ static void uiHelpWindowOpen()
     nk_label(ctx, "F2: toggle Wireframe", NK_TEXT_LEFT);
     nk_label(ctx, "F3: toggle Debug Info", NK_TEXT_LEFT);
     nk_label(ctx, "F5: Quick Repeater", NK_TEXT_LEFT);
-    nk_label(ctx, "Num0-9: Custom Tone", NK_TEXT_LEFT);
+    nk_label(ctx, "Num 0-9: Custom Tone", NK_TEXT_LEFT);
+    nk_label(ctx, "Num +: Next Bank", NK_TEXT_LEFT);
+    nk_label(ctx, "Num -: Previous Bank", NK_TEXT_LEFT);
+    nk_label(ctx, "Alt+Return: Toggle Fullscreen", NK_TEXT_LEFT);
   }
   nk_end(ctx);
 }

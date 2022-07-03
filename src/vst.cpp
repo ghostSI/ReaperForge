@@ -459,7 +459,7 @@ void Vst::init()
           }
         }
       }
-      Global::pluginNames.push_back(vstPlugin.name);
+      Global::pluginNames.push_back("VST " + vstPlugin.name);
     }
   }
 }
@@ -531,7 +531,7 @@ std::string Vst::saveParameters(i32 index, i32 instance)
   if (to_underlying(vstPlugins[index].aEffect[instance]->flags & EffFlags::ProgramChunks))
   {
     const i64 len = callDispatcher(vstPlugins[index].aEffect[instance], EffOpcode::GetChunk, 1, 0, &chunk, 0.0);
-    assert(len > 0);
+    //assert(len > 0);
 
     return Base64::encode(chunk, len);
   }

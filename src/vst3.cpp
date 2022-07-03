@@ -1370,9 +1370,8 @@ void Vst3::loadParameter(i32 index, i32 instance, const std::string& base64)
   const u64 len = Base64::decode(base64, reinterpret_cast<u8*>(parameterBuffer.data()));
   assert(len <= estimatedSize);
   assert(len > estimatedSize - 3);
-
-  parameterBuffer.get().setFillSize(len);
-  assert(len == parameterBuffer.get().getFillSize());
+  parameterBuffer.get().setSize(len);
+  assert(parameterBuffer.get().getFillSize() == 0); // does not work when fill size is set
 
   const Steinberg::tresult result = vst3Plugin.effectComponent->setState(&parameterBuffer);
   assert(result == Steinberg::kResultOk);

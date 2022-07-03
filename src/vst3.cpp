@@ -1328,12 +1328,16 @@ u64 Vst3::processBlock(i32 index, i32 instance, f32** inBlock, f32** outBlock, i
   return blockLen;
 }
 
-class PresetsBufferStream : public Steinberg::Vst::BufferStream
+class ParameterBuffer : public Steinberg::Vst::BufferStream
 {
 public:
   Steinberg::Buffer& get()
   {
     return mBuffer;
+  }
+  u8* data()
+  {
+    return static_cast<u8*>(static_cast<void*>(mBuffer));
   }
 };
 
@@ -1344,12 +1348,12 @@ std::string Vst3::saveParameters(i32 index, i32 instance)
 
   Vst3Plugin& vst3Plugin = vst3Plugins[index];
 
-  PresetsBufferStream bufferStream;
-  const Steinberg::tresult result = vst3Plugin.effectComponent->getState(&bufferStream);
+  ParameterBuffer parameterBuffer;
+  const Steinberg::tresult result = vst3Plugin.effectComponent->getState(&parameterBuffer);
   assert(result == Steinberg::kResultOk);
-  assert(bufferStream.get().getFillSize() > 0);
+  assert(parameterBuffer.get().getFillSize() > 0);
 
-  return Base64::encode(reinterpret_cast<u8*>(bufferStream.get().pass()), bufferStream.get().getFillSize());
+  return Base64::encode(reinterpret_cast<u8*>(parameterBuffer.data()), parameterBuffer.get().getFillSize());
 }
 
 void Vst3::loadParameter(i32 index, i32 instance, const std::string& base64)
@@ -1361,14 +1365,16 @@ void Vst3::loadParameter(i32 index, i32 instance, const std::string& base64)
 
   const u64 estimatedSize = (base64.size() / 4 * 3);
 
-  PresetsBufferStream bufferStream;
-  bufferStream.get().setSize(estimatedSize);
-  const i64 len = Base64::decode(base64, reinterpret_cast<u8*>(bufferStream.get().pass()));
-
+  ParameterBuffer parameterBuffer;
+  parameterBuffer.get().setSize(estimatedSize);
+  const u64 len = Base64::decode(base64, reinterpret_cast<u8*>(parameterBuffer.data()));
   assert(len <= estimatedSize);
   assert(len > estimatedSize - 3);
 
-  const Steinberg::tresult result = vst3Plugin.effectComponent->setState(&bufferStream);
+  parameterBuffer.get().setFillSize(len);
+  assert(len == parameterBuffer.get().getFillSize());
+
+  const Steinberg::tresult result = vst3Plugin.effectComponent->setState(&parameterBuffer);
   assert(result == Steinberg::kResultOk);
 }
 

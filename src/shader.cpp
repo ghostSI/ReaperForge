@@ -91,13 +91,19 @@ GLuint Shader::useShader(Shader::Stem shaderStem)
 
   glUseProgram(shaderProgram);
 
-  GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-  glEnableVertexAttribArray(posAttrib);
-  glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+  const GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+  if (posAttrib >= 0)
+  {
+    glEnableVertexAttribArray(posAttrib);
+    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+  }
 
-  GLint texAttrib = glGetAttribLocation(shaderProgram, "texcoord");
-  glEnableVertexAttribArray(texAttrib);
-  glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  const GLint texAttrib = glGetAttribLocation(shaderProgram, "texcoord");
+  if (texAttrib >= 0)
+  {
+    glEnableVertexAttribArray(texAttrib);
+    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  }
 
   glUniform1i(glGetUniformLocation(shaderProgram, "texture0"), 0);
 

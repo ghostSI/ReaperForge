@@ -1139,7 +1139,7 @@ void Vst3::init()
         }
         {
           const u32 latency = vst3Plugin.audioProcessor->getLatencySamples();
-          assert(latency < 512);
+          //assert(latency < 512);
         }
       }
     }

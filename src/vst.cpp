@@ -5,6 +5,9 @@
 #include "base64.h"
 #include "global.h"
 #include "version.h"
+#ifdef DEBUG
+#include "opengl.h"
+#endif // DEBUG
 
 #include <SDL2/SDL_syswm.h>
 
@@ -481,7 +484,16 @@ void Vst::openWindow(i32 index, i32 instance)
   SDL_VERSION(&wmInfo.version);
   SDL_GetWindowWMInfo(Global::window, &wmInfo);
 
-  callDispatcher(vstPlugin.aEffect[instance], EffOpcode::EditOpen, 0, 0, wmInfo.info.win.window, 0.0);
+  {
+#ifdef OPENGL_ERROR_CHECK
+    assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
+    callDispatcher(vstPlugin.aEffect[instance], EffOpcode::EditOpen, 0, 0, wmInfo.info.win.window, 0.0);
+#ifdef OPENGL_ERROR_CHECK
+    assert(glGetError() == 0); // plugin corrupted opengl context
+#endif // OPENGL_ERROR_CHECK
+  }
+
 
   vstPlugin.hwnd = GetWindow(wmInfo.info.win.window, GW_CHILD);
 }

@@ -157,34 +157,58 @@ GLuint OpenGl::loadDDSTexture(const u8* in_dds, i32 in_size) {
 
 void glUseProgram(GLuint program) {
   glUseProgramProc(program);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glGenVertexArrays(GLsizei n, GLuint* arrays) {
   glGenVertexArraysProc(n, arrays);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glBindVertexArray(GLuint array) {
   glBindVertexArrayProc(array);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glGenBuffers(GLsizei n, GLuint* buffers) {
   glGenBuffersProc(n, buffers);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glBindBuffer(GLenum target, GLuint buffer) {
   glBindBufferProc(target, buffer);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glDetachShader(GLuint program, GLuint shader) {
   glDetachShaderProc(program, shader);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glDeleteProgram(GLuint program) {
   glDeleteProgramProc(program);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glBufferData(GLenum target, GLsizeiptr size, const void* data, GLenum usage) {
   glBufferDataProc(target, size, data, usage);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 GLint glGetUniformLocation(GLuint program, const GLchar* name) {
@@ -193,26 +217,44 @@ GLint glGetUniformLocation(GLuint program, const GLchar* name) {
 
 void glUniform1f(GLint location, GLfloat v0) {
   glUniform1fProc(location, v0);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glUniform2f(GLint location, GLfloat v0, GLfloat v1) {
   glUniform2fProc(location, v0, v1);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glUniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2) {
   glUniform3fProc(location, v0, v1, v2);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
   glUniform4fProc(location, v0, v1, v2, v3);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glUniform1i(GLint location, GLint v0) {
   glUniform1iProc(location, v0);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glUniform1ui(GLint location, GLuint v0) {
   glUniform1uiProc(location, v0);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 GLint glGetAttribLocation(GLuint program, const GLchar* name) {
@@ -221,15 +263,24 @@ GLint glGetAttribLocation(GLuint program, const GLchar* name) {
 
 void glEnableVertexAttribArray(GLuint index) {
   glEnableVertexAttribArrayProc(index);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,
   const void* pointer) {
   glVertexAttribPointerProc(index, size, type, normalized, stride, pointer);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glGenerateMipmap(GLenum target) {
   glGenerateMipmapProc(target);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 GLuint glCreateShader(GLenum shaderType) {
@@ -238,10 +289,16 @@ GLuint glCreateShader(GLenum shaderType) {
 
 void glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const GLint* length) {
   glShaderSourceProc(shader, count, string, length);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glCompileShader(GLuint shader) {
   glCompileShaderProc(shader);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 GLuint glCreateProgram() {
@@ -250,50 +307,86 @@ GLuint glCreateProgram() {
 
 void glAttachShader(GLuint program, GLuint shader) {
   glAttachShaderProc(program, shader);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glBindFragDataLocation(GLuint program, GLuint colorNumber, const char* name) {
   glBindFragDataLocationProc(program, colorNumber, name);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glLinkProgram(GLuint program) {
   glLinkProgramProc(program);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glGetProgramiv(GLuint program, GLenum pname, GLint* params) {
   glGetProgramivProc(program, pname, params);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glGetShaderiv(GLuint shader, GLenum pname, GLint* params) {
   glGetShaderivProc(shader, pname, params);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glGetShaderInfoLog(GLuint shader, GLsizei maxLength, GLsizei* length, GLchar* infoLog) {
   glGetShaderInfoLogProc(shader, maxLength, length, infoLog);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glDeleteShader(GLuint shader) {
   glDeleteShaderProc(shader);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value) {
   glUniformMatrix4fvProc(location, count, transpose, value);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glActiveTexture(GLenum texture) {
   glActiveTextureProc(texture);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glGenFramebuffers(GLsizei n, GLuint* ids) {
   glGenFramebuffersProc(n, ids);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glBindFramebuffer(GLenum target, GLuint framebuffer) {
   glBindFramebufferProc(target, framebuffer);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level) {
   glFramebufferTexture2DProc(target, attachment, textarget, texture, level);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 GLenum glCheckFramebufferStatus(GLenum target) {
@@ -302,23 +395,38 @@ GLenum glCheckFramebufferStatus(GLenum target) {
 
 void glGenRenderbuffers(GLsizei n, GLuint* renderbuffers) {
   glGenRenderbuffersProc(n, renderbuffers);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glBindRenderbuffer(GLenum target, GLuint renderbuffer) {
   glBindRenderbufferProc(target, renderbuffer);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height) {
   glRenderbufferStorageProc(target, internalformat, width, height);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void
 glFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer) {
   glFramebufferRenderbufferProc(target, attachment, renderbuffertarget, renderbuffer);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glDrawBuffers(GLsizei n, const GLenum* bufs) {
   glDrawBuffersProc(n, bufs);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 //void glBindTexture(GLenum target, GLuint texture) {
@@ -327,6 +435,9 @@ void glDrawBuffers(GLsizei n, const GLenum* bufs) {
 //
 //void glGenTextures(GLsizei n, GLuint* textures) {
 //  glGenTexturesProc(n, textures);
+//#ifdef OPENGL_ERROR_CHECK
+//  assert(glGetError() == 0);
+//#endif // OPENGL_ERROR_CHECK
 //}
 
 void* glMapBuffer(GLenum target, GLenum access) {
@@ -335,6 +446,9 @@ void* glMapBuffer(GLenum target, GLenum access) {
 
 //void glDeleteTextures(GLsizei n, const GLuint* textures) {
 //  glDeleteTexturesProc(n, textures);
+//#ifdef OPENGL_ERROR_CHECK
+//  assert(glGetError() == 0);
+//#endif // OPENGL_ERROR_CHECK
 //}
 
 GLboolean glUnmapBuffer(GLenum target) {
@@ -343,13 +457,22 @@ GLboolean glUnmapBuffer(GLenum target) {
 
 void glBlendEquation(GLenum mode) {
   glBlendEquationProc(mode);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glDeleteBuffers(GLsizei n, const GLuint* buffers) {
   glDeleteBuffersProc(n, buffers);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }
 
 void glCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height,
   GLint border, GLsizei imageSize, const GLvoid* data) {
   glCompressedTexImage2DProc(target, level, internalformat, width, height, border, imageSize, data);
+#ifdef OPENGL_ERROR_CHECK
+  assert(glGetError() == 0);
+#endif // OPENGL_ERROR_CHECK
 }

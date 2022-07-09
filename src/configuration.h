@@ -13,6 +13,8 @@
 
 #define XML_IGNORE_ERROR
 
+#define OPENGL_ERROR_CHECK
+
 #ifdef _WIN32
 #define SUPPORT_BNK
 #define SUPPORT_PLUGIN

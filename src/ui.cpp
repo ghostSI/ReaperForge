@@ -2335,6 +2335,10 @@ static void songWindow()
       nk_layout_row_template_end(ctx);
       {
         {
+#ifdef COLLECTION_WORKER_THREAD
+          const std::unique_lock lock(Global::psarcInfosMutex);
+#endif // COLLECTION_WORKER_THREAD
+
           static i32 expandedIndex = -1;
           static i32 expandedHeight = 0;
 

@@ -15,6 +15,8 @@
 
 #define OPENGL_ERROR_CHECK
 
+//#define COLLECTION_WORKER_THREAD
+
 #ifdef _WIN32
 #define SUPPORT_BNK
 #define SUPPORT_PLUGIN

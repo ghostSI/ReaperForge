@@ -46,6 +46,9 @@ bool Global::isInstalled = false;
 InstrumentFlags Global::currentInstrument = InstrumentFlags::LeadGuitar;
 i32 Global::bassTuning[5] = { 0, 0, 0, 0, 0 };
 i32 Global::guitarTuning[7] = { 0, 0, 0, 0, 0, 0, 0 };
+#ifdef COLLECTION_WORKER_THREAD
+std::mutex Global::psarcInfosMutex;
+#endif // COLLECTION_WORKER_THREAD
 std::vector<Psarc::Info> Global::psarcInfos;
 i32 Global::songSelected = -1;
 i32 Global::manifestSelected = 0;

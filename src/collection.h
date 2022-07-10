@@ -3,10 +3,9 @@
 
 #include "typedefs.h"
 
-namespace Collection {
-
-    void init();
-
+namespace Collection
+{
+  void init();
 }
 
 #endif // COLLECTION_H

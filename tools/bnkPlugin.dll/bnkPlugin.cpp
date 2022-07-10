@@ -3501,7 +3501,7 @@ extern "C" __declspec(dllexport) void bnkInit(const char* bnkPath, void* hWnd)
   platformInitSettings.hWnd = (HWND)hWnd;
 
   // Initialize Wwise
-   bool bSuccess = InitWwise(memSettings, stmSettings, deviceSettings, initSettings, platformInitSettings);
+  bool bSuccess = InitWwise(memSettings, stmSettings, deviceSettings, initSettings, platformInitSettings);
   if (!bSuccess)
   {
     assert(false);

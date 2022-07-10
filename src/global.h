@@ -10,6 +10,7 @@
 #include <atomic>
 #include <vector>
 #include <string>
+#include <mutex>
 
 enum struct FullscreenMode : u8;
 enum struct InputDebugMode : u16;
@@ -205,6 +206,9 @@ namespace Global {
   extern InstrumentFlags currentInstrument;
   extern i32 bassTuning[5];
   extern i32 guitarTuning[7];
+#ifdef COLLECTION_WORKER_THREAD
+  extern std::mutex psarcInfosMutex;
+#endif // COLLECTION_WORKER_THREAD
   extern std::vector<Psarc::Info> psarcInfos;
   extern std::vector<Song::Info> songInfos;
   extern i32 songSelected;

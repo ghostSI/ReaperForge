@@ -1,6 +1,7 @@
 #include "global.h"
 
 SDL_Window* Global::window = nullptr;
+void* Global::hWnd = nullptr;
 SDL_GameController* Global::gameController = nullptr;
 bool Global::appQuit = false;
 i32 Global::resolutionWidth = 1024;

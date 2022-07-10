@@ -3127,32 +3127,78 @@ static void bnkWindow() {
   if (nk_begin(ctx, "Bnk", nk_rect(60, 60, 300, 300), NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE | NK_WINDOW_CLOSABLE))
   {
     nk_layout_row_dynamic(ctx, 22, 1);
+    //{
+    //  static int check;
+    //  static int lastCheck;
+    //  nk_checkbox_label(ctx, "Microphone Delay", &check);
+    //  if (check != lastCheck)
+    //  {
+    //    lastCheck = check;
+    //    if (check)
+    //      Bnk::postEvent(Bnk::EVENTS::ENABLE_MICROPHONE_DELAY);
+    //    else
+    //      Bnk::postEvent(Bnk::EVENTS::DISABLE_MICROPHONE_DELAY);
+    //  }
+    //}
+    //{
+    //  static int check;
+    //  nk_checkbox_label(ctx, "Car", &check);
+    //  if (check)
+    //  {
+    //    if (static Bnk::BankID bankId{}; bankId == 0)
+    //    {
+    //      Bnk::loadBank("Car.bnk", bankId);
+    //      Bnk::postEvent(Bnk::EVENTS::PLAY_ENGINE);
+    //    }
+    //    nk_label(ctx, "rpm", NK_TEXT_LEFT);
+    //    static f32 rpm = 1000;
+    //    nk_slider_float(ctx, 1000.0f, &rpm, 10000.0f, 1.0f);
+    //    Bnk::setRTPCValue(Bnk::GAME_PARAMETERS::RPM, rpm);
+    //  }
+    //}
+
     {
       static int check;
       static int lastCheck;
-      nk_checkbox_label(ctx, "Microphone Delay", &check);
+      nk_checkbox_label(ctx, "rearmed", &check);
       if (check != lastCheck)
-      {
-        lastCheck = check;
-        if (check)
-          Bnk::postEvent(Bnk::EVENTS::ENABLE_MICROPHONE_DELAY);
-        else
-          Bnk::postEvent(Bnk::EVENTS::DISABLE_MICROPHONE_DELAY);
-      }
-    }
-    {
-      static int check;
-      nk_checkbox_label(ctx, "Car", &check);
-      if (check)
       {
         if (static Bnk::BankID bankId{}; bankId == 0)
         {
-          Bnk::loadBank("Car.bnk", bankId);
-          Bnk::postEvent(Bnk::EVENTS::PLAY_ENGINE);
+          Bnk::loadBank("Door.bnk", bankId);
         }
-        static f32 rpm = 1000;
-        nk_slider_float(ctx, 1000.0f, &rpm, 10000.0f, 1.0f);
-        Bnk::setRTPCValue(Bnk::GAME_PARAMETERS::RPM, rpm);
+        if (nk_button_label(ctx, "openTheDoor"))
+        {
+          Bnk::postEvent(1984420030);
+        }
+        if (nk_button_label(ctx, "openTheDoor_intercom"))
+        {
+          Bnk::postEvent(4077742068);
+        }
+        nk_label(ctx, "frequency", NK_TEXT_LEFT);
+        static f32 frequency = 10.0f;
+        nk_slider_float(ctx, 0.0f, &frequency, 20.0f, 1.0f);
+        Bnk::setRTPCValue(858531997, frequency);
+        if (nk_button_label(ctx, "openTheDoor_justDoor"))
+        {
+          Bnk::postEvent(369591575);
+        }
+        if (nk_button_label(ctx, "openTheDoor_slow"))
+        {
+          Bnk::postEvent(3096662402);
+        }
+        if (nk_button_label(ctx, "micophone"))
+        {
+          Bnk::postEvent(2872041301);
+        }
+        nk_label(ctx, "reverb", NK_TEXT_LEFT);
+        static f32 reverb = 0.0f;
+        nk_slider_float(ctx, 0.0f, &reverb, 20.0f, 1.0f);
+        auto res = Bnk::setRTPCValue(348963605, reverb);
+        nk_label(ctx, "feedback", NK_TEXT_LEFT);
+        static f32 feedback = 0.0f;
+        nk_slider_float(ctx, 0.0f, &feedback, 20.0f, 1.0f);
+        res = Bnk::setRTPCValue(4228153068, feedback);
       }
     }
   }

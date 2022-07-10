@@ -6,7 +6,7 @@
 
 #ifdef BNK_DLL_IMPORT // enabled use __declspec(dllimport), disabled use LoadLibrary
 
-extern "C" __declspec(dllimport) void bnkInit(const char*);
+extern "C" __declspec(dllimport) void bnkInit(const char*, void*);
 extern "C" __declspec(dllimport) void bnkTick();
 extern "C" __declspec(dllimport) i32 bnkLoadBank(const char*, u32* const);
 extern "C" __declspec(dllimport) i32 bnkPostEvent(i32);
@@ -16,7 +16,7 @@ extern "C" __declspec(dllimport) void bnkInputOn(i32);
 #else // BNK_DLL_IMPORT
 #include <windows.h> 
 
-typedef void (*bnkInitFunc)(const char*);
+typedef void (*bnkInitFunc)(const char*, void*);
 static bnkInitFunc bnkInit;
 
 typedef void (*bnkTickFunc)();
@@ -67,14 +67,16 @@ void Bnk::init()
   if (Global::settings.audioSignalChain != SignalChain::soundBank)
     return;
 
-#ifndef BNK_DLL_IMPORT
+#ifdef BNK_DLL_IMPORT
+  Global::bnkPluginLoaded = true;
+#else
   Global::bnkPluginLoaded = loadLibrary();
 #endif // BNK_DLL_IMPORT
 
   if (!Global::bnkPluginLoaded)
     return;
 
-  bnkInit("bnk/");
+  bnkInit(Global::settings.bnkPath.c_str(), Global::hWnd);
 }
 
 void Bnk::tick()
@@ -87,7 +89,9 @@ void Bnk::tick()
 
 Bnk::Result Bnk::loadBank(const char* name, Bnk::BankID& bankID)
 {
-  return Bnk::Result(bnkLoadBank(name, &bankID));
+  const Bnk::Result result = Bnk::Result(bnkLoadBank(name, &bankID));
+  //assert(result == Bnk::Result::Success);
+  return result;
 }
 
 Bnk::PlayID Bnk::postEvent(Bnk::UniqueID eventID)
@@ -97,7 +101,9 @@ Bnk::PlayID Bnk::postEvent(Bnk::UniqueID eventID)
 
 Bnk::Result Bnk::setRTPCValue(Bnk::RtpcID rtpcId, Bnk::RtpcValue value)
 {
-  return Bnk::Result(bnkSetRTPCValue(rtpcId, value));
+  const Bnk::Result result = Bnk::Result(bnkSetRTPCValue(rtpcId, value));
+  //assert(result == Bnk::Result::Success);
+  return result;
 }
 
 void Bnk::inputOn(Bnk::PlayID playID)

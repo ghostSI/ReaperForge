@@ -286,7 +286,7 @@ static void drawNote(const Song::TranscriptionTrack::Note& note, f32 noteTime, f
     }
     else
     {
-      if (note.slideTo != -1 && note.slideTo != note.fret)
+      if (note.slideTo >= 1 && note.slideTo != note.fret)
       {
         const i32 slideWidth = note.slideTo - note.fret;
 

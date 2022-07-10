@@ -9,8 +9,6 @@
 #include "opengl.h"
 #endif // DEBUG
 
-#include <SDL2/SDL_syswm.h>
-
 #include <windows.h> 
 
 #include <filesystem>
@@ -480,22 +478,17 @@ void Vst::openWindow(i32 index, i32 instance)
   assert(vstPlugin.windowRect->bottom >= 1);
   assert(vstPlugin.windowRect->right >= 1);
 
-  SDL_SysWMinfo wmInfo;
-  SDL_VERSION(&wmInfo.version);
-  SDL_GetWindowWMInfo(Global::window, &wmInfo);
-
   {
 #ifdef OPENGL_ERROR_CHECK
     assert(glGetError() == 0);
 #endif // OPENGL_ERROR_CHECK
-    callDispatcher(vstPlugin.aEffect[instance], EffOpcode::EditOpen, 0, 0, wmInfo.info.win.window, 0.0);
+    callDispatcher(vstPlugin.aEffect[instance], EffOpcode::EditOpen, 0, 0, Global::hWnd, 0.0);
 #ifdef OPENGL_ERROR_CHECK
     assert(glGetError() == 0); // plugin corrupted opengl context
 #endif // OPENGL_ERROR_CHECK
   }
 
-
-  vstPlugin.hwnd = GetWindow(wmInfo.info.win.window, GW_CHILD);
+  vstPlugin.hwnd = GetWindow((HWND)Global::hWnd, GW_CHILD);
 }
 
 Rect Vst::getWindowRect(i32 index)

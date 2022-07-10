@@ -550,8 +550,6 @@ namespace VST3 {
 #include "global.h"
 #include "version.h"
 
-#include <SDL2/SDL_syswm.h>
-
 #include <pluginterfaces/gui/iplugview.h>
 #include <pluginterfaces/vst/ivstaudioprocessor.h>
 #include <pluginterfaces/vst/ivstcomponent.h>
@@ -1179,19 +1177,15 @@ void Vst3::openWindow(i32 index, i32 instance)
     assert(result == Steinberg::kResultOk);
   }
 
-  SDL_SysWMinfo wmInfo;
-  SDL_VERSION(&wmInfo.version);
-  SDL_GetWindowWMInfo(Global::window, &wmInfo);
-
   //PlugFrame* plugFrame = new PlugFrame(wmInfo.info.win.window);
   //vst3Plugin.plugView->setFrame(plugFrame);
 
   {
-    const Steinberg::tresult result = vst3Plugin.plugView->attached(wmInfo.info.win.window, Steinberg::kPlatformTypeHWND);
+    const Steinberg::tresult result = vst3Plugin.plugView->attached(Global::hWnd, Steinberg::kPlatformTypeHWND);
     assert(result == Steinberg::kResultOk);
   }
 
-  vst3Plugin.hwnd = GetWindow(wmInfo.info.win.window, GW_CHILD);
+  vst3Plugin.hwnd = GetWindow((HWND)Global::hWnd, GW_CHILD);
 }
 
 Rect Vst3::getWindowRect(i32 index)

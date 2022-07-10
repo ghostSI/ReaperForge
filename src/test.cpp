@@ -25107,9 +25107,11 @@ static void bnkTest()
   }
 
   std::vector<std::string> success;
+  std::vector<std::string> fail;
   std::vector<std::string> wrongBankVersion;
   std::vector<std::string> bankAlreadyLoaded;
   std::vector<std::string> notInitialized;
+  std::vector<std::string> insufficientMemory;
   std::vector<std::string> initBankNotLoaded;
   for (int i = 0; i < results.size(); ++i)
   {
@@ -25117,6 +25119,9 @@ static void bnkTest()
     {
     case Bnk::Result::Success:
       success.push_back(bnkFileNames[i]);
+      break;
+    case Bnk::Result::Fail:
+      fail.push_back(bnkFileNames[i]);
       break;
     case Bnk::Result::WrongBankVersion:
       wrongBankVersion.push_back(bnkFileNames[i]);
@@ -25127,6 +25132,9 @@ static void bnkTest()
     case Bnk::Result::NotInitialized:
       notInitialized.push_back(bnkFileNames[i]);
       break;
+    case Bnk::Result::InsufficientMemory:
+      insufficientMemory.push_back(bnkFileNames[i]);
+      break;
     case Bnk::Result::InitBankNotLoaded:
       initBankNotLoaded.push_back(bnkFileNames[i]);
       break;
@@ -25136,17 +25144,19 @@ static void bnkTest()
     }
   }
 
-  assert(17 == success.size());
-  assert(1143 == wrongBankVersion.size());
-  assert(0 == bankAlreadyLoaded.size());
+  assert(192 == success.size());
+  assert(0 == fail.size());
+  assert(0 == wrongBankVersion.size());
+  assert(1 == bankAlreadyLoaded.size());
   assert(0 == notInitialized.size());
-  assert(10 == initBankNotLoaded.size());
+  assert(36 == insufficientMemory.size());
+  assert(0 == initBankNotLoaded.size());
 }
 #endif // SUPPORT_BNK
 
 void Test::run() {
 #ifdef SUPPORT_BNK
-#if 0
+#if 1
   bnkTest();
 #endif
 #endif // SUPPORT_BNK

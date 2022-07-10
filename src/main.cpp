@@ -23,6 +23,7 @@
 #include "ui.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
 
 #include <chrono>
 
@@ -155,6 +156,13 @@ int main(int argc, char* argv[]) {
   if (Global::window == nullptr) {
     SDL_Log("Unable to create Window: %s", SDL_GetError());
     SDL_Quit();
+  }
+
+  {
+    SDL_SysWMinfo wmInfo;
+    SDL_VERSION(&wmInfo.version);
+    SDL_GetWindowWMInfo(Global::window, &wmInfo);
+    Global::hWnd = wmInfo.info.win.window;
   }
 
   SDL_GLContext con = SDL_GL_CreateContext(Global::window);

@@ -7,7 +7,7 @@
 //  INCLUDES
 /////////////////////////
 
-#include "../../bnk/Wwise_IDs.h"
+//#include "../../bnk/Wwise_IDs.h"
 
 #define DEMO_DEFAULT_POOL_SIZE 4000ULL*1024*1024
 #define DEMO_LENGINE_DEFAULT_POOL_SIZE 4000ULL*1024*1024
@@ -3495,28 +3495,31 @@ static bool InitWwise(
   return true;
 }
 
-extern "C" __declspec(dllexport) void bnkInit(const char* bnkPath)
+extern "C" __declspec(dllexport) void bnkInit(const char* bnkPath, void* hWnd)
 {
   GetDefaultSettings(memSettings, stmSettings, deviceSettings, initSettings, platformInitSettings);
-
-  //platformInitSettings.hWnd = hWnd;
-
-  bool bSuccess;
-
+  platformInitSettings.hWnd = (HWND)hWnd;
 
   // Initialize Wwise
-  bSuccess = InitWwise(memSettings, stmSettings, deviceSettings, initSettings, platformInitSettings);
+   bool bSuccess = InitWwise(memSettings, stmSettings, deviceSettings, initSettings, platformInitSettings);
   if (!bSuccess)
   {
     assert(false);
   }
 
-  const size_t size = strlen(bnkPath) + 1;
-  wchar_t wText[260];
-  mbstowcs(wText, bnkPath, size);
+  wchar_t wBnkPath[260];
+  {
+    const size_t len = strlen(bnkPath) + 1;
+    mbstowcs(wBnkPath, bnkPath, len);
+    if (wBnkPath[len - 2] != '/')
+    {
+      wBnkPath[len - 1] = '/';
+      wBnkPath[len] = '\0';
+    }
+  }
 
   // Set the path to the SoundBank Files.
-  m_pLowLevelIO.SetBasePath(wText);
+  m_pLowLevelIO.SetBasePath(wBnkPath);
 
   // Set global language. Low-level I/O devices can use this string to find language-specific assets.
   if (AK::StreamMgr::SetCurrentLanguage(AKTEXT("English(US)")) != AK_Success)
@@ -3525,14 +3528,9 @@ extern "C" __declspec(dllexport) void bnkInit(const char* bnkPath)
   }
 
   // Load the Init sound bank
-// NOTE: The Init sound bank must be the first bank loaded by Wwise!
+  // NOTE: The Init sound bank must be the first bank loaded by Wwise!
   AkBankID bankID;
   if (AK::SoundEngine::LoadBank("init.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
-  {
-    assert(false);
-  }
-
-  if (AK::SoundEngine::LoadBank("InitFromIntegrationDemo.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
   {
     assert(false);
   }
@@ -3544,18 +3542,10 @@ extern "C" __declspec(dllexport) void bnkInit(const char* bnkPath)
 
   AK::SoundEngine::RegisterGameObj(0xBA55BABE, "Global");
 
-  // Load the sound bank
-  if (AK::SoundEngine::LoadBank("Microphone.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
-  {
-    assert(false);
-  }
-
   if (!SoundInput::Instance().InputOn(/*We only support one microphone*/))
   {
     assert(false);
   }
-
-  AkPlayingID playId = AK::SoundEngine::PostEvent(AK::EVENTS::PLAY_MICROPHONE, 0xBA55BABE);
 }
 
 extern "C" __declspec(dllexport) void bnkTick()

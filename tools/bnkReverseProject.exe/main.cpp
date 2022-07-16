@@ -7,7 +7,6 @@
 //  INCLUDES
 /////////////////////////
 
-#include "../../bnk/Wwise_IDs.h"
 
 #define DEMO_DEFAULT_POOL_SIZE 4000ULL*1024*1024
 #define DEMO_LENGINE_DEFAULT_POOL_SIZE 4000ULL*1024*1024
@@ -3396,6 +3395,244 @@ static AK::IAkPluginParam* createParamCallback(AK::IAkPluginMemAlloc* in_pAlloca
   return nullptr;
 }
 
+static void loadAllBnkFiles()
+{
+  AkBankID bankID;
+
+  AK::SoundEngine::LoadBank("DoorInit.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("Door.bnk", AK_DEFAULT_POOL_ID, bankID);
+
+  AK::SoundEngine::LoadBank("amp_at120.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_at20.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_bt15.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_bt30.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_bt45.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_ca100.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_ca38.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_ca85.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_cs100.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_cs120.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_cs90.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_en30.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_en50.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_epiphoneelectarcentury.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_epiphoneelectarm.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_epiphoneelectrichawaiian.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_epiphonezephyr.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_gb100.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_gb38.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_gb50.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_gibsonga79.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_gibsonga8.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_gibsonga88.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_hg100.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_hg180.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_hg500.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_marshall1962bluesbreaker.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_marshalldsl100h.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_marshalldsl15h.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_marshalljcm800.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_marshalljtm45.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_marshalljvm410h.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_marshallplexi.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_orangead50.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_orangejimmybean.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_orangeor100.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_orangeor50h.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_orangerockerverb.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_orangetinyterror.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_tw22.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_tw26.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("amp_tw40.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_bt600b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_bt880b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_bt975b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_ch300b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_ch350b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_ch600b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_cs240b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_cs300b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_cs75b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_edene300.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_edenwt550.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_edenwt800.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_ht100b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_ht300b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_ht400b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_lt25b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_lt85b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_amp_orangead200b.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_at1150bc.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_at810bc.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_bt115bc.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_bt212bc.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_bt410bc.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_ca1510bc.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_ch210bc.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_ch310bc.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_ch410bc.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_cs112bc.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_cs15bc.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_cs410bc.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_edend115xlt.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_edend212xlt.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_edend410xst.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_edend610xst.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_gb415bc.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_orangeobc115.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_orangeobc810.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_cab_tw215bc.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_bassautofilter.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_basschorus.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_bassdistortion.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_bassenbig.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_basseq8.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_bassfilterdelay.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_bassfilterecho.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_bassflanger.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_bassfuzz.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_bassoverdrive.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_bassphase.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_basssuboctave.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_basswah.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_edenwtdi.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("bass_pedal_mbcomp.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("boot.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_at0112c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_at1121c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_audiophile.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_boombox.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_bt1120c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_bt1121c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_bt410c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_ca112c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_ca215c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_ca412c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_cabinetradio.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_cs1120c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_cs1515c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_cs212c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_en212c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_en4120c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_gb412cmki.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_gb412cmkii.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_gb412cmkiii.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_gramophone.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_hg2120c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_hg212c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_hg215c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_jukebox.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_marshall1936.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_marshall1960a.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_marshall1960ax.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_marshall1960tv.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_orangejimmybean.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_orangeppc212ob.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_orangeppc412.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_pa1152c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_pa600c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_pa999c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_tw110c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_tw112c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_tw410c.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("cab_vintagehifi.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("core.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("crowd_venuesize_large.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("crowd_venuesize_medium.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("crowd_venuesize_small.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("di_amp_bassdriver.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("di_amp_mixerpre.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("di_amp_tubepre.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("init.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_80sflanger.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_acousticemulator.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_ampeq.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_amptrem.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_ampvibe.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_analoguedelay.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_autofilter.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_autovibe.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_bakedrotatoe.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_bassemulator.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_bitcruncher.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_bobfilter.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_buzzone.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_buzztoo.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_captfuzzle.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_chorus.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_chorus20.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_classicflanger.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_compression.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_cosmicecho.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_customdrive.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_digitalchorus.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_digitalverb.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_distortion.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_enbiggenator.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_eq5.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_eq8.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_fuzzwashe.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_germaniumdrive.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_limiter.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_linedrive.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_lofifilter.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_marshallguvnorplus.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_marshallsupervibe.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_metaldistortion.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_moddelay.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_modernflanger.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_modernwah.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_multipitch.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_multitrem.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_multivibe.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_nofiecho.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_noisegate.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_npndelay.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_octaveup.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_octavius.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_oilcanecho.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_omnimod.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_phaser.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_planephase.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_plateverb.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_rangebooster.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_ringmod.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_sendintheclones.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_shaverphaser.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_shredzone.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_springreverb.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_superdrive.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_swole.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_tremole.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_tremolo.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_tubespring.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_ukwah.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_uswah.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_valveecho.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_vintagechorus.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_vintagedistortion.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("pedal_vintageflanger.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_rotavibe.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_stereoanalogvibe.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_stereophaser.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_stereotubetrem.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_studiochamber.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_studiochorus.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_studiocompressor.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_studiodelay.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_studioeq.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_studioflanger.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_studiographiceq.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_studiopitch.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_studioplate.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_studioverb.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_studiowahfilter.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_synthfilter.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("rack_tapeecho.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("tonedesigner.bnk", AK_DEFAULT_POOL_ID, bankID);
+  AK::SoundEngine::LoadBank("videobank.bnk", AK_DEFAULT_POOL_ID, bankID);
+}
+
 int main()
 {
   AkStreamMgrSettings stmSettings;
@@ -3456,15 +3693,6 @@ int main()
 
   AkBankID bankID;
 
-  if (AK::SoundEngine::LoadBank("InitFromIntegrationDemo.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
-    abort();
-
-  if (AK::SoundEngine::LoadBank("boot.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
-    abort();
-
-  if (AK::SoundEngine::LoadBank("core.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
-    abort();
-
   if (AK::SoundEngine::LoadBank("init.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
     abort();
 
@@ -3474,146 +3702,18 @@ int main()
   if (AK::SoundEngine::RegisterGameObj(GAME_OBJECT, "GAME_OBJECT") != AK_Success)
     abort();
 
-  AkPlayingID playId;
-  {
-    if (AK::SoundEngine::LoadBank("MusicCallbacks.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
-      abort();
-
-    playId = AK::SoundEngine::PostEvent(AK::EVENTS::PLAYMUSICDEMO1, GAME_OBJECT);
-  }
+  loadAllBnkFiles();
 
   {
-    if (AK::SoundEngine::LoadBank("Microphone.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
-      abort();
-    playId = AK::SoundEngine::PostEvent(AK::EVENTS::PLAY_MICROPHONE, GAME_OBJECT);
-    if (SoundInput::Instance().InputOn())
-      SoundInput::Instance().SetPlayingID(playId);
-    playId = AK::SoundEngine::PostEvent(AK::EVENTS::ENABLE_MICROPHONE_DELAY, GAME_OBJECT);
+    AK::SoundEngine::PostEvent("Play_TitleScreen", GAME_OBJECT);
+    AK::SoundEngine::PostEvent("Dialog_TransitionIn", GAME_OBJECT);
+    AK::SoundEngine::PostEvent("Dialog_TransitionOut", GAME_OBJECT);
+    AK::SoundEngine::PostEvent("Play_RocksmithStart_NewVO", GAME_OBJECT);
+    AK::SoundEngine::PostEvent("Enter_Bib", GAME_OBJECT);
+    AK::SoundEngine::PostEvent("Nav_Down", GAME_OBJECT);
   }
 
-  //{
-  //  if (AK::SoundEngine::LoadBank("_80srevival_drums.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
-  //    abort();
-  //  AkPlayingID playId = AK::SoundEngine::PostEvent(215472875, GAME_OBJECT);
-  //  playId = AK::SoundEngine::PostEvent(1824496774, GAME_OBJECT);
-  //  playId = AK::SoundEngine::PostEvent(2650314417, GAME_OBJECT);
-  //  playId = AK::SoundEngine::PostEvent(3350917424, GAME_OBJECT);
-  //  playId = AK::SoundEngine::PostEvent(3621857864, GAME_OBJECT);
-  //  SoundInput::Instance().SetPlayingID(playId);
-  //}
-
-  //{
-  //  if (AK::SoundEngine::LoadBank("song_brightlights_preview.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
-  //    abort();
-  //  playId = AK::SoundEngine::PostEvent(3051082168, GAME_OBJECT);
-  //  playId = AK::SoundEngine::PostEvent(991327132, GAME_OBJECT);
-  //  SoundInput::Instance().SetPlayingID(playId);
-  //}
-
-  {
-    if (AK::SoundEngine::LoadBank("amp_at120.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
-      abort();
-
-    AKRESULT result = AK::SoundEngine::RegisterPlugin(AkPluginType::AkPluginTypeEffect, 0, 0x7E, createPluginCallback, createParamCallback);
-    result = AK::SoundEngine::RegisterPlugin(AkPluginType::AkPluginTypeEffect, 0, 0x83, createPluginCallback, createParamCallback);
-
-    playId = AK::SoundEngine::PostEvent(38854832, GAME_OBJECT);
-    playId = AK::SoundEngine::PostEvent(38854833, GAME_OBJECT);
-    playId = AK::SoundEngine::PostEvent(38854834, GAME_OBJECT);
-    playId = AK::SoundEngine::PostEvent(38854835, GAME_OBJECT);
-    playId = AK::SoundEngine::PostEvent(1481751032, GAME_OBJECT);
-    playId = AK::SoundEngine::PostEvent(1481751034, GAME_OBJECT);
-    playId = AK::SoundEngine::PostEvent(1481751035, GAME_OBJECT);
-    playId = AK::SoundEngine::PostEvent(1481751037, GAME_OBJECT);
-    playId = AK::SoundEngine::PostEvent(2220269873, GAME_OBJECT);
-    playId = AK::SoundEngine::PostEvent(3758901456, GAME_OBJECT);
-
-    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 38854833);
-    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 38854834);
-    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 38854835);
-    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 1481751032);
-    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 1481751034);
-    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 1481751035);
-    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 1481751037);
-    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 2220269873);
-    result = AK::SoundEngine::SetActorMixerEffect(playId, bankID, 3758901456);
-
-  }
-
-  if (AK::SoundEngine::LoadBank("amp_at20.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_bt15.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_bt30.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_bt45.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_ca100.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_ca38.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_ca85.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_cs100.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_cs120.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_cs90.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_en30.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_en50.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_epiphoneelectarcentury.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_epiphoneelectarm.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_epiphoneelectrichawaiian.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_epiphonezephyr.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_gb100.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_gb38.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_gb50.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_gibsonga79.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_gibsonga8.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_gibsonga88.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_hg100.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_hg180.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_hg500.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_marshall1962bluesbreaker.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_marshalldsl100h.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_marshalldsl15h.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_marshalljcm800.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_marshalljtm45.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_marshalljvm410h.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_marshallplexi.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_orangead50.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_orangejimmybean.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_orangeor100.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_orangeor50h.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_orangerockerverb.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_orangetinyterror.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_tw22.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_tw26.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("amp_tw40.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_bt600b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_bt880b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_bt975b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_ch300b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_ch350b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_ch600b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_cs240b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_cs300b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_cs75b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_edene300.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_edenwt550.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_edenwt800.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_ht100b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_ht300b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_ht400b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_lt25b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_lt85b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_amp_orangead200b.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_at1150bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_at810bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_bt115bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_bt212bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_bt410bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_ca1510bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_ch210bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_ch310bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_ch410bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_cs112bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_cs15bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_cs410bc.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_edend115xlt.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_edend212xlt.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
-  if (AK::SoundEngine::LoadBank("bass_cab_edend410xst.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success) { abort(); }
+  AK::SoundEngine::PostEvent("openTheDoor_justDoor", GAME_OBJECT);
 
   for (;;) {
     if (AK::SoundEngine::IsInitialized())

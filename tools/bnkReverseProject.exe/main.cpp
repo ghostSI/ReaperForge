@@ -8,8 +8,8 @@
 /////////////////////////
 
 
-#define DEMO_DEFAULT_POOL_SIZE 4000ULL*1024*1024
-#define DEMO_LENGINE_DEFAULT_POOL_SIZE 4000ULL*1024*1024
+#define DEMO_DEFAULT_POOL_SIZE 400ULL*1024*1024
+#define DEMO_LENGINE_DEFAULT_POOL_SIZE 400ULL*1024*1024
 #define SOUND_BANK_PATH L"../../bnk/"
 
 #include <AK/MusicEngine/Common/AkMusicEngine.h>    // Sound engine
@@ -3385,7 +3385,6 @@ static void MusicCallback(AkCallbackType in_eType, AkCallbackInfo* in_pCallbackI
   }
 }
 
-
 static AK::IAkPlugin* createPluginCallback(AK::IAkPluginMemAlloc* in_pAllocator)
 {
   return nullptr;
@@ -3646,13 +3645,13 @@ int main()
   initSettings.uDefaultPoolSize = DEMO_DEFAULT_POOL_SIZE;
   initSettings.pfnAssertHook = AkAssertHookA;
 
-  AkMusicSettings initMusicSettings;
-  initMusicSettings.fStreamingLookAheadRatio = 1.0f;
-  AK::MusicEngine::GetDefaultInitSettings(initMusicSettings);
-
   AkPlatformInitSettings platformInitSettings;
   AK::SoundEngine::GetDefaultPlatformInitSettings(platformInitSettings);
   platformInitSettings.uLEngineDefaultPoolSize = DEMO_LENGINE_DEFAULT_POOL_SIZE;
+
+  AkMusicSettings initMusicSettings;
+  initMusicSettings.fStreamingLookAheadRatio = 1.0f;
+  AK::MusicEngine::GetDefaultInitSettings(initMusicSettings);
 
   if (AK::MemoryMgr::IsInitialized())
     abort();
@@ -3686,20 +3685,24 @@ int main()
   if (res != AK_Success)
     abort();
 
+  res = AK::SoundEngine::RegisterAllCodecPlugins();
+  if (res != AK_Success)
+    abort();
+
   m_pLowLevelIO.SetBasePath(SOUND_BANK_PATH);
 
   if (AK::StreamMgr::SetCurrentLanguage(AKTEXT("English(US)")) != AK_Success)
     abort();
 
-  AkBankID bankID;
-
-  if (AK::SoundEngine::LoadBank("init.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
-    abort();
-
   if (!SoundInputMgr::Instance().Initialize())
     abort();
+
 #define GAME_OBJECT 1234
   if (AK::SoundEngine::RegisterGameObj(GAME_OBJECT, "GAME_OBJECT") != AK_Success)
+    abort();
+
+  AkBankID bankID;
+  if (AK::SoundEngine::LoadBank("init.bnk", AK_DEFAULT_POOL_ID, bankID) != AK_Success)
     abort();
 
   loadAllBnkFiles();

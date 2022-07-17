@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|x86">
+    <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>x86</Platform>
     </ProjectConfiguration>
@@ -9,44 +9,12 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug(StaticCRT)|x86">
-      <Configuration>Debug(StaticCRT)</Configuration>
-      <Platform>x86</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug(StaticCRT)|x64">
-      <Configuration>Debug(StaticCRT)</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Profile|x86">
-      <Configuration>Profile</Configuration>
-      <Platform>x86</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Profile|x64">
-      <Configuration>Profile</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Profile(StaticCRT)|x86">
-      <Configuration>Profile(StaticCRT)</Configuration>
-      <Platform>x86</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Profile(StaticCRT)|x64">
-      <Configuration>Profile(StaticCRT)</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x86">
+    <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>x86</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release(StaticCRT)|x86">
-      <Configuration>Release(StaticCRT)</Configuration>
-      <Platform>x86</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release(StaticCRT)|x64">
-      <Configuration>Release(StaticCRT)</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -58,73 +26,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x86'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x86'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x86'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x86'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x64'" Label="Configuration">
+  <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -133,292 +35,28 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="NDebug_StaticCRT_vc120.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="NDebug_StaticCRT_vc120.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x86'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="NDebug_StaticCRT_vc120.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="NDebug_StaticCRT_vc120.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x86'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="NDebug_StaticCRT_vc120.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="NDebug_StaticCRT_vc120.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x86'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="NDebug_StaticCRT_vc120.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="NDebug_StaticCRT_vc120.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="NDebug_StaticCRT_vc120.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="NDebug_StaticCRT_vc120.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x86'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="NDebug_StaticCRT_vc120.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x64'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="NDebug_StaticCRT_vc120.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">..\..\$(Configuration)\bin\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">..\..\$(Configuration)\obj\$(ProjectName)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">bnk</TargetName>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\$(Configuration)\bin\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\$(Configuration)\obj\$(ProjectName)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">bnk</TargetName>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x86'">..\..\$(Configuration)\bin\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x86'">..\..\$(Configuration)\obj\$(ProjectName)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x86'">bnk</TargetName>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x86'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x64'">..\..\$(Configuration)\bin\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x64'">..\..\$(Configuration)\obj\$(ProjectName)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x64'">bnk</TargetName>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Profile|x86'">..\..\$(Configuration)\bin\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Profile|x86'">..\..\$(Configuration)\obj\$(ProjectName)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Profile|x86'">bnk</TargetName>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Profile|x86'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">..\..\$(Configuration)\bin\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">..\..\$(Configuration)\obj\$(ProjectName)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">bnk</TargetName>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x86'">..\..\$(Configuration)\bin\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x86'">..\..\$(Configuration)\obj\$(ProjectName)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x86'">bnk</TargetName>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x86'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x64'">..\..\$(Configuration)\bin\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x64'">..\..\$(Configuration)\obj\$(ProjectName)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x64'">bnk</TargetName>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x86'">..\..\$(Configuration)\bin\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x86'">..\..\$(Configuration)\obj\$(ProjectName)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x86'">bnk</TargetName>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x86'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\$(Configuration)\bin\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\$(Configuration)\obj\$(ProjectName)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">bnk</TargetName>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x86'">..\..\$(Configuration)\bin\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x86'">..\..\$(Configuration)\obj\$(ProjectName)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x86'">bnk</TargetName>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x86'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x64'">..\..\$(Configuration)\bin\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x64'">..\..\$(Configuration)\obj\$(ProjectName)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x64'">bnk</TargetName>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x64'">true</LinkIncremental>
+    <OutDir>..\..\$(Configuration)\bin\</OutDir>
+    <IntDir>..\..\$(Configuration)\obj\$(ProjectName)\</IntDir>
+    <TargetName>bnk</TargetName>
+    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+  <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\3rdparty\Wwise 2013.2.9.4872\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>COMPILING_DLL;_DEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>AK_OPTIMIZED;COMPILING_DLL;NDEBUG;AK_OPTIMIZED;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <ExceptionHandling>Sync</ExceptionHandling>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>AkConvolutionReverbFX.lib;iZTrashMultibandDistortionFX.lib;AstoundsoundExpanderFX.lib;AkTremoloFX.lib;AkMemoryMgr.lib;AkMotionGenerator.lib;AkSineSource.lib;AkSoundSeedWind.lib;AkStereoDelayFX.lib;AkGuitarDistortionFX.lib;AkRumble.lib;AkSoundEngine.lib;AkMP3Source.lib;iZTrashBoxModelerFX.lib;AkSoundSeedImpactFX.lib;AkRoomVerbFX.lib;iZTrashDelayFX.lib;McDSPFutzBoxFX.lib;AkParametricEQFX.lib;McDSPLimiterFX.lib;AkToneSource.lib;AkFlangerFX.lib;AkCompressorFX.lib;AstoundsoundFolddownFX.lib;AkAudioInputSource.lib;AkMusicEngine.lib;AkDelayFX.lib;CrankcaseAudioREVModelPlayerFX.lib;AkSoundSeedWoosh.lib;iZHybridReverbFX.lib;AkPitchShifterFX.lib;iZTrashDynamicsFX.lib;iZTrashDistortionFX.lib;AstoundsoundRTIFX.lib;AkSilenceSource.lib;AkGainFX.lib;AkVorbisDecoder.lib;AkTimeStretchFX.lib;AstoundsoundShared.lib;iZTrashFiltersFX.lib;AkMatrixReverbFX.lib;AkMeterFX.lib;AkStreamMgr.lib;AkHarmonizerFX.lib;AkPeakLimiterFX.lib;AkExpanderFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>"$(DXSDK_DIR)\lib\x86";..\..\3rdparty\Wwise 2013.2.9.4872\libx86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>..\..\3rdparty\Wwise 2013.2.9.4872\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>AK_OPTIMIZED;COMPILING_DLL;_DEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>AkConvolutionReverbFX.lib;iZTrashMultibandDistortionFX.lib;AstoundsoundExpanderFX.lib;AkTremoloFX.lib;AkMemoryMgr.lib;AkMotionGenerator.lib;AkSineSource.lib;AkSoundSeedWind.lib;AkStereoDelayFX.lib;AkGuitarDistortionFX.lib;AkRumble.lib;AkSoundEngine.lib;AkMP3Source.lib;iZTrashBoxModelerFX.lib;AkSoundSeedImpactFX.lib;AkRoomVerbFX.lib;iZTrashDelayFX.lib;McDSPFutzBoxFX.lib;AkParametricEQFX.lib;McDSPLimiterFX.lib;AkToneSource.lib;AkFlangerFX.lib;AkCompressorFX.lib;AstoundsoundFolddownFX.lib;AkAudioInputSource.lib;AkMusicEngine.lib;AkDelayFX.lib;CrankcaseAudioREVModelPlayerFX.lib;AkSoundSeedWoosh.lib;iZHybridReverbFX.lib;AkPitchShifterFX.lib;iZTrashDynamicsFX.lib;iZTrashDistortionFX.lib;AstoundsoundRTIFX.lib;AkSilenceSource.lib;AkGainFX.lib;AkVorbisDecoder.lib;AkTimeStretchFX.lib;AstoundsoundShared.lib;iZTrashFiltersFX.lib;AkMatrixReverbFX.lib;AkMeterFX.lib;AkStreamMgr.lib;AkHarmonizerFX.lib;AkPeakLimiterFX.lib;AkExpanderFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>"$(DXSDK_DIR)\lib\x64";..\..\3rdparty\Wwise 2013.2.9.4872\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x86'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>..\..\3rdparty\Wwise 2013.2.9.4872\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>COMPILING_DLL;_DEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>AkConvolutionReverbFX.lib;iZTrashMultibandDistortionFX.lib;AstoundsoundExpanderFX.lib;AkTremoloFX.lib;AkMemoryMgr.lib;AkMotionGenerator.lib;AkSineSource.lib;AkSoundSeedWind.lib;AkStereoDelayFX.lib;AkGuitarDistortionFX.lib;AkRumble.lib;AkSoundEngine.lib;AkMP3Source.lib;iZTrashBoxModelerFX.lib;AkSoundSeedImpactFX.lib;AkRoomVerbFX.lib;iZTrashDelayFX.lib;McDSPFutzBoxFX.lib;AkParametricEQFX.lib;McDSPLimiterFX.lib;AkToneSource.lib;AkFlangerFX.lib;AkCompressorFX.lib;AstoundsoundFolddownFX.lib;AkAudioInputSource.lib;AkMusicEngine.lib;AkDelayFX.lib;CrankcaseAudioREVModelPlayerFX.lib;AkSoundSeedWoosh.lib;iZHybridReverbFX.lib;AkPitchShifterFX.lib;iZTrashDynamicsFX.lib;iZTrashDistortionFX.lib;AstoundsoundRTIFX.lib;AkSilenceSource.lib;AkGainFX.lib;AkVorbisDecoder.lib;AkTimeStretchFX.lib;AstoundsoundShared.lib;iZTrashFiltersFX.lib;AkMatrixReverbFX.lib;AkMeterFX.lib;AkStreamMgr.lib;AkHarmonizerFX.lib;AkPeakLimiterFX.lib;AkExpanderFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>"$(DXSDK_DIR)\lib\x86";..\..\3rdparty\Wwise 2013.2.9.4872\libx86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>..\..\3rdparty\Wwise 2013.2.9.4872\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>AK_OPTIMIZED;COMPILING_DLL;_DEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>AkConvolutionReverbFX.lib;iZTrashMultibandDistortionFX.lib;AstoundsoundExpanderFX.lib;AkTremoloFX.lib;AkMemoryMgr.lib;AkMotionGenerator.lib;AkSineSource.lib;AkSoundSeedWind.lib;AkStereoDelayFX.lib;AkGuitarDistortionFX.lib;AkRumble.lib;AkSoundEngine.lib;AkMP3Source.lib;iZTrashBoxModelerFX.lib;AkSoundSeedImpactFX.lib;AkRoomVerbFX.lib;iZTrashDelayFX.lib;McDSPFutzBoxFX.lib;AkParametricEQFX.lib;McDSPLimiterFX.lib;AkToneSource.lib;AkFlangerFX.lib;AkCompressorFX.lib;AstoundsoundFolddownFX.lib;AkAudioInputSource.lib;AkMusicEngine.lib;AkDelayFX.lib;CrankcaseAudioREVModelPlayerFX.lib;AkSoundSeedWoosh.lib;iZHybridReverbFX.lib;AkPitchShifterFX.lib;iZTrashDynamicsFX.lib;iZTrashDistortionFX.lib;AstoundsoundRTIFX.lib;AkSilenceSource.lib;AkGainFX.lib;AkVorbisDecoder.lib;AkTimeStretchFX.lib;AstoundsoundShared.lib;iZTrashFiltersFX.lib;AkMatrixReverbFX.lib;AkMeterFX.lib;AkStreamMgr.lib;AkHarmonizerFX.lib;AkPeakLimiterFX.lib;AkExpanderFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>"$(DXSDK_DIR)\lib\x64";..\..\3rdparty\Wwise 2013.2.9.4872\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x86'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>..\..\3rdparty\Wwise 2013.2.9.4872\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>COMPILING_DLL;NDEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>AkConvolutionReverbFX.lib;iZTrashMultibandDistortionFX.lib;AstoundsoundExpanderFX.lib;AkTremoloFX.lib;AkMemoryMgr.lib;AkMotionGenerator.lib;AkSineSource.lib;AkSoundSeedWind.lib;AkStereoDelayFX.lib;AkGuitarDistortionFX.lib;AkRumble.lib;AkSoundEngine.lib;AkMP3Source.lib;iZTrashBoxModelerFX.lib;AkSoundSeedImpactFX.lib;AkRoomVerbFX.lib;iZTrashDelayFX.lib;McDSPFutzBoxFX.lib;AkParametricEQFX.lib;McDSPLimiterFX.lib;AkToneSource.lib;AkFlangerFX.lib;AkCompressorFX.lib;AstoundsoundFolddownFX.lib;AkAudioInputSource.lib;AkMusicEngine.lib;AkDelayFX.lib;CrankcaseAudioREVModelPlayerFX.lib;AkSoundSeedWoosh.lib;iZHybridReverbFX.lib;AkPitchShifterFX.lib;iZTrashDynamicsFX.lib;iZTrashDistortionFX.lib;AstoundsoundRTIFX.lib;AkSilenceSource.lib;AkGainFX.lib;AkVorbisDecoder.lib;AkTimeStretchFX.lib;AstoundsoundShared.lib;iZTrashFiltersFX.lib;AkMatrixReverbFX.lib;AkMeterFX.lib;AkStreamMgr.lib;AkHarmonizerFX.lib;AkPeakLimiterFX.lib;AkExpanderFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>"$(DXSDK_DIR)\lib\x86";..\..\3rdparty\Wwise 2013.2.9.4872\libx86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>..\..\3rdparty\Wwise 2013.2.9.4872\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>AK_OPTIMIZED;COMPILING_DLL;NDEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>AkConvolutionReverbFX.lib;iZTrashMultibandDistortionFX.lib;AstoundsoundExpanderFX.lib;AkTremoloFX.lib;AkMemoryMgr.lib;AkMotionGenerator.lib;AkSineSource.lib;AkSoundSeedWind.lib;AkStereoDelayFX.lib;AkGuitarDistortionFX.lib;AkRumble.lib;AkSoundEngine.lib;AkMP3Source.lib;iZTrashBoxModelerFX.lib;AkSoundSeedImpactFX.lib;AkRoomVerbFX.lib;iZTrashDelayFX.lib;McDSPFutzBoxFX.lib;AkParametricEQFX.lib;McDSPLimiterFX.lib;AkToneSource.lib;AkFlangerFX.lib;AkCompressorFX.lib;AstoundsoundFolddownFX.lib;AkAudioInputSource.lib;AkMusicEngine.lib;AkDelayFX.lib;CrankcaseAudioREVModelPlayerFX.lib;AkSoundSeedWoosh.lib;iZHybridReverbFX.lib;AkPitchShifterFX.lib;iZTrashDynamicsFX.lib;iZTrashDistortionFX.lib;AstoundsoundRTIFX.lib;AkSilenceSource.lib;AkGainFX.lib;AkVorbisDecoder.lib;AkTimeStretchFX.lib;AstoundsoundShared.lib;iZTrashFiltersFX.lib;AkMatrixReverbFX.lib;AkMeterFX.lib;AkStreamMgr.lib;AkHarmonizerFX.lib;AkPeakLimiterFX.lib;AkExpanderFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>"$(DXSDK_DIR)\lib\x64";..\..\3rdparty\Wwise 2013.2.9.4872\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x86'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>..\..\3rdparty\Wwise 2013.2.9.4872\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>COMPILING_DLL;NDEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>AkConvolutionReverbFX.lib;iZTrashMultibandDistortionFX.lib;AstoundsoundExpanderFX.lib;AkTremoloFX.lib;AkMemoryMgr.lib;AkMotionGenerator.lib;AkSineSource.lib;AkSoundSeedWind.lib;AkStereoDelayFX.lib;AkGuitarDistortionFX.lib;AkRumble.lib;AkSoundEngine.lib;AkMP3Source.lib;iZTrashBoxModelerFX.lib;AkSoundSeedImpactFX.lib;AkRoomVerbFX.lib;iZTrashDelayFX.lib;McDSPFutzBoxFX.lib;AkParametricEQFX.lib;McDSPLimiterFX.lib;AkToneSource.lib;AkFlangerFX.lib;AkCompressorFX.lib;AstoundsoundFolddownFX.lib;AkAudioInputSource.lib;AkMusicEngine.lib;AkDelayFX.lib;CrankcaseAudioREVModelPlayerFX.lib;AkSoundSeedWoosh.lib;iZHybridReverbFX.lib;AkPitchShifterFX.lib;iZTrashDynamicsFX.lib;iZTrashDistortionFX.lib;AstoundsoundRTIFX.lib;AkSilenceSource.lib;AkGainFX.lib;AkVorbisDecoder.lib;AkTimeStretchFX.lib;AstoundsoundShared.lib;iZTrashFiltersFX.lib;AkMatrixReverbFX.lib;AkMeterFX.lib;AkStreamMgr.lib;AkHarmonizerFX.lib;AkPeakLimiterFX.lib;AkExpanderFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>"$(DXSDK_DIR)\lib\x86";..\..\3rdparty\Wwise 2013.2.9.4872\libx86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>..\..\3rdparty\Wwise 2013.2.9.4872\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>AK_OPTIMIZED;COMPILING_DLL;NDEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>AkConvolutionReverbFX.lib;iZTrashMultibandDistortionFX.lib;AstoundsoundExpanderFX.lib;AkTremoloFX.lib;AkMemoryMgr.lib;AkMotionGenerator.lib;AkSineSource.lib;AkSoundSeedWind.lib;AkStereoDelayFX.lib;AkGuitarDistortionFX.lib;AkRumble.lib;AkSoundEngine.lib;AkMP3Source.lib;iZTrashBoxModelerFX.lib;AkSoundSeedImpactFX.lib;AkRoomVerbFX.lib;iZTrashDelayFX.lib;McDSPFutzBoxFX.lib;AkParametricEQFX.lib;McDSPLimiterFX.lib;AkToneSource.lib;AkFlangerFX.lib;AkCompressorFX.lib;AstoundsoundFolddownFX.lib;AkAudioInputSource.lib;AkMusicEngine.lib;AkDelayFX.lib;CrankcaseAudioREVModelPlayerFX.lib;AkSoundSeedWoosh.lib;iZHybridReverbFX.lib;AkPitchShifterFX.lib;iZTrashDynamicsFX.lib;iZTrashDistortionFX.lib;AstoundsoundRTIFX.lib;AkSilenceSource.lib;AkGainFX.lib;AkVorbisDecoder.lib;AkTimeStretchFX.lib;AstoundsoundShared.lib;iZTrashFiltersFX.lib;AkMatrixReverbFX.lib;AkMeterFX.lib;AkStreamMgr.lib;AkHarmonizerFX.lib;AkPeakLimiterFX.lib;AkExpanderFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>"$(DXSDK_DIR)\lib\x64";..\..\3rdparty\Wwise 2013.2.9.4872\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>..\..\3rdparty\Wwise 2013.2.9.4872\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>COMPILING_DLL;NDEBUG;AK_OPTIMIZED;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">Disabled</Optimization>
+      <InlineFunctionExpansion Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">Disabled</InlineFunctionExpansion>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;AK_OPTIMIZED;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -433,7 +71,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ItemDefinitionGroup Condition="'$(Platform)'=='x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\3rdparty\Wwise 2013.2.9.4872\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>AK_OPTIMIZED;COMPILING_DLL;NDEBUG;AK_OPTIMIZED;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -441,50 +79,8 @@
       </PrecompiledHeaderFile>
       <ExceptionHandling>Sync</ExceptionHandling>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;AK_OPTIMIZED;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>AkConvolutionReverbFX.lib;iZTrashMultibandDistortionFX.lib;AstoundsoundExpanderFX.lib;AkTremoloFX.lib;AkMemoryMgr.lib;AkMotionGenerator.lib;AkSineSource.lib;AkSoundSeedWind.lib;AkStereoDelayFX.lib;AkGuitarDistortionFX.lib;AkRumble.lib;AkSoundEngine.lib;AkMP3Source.lib;iZTrashBoxModelerFX.lib;AkSoundSeedImpactFX.lib;AkRoomVerbFX.lib;iZTrashDelayFX.lib;McDSPFutzBoxFX.lib;AkParametricEQFX.lib;McDSPLimiterFX.lib;AkToneSource.lib;AkFlangerFX.lib;AkCompressorFX.lib;AstoundsoundFolddownFX.lib;AkAudioInputSource.lib;AkMusicEngine.lib;AkDelayFX.lib;CrankcaseAudioREVModelPlayerFX.lib;AkSoundSeedWoosh.lib;iZHybridReverbFX.lib;AkPitchShifterFX.lib;iZTrashDynamicsFX.lib;iZTrashDistortionFX.lib;AstoundsoundRTIFX.lib;AkSilenceSource.lib;AkGainFX.lib;AkVorbisDecoder.lib;AkTimeStretchFX.lib;AstoundsoundShared.lib;iZTrashFiltersFX.lib;AkMatrixReverbFX.lib;AkMeterFX.lib;AkStreamMgr.lib;AkHarmonizerFX.lib;AkPeakLimiterFX.lib;AkExpanderFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>"$(DXSDK_DIR)\lib\x64";..\..\3rdparty\Wwise 2013.2.9.4872\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x86'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>..\..\3rdparty\Wwise 2013.2.9.4872\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>COMPILING_DLL;NDEBUG;AK_OPTIMIZED;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;AK_OPTIMIZED;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>AkConvolutionReverbFX.lib;iZTrashMultibandDistortionFX.lib;AstoundsoundExpanderFX.lib;AkTremoloFX.lib;AkMemoryMgr.lib;AkMotionGenerator.lib;AkSineSource.lib;AkSoundSeedWind.lib;AkStereoDelayFX.lib;AkGuitarDistortionFX.lib;AkRumble.lib;AkSoundEngine.lib;AkMP3Source.lib;iZTrashBoxModelerFX.lib;AkSoundSeedImpactFX.lib;AkRoomVerbFX.lib;iZTrashDelayFX.lib;McDSPFutzBoxFX.lib;AkParametricEQFX.lib;McDSPLimiterFX.lib;AkToneSource.lib;AkFlangerFX.lib;AkCompressorFX.lib;AstoundsoundFolddownFX.lib;AkAudioInputSource.lib;AkMusicEngine.lib;AkDelayFX.lib;CrankcaseAudioREVModelPlayerFX.lib;AkSoundSeedWoosh.lib;iZHybridReverbFX.lib;AkPitchShifterFX.lib;iZTrashDynamicsFX.lib;iZTrashDistortionFX.lib;AstoundsoundRTIFX.lib;AkSilenceSource.lib;AkGainFX.lib;AkVorbisDecoder.lib;AkTimeStretchFX.lib;AstoundsoundShared.lib;iZTrashFiltersFX.lib;AkMatrixReverbFX.lib;AkMeterFX.lib;AkStreamMgr.lib;AkHarmonizerFX.lib;AkPeakLimiterFX.lib;AkExpanderFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>"$(DXSDK_DIR)\lib\x86";..\..\3rdparty\Wwise 2013.2.9.4872\libx86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>..\..\3rdparty\Wwise 2013.2.9.4872\include;..\..\SoundEngine\Common;..\..\SoundEngine\x86;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>AK_OPTIMIZED;COMPILING_DLL;NDEBUG;AK_OPTIMIZED;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</Optimization>
+      <InlineFunctionExpansion Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</InlineFunctionExpansion>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;AK_OPTIMIZED;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>

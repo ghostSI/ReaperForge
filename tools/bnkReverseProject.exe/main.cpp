@@ -540,8 +540,6 @@ typedef AkListBare<CAkFilePackage, CAkListAware<CAkFilePackage>::AkListNextItem,
 
 struct AkFileSystemFlags;
 
-#include <AK/SoundEngine/Common/IAkStreamMgr.h>
-
 class CAkFileLocationBase
 {
 public:
@@ -3398,8 +3396,8 @@ static void loadAllBnkFiles()
 {
   AkBankID bankID;
 
-  AK::SoundEngine::LoadBank("DoorInit.bnk", AK_DEFAULT_POOL_ID, bankID);
-  AK::SoundEngine::LoadBank("Door.bnk", AK_DEFAULT_POOL_ID, bankID);
+  //AK::SoundEngine::LoadBank("DoorInit.bnk", AK_DEFAULT_POOL_ID, bankID);
+  //AK::SoundEngine::LoadBank("Door.bnk", AK_DEFAULT_POOL_ID, bankID);
 
   AK::SoundEngine::LoadBank("amp_at120.bnk", AK_DEFAULT_POOL_ID, bankID);
   AK::SoundEngine::LoadBank("amp_at20.bnk", AK_DEFAULT_POOL_ID, bankID);
@@ -5568,10 +5566,10 @@ int main()
     abort();
 
 
-  registerAllPlugins();
-  //res = AK::SoundEngine::RegisterAllPlugins();
-  //if (res != AK_Success)
-  //  abort();
+  //registerAllPlugins();
+  res = AK::SoundEngine::RegisterAllPlugins();
+  if (res != AK_Success)
+    abort();
 
   res = AK::SoundEngine::RegisterAllCodecPlugins();
   if (res != AK_Success)
@@ -5595,6 +5593,10 @@ int main()
 
   loadAllBnkFiles();
 
+
+  AK::SoundEngine::SetRTPCValue("Master_Volume", 100, GAME_OBJECT);
+  AK::SoundEngine::SetRTPCValue("MusicRamping", 100, GAME_OBJECT);
+  AK::SoundEngine::SetRTPCValue("Crowd_RRVolumeControl", 100, GAME_OBJECT);
   AK::SoundEngine::SetRTPCValue("Mixer_SFX", 100, GAME_OBJECT);
   AK::SoundEngine::SetRTPCValue("Mixer_Music", 100, GAME_OBJECT);
   AK::SoundEngine::SetRTPCValue("Mixer_Player1", 100, GAME_OBJECT);
@@ -5606,10 +5608,10 @@ int main()
 
   AK::SoundEngine::SetRTPCValue("BusVolume", 100, GAME_OBJECT);
 
-  for (unsigned int i : init_rtpc)
-  {
-    AK::SoundEngine::SetRTPCValue(i, 1000.0f, GAME_OBJECT);
-  }
+  //for (unsigned int i : init_rtpc)
+  //{
+  //  AK::SoundEngine::SetRTPCValue(i, 1000.0f, GAME_OBJECT);
+  //}
 
   {
     AK::SoundEngine::PostEvent("Play_TitleScreen", GAME_OBJECT);

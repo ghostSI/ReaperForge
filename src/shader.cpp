@@ -63,7 +63,7 @@ void Shader::init()
   shaderPrograms[3] = compileShader(Data::Shader::defaultWorldVert, Data::Shader::detectedFretFrag);
   shaderPrograms[4] = compileShader(Data::Shader::defaultWorldVert, Data::Shader::detectedNoteFrag);
   shaderPrograms[5] = compileShader(Data::Shader::defaultWorldVert, Data::Shader::dotInlayFrag);
-  shaderPrograms[6] = compileShader(Data::Shader::defaultWorldVert, Data::Shader::groundFrag);
+  shaderPrograms[6] = compileShader(Data::Shader::defaultWorldVert, Data::Shader::groundFretFrag);
   shaderPrograms[7] = compileShader(Data::Shader::defaultScreenVert, Data::Shader::fontFrag);
   shaderPrograms[8] = compileShader(Data::Shader::defaultWorldVert, Data::Shader::fontFrag);
   shaderPrograms[9] = compileShader(Data::Shader::defaultWorldVert, Data::Shader::anchorFrag);

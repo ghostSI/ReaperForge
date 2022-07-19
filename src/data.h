@@ -14,7 +14,7 @@ namespace Data {
     extern const char* detectedFretFrag;
     extern const char* detectedNoteFrag;
     extern const char* dotInlayFrag;
-    extern const char* groundFrag;
+    extern const char* groundFretFrag;
     extern const char* fontFrag;
     extern const char* anchorFrag;
     extern const char* ebeatFrag;
@@ -64,7 +64,6 @@ namespace Data {
   namespace Geometry
   {
     extern const f32 fret[3135];
-    extern const f32 ground[30];
     extern const f32 string[180];
 
 

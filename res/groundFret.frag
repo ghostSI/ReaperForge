@@ -4,16 +4,12 @@ precision mediump float;
 in vec2 Texcoord;
 out vec4 outColor;
 uniform vec4 color;
+uniform vec4 color2;
 
 void main()
 {
-  vec4 col = color;
+  float a = cos((Texcoord.x - 0.5) * 3.0);
   
-  col.a = pow(sin(Texcoord.x * 154.0), 100.0);
-  
-  if (col.a <= 0.0)
-    discard;
-  
-  outColor = col;
+  outColor = mix(color2, color, a);
 }
 )"

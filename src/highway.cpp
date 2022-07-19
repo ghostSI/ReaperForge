@@ -22,13 +22,26 @@ static vec4* instrumentStringColors = Global::settings.instrumentGuitarStringCol
 
 static void drawGround()
 {
-  GLuint shader = Shader::useShader(Shader::Stem::ground);
+  GLuint shader = Shader::useShader(Shader::Stem::groundFret);
+  glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayGroundFretColor[0].v0, Global::settings.highwayGroundFretColor[0].v1, Global::settings.highwayGroundFretColor[0].v2, Global::settings.highwayGroundFretColor[0].v3);
+  glUniform4f(glGetUniformLocation(shader, "color2"), Global::settings.highwayGroundFretColor[1].v0, Global::settings.highwayGroundFretColor[1].v1, Global::settings.highwayGroundFretColor[1].v2, Global::settings.highwayGroundFretColor[1].v3);
 
   mat4 modelMat;
-  glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
-  glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayGroundFretColor[0].v0, Global::settings.highwayGroundFretColor[0].v1, Global::settings.highwayGroundFretColor[0].v2, 1.0f);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Data::Geometry::ground), Data::Geometry::ground, GL_STATIC_DRAW);
-  glDrawArrays(GL_TRIANGLES, 0, sizeof(Data::Geometry::ground) / (sizeof(float) * 5));
+  for (i32 i = 0; i < NUM(Const::highwayFretPosition); ++i)
+  {
+    modelMat.m30 = Const::highwayFretPosition[i];
+    glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &modelMat.m00);
+
+    const GLfloat v[] = {
+      -0.04f, -0.353f, -100.0f, 0.0f, 1.0f,
+      0.04f, -0.353f, -100.0f, 1.0f, 1.0f,
+      -0.04f, -0.353f, 0.0f, 0.0f, 0.0f,
+      0.04f, -0.353f, 0.0f, 1.0f, 0.0f,
+    };
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  }
 }
 
 static void drawFrets()

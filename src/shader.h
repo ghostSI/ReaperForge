@@ -11,7 +11,7 @@ namespace Shader {
         detectedFret,
         detectedNote,
         dotInlay,
-        ground,
+        groundFret,
         fontScreen,
         fontWorld,
         anchor,

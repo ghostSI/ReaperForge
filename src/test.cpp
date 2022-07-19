@@ -25144,12 +25144,12 @@ static void bnkTest()
     }
   }
 
-  assert(192 == success.size());
+  assert(193 == success.size());
   assert(0 == fail.size());
   assert(0 == wrongBankVersion.size());
   assert(1 == bankAlreadyLoaded.size());
   assert(0 == notInitialized.size());
-  assert(36 == insufficientMemory.size());
+  assert(37 == insufficientMemory.size());
   assert(0 == initBankNotLoaded.size());
 }
 #endif // SUPPORT_BNK

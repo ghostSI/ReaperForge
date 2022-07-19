@@ -1054,14 +1054,46 @@ static void drawNoteFreadboard(f32 fretboardNoteDistance[7][24])
 
 static void drawFretNumbers()
 {
+  i32 currentAnchor = -1;
+  for (i32 i = 0; i < Global::songTrack.transcriptionTrack.anchors.size() - 2; ++i)
+  {
+    const Song::TranscriptionTrack::Anchor& anchor0 = Global::songTrack.transcriptionTrack.anchors[i];
+    const Song::TranscriptionTrack::Anchor& anchor1 = Global::songTrack.transcriptionTrack.anchors[i + 1];
+
+    if (Global::musicTimeElapsed >= anchor0.time && Global::musicTimeElapsed < anchor1.time)
+    {
+      currentAnchor = i;
+      break;
+    }
+  }
+
   const GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
-  glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayFretNumberColor[0].v0, Global::settings.highwayFretNumberColor[0].v1, Global::settings.highwayFretNumberColor[0].v2, Global::settings.highwayFretNumberColor[0].v3);
 
   for (i32 i = 1; i <= 24; ++i)
   {
     const f32 x = Const::highwayFretPosition[i - 1] + 0.5f * (Const::highwayFretPosition[i] - Const::highwayFretPosition[i - 1]);
 
-    Font::drawFretNumber(i, x, -0.7f, 0.0f, 0.2f, 0.2f);
+    if (currentAnchor >= 0)
+    {
+      const i32 left = Global::songTrack.transcriptionTrack.anchors[currentAnchor].fret;
+      const i32 right = Global::songTrack.transcriptionTrack.anchors[currentAnchor].fret + Global::songTrack.transcriptionTrack.anchors[currentAnchor].width;
+
+      if (left <= i && i < right)
+      {
+        glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayFretNumberColor[0].v0, Global::settings.highwayFretNumberColor[0].v1, Global::settings.highwayFretNumberColor[0].v2, Global::settings.highwayFretNumberColor[0].v3);
+        Font::drawFretNumber(i, x, -0.7f, 0.0f, 0.2f, 0.2f);
+      }
+      else if (left - 1 <= i && i < right + 1)
+      {
+        glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayFretNumberColor[1].v0, Global::settings.highwayFretNumberColor[1].v1, Global::settings.highwayFretNumberColor[1].v2, Global::settings.highwayFretNumberColor[1].v3);
+        Font::drawFretNumber(i, x, -0.7f, 0.0f, 0.2f, 0.2f);
+      }
+      else if (Const::isMarkedFret[i])
+      {
+        glUniform4f(glGetUniformLocation(shader, "color"), Global::settings.highwayFretNumberColor[2].v0, Global::settings.highwayFretNumberColor[2].v1, Global::settings.highwayFretNumberColor[2].v2, Global::settings.highwayFretNumberColor[2].v3);
+        Font::drawFretNumber(i, x, -0.7f, 0.0f, 0.2f, 0.2f);
+      }
+    }
   }
 }
 

@@ -50,9 +50,9 @@ namespace Settings {
     vec4 highwayFingerNumberColor = colorVec4("#FFFFFF");
     bool highwayFretNoteNames = false;
     vec4 highwayFretNumberColor[3] = {
-      colorVec4("#FFBA17"),
-      colorVec4("#8795E5"),
-      colorVec4("#A0AEEF")
+      colorVec4("#FFBA17CC"),
+      colorVec4("#8795E5CC"),
+      colorVec4("#4A609ACC")
     };
     vec4 highwayFretboardNoteNameColor[2] = {
       colorVec4("#BCBED4"),

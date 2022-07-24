@@ -1,7 +1,6 @@
 #ifndef SONG_H
 #define SONG_H
 
-#include "arrangement.h"
 #include "manifest.h"
 #include "sng.h"
 #include "xblock.h"
@@ -17,8 +16,6 @@ namespace Song {
     complete,
   };
 
-
-
   struct Info
   {
     LoadState loadState = LoadState::none;
@@ -31,11 +28,6 @@ namespace Song {
     mutable GLuint albumCover128_ogl = 0;
     i32 albumCover256_tocIndex = -1;
     mutable GLuint albumCover256_ogl = 0;
-
-    std::vector<Sng::Info> sngInfos;
-#ifdef ARRANGEMENT_XML
-    std::vector<Arrangement::Info> arrangements;
-#endif // ARRANGEMENT_XML
   };
 
   Info loadSongInfoManifestOnly(const Psarc::Info& psarcInfo);

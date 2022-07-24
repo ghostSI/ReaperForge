@@ -1684,18 +1684,24 @@ static const char* instrumentName(InstrumentFlags instrumentFlags)
     return "Rhythm 2";
   case InstrumentFlags::BassGuitar | InstrumentFlags::Second:
     return "Bass 2";
-  case InstrumentFlags::LeadGuitar | InstrumentFlags::Alternative:
-    return "Lead Alternative";
-  case InstrumentFlags::RhythmGuitar | InstrumentFlags::Alternative:
-    return "Rhythm Alternative";
-  case InstrumentFlags::BassGuitar | InstrumentFlags::Alternative:
-    return "Bass Alternative";
-  case InstrumentFlags::LeadGuitar | InstrumentFlags::Bonus:
-    return "Lead Bonus";
-  case InstrumentFlags::RhythmGuitar | InstrumentFlags::Bonus:
-    return "Rhythm Bonus";
-  case InstrumentFlags::BassGuitar | InstrumentFlags::Bonus:
-    return "Bass Bonus";
+  case InstrumentFlags::LeadGuitar | InstrumentFlags::Third:
+    return "Lead 3";
+  case InstrumentFlags::RhythmGuitar | InstrumentFlags::Third:
+    return "Rhythm 3";
+  case InstrumentFlags::BassGuitar | InstrumentFlags::Third:
+    return "Bass 3";
+  //case InstrumentFlags::LeadGuitar | InstrumentFlags::Alternative:
+  //  return "Lead Alternative";
+  //case InstrumentFlags::RhythmGuitar | InstrumentFlags::Alternative:
+  //  return "Rhythm Alternative";
+  //case InstrumentFlags::BassGuitar | InstrumentFlags::Alternative:
+  //  return "Bass Alternative";
+  //case InstrumentFlags::LeadGuitar | InstrumentFlags::Bonus:
+  //  return "Lead Bonus";
+  //case InstrumentFlags::RhythmGuitar | InstrumentFlags::Bonus:
+  //  return "Rhythm Bonus";
+  //case InstrumentFlags::BassGuitar | InstrumentFlags::Bonus:
+  //  return "Bass Bonus";
   default:
     assert(false);
     return "";
@@ -2187,18 +2193,25 @@ static std::vector<i32> sortManifestIndices(const std::vector<Manifest::Info>& m
     }
 
   for (i32 i = 0; i < manifestInfos.size(); ++i)
-    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::LeadGuitar | InstrumentFlags::Alternative))
+    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::LeadGuitar | InstrumentFlags::Third))
     {
       sortedIndex[j++] = i;
       break;
     }
 
-  for (i32 i = 0; i < manifestInfos.size(); ++i)
-    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::LeadGuitar | InstrumentFlags::Bonus))
-    {
-      sortedIndex[j++] = i;
-      break;
-    }
+  //for (i32 i = 0; i < manifestInfos.size(); ++i)
+  //  if (manifestInfos[i].instrumentFlags == (InstrumentFlags::LeadGuitar | InstrumentFlags::Alternative))
+  //  {
+  //    sortedIndex[j++] = i;
+  //    break;
+  //  }
+
+  //for (i32 i = 0; i < manifestInfos.size(); ++i)
+  //  if (manifestInfos[i].instrumentFlags == (InstrumentFlags::LeadGuitar | InstrumentFlags::Bonus))
+  //  {
+  //    sortedIndex[j++] = i;
+  //    break;
+  //  }
 
   for (i32 i = 0; i < manifestInfos.size(); ++i)
     if (manifestInfos[i].instrumentFlags == InstrumentFlags::RhythmGuitar)
@@ -2215,18 +2228,25 @@ static std::vector<i32> sortManifestIndices(const std::vector<Manifest::Info>& m
     }
 
   for (i32 i = 0; i < manifestInfos.size(); ++i)
-    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::RhythmGuitar | InstrumentFlags::Alternative))
+    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::RhythmGuitar | InstrumentFlags::Third))
     {
       sortedIndex[j++] = i;
       break;
     }
 
-  for (i32 i = 0; i < manifestInfos.size(); ++i)
-    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::RhythmGuitar | InstrumentFlags::Bonus))
-    {
-      sortedIndex[j++] = i;
-      break;
-    }
+  //for (i32 i = 0; i < manifestInfos.size(); ++i)
+  //  if (manifestInfos[i].instrumentFlags == (InstrumentFlags::RhythmGuitar | InstrumentFlags::Alternative))
+  //  {
+  //    sortedIndex[j++] = i;
+  //    break;
+  //  }
+
+  //for (i32 i = 0; i < manifestInfos.size(); ++i)
+  //  if (manifestInfos[i].instrumentFlags == (InstrumentFlags::RhythmGuitar | InstrumentFlags::Bonus))
+  //  {
+  //    sortedIndex[j++] = i;
+  //    break;
+  //  }
 
   for (i32 i = 0; i < manifestInfos.size(); ++i)
     if (manifestInfos[i].instrumentFlags == InstrumentFlags::BassGuitar)
@@ -2243,18 +2263,25 @@ static std::vector<i32> sortManifestIndices(const std::vector<Manifest::Info>& m
     }
 
   for (i32 i = 0; i < manifestInfos.size(); ++i)
-    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::BassGuitar | InstrumentFlags::Alternative))
+    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::BassGuitar | InstrumentFlags::Third))
     {
       sortedIndex[j++] = i;
       break;
     }
 
-  for (i32 i = 0; i < manifestInfos.size(); ++i)
-    if (manifestInfos[i].instrumentFlags == (InstrumentFlags::BassGuitar | InstrumentFlags::Bonus))
-    {
-      sortedIndex[j++] = i;
-      break;
-    }
+  //for (i32 i = 0; i < manifestInfos.size(); ++i)
+  //  if (manifestInfos[i].instrumentFlags == (InstrumentFlags::BassGuitar | InstrumentFlags::Alternative))
+  //  {
+  //    sortedIndex[j++] = i;
+  //    break;
+  //  }
+
+  //for (i32 i = 0; i < manifestInfos.size(); ++i)
+  //  if (manifestInfos[i].instrumentFlags == (InstrumentFlags::BassGuitar | InstrumentFlags::Bonus))
+  //  {
+  //    sortedIndex[j++] = i;
+  //    break;
+  //  }
 
   assert(j == manifestInfos.size());
 
@@ -2270,6 +2297,7 @@ static void songWindow()
     nk_layout_row_template_push_static(ctx, 58);
     nk_layout_row_template_push_static(ctx, 47);
     nk_layout_row_template_push_dynamic(ctx);
+    nk_layout_row_template_push_static(ctx, 35);
     nk_layout_row_template_push_static(ctx, 35);
     nk_layout_row_template_push_static(ctx, 20);
     nk_layout_row_template_push_static(ctx, 48);
@@ -2299,6 +2327,8 @@ static void songWindow()
     }
 
     nk_edit_string(ctx, NK_EDIT_SIMPLE, Global::searchText, &Global::searchTextLength, sizeof(Global::searchText), nk_filter_default);
+
+    nk_label(ctx, std::to_string(Global::songInfos.size()).c_str(), NK_TEXT_LEFT);
 
 #ifdef SUPPORT_PLUGIN
     if (nk_button_label(ctx, "VST"))
@@ -2370,6 +2400,8 @@ static void songWindow()
 
               if (songInfo.albumCover128_ogl != 0)
                 thumbnail = nk_image_id((int)songInfo.albumCover128_ogl);
+              else
+                thumbnail = nk_image_id((int)Global::textureError);
 
               nk_command_buffer* canvas = nk_window_get_canvas(ctx);
               struct nk_rect window_content_region = nk_window_get_content_region(ctx);
@@ -3110,9 +3142,10 @@ static void installWindow() {
 
 static void uiHelpWindowOpen()
 {
-  if (nk_begin(ctx, "Help", nk_rect(200, 280, 600, 300), NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE | NK_WINDOW_CLOSABLE)) {
-
+  if (nk_begin(ctx, "Help", nk_rect(200, 280, 600, 300), NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE | NK_WINDOW_CLOSABLE))
+  {
     nk_layout_row_dynamic(ctx, 22, 1);
+
     nk_label(ctx, "Keybindings.", NK_TEXT_LEFT);
     //nk_label(ctx, "F1: open Tuner", NK_TEXT_LEFT);
     nk_label(ctx, "F2: toggle Wireframe", NK_TEXT_LEFT);

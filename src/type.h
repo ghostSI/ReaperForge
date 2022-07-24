@@ -16,12 +16,12 @@ enum struct InstrumentFlags : u16
   LeadGuitar = 1 << 0,
   RhythmGuitar = 1 << 1,
   BassGuitar = 1 << 2,
-  Vocals = 1 << 3,
-  Keyboard = 1 << 4,
   Second = 1 << 5,
-  Alternative = 1 << 6,
-  Bonus = 1 << 7,
-  //Third = 1 << 8
+  Third = 1 << 6,
+  //Alternative = 1 << 7,
+  //Bonus = 1 << 8,
+  //Vocals = 1 << 10,
+  //Keyboard = 1 << 11,
 }BIT_FLAGS(InstrumentFlags);
 
 enum struct SaveMode : u8

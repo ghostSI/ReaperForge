@@ -270,6 +270,7 @@ namespace Global {
   extern GLuint fbo; // default fbo is 0 if postprocessor is off
   extern GLuint fboRtt; // framebuffer for rendering to texture (make sure to set framebuffer to 0 after using it)
   extern GLuint texture;
+  extern GLuint textureError;
 };
 
 #endif // GLOBAL_H

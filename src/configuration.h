@@ -7,8 +7,6 @@
 
 //#define XBLOCK_FULL // read all data from xblock files
 
-#define ARRANGEMENT_XML // read arrangement.xml file
-
 //#define FORCE_OPENGL_ES
 
 #define XML_IGNORE_ERROR

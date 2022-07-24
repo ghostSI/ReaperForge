@@ -110,3 +110,4 @@ GLuint Global::ebo = 0;
 GLuint Global::fbo = 0;
 GLuint Global::fboRtt = 0;
 GLuint Global::texture = 0;
+GLuint Global::textureError = 0;

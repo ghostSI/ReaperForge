@@ -190,6 +190,7 @@ int main(int argc, char* argv[]) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Global::ebo);
   glGenFramebuffers(1, &Global::fboRtt);
   Global::texture = OpenGl::loadDDSTexture(Data::Texture::texture, sizeof(Data::Texture::texture));
+  Global::textureError = OpenGl::loadDDSTexture(Data::Texture::textureError, sizeof(Data::Texture::textureError));
 
   if (Global::gameController == nullptr && SDL_NumJoysticks() >= 1 && SDL_IsGameController(0))
     Global::gameController = SDL_GameControllerOpen(0);

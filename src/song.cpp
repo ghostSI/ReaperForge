@@ -75,73 +75,14 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
       || tocEntry.name.ends_with(".dds")
       || tocEntry.name.ends_with(".bnk")
       || tocEntry.name.ends_with(".wem")
-      || tocEntry.name.ends_with(".sng")
       || tocEntry.name.ends_with(".nt")
       || tocEntry.name.ends_with(".version")
       || tocEntry.name.ends_with(".appid")
-      || tocEntry.name.ends_with("_vocals.xml")
-      || tocEntry.name.ends_with("_showlights.xml")
+      || tocEntry.name.ends_with(".sng")
+      || tocEntry.name.ends_with(".xml")
       || tocEntry.name.ends_with("_vocals.json"))
     {
       continue;
-    }
-    else if (tocEntry.name.ends_with("_lead.xml")) {
-#ifdef ARRANGEMENT_XML
-      Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
-      arrangement.instrumentFlags |= InstrumentFlags::LeadGuitar;
-      songInfo.arrangements.push_back(arrangement);
-#endif // ARRANGEMENT_XML
-    }
-    else if (tocEntry.name.ends_with("_lead2.xml")) {
-#ifdef ARRANGEMENT_XML
-      Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
-      arrangement.instrumentFlags |= InstrumentFlags::LeadGuitar;
-      songInfo.arrangements.push_back(arrangement);
-#endif // ARRANGEMENT_XML
-    }
-    else if (tocEntry.name.ends_with("_rhythm.xml")) {
-#ifdef ARRANGEMENT_XML
-      Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
-      arrangement.instrumentFlags |= InstrumentFlags::RhythmGuitar;
-      songInfo.arrangements.push_back(arrangement);
-#endif // ARRANGEMENT_XML
-    }
-    else if (tocEntry.name.ends_with("_rhythm2.xml")) {
-#ifdef ARRANGEMENT_XML
-      Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
-      arrangement.instrumentFlags |= InstrumentFlags::RhythmGuitar;
-      songInfo.arrangements.push_back(arrangement);
-#endif // ARRANGEMENT_XML
-    }
-    else if (tocEntry.name.ends_with("_bass.xml")) {
-#ifdef ARRANGEMENT_XML
-      Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
-      arrangement.instrumentFlags |= InstrumentFlags::BassGuitar;
-      songInfo.arrangements.push_back(arrangement);
-#endif // ARRANGEMENT_XML
-    }
-    else if (tocEntry.name.ends_with("_bass2.xml")) {
-#ifdef ARRANGEMENT_XML
-      Arrangement::Info arrangement = Arrangement::readArrangement(tocEntry.content);
-      arrangement.instrumentFlags |= InstrumentFlags::BassGuitar;
-      songInfo.arrangements.push_back(arrangement);
-#endif // ARRANGEMENT_XML
-    }
-    else if (tocEntry.name.ends_with("_lead.sng"))
-    {
-      const Sng::Info sngInfo = Sng::parse(tocEntry.content);
-    }
-    else if (tocEntry.name.ends_with("_rhythm.sng"))
-    {
-      songInfo.sngInfos.push_back(Sng::parse(tocEntry.content));
-    }
-    else if (tocEntry.name.ends_with("_bass.sng"))
-    {
-      songInfo.sngInfos.push_back(Sng::parse(tocEntry.content));
-    }
-    else if (tocEntry.name.ends_with("_vocals.sng"))
-    {
-      songInfo.sngInfos.push_back(Sng::parse(tocEntry.content));
     }
     else if (tocEntry.name.ends_with("_lead.json"))
     {
@@ -149,6 +90,11 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
       songInfo.tones.insert(songInfo.tones.begin(), tones.begin(), tones.end());
     }
     else if (tocEntry.name.ends_with("_lead2.json"))
+    {
+      const std::vector<Manifest::Tone> tones = Manifest::readJson(tocEntry.content);
+      songInfo.tones.insert(songInfo.tones.begin(), tones.begin(), tones.end());
+    }
+    else if (tocEntry.name.ends_with("_lead3.json"))
     {
       const std::vector<Manifest::Tone> tones = Manifest::readJson(tocEntry.content);
       songInfo.tones.insert(songInfo.tones.begin(), tones.begin(), tones.end());
@@ -163,7 +109,22 @@ void Song::loadSongInfoComplete(const Psarc::Info& psarcInfo, Song::Info& songIn
       const std::vector<Manifest::Tone> tones = Manifest::readJson(tocEntry.content);
       songInfo.tones.insert(songInfo.tones.begin(), tones.begin(), tones.end());
     }
+    else if (tocEntry.name.ends_with("_rhythm3.json"))
+    {
+      const std::vector<Manifest::Tone> tones = Manifest::readJson(tocEntry.content);
+      songInfo.tones.insert(songInfo.tones.begin(), tones.begin(), tones.end());
+    }
     else if (tocEntry.name.ends_with("_bass.json"))
+    {
+      const std::vector<Manifest::Tone> tones = Manifest::readJson(tocEntry.content);
+      songInfo.tones.insert(songInfo.tones.begin(), tones.begin(), tones.end());
+    }
+    else if (tocEntry.name.ends_with("_bass2.json"))
+    {
+      const std::vector<Manifest::Tone> tones = Manifest::readJson(tocEntry.content);
+      songInfo.tones.insert(songInfo.tones.begin(), tones.begin(), tones.end());
+    }
+    else if (tocEntry.name.ends_with("_bass3.json"))
     {
       const std::vector<Manifest::Tone> tones = Manifest::readJson(tocEntry.content);
       songInfo.tones.insert(songInfo.tones.begin(), tones.begin(), tones.end());
@@ -400,75 +361,109 @@ static void readSongHandShape(const pugi::xml_document& doc, std::vector<Song::T
   }
 }
 
-Song::Track Song::loadTrack(const Psarc::Info& psarcInfo, InstrumentFlags instrumentFlags)
+static Song::Track load_xml(const Psarc::Info::TOCEntry& tocEntry)
 {
-  Song::Track track;
+  Song::Track songTrack;
 
-  for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries)
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load_string(reinterpret_cast<const char*>(tocEntry.content.data()));
+  assert(result.status == pugi::status_ok);
+
+  readPhrases(doc, songTrack.phrases);
+  readPhraseIterations(doc, songTrack.phraseIterations);
+  readChordTemplates(doc, songTrack.chordTemplates);
+  readEbeats(doc, songTrack.ebeats);
+  readSongNotes(doc, songTrack.transcriptionTrack.notes);
+  readSongChords(doc, songTrack.transcriptionTrack.chords);
+  readSongAnchors(doc, songTrack.transcriptionTrack.anchors);
+  readSongHandShape(doc, songTrack.transcriptionTrack.handShape);
+
+  return songTrack;
+}
+
+static Song::Track load_sng(const Psarc::Info::TOCEntry& tocEntry)
+{
+  Song::Track songTrack;
+
+  const Sng::Info sngInfo = Sng::parse(tocEntry.content);
+
+  for (i32 i = 0; i < sngInfo.phrase.size(); ++i)
   {
-    switch (instrumentFlags)
-    {
-    case InstrumentFlags::LeadGuitar:
-      if (tocEntry.name.ends_with("_lead.xml"))
-      {
-        pugi::xml_document doc;
-        pugi::xml_parse_result result = doc.load_string(reinterpret_cast<const char*>(tocEntry.content.data()));
-        assert(result.status == pugi::status_ok);
-
-        readPhrases(doc, track.phrases);
-        readPhraseIterations(doc, track.phraseIterations);
-        readChordTemplates(doc, track.chordTemplates);
-        readEbeats(doc, track.ebeats);
-        readSongNotes(doc, track.transcriptionTrack.notes);
-        readSongChords(doc, track.transcriptionTrack.chords);
-        readSongAnchors(doc, track.transcriptionTrack.anchors);
-        readSongHandShape(doc, track.transcriptionTrack.handShape);
-
-        return track;
-      }
-      break;
-    case InstrumentFlags::RhythmGuitar:
-      if (tocEntry.name.ends_with("_rhythm.xml"))
-      {
-        pugi::xml_document doc;
-        pugi::xml_parse_result result = doc.load_string(reinterpret_cast<const char*>(tocEntry.content.data()));
-        assert(result.status == pugi::status_ok);
-
-        readPhrases(doc, track.phrases);
-        readPhraseIterations(doc, track.phraseIterations);
-        readChordTemplates(doc, track.chordTemplates);
-        readEbeats(doc, track.ebeats);
-        readSongNotes(doc, track.transcriptionTrack.notes);
-        readSongChords(doc, track.transcriptionTrack.chords);
-        readSongAnchors(doc, track.transcriptionTrack.anchors);
-        readSongHandShape(doc, track.transcriptionTrack.handShape);
-
-        return track;
-      }
-      break;
-    case InstrumentFlags::BassGuitar:
-      if (tocEntry.name.ends_with("_bass.xml"))
-      {
-        pugi::xml_document doc;
-        pugi::xml_parse_result result = doc.load_string(reinterpret_cast<const char*>(tocEntry.content.data()));
-        assert(result.status == pugi::status_ok);
-
-        readPhrases(doc, track.phrases);
-        readPhraseIterations(doc, track.phraseIterations);
-        readChordTemplates(doc, track.chordTemplates);
-        readEbeats(doc, track.ebeats);
-        readSongNotes(doc, track.transcriptionTrack.notes);
-        readSongChords(doc, track.transcriptionTrack.chords);
-        readSongAnchors(doc, track.transcriptionTrack.anchors);
-        readSongHandShape(doc, track.transcriptionTrack.handShape);
-
-        return track;
-      }
-      break;
-    }
+    Song::Phrase phrase;
+    phrase.name = sngInfo.phrase[i].name;
+    phrase.maxDifficulty = sngInfo.phrase[i].maxDifficulty;
+    songTrack.phrases.push_back(phrase);
+  }
+  for (i32 i = 0; i < sngInfo.phraseIteration.size(); ++i)
+  {
+    Song::PhraseIteration phraseIteration;
+    phraseIteration.time = sngInfo.phraseIteration[i].startTime;
+    phraseIteration.phraseId = sngInfo.phraseIteration[i].phraseId;
+    songTrack.phraseIterations.push_back(phraseIteration);
+  }
+  for (i32 i = 0; i < sngInfo.arrangement[0].notes.size(); ++i)
+  {
+    Song::TranscriptionTrack::Note note{};
+    note.string = sngInfo.arrangement[0].notes[i].stringIndex;
+    note.time = sngInfo.arrangement[0].notes[i].time;
+    note.fret = sngInfo.arrangement[0].notes[i].fretId;
+    songTrack.transcriptionTrack.notes.push_back(note);
+  }
+  for (i32 i = 0; i < sngInfo.arrangement[0].anchors.size(); ++i)
+  {
+    Song::TranscriptionTrack::Anchor anchor{};
+    anchor.fret = sngInfo.arrangement[0].anchors[i].fretId;
+    anchor.time = sngInfo.arrangement[0].anchors[i].startBeatTime;
+    anchor.width = sngInfo.arrangement[0].anchors[i].width;
+    songTrack.transcriptionTrack.anchors.push_back(anchor);
   }
 
-  return track;
+  return songTrack;
+}
+
+static Song::Track load(const Psarc::Info& psarcInfo, const std::string& name)
+{
+  //const std::string nameSng = name + ".sng";
+  //for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries)
+  //{
+  //  if (tocEntry.name.ends_with(nameSng))
+  //    return load_sng(tocEntry);
+  //}
+
+  const std::string nameXml = name + ".xml";
+  for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries)
+  {
+    if (tocEntry.name.ends_with(nameXml))
+      return load_xml(tocEntry);
+  }
+
+  assert(false);
+  return Song::Track();
+}
+
+Song::Track Song::loadTrack(const Psarc::Info& psarcInfo, InstrumentFlags instrumentFlags)
+{
+  switch (instrumentFlags)
+  {
+  case InstrumentFlags::LeadGuitar:
+    return load(psarcInfo, "_lead");
+  case InstrumentFlags::LeadGuitar | InstrumentFlags::Second:
+    return load(psarcInfo, "_lead2");
+  case InstrumentFlags::LeadGuitar | InstrumentFlags::Third:
+    return load(psarcInfo, "_lead3");
+  case InstrumentFlags::RhythmGuitar:
+    return load(psarcInfo, "_rhythm");
+  case InstrumentFlags::RhythmGuitar | InstrumentFlags::Second:
+    return load(psarcInfo, "_rhythm2");
+  case InstrumentFlags::RhythmGuitar | InstrumentFlags::Third:
+    return load(psarcInfo, "_rhythm3");
+  case InstrumentFlags::BassGuitar:
+    return load(psarcInfo, "_bass");
+  case InstrumentFlags::BassGuitar | InstrumentFlags::Second:
+    return load(psarcInfo, "_bass2");
+  case InstrumentFlags::BassGuitar | InstrumentFlags::Third:
+    return load(psarcInfo, "_bass3");
+  }
 }
 
 std::vector<Song::Vocal> Song::loadVocals(const Psarc::Info& psarcInfo) {

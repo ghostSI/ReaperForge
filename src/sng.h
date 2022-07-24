@@ -1,11 +1,14 @@
 #ifndef SNG_H
 #define SNG_H
 
-#include "typedefs.h"
+#include "type.h"
+
 #include <vector>
 
 namespace Sng {
   struct Info {
+    InstrumentFlags instrumentFlags = InstrumentFlags::none;
+
     struct Bpm
     {
       f32 time;

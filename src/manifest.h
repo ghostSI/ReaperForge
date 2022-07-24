@@ -51,6 +51,8 @@ namespace Manifest {
     i32 songYear{};
     std::string japaneseSongName; // TODO is this in use?
     std::string japaneseArtist; // TODO is this in use?
+    std::string japaneseArtistName; // TODO is this in use?
+    bool japaneseVocal; // TODO is this in use?
     Tuning tuning;
     std::string persistentID;
 

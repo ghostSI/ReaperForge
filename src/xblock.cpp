@@ -19,21 +19,36 @@ static InstrumentFlags instrumentFlagsFromName(const char* name)
     return InstrumentFlags::RhythmGuitar;
   if (str_ends_with(name, "_Bass"))
     return InstrumentFlags::BassGuitar;
-  if (str_ends_with(name, "_Vocals"))
-    return InstrumentFlags::Vocals;
   if (str_ends_with(name, "_Lead2"))
     return InstrumentFlags::LeadGuitar | InstrumentFlags::Second;
   if (str_ends_with(name, "_Rhythm2"))
     return InstrumentFlags::RhythmGuitar | InstrumentFlags::Second;
   if (str_ends_with(name, "_Bass2"))
     return InstrumentFlags::BassGuitar | InstrumentFlags::Second;
+  if (str_ends_with(name, "_Lead3"))
+    return InstrumentFlags::LeadGuitar | InstrumentFlags::Third;
+  if (str_ends_with(name, "_Rhythm3"))
+    return InstrumentFlags::RhythmGuitar | InstrumentFlags::Third;
+  if (str_ends_with(name, "_Bass3"))
+    return InstrumentFlags::BassGuitar | InstrumentFlags::Third;
 
-  if (str_ends_with(name, "_Combo")) // TODO: research what this is.
+  // TODO: research the ones below.
+  if (str_ends_with(name, "_Combo")) // Lead and Rhythm?
     return InstrumentFlags::LeadGuitar;
+  if (str_ends_with(name, "_Combo2"))
+    return InstrumentFlags::LeadGuitar | InstrumentFlags::Second;
+  if (str_ends_with(name, "_Combo3"))
+    return InstrumentFlags::LeadGuitar | InstrumentFlags::Third;
+  if (str_ends_with(name, "_Vocals"))
+    return InstrumentFlags::none;
+  if (str_ends_with(name, "_JVocals"))
+    return InstrumentFlags::none;
+  if (str_ends_with(name, "_ShowLights"))
+    return InstrumentFlags::none;
 
   assert(false);
 
-  return InstrumentFlags::LeadGuitar;
+  return InstrumentFlags::none;
 }
 
 #ifdef XBLOCK_FULL
@@ -117,6 +132,8 @@ XBlock::Info XBlock::readXBlock(const std::vector<u8>& xBlockData)
 
     const char* name = entity.attribute("name").as_string();
     entry.instrumentFlags = instrumentFlagsFromName(name);
+    if (entry.instrumentFlags == InstrumentFlags::none)
+      continue;
 
 #ifdef XBLOCK_FULL
     pugi::xml_node properties = entity.child("properties");

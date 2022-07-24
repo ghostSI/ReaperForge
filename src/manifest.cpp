@@ -271,6 +271,13 @@ static void readAttribute(Json::object_element* it, Manifest::Info& manifestInfo
     manifestInfo.japaneseArtist = string->string;
     return;
   }
+  if (0 == strcmp(it->name->string, "JapaneseArtistName"))
+  {
+    assert(it->value->type == Json::type_string);
+    Json::string* string = (Json::string*)it->value->payload;
+    manifestInfo.japaneseArtistName = string->string;
+    return;
+  }
   if (0 == strcmp(it->name->string, "Tuning"))
   {
     Json::value* tuning_value = it->value;
@@ -330,6 +337,12 @@ static void readAttribute(Json::object_element* it, Manifest::Info& manifestInfo
     manifestInfo.persistentID = string->string;
     return;
   }
+  if (0 == strcmp(it->name->string, "JapaneseVocal"))
+  {
+    assert(it->value->type == Json::type_true || it->value->type == Json::type_false);
+    manifestInfo.japaneseVocal = it->value->type == Json::type_true;
+    return;
+  }
 
   assert(false);
 }
@@ -369,19 +382,19 @@ std::vector<Manifest::Info> Manifest::readHsan(const std::vector<u8>& hsanData, 
 
     Manifest::Info entry;
 
-    for (const XBlock::Info::Entry& entry_ : xblock.entries)
     {
-      if (isSameId(id->name->string, entry_.id))
+      // compare against xblock and set Insturment Flags
+      for (const XBlock::Info::Entry& entry_ : xblock.entries)
       {
-        entry.instrumentFlags = entry_.instrumentFlags;
-        break;
+        if (isSameId(id->name->string, entry_.id))
+        {
+          entry.instrumentFlags = entry_.instrumentFlags;
+          break;
+        }
       }
+      if (entry.instrumentFlags == InstrumentFlags::none)
+        continue;
     }
-
-    if (entry.instrumentFlags == InstrumentFlags::Vocals)
-      continue;
-
-    assert(entry.instrumentFlags != InstrumentFlags::none);
 
     Json::value* id_value = id->value;
 

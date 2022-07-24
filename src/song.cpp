@@ -5,26 +5,6 @@
 #include "global.h"
 #include "xml.h"
 
-//static bool isXmlForInstrument(std::string filename, InstrumentFlags instrument) {
-//
-//  switch (instrument) {
-//  case InstrumentFlags::LeadGuitar:
-//    if (filename.ends_with("_lead.xml"))
-//      return true;
-//    break;
-//  case InstrumentFlags::RhythmGuitar:
-//    if (filename.ends_with("_rhythm.xml"))
-//      return true;
-//    break;
-//  case InstrumentFlags::BassGuitar:
-//    if (filename.ends_with("_bass.xml"))
-//      return true;
-//    break;
-//  }
-//
-//  return false;
-//}
-
 Song::Info Song::loadSongInfoManifestOnly(const Psarc::Info& psarcInfo) {
 
   Song::Info songInfo;
@@ -401,21 +381,49 @@ static Song::Track load_sng(const Psarc::Info::TOCEntry& tocEntry)
     phraseIteration.phraseId = sngInfo.phraseIteration[i].phraseId;
     songTrack.phraseIterations.push_back(phraseIteration);
   }
-  for (i32 i = 0; i < sngInfo.arrangement[0].notes.size(); ++i)
+  for (i32 j = sngInfo.arrangement.size() - 1; j >= 0; --j)
   {
-    Song::TranscriptionTrack::Note note{};
-    note.string = sngInfo.arrangement[0].notes[i].stringIndex;
-    note.time = sngInfo.arrangement[0].notes[i].time;
-    note.fret = sngInfo.arrangement[0].notes[i].fretId;
-    songTrack.transcriptionTrack.notes.push_back(note);
-  }
-  for (i32 i = 0; i < sngInfo.arrangement[0].anchors.size(); ++i)
-  {
-    Song::TranscriptionTrack::Anchor anchor{};
-    anchor.fret = sngInfo.arrangement[0].anchors[i].fretId;
-    anchor.time = sngInfo.arrangement[0].anchors[i].startBeatTime;
-    anchor.width = sngInfo.arrangement[0].anchors[i].width;
-    songTrack.transcriptionTrack.anchors.push_back(anchor);
+    for (i32 i = 0; i < sngInfo.arrangement[j].notes.size(); ++i)
+    {
+      Song::TranscriptionTrack::Note note{};
+      note.string = sngInfo.arrangement[j].notes[i].stringIndex;
+      note.time = sngInfo.arrangement[j].notes[i].time;
+      note.fret = sngInfo.arrangement[j].notes[i].fretId;
+
+      bool found = false;
+      for (i32 k = 0; k < songTrack.transcriptionTrack.notes.size(); ++k)
+      {
+        if (songTrack.transcriptionTrack.notes[k].time == note.time)
+        {
+          found = true;
+          break;
+        }
+      }
+
+      if (!found)
+        songTrack.transcriptionTrack.notes.push_back(note);
+    }
+
+    for (i32 i = 0; i < sngInfo.arrangement[j].anchors.size(); ++i)
+    {
+      Song::TranscriptionTrack::Anchor anchor{};
+      anchor.fret = sngInfo.arrangement[j].anchors[i].fretId;
+      anchor.time = sngInfo.arrangement[j].anchors[i].startBeatTime;
+      anchor.width = sngInfo.arrangement[j].anchors[i].width;
+
+      bool found = false;
+      for (i32 k = 0; k < songTrack.transcriptionTrack.anchors.size(); ++k)
+      {
+        if (songTrack.transcriptionTrack.anchors[k].time == anchor.time)
+        {
+          found = true;
+          break;
+        }
+      }
+
+      if (!found)
+        songTrack.transcriptionTrack.anchors.push_back(anchor);
+    }
   }
 
   return songTrack;
@@ -423,18 +431,40 @@ static Song::Track load_sng(const Psarc::Info::TOCEntry& tocEntry)
 
 static Song::Track load(const Psarc::Info& psarcInfo, const std::string& name)
 {
-  //const std::string nameSng = name + ".sng";
-  //for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries)
-  //{
-  //  if (tocEntry.name.ends_with(nameSng))
-  //    return load_sng(tocEntry);
-  //}
-
-  const std::string nameXml = name + ".xml";
-  for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries)
+  switch (Global::settings.profilePreferedSongFormat)
   {
-    if (tocEntry.name.ends_with(nameXml))
-      return load_xml(tocEntry);
+  case SongFormat::sng:
+  {
+    const std::string nameSng = name + ".sng";
+    for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries)
+    {
+      if (tocEntry.name.ends_with(nameSng))
+        return load_sng(tocEntry);
+    }
+    const std::string nameXml = name + ".xml";
+    for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries)
+    {
+      if (tocEntry.name.ends_with(nameXml))
+        return load_xml(tocEntry);
+    }
+  }
+  break;
+  case SongFormat::xml:
+  {
+    const std::string nameXml = name + ".xml";
+    for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries)
+    {
+      if (tocEntry.name.ends_with(nameXml))
+        return load_xml(tocEntry);
+    }
+    const std::string nameSng = name + ".sng";
+    for (const Psarc::Info::TOCEntry& tocEntry : psarcInfo.tocEntries)
+    {
+      if (tocEntry.name.ends_with(nameSng))
+        return load_sng(tocEntry);
+    }
+  }
+  break;
   }
 
   assert(false);

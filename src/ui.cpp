@@ -3094,6 +3094,14 @@ static void settingsWindow()
     if (nk_tree_push(ctx, NK_TREE_TAB, "Profile", NK_MINIMIZED))
     {
       nk_layout_row_dynamic(ctx, 22, 2);
+      nk_label(ctx, "Prefered Song Format:", NK_TEXT_LEFT);
+      {
+        static const char* songFormatNames[] = {
+          "sng",
+          "xml"
+        };
+        Global::settings.profilePreferedSongFormat = SongFormat(nk_combo(ctx, songFormatNames, NUM(songFormatNames), to_underlying(Global::settings.profilePreferedSongFormat), 25, nk_vec2(200, 200)));
+      }
       {
         nk_label(ctx, "Save Mode", NK_TEXT_LEFT);
         static const char* saveModeNames[] = {

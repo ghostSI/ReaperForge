@@ -31,6 +31,12 @@ enum struct SaveMode : u8
   wholeManifest,
 };
 
+enum struct SongFormat : u8
+{
+  sng,
+  xml,
+};
+
 enum struct SignalChain : i8
 {
   soundBank,

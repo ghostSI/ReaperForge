@@ -282,6 +282,7 @@ static std::map<std::string, std::map<std::string, std::string>> serialize(const
     {
       "Profile",
       {
+        { "PreferedSongFormat", std::to_string(to_underlying(settings.profilePreferedSongFormat)) },
         { "SaveMode", std::to_string(to_underlying(settings.profileSaveMode)) }
       }
     },
@@ -431,6 +432,7 @@ static Settings::Info deserialize(const std::map<std::string, std::map<std::stri
     .mixerMusicVolume = atoi(serializedSettings.at("Mixer").at("MusicVolume").c_str()),
     .mixerGuitar1Volume = atoi(serializedSettings.at("Mixer").at("Guitar1Volume").c_str()),
     .mixerBass1Volume = atoi(serializedSettings.at("Mixer").at("Bass1Volume").c_str()),
+    .profilePreferedSongFormat = SongFormat(atoi(serializedSettings.at("Profile").at("PreferedSongFormat").c_str())),
     .profileSaveMode = SaveMode(atoi(serializedSettings.at("Profile").at("SaveMode").c_str())),
     .uiScale = f32(atof(serializedSettings.at("Ui").at("Scale").c_str()))
   };

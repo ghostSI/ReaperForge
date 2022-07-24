@@ -113,6 +113,7 @@ namespace Settings {
     i32 mixerGuitar2Volume = 100;
     i32 mixerBass2Volume = 100;
     i32 mixerMicrophoneVolume = 100;
+    SongFormat profilePreferedSongFormat = SongFormat::xml;
     SaveMode profileSaveMode = SaveMode::statsOnly;
     f32 uiScale = 1.0f;
   };

@@ -76,8 +76,8 @@ void Phrases::render()
       // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
       const GLfloat v[] = {
         left , top, posZ, 0.0f, 1.0f,
-        right, top, posZ, 1.0f, 1.0f,
         left, bottom, posZ, 0.0f, 0.0f,
+        right, top, posZ, 1.0f, 1.0f,
         right, bottom, posZ, 1.0f, 0.0f,
       };
 
@@ -94,8 +94,8 @@ void Phrases::render()
       // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
       const GLfloat v[] = {
         left , top, posZ, 0.0f, 1.0f,
-        right, top, posZ, 1.0f, 1.0f,
         left, bottom, posZ, 0.0f, 0.0f,
+        right, top, posZ, 1.0f, 1.0f,
         right, bottom, posZ, 1.0f, 0.0f,
       };
 

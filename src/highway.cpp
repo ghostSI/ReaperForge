@@ -397,8 +397,8 @@ static void drawNoteStandZero(const Song::TranscriptionTrack::Note& note, f32 no
   // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
   const GLfloat v[] = {
     left , top, posZ, 0.0f, 1.0f,
-    right, top, posZ, 1.0f, 1.0f,
     left, bottom, posZ, 0.0f, 0.0f,
+    right, top, posZ, 1.0f, 1.0f,
     right, bottom, posZ, 1.0f, 0.0f,
   };
 
@@ -606,8 +606,8 @@ static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime
         // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
         const GLfloat v[] = {
           left , top, posZ, 0.0f, 1.0f,
-          right, top, posZ, 1.0f, 1.0f,
           left, bottom, posZ, 0.0f, 0.0f,
+          right, top, posZ, 1.0f, 1.0f,
           right, bottom, posZ, 1.0f, 0.0f,
         };
 
@@ -648,8 +648,8 @@ static void drawChord(const Song::TranscriptionTrack::Chord& chord, f32 noteTime
       // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
       const GLfloat v[] = {
         left , top, posZ, 0.0f, 1.0f,
-        right, top, posZ, 1.0f, 1.0f,
         left, bottom, posZ, 0.0f, 0.0f,
+        right, top, posZ, 1.0f, 1.0f,
         right, bottom, posZ, 1.0f, 0.0f,
       };
 
@@ -909,8 +909,8 @@ static void drawHandShape(const Song::TranscriptionTrack::HandShape& handShape, 
   //  // for sprites triangleStrip: 4 Verts + UV. Format: x,y,z,u,v
   //  const GLfloat v[] = {
   //    left , top, posZ, 0.0f, 1.0f,
-  //    right, top, posZ, 1.0f, 1.0f,
   //    left, bottom, posZ, 0.0f, 0.0f,
+  //    right, top, posZ, 1.0f, 1.0f,
   //    right, bottom, posZ, 1.0f, 0.0f,
   //  };
 
@@ -986,8 +986,8 @@ static void drawDotInlays()
 
       const GLfloat v[] = {
         left , top, z, 0.0f, 1.0f,
-        right, top, z, 1.0f, 1.0f,
         left, bottom, z, 0.0f, 0.0f,
+        right, top, z, 1.0f, 1.0f,
         right, bottom, z, 1.0f, 0.0f,
       };
 
@@ -1006,8 +1006,8 @@ static void drawDotInlays()
 
         const GLfloat v[] = {
           left , top, z, 0.0f, 1.0f,
-          right, top, z, 1.0f, 1.0f,
           left, bottom, z, 0.0f, 0.0f,
+          right, top, z, 1.0f, 1.0f,
           right, bottom, z, 1.0f, 0.0f,
         };
 
@@ -1020,8 +1020,8 @@ static void drawDotInlays()
 
         const GLfloat v[] = {
           left , top, z, 0.0f, 1.0f,
-          right, top, z, 1.0f, 1.0f,
           left, bottom, z, 0.0f, 0.0f,
+          right, top, z, 1.0f, 1.0f,
           right, bottom, z, 1.0f, 0.0f,
         };
 

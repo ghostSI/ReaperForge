@@ -3291,6 +3291,7 @@ void Ui::render() {
   ortho[0][0] /= (GLfloat)Global::resolutionWidth;
   ortho[1][1] /= (GLfloat)Global::resolutionHeight;
 
+  glDisable(GL_CULL_FACE);
   glDisable(GL_DEPTH_TEST);
 
   GLuint shader = Shader::useShader(Shader::Stem::ui);
@@ -3370,6 +3371,7 @@ void Ui::render() {
   }
 
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
   glBindTexture(GL_TEXTURE_2D, Global::texture);
 }
 

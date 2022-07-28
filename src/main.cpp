@@ -172,9 +172,7 @@ int main(int argc, char* argv[]) {
   SDL_GL_SetSwapInterval(0); // disable vsync
 #endif // __EMSCRIPTEN__
 
-  //glEnable(GL_CULL_FACE);
-  //glCullFace(GL_FRONT);
-  //glFrontFace(GL_CCW);
+  glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
   glEnable(GL_BLEND);

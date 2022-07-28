@@ -34,8 +34,8 @@ static void drawGround()
 
     const GLfloat v[] = {
       -0.04f, -0.353f, -100.0f, 0.0f, 1.0f,
-      0.04f, -0.353f, -100.0f, 1.0f, 1.0f,
       -0.04f, -0.353f, 0.0f, 0.0f, 0.0f,
+      0.04f, -0.353f, -100.0f, 1.0f, 1.0f,
       0.04f, -0.353f, 0.0f, 1.0f, 0.0f,
     };
 
@@ -946,7 +946,7 @@ static void drawHandShapes()
 
 static void drawNoteFretboard(i32 fret, i32 string, f32 size)
 {
-  const GLuint shader = Shader::useShader(Shader::Stem::fontWorld);
+  const GLuint shader = Shader::useShader(Shader::Stem::defaultWorld);
 
   mat4 modelMat;
   modelMat.m00 = size;
